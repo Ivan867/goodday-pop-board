@@ -24,9 +24,8 @@
     const CATEGORIES = ["鮮魚","刺身","惣菜","特売","旬の魚","その他"];
     const CFG_KEY = "goodday_cfg";
 
-    // ★ここにSupabaseの情報を直接入力してもOK（その場合は設定画面をスキップ）
-    // const SUPABASE_URL = "https://xxxxxx.supabase.co";
-    // const SUPABASE_KEY = "eyJ...";
+    const SUPABASE_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
 
     function timeAgo(d) {
       const s = (Date.now() - new Date(d)) / 1000;
@@ -267,14 +266,9 @@
       const [err, setErr] = useState(null);
 
       useEffect(() => {
-        try {
-          const saved = localStorage.getItem(CFG_KEY);
-          if (saved) {
-            const c = JSON.parse(saved);
-            setCfg(c);
-            setSb(supabase.createClient(c.url, c.key));
-          }
-        } catch {}
+        const c = { url: SUPABASE_URL, key: SUPABASE_KEY };
+        setCfg(c);
+        setSb(supabase.createClient(c.url, c.key));
       }, []);
 
       const onConnect = c => { setCfg(c); setSb(supabase.createClient(c.url, c.key)); };
