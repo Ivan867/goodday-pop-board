@@ -7,7 +7,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
@@ -16,16 +15,50 @@
 </head>
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
 
     const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
     const CATEGORIES = ["鮮魚","刺身","惣菜","特売","旬の魚","その他"];
-    const CFG_KEY = "goodday_cfg";
 
-    const SUPABASE_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
+    const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
+
+    // Supabase REST API（SDKなし）
+    const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
+
+    const api = {
+      async list(store, cat) {
+        let url = `${SB_URL}/rest/v1/pops?select=*&order=created_at.desc`;
+        if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
+        if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
+        const r = await fetch(url, { headers: h() });
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      },
+      async insert(data) {
+        const r = await fetch(`${SB_URL}/rest/v1/pops`, {
+          method: "POST",
+          headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+          body: JSON.stringify(data)
+        });
+        if (!r.ok) throw new Error(await r.text());
+        return (await r.json())[0];
+      },
+      async del(id) {
+        const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
+        if (!r.ok) throw new Error(await r.text());
+      },
+      async upload(blob, name) {
+        const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
+          method: "POST",
+          headers: { ...h(), "Content-Type": "image/jpeg", "x-upsert": "true" },
+          body: blob
+        });
+        if (!r.ok) throw new Error(await r.text());
+        return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
+      }
+    };
 
     function timeAgo(d) {
       const s = (Date.now() - new Date(d)) / 1000;
@@ -35,7 +68,7 @@
       return `${Math.floor(s/86400)}日前`;
     }
 
-    async function compressToBlob(file, maxW = 1200) {
+    async function compressToBlob(file, maxW=1200) {
       return new Promise(res => {
         const r = new FileReader();
         r.onload = e => {
@@ -43,7 +76,7 @@
           img.onload = () => {
             const c = document.createElement("canvas");
             let w = img.width, h = img.height;
-            if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+            if (w > maxW) { h = Math.round(h*maxW/w); w = maxW; }
             c.width = w; c.height = h;
             c.getContext("2d").drawImage(img, 0, 0, w, h);
             c.toBlob(res, "image/jpeg", 0.82);
@@ -54,72 +87,15 @@
       });
     }
 
-    /* ─── 設定画面 ─── */
-    function SetupScreen({ onConnect }) {
-      const [url, setUrl] = useState("");
-      const [key, setKey] = useState("");
-      const [busy, setBusy] = useState(false);
-      const [err, setErr] = useState("");
-
-      const connect = async () => {
-        if (!url || !key) return;
-        setBusy(true); setErr("");
-        try {
-          const sb = supabase.createClient(url.trim(), key.trim());
-          const { error } = await sb.from("pops").select("id").limit(1);
-          if (error) throw new Error(error.message);
-          const cfg = { url: url.trim(), key: key.trim() };
-          localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-          onConnect(cfg);
-        } catch(e) {
-          setErr("接続失敗: " + e.message);
-        }
-        setBusy(false);
-      };
-
-      return (
-        <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#fff8f0,#f0f4ff)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-          <div style={{ background:"white", borderRadius:24, maxWidth:480, width:"100%", boxShadow:"0 20px 80px rgba(0,0,0,0.13)", overflow:"hidden" }}>
-            <div style={{ background:"linear-gradient(135deg,#e05c00,#ff8c42)", padding:"28px 32px" }}>
-              <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.7)", letterSpacing:3, marginBottom:4 }}>SETUP</div>
-              <div style={{ fontSize:22, fontWeight:900, color:"white" }}>🐟 GoodDay ポップ共有</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.8)", marginTop:6 }}>Supabase接続設定</div>
-            </div>
-            <div style={{ padding:"28px 32px 32px" }}>
-              <p style={{ fontSize:13, color:"#666", lineHeight:1.7, marginBottom:20 }}>
-                SupabaseプロジェクトのSettings → APIから<br/>URLとAnon Keyを入力してください。
-              </p>
-              {[
-                { label:"Project URL", val:url, set:setUrl, ph:"https://xxxxxxxx.supabase.co" },
-                { label:"Anon Key", val:key, set:setKey, ph:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
-              ].map(f => (
-                <div key={f.label} style={{ marginBottom:16 }}>
-                  <label style={{ fontSize:12, fontWeight:700, color:"#444", display:"block", marginBottom:6 }}>{f.label}</label>
-                  <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                    style={{ width:"100%", padding:"11px 14px", border:"2px solid #eee", borderRadius:10, fontSize:12, outline:"none", fontFamily:"monospace" }}
-                    onFocus={e => e.target.style.borderColor="#e05c00"}
-                    onBlur={e => e.target.style.borderColor="#eee"} />
-                </div>
-              ))}
-              {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"12px 14px", marginBottom:14, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
-              <button onClick={connect} disabled={!url||!key||busy}
-                style={{ width:"100%", padding:15, background:url&&key?"#e05c00":"#ddd", color:"white", border:"none", borderRadius:12, fontSize:15, fontWeight:900, cursor:url&&key?"pointer":"default" }}>
-                {busy ? "接続確認中..." : "🚀 接続してスタート"}
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     /* ─── アップロードモーダル ─── */
-    function UploadModal({ sb, currentStore, onClose, onDone }) {
+    function UploadModal({ currentStore, onClose, onDone }) {
       const [step, setStep] = useState("pick");
       const [preview, setPreview] = useState(null);
       const [blob, setBlob] = useState(null);
       const [form, setForm] = useState({ productName:"", category:"鮮魚", comment:"", author:"" });
       const [drag, setDrag] = useState(false);
       const [prog, setProg] = useState("");
+      const [err, setErr] = useState("");
       const ref = useRef();
 
       const pick = async file => {
@@ -129,30 +105,16 @@
       };
 
       const submit = async () => {
-        if (!form.productName || !form.author) { alert("商品名と担当者名を入力してください"); return; }
-        setStep("up");
+        if (!form.productName || !form.author) { setErr("商品名と担当者名を入力してください"); return; }
+        setStep("up"); setErr("");
         try {
           setProg("画像をアップロード中...");
           const fn = `${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
-          const { error: upErr } = await sb.storage.from("pop-images").upload(fn, blob, { contentType:"image/jpeg", upsert:true });
-          if (upErr) throw new Error(upErr.message);
-          const { data: { publicUrl } } = sb.storage.from("pop-images").getPublicUrl(fn);
-
+          const imageUrl = await api.upload(blob, fn);
           setProg("データを保存中...");
-          const { data, error } = await sb.from("pops").insert({
-            store_name: currentStore,
-            product_name: form.productName,
-            category: form.category,
-            comment: form.comment,
-            author: form.author,
-            image_url: publicUrl
-          }).select().single();
-          if (error) throw new Error(error.message);
-          onDone(data); onClose();
-        } catch(e) {
-          alert("エラー: " + e.message);
-          setStep("form");
-        }
+          const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl });
+          onDone(pop); onClose();
+        } catch(e) { setErr("エラー: "+e.message); setStep("form"); }
       };
 
       return (
@@ -166,53 +128,50 @@
               <button onClick={onClose} style={{ background:"#f0f0f0", border:"none", borderRadius:10, width:36, height:36, fontSize:18, cursor:"pointer" }}>×</button>
             </div>
             <div style={{ padding:"20px 24px 28px" }}>
-              {step === "pick" && (
-                <>
-                  <div onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)}
-                    onDrop={e=>{e.preventDefault();setDrag(false);pick(e.dataTransfer.files[0])}}
-                    onClick={()=>ref.current.click()}
-                    style={{ border:`3px dashed ${drag?"#e05c00":"#ddd"}`, borderRadius:16, padding:"52px 24px", textAlign:"center", cursor:"pointer", background:drag?"#fff8f0":"#fafafa" }}>
-                    <div style={{ fontSize:52, marginBottom:14 }}>📷</div>
-                    <div style={{ fontWeight:800, fontSize:16, color:"#1a1a1a", marginBottom:6 }}>写真を選択またはドラッグ</div>
-                    <div style={{ fontSize:13, color:"#aaa", marginBottom:18 }}>作成したポップの写真をアップロードしてください</div>
-                    <div style={{ display:"inline-block", background:"#e05c00", color:"white", padding:"11px 28px", borderRadius:12, fontWeight:800, fontSize:14 }}>ファイルを選択</div>
+              {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
+              {step==="pick" && <>
+                <div onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)}
+                  onDrop={e=>{e.preventDefault();setDrag(false);pick(e.dataTransfer.files[0])}}
+                  onClick={()=>ref.current.click()}
+                  style={{ border:`3px dashed ${drag?"#e05c00":"#ddd"}`, borderRadius:16, padding:"52px 24px", textAlign:"center", cursor:"pointer", background:drag?"#fff8f0":"#fafafa" }}>
+                  <div style={{ fontSize:52, marginBottom:14 }}>📷</div>
+                  <div style={{ fontWeight:800, fontSize:16, color:"#1a1a1a", marginBottom:6 }}>写真を選択またはドラッグ</div>
+                  <div style={{ fontSize:13, color:"#aaa", marginBottom:18 }}>作成したポップの写真をアップロードしてください</div>
+                  <div style={{ display:"inline-block", background:"#e05c00", color:"white", padding:"11px 28px", borderRadius:12, fontWeight:800, fontSize:14 }}>ファイルを選択</div>
+                </div>
+                <input ref={ref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>pick(e.target.files[0])} />
+              </>}
+              {step==="form" && <>
+                <div style={{ borderRadius:12, overflow:"hidden", marginBottom:18, position:"relative", background:"#111" }}>
+                  <img src={preview} style={{ width:"100%", maxHeight:240, objectFit:"contain", display:"block" }} />
+                  <button onClick={()=>{setPreview(null);setBlob(null);setStep("pick")}} style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.65)", color:"white", border:"none", borderRadius:8, padding:"4px 12px", fontSize:12, cursor:"pointer", fontWeight:700 }}>変更</button>
+                </div>
+                {[
+                  {label:"商品名 *",key:"productName",ph:"例：天然鯛"},
+                  {label:"担当者名 *",key:"author",ph:"例：田中"},
+                  {label:"コメント（任意）",key:"comment",ph:"例：本日特売！脂のりバツグンです"},
+                ].map(({label,key,ph})=>(
+                  <div key={key} style={{ marginBottom:14 }}>
+                    <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:6 }}>{label}</label>
+                    <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph}
+                      style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }}
+                      onFocus={e=>e.target.style.borderColor="#e05c00"} onBlur={e=>e.target.style.borderColor="#eee"} />
                   </div>
-                  <input ref={ref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>pick(e.target.files[0])} />
-                </>
-              )}
-              {step === "form" && (
-                <>
-                  <div style={{ borderRadius:12, overflow:"hidden", marginBottom:18, position:"relative", background:"#111" }}>
-                    <img src={preview} style={{ width:"100%", maxHeight:240, objectFit:"contain", display:"block" }} />
-                    <button onClick={()=>{setPreview(null);setBlob(null);setStep("pick")}} style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.65)", color:"white", border:"none", borderRadius:8, padding:"4px 12px", fontSize:12, cursor:"pointer", fontWeight:700 }}>変更</button>
+                ))}
+                <div style={{ marginBottom:20 }}>
+                  <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>カテゴリ</label>
+                  <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                    {CATEGORIES.map(c=>(
+                      <button key={c} onClick={()=>setForm(p=>({...p,category:c}))}
+                        style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:form.category===c?"#e05c00":"#eee", background:form.category===c?"#e05c00":"white", color:form.category===c?"white":"#666" }}>{c}</button>
+                    ))}
                   </div>
-                  {[
-                    { label:"商品名 *", key:"productName", ph:"例：天然鯛" },
-                    { label:"担当者名 *", key:"author", ph:"例：田中" },
-                    { label:"コメント（任意）", key:"comment", ph:"例：本日特売！脂のりバツグンです" },
-                  ].map(({label,key,ph}) => (
-                    <div key={key} style={{ marginBottom:14 }}>
-                      <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:6 }}>{label}</label>
-                      <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph}
-                        style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }}
-                        onFocus={e=>e.target.style.borderColor="#e05c00"} onBlur={e=>e.target.style.borderColor="#eee"} />
-                    </div>
-                  ))}
-                  <div style={{ marginBottom:20 }}>
-                    <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>カテゴリ</label>
-                    <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-                      {CATEGORIES.map(c => (
-                        <button key={c} onClick={()=>setForm(p=>({...p,category:c}))}
-                          style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:form.category===c?"#e05c00":"#eee", background:form.category===c?"#e05c00":"white", color:form.category===c?"white":"#666" }}>{c}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <button onClick={submit} style={{ width:"100%", padding:15, background:"#e05c00", color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:900, cursor:"pointer" }}>
-                    🚀 全店舗に共有する
-                  </button>
-                </>
-              )}
-              {step === "up" && (
+                </div>
+                <button onClick={submit} style={{ width:"100%", padding:15, background:"#e05c00", color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:900, cursor:"pointer" }}>
+                  🚀 全店舗に共有する
+                </button>
+              </>}
+              {step==="up" && (
                 <div style={{ textAlign:"center", padding:"56px 0" }}>
                   <div style={{ fontSize:40, marginBottom:12 }}>⏳</div>
                   <div style={{ fontWeight:700, color:"#888" }}>{prog}</div>
@@ -242,7 +201,7 @@
               <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
                 <span style={{ background:"#252540", color:"#8899ff", padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:800 }}>{pop.store_name}</span>
                 <span style={{ color:"#666", fontSize:12 }}>{pop.author} · {timeAgo(pop.created_at)}</span>
-                {pop.store_name === currentStore && (
+                {pop.store_name===currentStore && (
                   <button onClick={()=>onDelete(pop.id)} style={{ marginLeft:"auto", background:"#3a1010", color:"#ff7070", border:"none", borderRadius:8, padding:"5px 14px", fontSize:12, cursor:"pointer", fontWeight:800 }}>削除</button>
                 )}
               </div>
@@ -254,59 +213,36 @@
 
     /* ─── メイン ─── */
     function App() {
-      const [cfg, setCfg] = useState(null);
-      const [sb, setSb] = useState(null);
       const [currentStore, setCurrentStore] = useState(STORES[0]);
       const [pops, setPops] = useState([]);
       const [showUp, setShowUp] = useState(false);
       const [sel, setSel] = useState(null);
       const [fStore, setFStore] = useState("");
       const [fCat, setFCat] = useState("");
-      const [loading, setLoading] = useState(false);
+      const [loading, setLoading] = useState(true);
       const [err, setErr] = useState(null);
 
-      useEffect(() => {
-        const c = { url: SUPABASE_URL, key: SUPABASE_KEY };
-        setCfg(c);
-        setSb(supabase.createClient(c.url, c.key));
-      }, []);
-
-      const onConnect = c => { setCfg(c); setSb(supabase.createClient(c.url, c.key)); };
-
       const load = useCallback(async () => {
-        if (!sb) return;
         setLoading(true); setErr(null);
-        try {
-          let q = sb.from("pops").select("*").order("created_at", { ascending: false });
-          if (fStore) q = q.eq("store_name", fStore);
-          if (fCat)   q = q.eq("category", fCat);
-          const { data, error } = await q;
-          if (error) throw new Error(error.message);
-          setPops(data || []);
-        } catch(e) { setErr(e.message); }
+        try { setPops(await api.list(fStore||null, fCat||null)); }
+        catch(e) { setErr(e.message); }
         setLoading(false);
-      }, [sb, fStore, fCat]);
+      }, [fStore, fCat]);
 
-      useEffect(() => { if (sb) load(); }, [load]);
+      useEffect(() => { load(); }, [load]);
 
       const onDone = p => setPops(prev => [p, ...prev]);
 
       const onDelete = async id => {
         if (!confirm("このポップを削除しますか？")) return;
-        const { error } = await sb.from("pops").delete().eq("id", id);
-        if (error) { alert("削除失敗: " + error.message); return; }
-        setPops(p => p.filter(x => x.id !== id)); setSel(null);
+        try { await api.del(id); setPops(p=>p.filter(x=>x.id!==id)); setSel(null); }
+        catch(e) { alert("削除失敗: "+e.message); }
       };
-
-      const disconnect = () => { localStorage.removeItem(CFG_KEY); setCfg(null); setSb(null); setPops([]); };
-
-      if (!cfg) return <SetupScreen onConnect={onConnect} />;
 
       const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
 
       return (
         <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
-          {/* ヘッダー */}
           <div style={{ background:"white", borderBottom:"1px solid #e8e8e8", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
             <div style={{ maxWidth:1080, margin:"0 auto", padding:"14px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
               <div>
@@ -320,13 +256,11 @@
                 </select>
                 <button onClick={()=>setShowUp(true)} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
                 <button onClick={load} style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
-                <button onClick={disconnect} title="設定リセット" style={{ background:"#f5f5f5", color:"#999", border:"none", borderRadius:10, padding:"9px 12px", fontSize:14, cursor:"pointer" }}>⚙</button>
               </div>
             </div>
           </div>
 
           <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px" }}>
-            {/* 店舗タブ */}
             <div style={{ display:"flex", gap:10, marginBottom:20, overflowX:"auto", paddingBottom:4 }}>
               {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
                 <div key={lbl} onClick={()=>setFStore(val)}
@@ -337,7 +271,6 @@
               ))}
             </div>
 
-            {/* カテゴリ */}
             <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
               {["",...CATEGORIES].map(c=>(
                 <button key={c||"all"} onClick={()=>setFCat(c)}
@@ -349,7 +282,8 @@
 
             {err && (
               <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>
-                ⚠️ {err} <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button>
+                ⚠️ {err}
+                <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button>
               </div>
             )}
 
@@ -358,7 +292,7 @@
                 <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
                 <div style={{ fontWeight:600 }}>読み込み中...</div>
               </div>
-            ) : pops.length === 0 ? (
+            ) : pops.length===0 ? (
               <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
                 <div style={{ fontSize:56, marginBottom:16 }}>📌</div>
                 <div style={{ fontWeight:800, fontSize:16, marginBottom:8, color:"#888" }}>ポップがまだありません</div>
@@ -392,7 +326,7 @@
             )}
           </div>
 
-          {showUp && <UploadModal sb={sb} currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
+          {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
           {sel && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} currentStore={currentStore} />}
         </div>
       );
