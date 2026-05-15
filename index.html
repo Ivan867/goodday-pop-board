@@ -1,338 +1,598 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GoodDay ポップ共有ボード</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoodDay ポップ共有ボード</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-    const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
-    const CATEGORIES = ["鮮魚","刺身","惣菜","特売","旬の魚","その他"];
+const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
+const CATEGORIES = ["鮮魚","刺身","惣菜","特売","旬の魚","その他"];
+const PRIORITIES = ["普通","急ぎ","緊急"];
+const STATUSES = ["未対応","検討中","対応済み"];
 
-    const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
+const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
 
-    // Supabase REST API（SDKなし）
-    const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
+const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
-    const api = {
-      async list(store, cat) {
-        let url = `${SB_URL}/rest/v1/pops?select=*&order=created_at.desc`;
-        if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
-        if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
-        const r = await fetch(url, { headers: h() });
-        if (!r.ok) throw new Error(await r.text());
-        return r.json();
-      },
-      async insert(data) {
-        const r = await fetch(`${SB_URL}/rest/v1/pops`, {
-          method: "POST",
-          headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-          body: JSON.stringify(data)
-        });
-        if (!r.ok) throw new Error(await r.text());
-        return (await r.json())[0];
-      },
-      async del(id) {
-        const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
-        if (!r.ok) throw new Error(await r.text());
-      },
-      async upload(blob, name) {
-        const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
-          method: "POST",
-          headers: { ...h(), "Content-Type": "image/jpeg", "x-upsert": "true" },
-          body: blob
-        });
-        if (!r.ok) throw new Error(await r.text());
-        return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
-      }
+const api = {
+  async list(store, cat) {
+    let url = `${SB_URL}/rest/v1/pops?select=*&order=created_at.desc`;
+    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
+    if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
+    const r = await fetch(url, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insert(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/pops`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async del(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+  },
+  async upload(blob, name) {
+    const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
+      method: "POST",
+      headers: { ...h(), "Content-Type": "image/jpeg", "x-upsert": "true" },
+      body: blob
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
+  },
+  async listRequests(store) {
+    let url = `${SB_URL}/rest/v1/pop_requests?select=*&order=created_at.desc`;
+    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
+    const r = await fetch(url, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertRequest(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async updateRequestStatus(id, status) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ status })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async delRequest(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+  }
+};
+
+function timeAgo(d) {
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 60) return "たった今";
+  if (s < 3600) return `${Math.floor(s/60)}分前`;
+  if (s < 86400) return `${Math.floor(s/3600)}時間前`;
+  return `${Math.floor(s/86400)}日前`;
+}
+
+async function compressToBlob(file, maxW=1200) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        let w = img.width, hh = img.height;
+        if (w > maxW) { hh = Math.round(hh*maxW/w); w = maxW; }
+        c.width = w; c.height = hh;
+        c.getContext("2d").drawImage(img, 0, 0, w, hh);
+        c.toBlob(res, "image/jpeg", 0.82);
+      };
+      img.src = e.target.result;
     };
+    r.readAsDataURL(file);
+  });
+}
 
-    function timeAgo(d) {
-      const s = (Date.now() - new Date(d)) / 1000;
-      if (s < 60) return "たった今";
-      if (s < 3600) return `${Math.floor(s/60)}分前`;
-      if (s < 86400) return `${Math.floor(s/3600)}時間前`;
-      return `${Math.floor(s/86400)}日前`;
-    }
+function UploadModal({ currentStore, onClose, onDone }) {
+  const [step, setStep] = useState("pick");
+  const [preview, setPreview] = useState(null);
+  const [blob, setBlob] = useState(null);
+  const [form, setForm] = useState({ productName:"", category:"鮮魚", comment:"", author:"" });
+  const [drag, setDrag] = useState(false);
+  const [prog, setProg] = useState("");
+  const [err, setErr] = useState("");
+  const ref = useRef();
 
-    async function compressToBlob(file, maxW=1200) {
-      return new Promise(res => {
-        const r = new FileReader();
-        r.onload = e => {
-          const img = new Image();
-          img.onload = () => {
-            const c = document.createElement("canvas");
-            let w = img.width, h = img.height;
-            if (w > maxW) { h = Math.round(h*maxW/w); w = maxW; }
-            c.width = w; c.height = h;
-            c.getContext("2d").drawImage(img, 0, 0, w, h);
-            c.toBlob(res, "image/jpeg", 0.82);
-          };
-          img.src = e.target.result;
-        };
-        r.readAsDataURL(file);
+  const pick = async file => {
+    if (!file?.type.startsWith("image/")) return;
+    const b = await compressToBlob(file);
+    setBlob(b); setPreview(URL.createObjectURL(b)); setStep("form");
+  };
+
+  const submit = async () => {
+    if (!form.productName || !form.author) { setErr("商品名と担当者名を入力してください"); return; }
+    setStep("up"); setErr("");
+    try {
+      setProg("画像をアップロード中...");
+      const fn = `${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
+      const imageUrl = await api.upload(blob, fn);
+      setProg("データを保存中...");
+      const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl });
+      onDone(pop); onClose();
+    } catch(e) { setErr("エラー: "+e.message); setStep("form"); }
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(10,10,20,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }}>
+      <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:480, maxHeight:"92vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.3)" }}>
+        <div style={{ padding:"22px 24px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:800, color:"#e05c00", letterSpacing:2 }}>📌 {currentStore}</div>
+            <div style={{ fontSize:20, fontWeight:900, color:"#1a1a1a" }}>ポップをアップロード</div>
+          </div>
+          <button onClick={onClose} style={{ background:"#f0f0f0", border:"none", borderRadius:10, width:36, height:36, fontSize:18, cursor:"pointer" }}>×</button>
+        </div>
+        <div style={{ padding:"20px 24px 28px" }}>
+          {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
+          {step==="pick" && <>
+            <div
+              onDragOver={e=>{e.preventDefault();setDrag(true)}}
+              onDragLeave={()=>setDrag(false)}
+              onDrop={e=>{e.preventDefault();setDrag(false);pick(e.dataTransfer.files[0])}}
+              onClick={()=>ref.current.click()}
+              style={{ border:`3px dashed ${drag?"#e05c00":"#ddd"}`, borderRadius:16, padding:"52px 24px", textAlign:"center", cursor:"pointer", background:drag?"#fff8f0":"#fafafa" }}>
+              <div style={{ fontSize:52, marginBottom:14 }}>📷</div>
+              <div style={{ fontWeight:800, fontSize:16, color:"#1a1a1a", marginBottom:6 }}>写真を選択またはドラッグ</div>
+              <div style={{ fontSize:13, color:"#aaa", marginBottom:18 }}>作成したポップの写真をアップロードしてください</div>
+              <div style={{ display:"inline-block", background:"#e05c00", color:"white", padding:"11px 28px", borderRadius:12, fontWeight:800, fontSize:14 }}>ファイルを選択</div>
+            </div>
+            <input ref={ref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>pick(e.target.files[0])} />
+          </>}
+          {step==="form" && <>
+            <div style={{ borderRadius:12, overflow:"hidden", marginBottom:18, position:"relative", background:"#111" }}>
+              <img src={preview} style={{ width:"100%", maxHeight:240, objectFit:"contain", display:"block" }} />
+              <button onClick={()=>{setPreview(null);setBlob(null);setStep("pick")}} style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.65)", color:"white", border:"none", borderRadius:8, padding:"4px 12px", fontSize:12, cursor:"pointer", fontWeight:700 }}>変更</button>
+            </div>
+            {[
+              {label:"商品名 *",key:"productName",ph:"例：天然鯛"},
+              {label:"担当者名 *",key:"author",ph:"例：田中"},
+              {label:"コメント（任意）",key:"comment",ph:"例：本日特売！脂のりバツグンです"},
+            ].map(({label,key,ph})=>(
+              <div key={key} style={{ marginBottom:14 }}>
+                <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:6 }}>{label}</label>
+                <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph}
+                  style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }}
+                  onFocus={e=>e.target.style.borderColor="#e05c00"} onBlur={e=>e.target.style.borderColor="#eee"} />
+              </div>
+            ))}
+            <div style={{ marginBottom:20 }}>
+              <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>カテゴリ</label>
+              <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                {CATEGORIES.map(c=>(
+                  <button key={c} onClick={()=>setForm(p=>({...p,category:c}))}
+                    style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:form.category===c?"#e05c00":"#eee", background:form.category===c?"#e05c00":"white", color:form.category===c?"white":"#666" }}>{c}</button>
+                ))}
+              </div>
+            </div>
+            <button onClick={submit} style={{ width:"100%", padding:15, background:"#e05c00", color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:900, cursor:"pointer" }}>
+              🚀 全店舗に共有する
+            </button>
+          </>}
+          {step==="up" && (
+            <div style={{ textAlign:"center", padding:"56px 0" }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>⏳</div>
+              <div style={{ fontWeight:700, color:"#888" }}>{prog}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DetailModal({ pop, onClose, onDelete, currentStore }) {
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(5,5,15,0.82)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }} onClick={onClose}>
+      <div style={{ background:"#18181f", borderRadius:20, width:"100%", maxWidth:500, overflow:"hidden", boxShadow:"0 32px 100px rgba(0,0,0,0.6)" }} onClick={e=>e.stopPropagation()}>
+        <div style={{ position:"relative", background:"#0f0f18" }}>
+          {pop.image_url
+            ? <img src={pop.image_url} style={{ width:"100%", maxHeight:420, objectFit:"contain", display:"block" }} />
+            : <div style={{ height:220, display:"flex", alignItems:"center", justifyContent:"center", color:"#444", fontSize:40 }}>🖼</div>}
+          <button onClick={onClose} style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.7)", color:"white", border:"none", borderRadius:10, width:36, height:36, fontSize:20, cursor:"pointer" }}>×</button>
+          <div style={{ position:"absolute", bottom:12, left:12, background:"#e05c00", color:"white", borderRadius:8, padding:"4px 12px", fontSize:12, fontWeight:800 }}>{pop.category}</div>
+        </div>
+        <div style={{ padding:"18px 22px 24px" }}>
+          <div style={{ fontSize:22, fontWeight:900, color:"white", marginBottom:6 }}>{pop.product_name}</div>
+          {pop.comment && <div style={{ fontSize:13, color:"#aaa", marginBottom:14, lineHeight:1.6 }}>{pop.comment}</div>}
+          <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+            <span style={{ background:"#252540", color:"#8899ff", padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:800 }}>{pop.store_name}</span>
+            <span style={{ color:"#666", fontSize:12 }}>{pop.author} · {timeAgo(pop.created_at)}</span>
+            {pop.store_name===currentStore && (
+              <button onClick={()=>onDelete(pop.id)} style={{ marginLeft:"auto", background:"#3a1010", color:"#ff7070", border:"none", borderRadius:8, padding:"5px 14px", fontSize:12, cursor:"pointer", fontWeight:800 }}>削除</button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RequestModal({ currentStore, onClose, onDone }) {
+  const [form, setForm] = useState({ productName:"", category:"鮮魚", reason:"", author:"", priority:"普通" });
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  const submit = async () => {
+    if (!form.productName || !form.author) { setErr("商品名と担当者名を入力してください"); return; }
+    setLoading(true); setErr("");
+    try {
+      const req = await api.insertRequest({
+        store_name: currentStore,
+        product_name: form.productName,
+        category: form.category,
+        reason: form.reason,
+        author: form.author,
+        priority: form.priority,
+        status: "未対応"
       });
-    }
+      onDone(req); onClose();
+    } catch(e) { setErr("エラー: "+e.message); setLoading(false); }
+  };
 
-    /* ─── アップロードモーダル ─── */
-    function UploadModal({ currentStore, onClose, onDone }) {
-      const [step, setStep] = useState("pick");
-      const [preview, setPreview] = useState(null);
-      const [blob, setBlob] = useState(null);
-      const [form, setForm] = useState({ productName:"", category:"鮮魚", comment:"", author:"" });
-      const [drag, setDrag] = useState(false);
-      const [prog, setProg] = useState("");
-      const [err, setErr] = useState("");
-      const ref = useRef();
+  const priorityColors = { "普通":"#3b82f6", "急ぎ":"#f59e0b", "緊急":"#ef4444" };
 
-      const pick = async file => {
-        if (!file?.type.startsWith("image/")) return;
-        const b = await compressToBlob(file);
-        setBlob(b); setPreview(URL.createObjectURL(b)); setStep("form");
-      };
-
-      const submit = async () => {
-        if (!form.productName || !form.author) { setErr("商品名と担当者名を入力してください"); return; }
-        setStep("up"); setErr("");
-        try {
-          setProg("画像をアップロード中...");
-          const fn = `${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
-          const imageUrl = await api.upload(blob, fn);
-          setProg("データを保存中...");
-          const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl });
-          onDone(pop); onClose();
-        } catch(e) { setErr("エラー: "+e.message); setStep("form"); }
-      };
-
-      return (
-        <div style={{ position:"fixed", inset:0, background:"rgba(10,10,20,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }}>
-          <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:480, maxHeight:"92vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.3)" }}>
-            <div style={{ padding:"22px 24px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <div>
-                <div style={{ fontSize:11, fontWeight:800, color:"#e05c00", letterSpacing:2 }}>📌 {currentStore}</div>
-                <div style={{ fontSize:20, fontWeight:900, color:"#1a1a1a" }}>ポップをアップロード</div>
-              </div>
-              <button onClick={onClose} style={{ background:"#f0f0f0", border:"none", borderRadius:10, width:36, height:36, fontSize:18, cursor:"pointer" }}>×</button>
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(10,10,20,0.75)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }}>
+      <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:480, maxHeight:"92vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.3)" }}>
+        <div style={{ padding:"22px 24px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:800, color:"#7c3aed", letterSpacing:2 }}>📋 {currentStore}</div>
+            <div style={{ fontSize:20, fontWeight:900, color:"#1a1a1a" }}>ポップ要望を投稿</div>
+          </div>
+          <button onClick={onClose} style={{ background:"#f0f0f0", border:"none", borderRadius:10, width:36, height:36, fontSize:18, cursor:"pointer" }}>×</button>
+        </div>
+        <div style={{ padding:"20px 24px 28px" }}>
+          {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
+          <div style={{ background:"#f5f3ff", borderRadius:12, padding:"12px 16px", marginBottom:18, fontSize:12, color:"#7c3aed", lineHeight:1.6 }}>
+            💡 「こんなポップが欲しい！」という要望を他店舗やバイヤーに伝えられます
+          </div>
+          {[
+            {label:"商品名 *", key:"productName", ph:"例：天然鯛、サーモン柵"},
+            {label:"担当者名 *", key:"author", ph:"例：田中"},
+            {label:"詳細・理由（任意）", key:"reason", ph:"例：週末に多く売れるので、特売用のポップが欲しいです"},
+          ].map(({label,key,ph})=>(
+            <div key={key} style={{ marginBottom:14 }}>
+              <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:6 }}>{label}</label>
+              {key==="reason"
+                ? <textarea value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph} rows={3}
+                    style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit" }}
+                    onFocus={e=>e.target.style.borderColor="#7c3aed"} onBlur={e=>e.target.style.borderColor="#eee"} />
+                : <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph}
+                    style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }}
+                    onFocus={e=>e.target.style.borderColor="#7c3aed"} onBlur={e=>e.target.style.borderColor="#eee"} />
+              }
             </div>
-            <div style={{ padding:"20px 24px 28px" }}>
-              {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"10px 14px", marginBottom:14, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
-              {step==="pick" && <>
-                <div onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)}
-                  onDrop={e=>{e.preventDefault();setDrag(false);pick(e.dataTransfer.files[0])}}
-                  onClick={()=>ref.current.click()}
-                  style={{ border:`3px dashed ${drag?"#e05c00":"#ddd"}`, borderRadius:16, padding:"52px 24px", textAlign:"center", cursor:"pointer", background:drag?"#fff8f0":"#fafafa" }}>
-                  <div style={{ fontSize:52, marginBottom:14 }}>📷</div>
-                  <div style={{ fontWeight:800, fontSize:16, color:"#1a1a1a", marginBottom:6 }}>写真を選択またはドラッグ</div>
-                  <div style={{ fontSize:13, color:"#aaa", marginBottom:18 }}>作成したポップの写真をアップロードしてください</div>
-                  <div style={{ display:"inline-block", background:"#e05c00", color:"white", padding:"11px 28px", borderRadius:12, fontWeight:800, fontSize:14 }}>ファイルを選択</div>
-                </div>
-                <input ref={ref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>pick(e.target.files[0])} />
-              </>}
-              {step==="form" && <>
-                <div style={{ borderRadius:12, overflow:"hidden", marginBottom:18, position:"relative", background:"#111" }}>
-                  <img src={preview} style={{ width:"100%", maxHeight:240, objectFit:"contain", display:"block" }} />
-                  <button onClick={()=>{setPreview(null);setBlob(null);setStep("pick")}} style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.65)", color:"white", border:"none", borderRadius:8, padding:"4px 12px", fontSize:12, cursor:"pointer", fontWeight:700 }}>変更</button>
-                </div>
-                {[
-                  {label:"商品名 *",key:"productName",ph:"例：天然鯛"},
-                  {label:"担当者名 *",key:"author",ph:"例：田中"},
-                  {label:"コメント（任意）",key:"comment",ph:"例：本日特売！脂のりバツグンです"},
-                ].map(({label,key,ph})=>(
-                  <div key={key} style={{ marginBottom:14 }}>
-                    <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:6 }}>{label}</label>
-                    <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={ph}
-                      style={{ width:"100%", padding:"10px 14px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }}
-                      onFocus={e=>e.target.style.borderColor="#e05c00"} onBlur={e=>e.target.style.borderColor="#eee"} />
-                  </div>
-                ))}
-                <div style={{ marginBottom:20 }}>
-                  <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>カテゴリ</label>
-                  <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-                    {CATEGORIES.map(c=>(
-                      <button key={c} onClick={()=>setForm(p=>({...p,category:c}))}
-                        style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:form.category===c?"#e05c00":"#eee", background:form.category===c?"#e05c00":"white", color:form.category===c?"white":"#666" }}>{c}</button>
-                    ))}
-                  </div>
-                </div>
-                <button onClick={submit} style={{ width:"100%", padding:15, background:"#e05c00", color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:900, cursor:"pointer" }}>
-                  🚀 全店舗に共有する
-                </button>
-              </>}
-              {step==="up" && (
-                <div style={{ textAlign:"center", padding:"56px 0" }}>
-                  <div style={{ fontSize:40, marginBottom:12 }}>⏳</div>
-                  <div style={{ fontWeight:700, color:"#888" }}>{prog}</div>
-                </div>
-              )}
+          ))}
+          <div style={{ marginBottom:16 }}>
+            <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>カテゴリ</label>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+              {CATEGORIES.map(c=>(
+                <button key={c} onClick={()=>setForm(p=>({...p,category:c}))}
+                  style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:form.category===c?"#7c3aed":"#eee", background:form.category===c?"#7c3aed":"white", color:form.category===c?"white":"#666" }}>{c}</button>
+              ))}
             </div>
+          </div>
+          <div style={{ marginBottom:22 }}>
+            <label style={{ fontSize:12, fontWeight:700, color:"#555", display:"block", marginBottom:8 }}>優先度</label>
+            <div style={{ display:"flex", gap:8 }}>
+              {PRIORITIES.map(p=>(
+                <button key={p} onClick={()=>setForm(f=>({...f,priority:p}))}
+                  style={{ flex:1, padding:"8px 0", borderRadius:10, fontSize:13, border:"2px solid", cursor:"pointer", fontWeight:800, borderColor:form.priority===p?priorityColors[p]:"#eee", background:form.priority===p?priorityColors[p]:"white", color:form.priority===p?"white":"#888" }}>{p}</button>
+              ))}
+            </div>
+          </div>
+          <button onClick={submit} disabled={loading}
+            style={{ width:"100%", padding:15, background:loading?"#ccc":"#7c3aed", color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:900, cursor:loading?"not-allowed":"pointer" }}>
+            {loading ? "送信中..." : "📋 要望を送信する"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RequestCard({ req, currentStore, onStatusChange, onDelete }) {
+  const priorityColors = { "普通":"#3b82f6", "急ぎ":"#f59e0b", "緊急":"#ef4444" };
+  const statusColors   = { "未対応":"#6b7280", "検討中":"#f59e0b", "対応済み":"#10b981" };
+  const statusBg       = { "未対応":"#f3f4f6", "検討中":"#fffbeb", "対応済み":"#ecfdf5" };
+
+  return (
+    <div style={{ background:"white", borderRadius:16, padding:"16px 18px", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", animation:"fadeUp 0.3s ease both", borderLeft:`4px solid ${priorityColors[req.priority]}` }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
+        <div style={{ flex:1 }}>
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:6 }}>
+            <span style={{ background:priorityColors[req.priority], color:"white", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{req.priority}</span>
+            <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{req.category}</span>
+            <span style={{ background:"#faf5ff", color:"#7c3aed", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{req.store_name}</span>
+          </div>
+          <div style={{ fontSize:16, fontWeight:900, color:"#111", marginBottom:4 }}>{req.product_name}</div>
+          {req.reason && <div style={{ fontSize:12, color:"#888", lineHeight:1.6 }}>{req.reason}</div>}
+        </div>
+        <div style={{ marginLeft:12, flexShrink:0 }}>
+          <select value={req.status} onChange={e=>onStatusChange(req.id, e.target.value)}
+            style={{ padding:"5px 10px", borderRadius:8, border:`2px solid ${statusColors[req.status]}`, fontSize:12, fontWeight:800, color:statusColors[req.status], background:statusBg[req.status], cursor:"pointer", outline:"none" }}>
+            {STATUSES.map(s=><option key={s}>{s}</option>)}
+          </select>
+        </div>
+      </div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingTop:10, borderTop:"1px solid #f0f0f0" }}>
+        <span style={{ fontSize:11, color:"#bbb" }}>{req.author} · {timeAgo(req.created_at)}</span>
+        {req.store_name===currentStore && (
+          <button onClick={()=>onDelete(req.id)} style={{ background:"none", border:"none", color:"#ddd", fontSize:12, cursor:"pointer", fontWeight:700 }}
+            onMouseEnter={e=>e.target.style.color="#ef4444"} onMouseLeave={e=>e.target.style.color="#ddd"}>削除</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RequestBoard({ currentStore }) {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [err, setErr]           = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [fStore, setFStore]     = useState("");
+  const [fStatus, setFStatus]   = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr(null);
+    try { setRequests(await api.listRequests(fStore||null)); }
+    catch(e) { setErr(e.message); }
+    setLoading(false);
+  }, [fStore]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const onDone = r => setRequests(prev => [r, ...prev]);
+
+  const onStatusChange = async (id, status) => {
+    try {
+      await api.updateRequestStatus(id, status);
+      setRequests(prev => prev.map(r => r.id===id ? {...r, status} : r));
+    } catch(e) { alert("更新失敗: "+e.message); }
+  };
+
+  const onDelete = async id => {
+    if (!confirm("この要望を削除しますか？")) return;
+    try { await api.delRequest(id); setRequests(prev => prev.filter(r => r.id!==id)); }
+    catch(e) { alert("削除失敗: "+e.message); }
+  };
+
+  const filtered = requests.filter(r =>
+    (!fStore  || r.store_name===fStore) &&
+    (!fStatus || r.status===fStatus)
+  );
+
+  const counts = { 未対応:0, 検討中:0, 対応済み:0 };
+  requests.forEach(r => { if (counts[r.status]!==undefined) counts[r.status]++; });
+
+  return (
+    <div>
+      <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
+        {[
+          { label:"未対応", count:counts["未対応"], color:"#6b7280", bg:"#f3f4f6" },
+          { label:"検討中", count:counts["検討中"], color:"#f59e0b", bg:"#fffbeb" },
+          { label:"対応済み", count:counts["対応済み"], color:"#10b981", bg:"#ecfdf5" },
+        ].map(({label,count,color,bg})=>(
+          <div key={label} onClick={()=>setFStatus(fStatus===label?"":label)}
+            style={{ background:fStatus===label?color:bg, borderRadius:12, padding:"12px 20px", flex:1, minWidth:90, textAlign:"center", cursor:"pointer", border:`2px solid ${color}`, transition:"all 0.15s" }}>
+            <div style={{ fontSize:22, fontWeight:900, color:fStatus===label?"white":color }}>{count}</div>
+            <div style={{ fontSize:11, fontWeight:700, color:fStatus===label?"rgba(255,255,255,0.85)":color }}>{label}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", paddingBottom:4 }}>
+        {["", ...STORES].map(s=>(
+          <button key={s||"all"} onClick={()=>setFStore(s)}
+            style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, whiteSpace:"nowrap", flexShrink:0, borderColor:fStore===s?"#7c3aed":"#ddd", background:fStore===s?"#7c3aed":"white", color:fStore===s?"white":"#666" }}>
+            {s||"全店舗"}
+          </button>
+        ))}
+      </div>
+      <div style={{ marginBottom:20 }}>
+        <button onClick={()=>setShowModal(true)}
+          style={{ background:"#7c3aed", color:"white", border:"none", borderRadius:12, padding:"12px 24px", fontSize:14, fontWeight:900, cursor:"pointer", width:"100%" }}>
+          📋 新しい要望を投稿する
+        </button>
+      </div>
+      {err && (
+        <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>
+          ⚠️ {err}
+          <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button>
+        </div>
+      )}
+      {loading ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
+          <div style={{ fontSize:32, marginBottom:10, animation:"pulse 1.5s infinite" }}>📋</div>
+          <div style={{ fontWeight:600 }}>読み込み中...</div>
+        </div>
+      ) : filtered.length===0 ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
+          <div style={{ fontSize:48, marginBottom:14 }}>📋</div>
+          <div style={{ fontWeight:800, fontSize:15, color:"#888", marginBottom:8 }}>要望がまだありません</div>
+          <div style={{ fontSize:13 }}>「新しい要望を投稿する」から最初の要望を送りましょう！</div>
+        </div>
+      ) : (
+        <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+          {filtered.map(req=>(
+            <RequestCard key={req.id} req={req} currentStore={currentStore} onStatusChange={onStatusChange} onDelete={onDelete} />
+          ))}
+        </div>
+      )}
+      {showModal && <RequestModal currentStore={currentStore} onClose={()=>setShowModal(false)} onDone={onDone} />}
+    </div>
+  );
+}
+
+function App() {
+  const [currentStore, setCurrentStore] = useState(STORES[0]);
+  const [pops, setPops]     = useState([]);
+  const [showUp, setShowUp] = useState(false);
+  const [sel, setSel]       = useState(null);
+  const [fStore, setFStore] = useState("");
+  const [fCat, setFCat]     = useState("");
+  const [loading, setLoading] = useState(true);
+  const [err, setErr]       = useState(null);
+  const [tab, setTab]       = useState("board");
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr(null);
+    try { setPops(await api.list(fStore||null, fCat||null)); }
+    catch(e) { setErr(e.message); }
+    setLoading(false);
+  }, [fStore, fCat]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const onDone   = p => setPops(prev => [p, ...prev]);
+  const onDelete = async id => {
+    if (!confirm("このポップを削除しますか？")) return;
+    try { await api.del(id); setPops(p=>p.filter(x=>x.id!==id)); setSel(null); }
+    catch(e) { alert("削除失敗: "+e.message); }
+  };
+
+  const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+      <div style={{ background:"white", borderBottom:"1px solid #e8e8e8", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"14px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
+          <div>
+            <div style={{ fontSize:10, fontWeight:800, color:"#e05c00", letterSpacing:3, marginBottom:1 }}>GoodDay 鮮魚部</div>
+            <div style={{ fontSize:19, fontWeight:900, color:"#111" }}>🐟 ポップ共有ボード</div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
+            <select value={currentStore} onChange={e=>setCurrentStore(e.target.value)}
+              style={{ padding:"8px 12px", border:"2px solid #e05c00", borderRadius:10, fontSize:13, fontWeight:700, color:"#e05c00", background:"#fff9f5", cursor:"pointer", outline:"none" }}>
+              {STORES.map(s=><option key={s}>{s}</option>)}
+            </select>
+            {tab==="board" && <>
+              <button onClick={()=>setShowUp(true)} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
+              <button onClick={load} style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
+            </>}
           </div>
         </div>
-      );
-    }
-
-    /* ─── 詳細モーダル ─── */
-    function DetailModal({ pop, onClose, onDelete, currentStore }) {
-      return (
-        <div style={{ position:"fixed", inset:0, background:"rgba(5,5,15,0.82)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }} onClick={onClose}>
-          <div style={{ background:"#18181f", borderRadius:20, width:"100%", maxWidth:500, overflow:"hidden", boxShadow:"0 32px 100px rgba(0,0,0,0.6)" }} onClick={e=>e.stopPropagation()}>
-            <div style={{ position:"relative", background:"#0f0f18" }}>
-              {pop.image_url
-                ? <img src={pop.image_url} style={{ width:"100%", maxHeight:420, objectFit:"contain", display:"block" }} />
-                : <div style={{ height:220, display:"flex", alignItems:"center", justifyContent:"center", color:"#444", fontSize:40 }}>🖼</div>}
-              <button onClick={onClose} style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.7)", color:"white", border:"none", borderRadius:10, width:36, height:36, fontSize:20, cursor:"pointer" }}>×</button>
-              <div style={{ position:"absolute", bottom:12, left:12, background:"#e05c00", color:"white", borderRadius:8, padding:"4px 12px", fontSize:12, fontWeight:800 }}>{pop.category}</div>
-            </div>
-            <div style={{ padding:"18px 22px 24px" }}>
-              <div style={{ fontSize:22, fontWeight:900, color:"white", marginBottom:6 }}>{pop.product_name}</div>
-              {pop.comment && <div style={{ fontSize:13, color:"#aaa", marginBottom:14, lineHeight:1.6 }}>{pop.comment}</div>}
-              <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
-                <span style={{ background:"#252540", color:"#8899ff", padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:800 }}>{pop.store_name}</span>
-                <span style={{ color:"#666", fontSize:12 }}>{pop.author} · {timeAgo(pop.created_at)}</span>
-                {pop.store_name===currentStore && (
-                  <button onClick={()=>onDelete(pop.id)} style={{ marginLeft:"auto", background:"#3a1010", color:"#ff7070", border:"none", borderRadius:8, padding:"5px 14px", fontSize:12, cursor:"pointer", fontWeight:800 }}>削除</button>
-                )}
-              </div>
-            </div>
-          </div>
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 20px", display:"flex", gap:0 }}>
+          {[
+            { key:"board",    label:"📌 ポップ一覧" },
+            { key:"requests", label:"📋 要望ボード" },
+          ].map(({key,label})=>(
+            <button key={key} onClick={()=>setTab(key)}
+              style={{ padding:"10px 20px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", borderBottom:`3px solid ${tab===key?(key==="board"?"#e05c00":"#7c3aed"):"transparent"}`, color:tab===key?(key==="board"?"#e05c00":"#7c3aed"):"#aaa", transition:"all 0.15s" }}>
+              {label}
+            </button>
+          ))}
         </div>
-      );
-    }
+      </div>
 
-    /* ─── メイン ─── */
-    function App() {
-      const [currentStore, setCurrentStore] = useState(STORES[0]);
-      const [pops, setPops] = useState([]);
-      const [showUp, setShowUp] = useState(false);
-      const [sel, setSel] = useState(null);
-      const [fStore, setFStore] = useState("");
-      const [fCat, setFCat] = useState("");
-      const [loading, setLoading] = useState(true);
-      const [err, setErr] = useState(null);
-
-      const load = useCallback(async () => {
-        setLoading(true); setErr(null);
-        try { setPops(await api.list(fStore||null, fCat||null)); }
-        catch(e) { setErr(e.message); }
-        setLoading(false);
-      }, [fStore, fCat]);
-
-      useEffect(() => { load(); }, [load]);
-
-      const onDone = p => setPops(prev => [p, ...prev]);
-
-      const onDelete = async id => {
-        if (!confirm("このポップを削除しますか？")) return;
-        try { await api.del(id); setPops(p=>p.filter(x=>x.id!==id)); setSel(null); }
-        catch(e) { alert("削除失敗: "+e.message); }
-      };
-
-      const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
-
-      return (
-        <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
-          <div style={{ background:"white", borderBottom:"1px solid #e8e8e8", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
-            <div style={{ maxWidth:1080, margin:"0 auto", padding:"14px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
-              <div>
-                <div style={{ fontSize:10, fontWeight:800, color:"#e05c00", letterSpacing:3, marginBottom:1 }}>GoodDay 鮮魚部</div>
-                <div style={{ fontSize:19, fontWeight:900, color:"#111" }}>🐟 ポップ共有ボード</div>
+      <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px" }}>
+        {tab==="board" && <>
+          <div style={{ display:"flex", gap:10, marginBottom:20, overflowX:"auto", paddingBottom:4 }}>
+            {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
+              <div key={lbl} onClick={()=>setFStore(val)}
+                style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"10px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
+                <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
+                <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#aaa", whiteSpace:"nowrap" }}>{lbl}</div>
               </div>
-              <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-                <select value={currentStore} onChange={e=>setCurrentStore(e.target.value)}
-                  style={{ padding:"8px 12px", border:"2px solid #e05c00", borderRadius:10, fontSize:13, fontWeight:700, color:"#e05c00", background:"#fff9f5", cursor:"pointer", outline:"none" }}>
-                  {STORES.map(s=><option key={s}>{s}</option>)}
-                </select>
-                <button onClick={()=>setShowUp(true)} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
-                <button onClick={load} style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
-              </div>
-            </div>
+            ))}
           </div>
-
-          <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px" }}>
-            <div style={{ display:"flex", gap:10, marginBottom:20, overflowX:"auto", paddingBottom:4 }}>
-              {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
-                <div key={lbl} onClick={()=>setFStore(val)}
-                  style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"10px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
-                  <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
-                  <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#aaa", whiteSpace:"nowrap" }}>{lbl}</div>
+          <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+            {["",...CATEGORIES].map(c=>(
+              <button key={c||"all"} onClick={()=>setFCat(c)}
+                style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+                {c||"すべて"}
+              </button>
+            ))}
+          </div>
+          {err && (
+            <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>
+              ⚠️ {err}
+              <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button>
+            </div>
+          )}
+          {loading ? (
+            <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
+              <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
+              <div style={{ fontWeight:600 }}>読み込み中...</div>
+            </div>
+          ) : pops.length===0 ? (
+            <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
+              <div style={{ fontSize:56, marginBottom:16 }}>📌</div>
+              <div style={{ fontWeight:800, fontSize:16, marginBottom:8, color:"#888" }}>ポップがまだありません</div>
+              <div style={{ fontSize:13 }}>「アップロード」ボタンから最初のポップを共有しましょう！</div>
+            </div>
+          ) : (
+            <div style={{ columns:"200px 4", gap:14 }}>
+              {pops.map((pop,i)=>(
+                <div key={pop.id}
+                  style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both` }}
+                  onClick={()=>setSel(pop)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
+                  <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
+                    {pop.image_url
+                      ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
+                      : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
+                    <div style={{ position:"absolute", top:8, left:8, background:"#e05c00", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
+                  </div>
+                  <div style={{ padding:"10px 12px 12px" }}>
+                    <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
+                    {pop.comment && <div style={{ fontSize:11, color:"#888", lineHeight:1.45, marginBottom:7, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{pop.comment}</div>}
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.store_name}</span>
+                      <span style={{ fontSize:10, color:"#ccc" }}>{timeAgo(pop.created_at)}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
+          )}
+        </>}
+        {tab==="requests" && <RequestBoard currentStore={currentStore} />}
+      </div>
 
-            <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
-              {["",...CATEGORIES].map(c=>(
-                <button key={c||"all"} onClick={()=>setFCat(c)}
-                  style={{ padding:"6px 14px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
-                  {c||"すべて"}
-                </button>
-              ))}
-            </div>
+      {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
+      {sel    && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} currentStore={currentStore} />}
+    </div>
+  );
+}
 
-            {err && (
-              <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>
-                ⚠️ {err}
-                <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button>
-              </div>
-            )}
-
-            {loading ? (
-              <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
-                <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
-                <div style={{ fontWeight:600 }}>読み込み中...</div>
-              </div>
-            ) : pops.length===0 ? (
-              <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
-                <div style={{ fontSize:56, marginBottom:16 }}>📌</div>
-                <div style={{ fontWeight:800, fontSize:16, marginBottom:8, color:"#888" }}>ポップがまだありません</div>
-                <div style={{ fontSize:13 }}>「アップロード」ボタンから最初のポップを共有しましょう！</div>
-              </div>
-            ) : (
-              <div style={{ columns:"200px 4", gap:14 }}>
-                {pops.map((pop,i)=>(
-                  <div key={pop.id}
-                    style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both` }}
-                    onClick={()=>setSel(pop)}
-                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
-                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
-                    <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
-                      {pop.image_url
-                        ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
-                        : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
-                      <div style={{ position:"absolute", top:8, left:8, background:"#e05c00", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
-                    </div>
-                    <div style={{ padding:"10px 12px 12px" }}>
-                      <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
-                      {pop.comment && <div style={{ fontSize:11, color:"#888", lineHeight:1.45, marginBottom:7, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{pop.comment}</div>}
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.store_name}</span>
-                        <span style={{ fontSize:10, color:"#ccc" }}>{timeAgo(pop.created_at)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
-          {sel && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} currentStore={currentStore} />}
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
 </body>
 </html>
