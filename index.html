@@ -455,65 +455,6 @@ function RequestBoard({ currentStore }) {
   );
 }
 
-/* ─── アーカイブ ─── */
-function ArchiveBoard({ onSelectPop }) {
-  const [pops, setPops]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr]         = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true); setErr(null);
-      try { setPops(await api.list(null, null)); }
-      catch(e) { setErr(e.message); }
-      setLoading(false);
-    })();
-  }, []);
-
-  return (
-    <div>
-      {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>⚠️ {err}</div>}
-      {loading ? (
-        <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
-          <div style={{ fontSize:36, marginBottom:12 }}>📦</div>
-          <div style={{ fontWeight:600 }}>読み込み中...</div>
-        </div>
-      ) : pops.length===0 ? (
-        <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
-          <div style={{ fontSize:56, marginBottom:16 }}>📦</div>
-          <div style={{ fontWeight:800, fontSize:16, color:"#888" }}>アーカイブがまだありません</div>
-        </div>
-      ) : (
-        <div style={{ columns:"200px 4", gap:14 }}>
-          {pops.map((pop,i) => (
-            <div key={pop.id}
-              style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both` }}
-              onClick={()=>onSelectPop(pop)}
-              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
-              <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
-                {pop.image_url
-                  ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
-                  : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
-                <div style={{ position:"absolute", top:8, left:8, background:"#1a6b3c", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
-              </div>
-              <div style={{ padding:"10px 12px 12px" }}>
-                <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
-                {pop.comment && <div style={{ fontSize:11, color:"#888", lineHeight:1.45, marginBottom:7, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{pop.comment}</div>}
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.store_name}</span>
-                  <span style={{ fontSize:10, color:"#ccc" }}>{formatDate(pop.created_at)}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── メイン ─── */
 function App() {
   const [currentStore, setCurrentStore] = useState(STORES[0]);
   const [pops, setPops]     = useState([]);
@@ -543,13 +484,6 @@ function App() {
 
   const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
 
-  const TABS = [
-    { key:"board",    label:"📌 ポップ一覧" },
-    { key:"requests", label:"📋 要望ボード" },
-    { key:"archive",  label:"📦 アーカイブ" },
-  ];
-  const tabColor = { board:"#e05c00", requests:"#7c3aed", archive:"#1a6b3c" };
-
   return (
     <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
       <div style={{ background:"white", borderBottom:"1px solid #e8e8e8", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
@@ -569,10 +503,13 @@ function App() {
             </>}
           </div>
         </div>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 20px", display:"flex", gap:0, overflowX:"auto" }}>
-          {TABS.map(({key,label})=>(
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 20px", display:"flex", gap:0 }}>
+          {[
+            { key:"board",    label:"📌 ポップ一覧", color:"#e05c00" },
+            { key:"requests", label:"📋 要望ボード",  color:"#7c3aed" },
+          ].map(({key,label,color})=>(
             <button key={key} onClick={()=>setTab(key)}
-              style={{ padding:"10px 20px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", whiteSpace:"nowrap", borderBottom:`3px solid ${tab===key?tabColor[key]:"transparent"}`, color:tab===key?tabColor[key]:"#aaa", transition:"all 0.15s" }}>
+              style={{ padding:"10px 20px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", whiteSpace:"nowrap", borderBottom:`3px solid ${tab===key?color:"transparent"}`, color:tab===key?color:"#aaa", transition:"all 0.15s" }}>
               {label}
             </button>
           ))}
@@ -631,7 +568,6 @@ function App() {
           )}
         </>}
         {tab==="requests" && <RequestBoard currentStore={currentStore} />}
-        {tab==="archive"  && <ArchiveBoard onSelectPop={setSel} />}
       </div>
 
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
