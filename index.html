@@ -12,8 +12,6 @@
 body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-@keyframes liked { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1); } }
-.like-btn:active { animation: liked 0.3s ease; }
 </style>
 </head>
 <body>
@@ -52,15 +50,6 @@ const api = {
   async del(id) {
     const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
-  },
-  async like(id, currentLikes) {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ likes: (currentLikes || 0) + 1 })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
   },
   async upload(blob, name) {
     const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
@@ -172,7 +161,7 @@ function UploadModal({ currentStore, onClose, onDone }) {
       const fn = `${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
       const imageUrl = await api.upload(blob, fn);
       setProg("データを保存中...");
-      const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl, likes:0 });
+      const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl });
       onDone(pop); onClose();
     } catch(e) { setErr("エラー: "+e.message); setStep("form"); }
   };
@@ -243,7 +232,7 @@ function UploadModal({ currentStore, onClose, onDone }) {
   );
 }
 
-function DetailModal({ pop, onClose, onDelete, onLike, currentStore }) {
+function DetailModal({ pop, onClose, onDelete, currentStore }) {
   const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
     setDownloading(true);
@@ -268,10 +257,6 @@ function DetailModal({ pop, onClose, onDelete, onLike, currentStore }) {
             <span style={{ color:"#666", fontSize:12 }}>{pop.author} · {formatDate(pop.created_at)}</span>
           </div>
           <div style={{ display:"flex", gap:10 }}>
-            <button className="like-btn" onClick={()=>onLike(pop)}
-              style={{ flex:1, padding:"12px 0", background:"#2a1a2e", border:"2px solid #ff4d8d", borderRadius:12, color:"#ff4d8d", fontSize:15, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-              ❤️ {pop.likes || 0}
-            </button>
             {pop.image_url && (
               <button onClick={handleDownload} disabled={downloading}
                 style={{ flex:1, padding:"12px 0", background:"#1a2a2a", border:"2px solid #00c896", borderRadius:12, color:"#00c896", fontSize:14, fontWeight:900, cursor:downloading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
@@ -487,11 +472,7 @@ function ArchiveBoard({ onSelectPop }) {
 
   return (
     <div>
-      {err && (
-        <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>
-          ⚠️ {err}
-        </div>
-      )}
+      {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>⚠️ {err}</div>}
       {loading ? (
         <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
           <div style={{ fontSize:36, marginBottom:12 }}>📦</div>
@@ -503,25 +484,27 @@ function ArchiveBoard({ onSelectPop }) {
           <div style={{ fontWeight:800, fontSize:16, color:"#888" }}>アーカイブがまだありません</div>
         </div>
       ) : (
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          {pops.map(pop => (
-            <div key={pop.id} onClick={()=>onSelectPop(pop)}
-              style={{ display:"flex", gap:12, alignItems:"center", padding:"12px 14px", borderRadius:14, cursor:"pointer", background:"white", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", border:"1px solid #f0f0f0", transition:"all 0.15s", animation:"fadeUp 0.3s ease both" }}
-              onMouseEnter={e=>e.currentTarget.style.background="#f8f8f8"}
-              onMouseLeave={e=>e.currentTarget.style.background="white"}>
-              {pop.image_url
-                ? <img src={pop.image_url} style={{ width:60, height:60, borderRadius:10, objectFit:"cover", flexShrink:0 }} />
-                : <div style={{ width:60, height:60, borderRadius:10, background:"#eee", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>🖼</div>}
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:4 }}>
-                  <span style={{ background:"#e05c00", color:"white", fontSize:9, fontWeight:800, padding:"1px 6px", borderRadius:4 }}>{pop.category}</span>
-                  <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:9, fontWeight:800, padding:"1px 6px", borderRadius:4 }}>{pop.store_name}</span>
-                </div>
-                <div style={{ fontWeight:800, fontSize:14, color:"#111", marginBottom:2, overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{pop.product_name}</div>
-                {pop.comment && <div style={{ fontSize:11, color:"#aaa", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{pop.comment}</div>}
-                <div style={{ fontSize:11, color:"#ccc", marginTop:2 }}>{pop.author} · {formatDate(pop.created_at)}</div>
+        <div style={{ columns:"200px 4", gap:14 }}>
+          {pops.map((pop,i) => (
+            <div key={pop.id}
+              style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both` }}
+              onClick={()=>onSelectPop(pop)}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
+              <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
+                {pop.image_url
+                  ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
+                  : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
+                <div style={{ position:"absolute", top:8, left:8, background:"#1a6b3c", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
               </div>
-              <span style={{ color:"#ccc", fontSize:18, flexShrink:0 }}>›</span>
+              <div style={{ padding:"10px 12px 12px" }}>
+                <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
+                {pop.comment && <div style={{ fontSize:11, color:"#888", lineHeight:1.45, marginBottom:7, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{pop.comment}</div>}
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <span style={{ background:"#f0f2ff", color:"#4055d4", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.store_name}</span>
+                  <span style={{ fontSize:10, color:"#ccc" }}>{formatDate(pop.created_at)}</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -556,13 +539,6 @@ function App() {
     if (!confirm("このポップを削除しますか？")) return;
     try { await api.del(id); setPops(p=>p.filter(x=>x.id!==id)); setSel(null); }
     catch(e) { alert("削除失敗: "+e.message); }
-  };
-  const onLike = async pop => {
-    try {
-      const updated = await api.like(pop.id, pop.likes);
-      setPops(prev => prev.map(p => p.id===pop.id ? {...p, likes: updated.likes} : p));
-      setSel(prev => prev ? {...prev, likes: updated.likes} : prev);
-    } catch(e) { alert("いいね失敗: "+e.message); }
   };
 
   const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
@@ -640,7 +616,6 @@ function App() {
                       ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
                       : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
                     <div style={{ position:"absolute", top:8, left:8, background:"#e05c00", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
-                    {pop.likes > 0 && <div style={{ position:"absolute", top:8, right:8, background:"rgba(255,77,141,0.9)", color:"white", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>❤️ {pop.likes}</div>}
                   </div>
                   <div style={{ padding:"10px 12px 12px" }}>
                     <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
@@ -660,7 +635,7 @@ function App() {
       </div>
 
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
-      {sel    && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} onLike={onLike} currentStore={currentStore} />}
+      {sel    && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} currentStore={currentStore} />}
     </div>
   );
 }
