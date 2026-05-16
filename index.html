@@ -12,6 +12,8 @@
 body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+@keyframes liked { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1); } }
+.like-btn:active { animation: liked 0.3s ease; }
 </style>
 </head>
 <body>
@@ -50,6 +52,15 @@ const api = {
   async del(id) {
     const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
+  },
+  async like(id, currentLikes) {
+    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ likes: (currentLikes || 0) + 1 })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
   },
   async upload(blob, name) {
     const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
@@ -118,6 +129,20 @@ async function compressToBlob(file, maxW=1200) {
   });
 }
 
+async function downloadImage(url, filename) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename || "pop.jpg";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch(e) {
+    alert("ダウンロードに失敗しました: " + e.message);
+  }
+}
+
 function UploadModal({ currentStore, onClose, onDone }) {
   const [step, setStep] = useState("pick");
   const [preview, setPreview] = useState(null);
@@ -142,7 +167,7 @@ function UploadModal({ currentStore, onClose, onDone }) {
       const fn = `${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
       const imageUrl = await api.upload(blob, fn);
       setProg("データを保存中...");
-      const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl });
+      const pop = await api.insert({ store_name:currentStore, product_name:form.productName, category:form.category, comment:form.comment, author:form.author, image_url:imageUrl, likes:0 });
       onDone(pop); onClose();
     } catch(e) { setErr("エラー: "+e.message); setStep("form"); }
   };
@@ -215,7 +240,15 @@ function UploadModal({ currentStore, onClose, onDone }) {
   );
 }
 
-function DetailModal({ pop, onClose, onDelete, currentStore }) {
+function DetailModal({ pop, onClose, onDelete, onLike, currentStore }) {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    await downloadImage(pop.image_url, `${pop.store_name}_${pop.product_name}.jpg`);
+    setDownloading(false);
+  };
+
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(5,5,15,0.82)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }} onClick={onClose}>
       <div style={{ background:"#18181f", borderRadius:20, width:"100%", maxWidth:500, overflow:"hidden", boxShadow:"0 32px 100px rgba(0,0,0,0.6)" }} onClick={e=>e.stopPropagation()}>
@@ -229,11 +262,24 @@ function DetailModal({ pop, onClose, onDelete, currentStore }) {
         <div style={{ padding:"18px 22px 24px" }}>
           <div style={{ fontSize:22, fontWeight:900, color:"white", marginBottom:6 }}>{pop.product_name}</div>
           {pop.comment && <div style={{ fontSize:13, color:"#aaa", marginBottom:14, lineHeight:1.6 }}>{pop.comment}</div>}
-          <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+          <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap", marginBottom:16 }}>
             <span style={{ background:"#252540", color:"#8899ff", padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:800 }}>{pop.store_name}</span>
             <span style={{ color:"#666", fontSize:12 }}>{pop.author} · {timeAgo(pop.created_at)}</span>
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <button className="like-btn" onClick={()=>onLike(pop)}
+              style={{ flex:1, padding:"12px 0", background:"#2a1a2e", border:"2px solid #ff4d8d", borderRadius:12, color:"#ff4d8d", fontSize:15, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+              ❤️ {pop.likes || 0}
+            </button>
+            {pop.image_url && (
+              <button onClick={handleDownload} disabled={downloading}
+                style={{ flex:1, padding:"12px 0", background:"#1a2a2a", border:"2px solid #00c896", borderRadius:12, color:"#00c896", fontSize:14, fontWeight:900, cursor:downloading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                {downloading ? "⏳ 保存中..." : "⬇️ ダウンロード"}
+              </button>
+            )}
             {pop.store_name===currentStore && (
-              <button onClick={()=>onDelete(pop.id)} style={{ marginLeft:"auto", background:"#3a1010", color:"#ff7070", border:"none", borderRadius:8, padding:"5px 14px", fontSize:12, cursor:"pointer", fontWeight:800 }}>削除</button>
+              <button onClick={()=>onDelete(pop.id)}
+                style={{ padding:"12px 16px", background:"#3a1010", border:"2px solid #ff7070", borderRadius:12, color:"#ff7070", fontSize:13, cursor:"pointer", fontWeight:800 }}>削除</button>
             )}
           </div>
         </div>
@@ -486,6 +532,14 @@ function App() {
     catch(e) { alert("削除失敗: "+e.message); }
   };
 
+  const onLike = async pop => {
+    try {
+      const updated = await api.like(pop.id, pop.likes);
+      setPops(prev => prev.map(p => p.id===pop.id ? {...p, likes: updated.likes} : p));
+      setSel(prev => prev ? {...prev, likes: updated.likes} : prev);
+    } catch(e) { alert("いいね失敗: "+e.message); }
+  };
+
   const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
 
   return (
@@ -569,6 +623,9 @@ function App() {
                       ? <img src={pop.image_url} alt={pop.product_name} style={{ width:"100%", display:"block", objectFit:"cover" }} loading="lazy" />
                       : <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", color:"#ccc", fontSize:28 }}>🖼</div>}
                     <div style={{ position:"absolute", top:8, left:8, background:"#e05c00", color:"white", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>{pop.category}</div>
+                    {pop.likes > 0 && (
+                      <div style={{ position:"absolute", top:8, right:8, background:"rgba(255,77,141,0.9)", color:"white", fontSize:10, fontWeight:800, padding:"2px 8px", borderRadius:6 }}>❤️ {pop.likes}</div>
+                    )}
                   </div>
                   <div style={{ padding:"10px 12px 12px" }}>
                     <div style={{ fontWeight:800, fontSize:13, color:"#111", marginBottom:3 }}>{pop.product_name}</div>
@@ -587,7 +644,7 @@ function App() {
       </div>
 
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
-      {sel    && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} currentStore={currentStore} />}
+      {sel    && <DetailModal pop={sel} onClose={()=>setSel(null)} onDelete={onDelete} onLike={onLike} currentStore={currentStore} />}
     </div>
   );
 }
