@@ -20,7 +20,7 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 const { useState, useEffect, useRef, useCallback } = React;
 
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
-const CATEGORIES = ["鮮魚","刺身","惣菜","特売","旬の魚","その他"];
+const CATEGORIES = ["鮮魚","刺身","寿司","惣菜","広告","特売","行事","塩干","その他"];
 const PRIORITIES = ["普通","急ぎ","緊急"];
 const STATUSES = ["未対応","検討中","対応済み"];
 
@@ -88,6 +88,35 @@ const api = {
   async delRequest(id) {
     const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
+  },
+
+  // ── 売り場ノート ──
+  async listPosts() {
+    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?select=*&order=created_at.desc`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertPost(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/blog_posts`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async incrementViews(id, currentViews) {
+    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ views: (currentViews || 0) + 1 })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async delPost(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
   }
 };
 
@@ -102,6 +131,11 @@ function timeAgo(d) {
 function formatDate(d) {
   const dt = new Date(d);
   return `${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日`;
+}
+
+function formatDateTime(d) {
+  const dt = new Date(d);
+  return `${dt.getMonth()+1}月${dt.getDate()}日 ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,"0")}`;
 }
 
 async function compressToBlob(file, maxW=1200) {
@@ -455,6 +489,183 @@ function RequestBoard({ currentStore }) {
   );
 }
 
+function BlogNewPostForm({ onPost, onCancel }) {
+  const [text, setText] = useState("");
+  const [blob, setBlob] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  const fileRef = useRef();
+
+  const handleImage = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const b = await compressToBlob(file);
+    setBlob(b);
+    setPreview(URL.createObjectURL(b));
+  };
+
+  const submit = async () => {
+    if (!text.trim()) return;
+    setLoading(true); setErr("");
+    try {
+      let image_url = null;
+      if (blob) {
+        const fn = `blog_${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;
+        image_url = await api.upload(blob, fn);
+      }
+      const post = await api.insertPost({ text: text.trim(), image_url, views: 0 });
+      onPost(post);
+    } catch(e) { setErr("エラー: "+e.message); setLoading(false); }
+  };
+
+  return (
+    <div style={{ background:"white", border:"2px solid #e8f0e8", borderRadius:16, padding:"18px 20px", marginBottom:22 }}>
+      {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, padding:"10px 14px", marginBottom:12, fontSize:12, color:"#cc0000" }}>⚠️ {err}</div>}
+      <textarea
+        value={text}
+        onChange={e=>setText(e.target.value)}
+        placeholder="今日の売り場の状況を書いてください…"
+        rows={4}
+        style={{ width:"100%", fontSize:14, padding:"10px 12px", border:"2px solid #eee", borderRadius:10, resize:"none", background:"#fafaf8", lineHeight:1.7, boxSizing:"border-box", fontFamily:"inherit", color:"#1a1a1a", outline:"none" }}
+        onFocus={e=>e.target.style.borderColor="#1a3a2a"}
+        onBlur={e=>e.target.style.borderColor="#eee"}
+      />
+      <div style={{ margin:"12px 0 16px" }}>
+        {preview ? (
+          <div style={{ position:"relative", display:"inline-block" }}>
+            <img src={preview} alt="" style={{ width:110, height:82, objectFit:"cover", borderRadius:8, display:"block" }} />
+            <button onClick={()=>{setBlob(null);setPreview(null);}} style={{ position:"absolute", top:-7, right:-7, width:20, height:20, borderRadius:"50%", background:"#555", color:"#fff", border:"none", cursor:"pointer", fontSize:12, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+          </div>
+        ) : (
+          <button onClick={()=>fileRef.current.click()} style={{ border:"1.5px dashed #ccc", borderRadius:10, padding:"9px 16px", background:"#fafaf8", cursor:"pointer", fontSize:12, color:"#aaa", display:"flex", alignItems:"center", gap:6 }}>
+            📷 写真を追加
+          </button>
+        )}
+        <input ref={fileRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleImage} />
+      </div>
+      <div style={{ display:"flex", gap:10 }}>
+        <button onClick={submit} disabled={!text.trim()||loading} style={{ background:text.trim()&&!loading?"#1a3a2a":"#ccc", color:"white", border:"none", borderRadius:10, padding:"10px 22px", fontSize:14, fontWeight:700, cursor:text.trim()&&!loading?"pointer":"not-allowed" }}>
+          {loading ? "投稿中..." : "投稿する"}
+        </button>
+        <button onClick={onCancel} style={{ background:"none", border:"1px solid #ddd", borderRadius:10, padding:"10px 16px", fontSize:14, color:"#999", cursor:"pointer" }}>キャンセル</button>
+      </div>
+    </div>
+  );
+}
+
+function BlogDetailModal({ post, onClose, onViewed, onDelete }) {
+  useEffect(() => {
+    onViewed(post);
+    const h = e => { if (e.key==="Escape") onClose(); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, []);
+
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:16 }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:18, maxWidth:500, width:"100%", maxHeight:"90vh", overflow:"auto", boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}>
+        {post.image_url && (
+          <img src={post.image_url} alt="" style={{ width:"100%", maxHeight:340, objectFit:"cover", borderRadius:"18px 18px 0 0", display:"block" }} />
+        )}
+        <div style={{ padding:"18px 20px 22px" }}>
+          <p style={{ fontSize:15, color:"#1a1a1a", lineHeight:1.75, margin:"0 0 18px" }}>{post.text}</p>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingTop:14, borderTop:"1px solid #f0f0f0", marginBottom:14 }}>
+            <span style={{ fontSize:12, color:"#bbb" }}>{formatDateTime(post.created_at)}</span>
+            <span style={{ fontSize:12, color:"#aaa" }}>👁 {post.views || 0}人が閲覧</span>
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={onClose} style={{ flex:1, background:"none", border:"1px solid #ddd", borderRadius:10, padding:"9px", fontSize:13, color:"#888", cursor:"pointer" }}>閉じる</button>
+            <button onClick={()=>{ if(confirm("この投稿を削除しますか？")) onDelete(post.id); }} style={{ padding:"9px 16px", background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:10, fontSize:13, color:"#cc4444", cursor:"pointer", fontWeight:700 }}>削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BlogBoard() {
+  const [posts, setPosts]       = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [err, setErr]           = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [openPost, setOpenPost] = useState(null);
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr(null);
+    try { setPosts(await api.listPosts()); }
+    catch(e) { setErr(e.message); }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handlePost = p => { setPosts(prev => [p, ...prev]); setShowForm(false); };
+
+  const handleViewed = async post => {
+    try {
+      await api.incrementViews(post.id, post.views);
+      setPosts(prev => prev.map(p => p.id===post.id ? {...p, views:(p.views||0)+1} : p));
+      setOpenPost(prev => prev ? {...prev, views:(prev.views||0)+1} : prev);
+    } catch(_) {}
+  };
+
+  const handleDelete = async id => {
+    try { await api.delPost(id); setPosts(prev=>prev.filter(p=>p.id!==id)); setOpenPost(null); }
+    catch(e) { alert("削除失敗: "+e.message); }
+  };
+
+  return (
+    <div>
+      <div style={{ background:"#f0f5f0", borderRadius:14, padding:"14px 18px", marginBottom:20, fontSize:13, color:"#2d5a3d", lineHeight:1.6 }}>
+        📝 今日の売り場の状況、上手くいったこと、気づいたことを自由に投稿してください
+      </div>
+      <div style={{ marginBottom:20 }}>
+        {showForm
+          ? <BlogNewPostForm onPost={handlePost} onCancel={()=>setShowForm(false)} />
+          : <button onClick={()=>setShowForm(true)} style={{ background:"#1a3a2a", color:"#d4e8d4", border:"none", borderRadius:12, padding:"12px 24px", fontSize:14, fontWeight:700, cursor:"pointer", width:"100%" }}>
+              ＋ 今日の状況を投稿する
+            </button>
+        }
+      </div>
+      {err && <div style={{ background:"#fff0f0", border:"1px solid #ffcccc", borderRadius:12, padding:"14px 18px", marginBottom:20, color:"#cc0000", fontSize:13 }}>⚠️ {err} <button onClick={load} style={{ marginLeft:12, background:"#cc0000", color:"white", border:"none", borderRadius:6, padding:"4px 12px", fontSize:12, cursor:"pointer" }}>再試行</button></div>}
+      {loading ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}><div style={{ fontSize:32, marginBottom:10, animation:"pulse 1.5s infinite" }}>📝</div><div style={{ fontWeight:600 }}>読み込み中...</div></div>
+      ) : posts.length===0 ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
+          <div style={{ fontSize:48, marginBottom:14 }}>📝</div>
+          <div style={{ fontWeight:800, fontSize:15, color:"#888", marginBottom:8 }}>まだ投稿がありません</div>
+          <div style={{ fontSize:13 }}>最初の報告を投稿してみましょう！</div>
+        </div>
+      ) : (
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {posts.map((post, i) => (
+            <div key={post.id}
+              onClick={()=>setOpenPost(post)}
+              style={{ background:"white", border:"1px solid #e8e4dc", borderRadius:14, overflow:"hidden", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,8)*0.04}s both` }}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.08)"}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+              {post.image_url && (
+                <div style={{ height:200, overflow:"hidden", background:"#f0ede6" }}>
+                  <img src={post.image_url} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} loading="lazy" />
+                </div>
+              )}
+              <div style={{ padding:"12px 14px 13px" }}>
+                <p style={{ fontSize:14, color:"#1a1a1a", margin:"0 0 10px", lineHeight:1.6, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{post.text}</p>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <span style={{ fontSize:11, color:"#bbb" }}>{formatDateTime(post.created_at)}</span>
+                  <span style={{ fontSize:11, color:"#bbb" }}>👁 {post.views || 0}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {openPost && <BlogDetailModal post={openPost} onClose={()=>setOpenPost(null)} onViewed={handleViewed} onDelete={handleDelete} />}
+    </div>
+  );
+}
+
 function App() {
   const [currentStore, setCurrentStore] = useState(STORES[0]);
   const [pops, setPops]     = useState([]);
@@ -484,6 +695,12 @@ function App() {
 
   const counts = STORES.reduce((a,s)=>({...a,[s]:pops.filter(p=>p.store_name===s).length}),{});
 
+  const TABS = [
+    { key:"board",    label:"📌 ポップ一覧",  color:"#e05c00" },
+    { key:"requests", label:"📋 要望ボード",   color:"#7c3aed" },
+    { key:"blog",     label:"📝 売り場ノート", color:"#1a7a3a" },
+  ];
+
   return (
     <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
       <div style={{ background:"white", borderBottom:"1px solid #e8e8e8", position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
@@ -503,11 +720,8 @@ function App() {
             </>}
           </div>
         </div>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 20px", display:"flex", gap:0 }}>
-          {[
-            { key:"board",    label:"📌 ポップ一覧", color:"#e05c00" },
-            { key:"requests", label:"📋 要望ボード",  color:"#7c3aed" },
-          ].map(({key,label,color})=>(
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 20px", display:"flex", gap:0, overflowX:"auto" }}>
+          {TABS.map(({key,label,color})=>(
             <button key={key} onClick={()=>setTab(key)}
               style={{ padding:"10px 20px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", whiteSpace:"nowrap", borderBottom:`3px solid ${tab===key?color:"transparent"}`, color:tab===key?color:"#aaa", transition:"all 0.15s" }}>
               {label}
@@ -568,6 +782,7 @@ function App() {
           )}
         </>}
         {tab==="requests" && <RequestBoard currentStore={currentStore} />}
+        {tab==="blog" && <BlogBoard />}
       </div>
 
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onDone={onDone} />}
