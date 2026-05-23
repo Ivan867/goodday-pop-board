@@ -114,33 +114,6 @@ const api = {
   async delRequest(id) {
     const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
-  },
-  async listPosts() {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?select=*&order=created_at.desc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertPost(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async incrementViews(id, currentViews) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ views: (currentViews||0)+1 })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delPost(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
   }
 };
 
@@ -179,7 +152,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
     setLoading(true); setError("");
     try {
       const image_url = await api.upload(file);
-      const pop = await api.insert({ store_name: store, product_name: product.trim(), category, image_url, likes: 0 });
+      const pop = await api.insert({ store_name: store, product_name: product.trim(), category, image_url, likes: 0, author: store });
       onSuccess(pop);
     } catch(e) {
       setError("エラー: " + e.message);
@@ -563,7 +536,7 @@ const PROMPT_TEMPLATES = [
 `あなたはスーパーの鮮魚売り場専門のデザイナーです。
 【商品】真鯛（刺身用・2〜3人前）
 【用途】刺身・カルパッチョ
-【価格】100gあたり 499円
+【価格】100gあたり 税別 499円 税込 539円
 【一言アピール】今が旬！地物の鮮度抜群な真鯛
 【サイズ】縦A4（210×297mm）
 【雰囲気】爽やかで高級感のある和風デザイン
@@ -590,7 +563,7 @@ const PROMPT_TEMPLATES = [
 `あなたはスーパーの鮮魚売り場専門のデザイナーです。
 【商品】真鯛（刺身用・2〜3人前）
 【用途】刺身・カルパッチョ
-【価格】100gあたり 499円
+【価格】100gあたり 税別 499円 税込 539円
 【一言アピール】今が旬！地物の鮮度抜群な真鯛
 【サイズ】横A4（297×210mm）
 【雰囲気】爽やかで高級感のある和風デザイン
