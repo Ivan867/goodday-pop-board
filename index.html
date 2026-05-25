@@ -13,19 +13,16 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 @keyframes liked { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1); } }
-@keyframes popIn { 0% { opacity:0; transform:scale(0.8) translateY(10px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
 .like-btn:active { animation: liked 0.3s ease; }
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useEffect, useCallback } = React;
 
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
 const CATEGORIES = ["鮮魚","刺身","寿司","惣菜","広告","特売","行事","塩干","その他"];
-const PRIORITIES = ["普通","急ぎ","緊急"];
-const STATUSES = ["未対応","検討中","対応済み"];
 
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
@@ -38,6 +35,11 @@ const api = {
     if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
     if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
     const r = await fetch(url, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async listAll() {
+    const r = await fetch(`${SB_URL}/rest/v1/pops?select=*&order=created_at.desc`, { headers: h() });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   },
@@ -86,35 +88,6 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
   },
-  async listRequests(store) {
-    let url = `${SB_URL}/rest/v1/pop_requests?select=*&order=created_at.desc`;
-    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
-    const r = await fetch(url, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertRequest(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async updateRequestStatus(id, status) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ status })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delRequest(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
   async listPosts() {
     const r = await fetch(`${SB_URL}/rest/v1/blog_posts?select=*&order=created_at.desc`, { headers: h() });
     if (!r.ok) throw new Error(await r.text());
@@ -162,6 +135,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
   const [store, setStore] = useState(currentStore||STORES[0]);
   const [author, setAuthor] = useState("");
   const [product, setProduct] = useState("");
+  const [comment, setComment] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -177,16 +151,15 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 
   const submit = async () => {
     if (!product.trim()) { setError("商品名を入力してください"); return; }
-    if (!author.trim()) { setError("名前を入力してください"); return; }
-    if (!file) { setError("画像を選択してください"); return; }
+    if (!author.trim())  { setError("名前を入力してください"); return; }
+    if (!file)           { setError("画像を選択してください"); return; }
     setLoading(true); setError("");
     try {
       const image_url = await api.upload(file);
-      const pop = await api.insert({ store_name: store, product_name: product.trim(), category, image_url, likes: 0, author: author.trim() });
+      const pop = await api.insert({ store_name: store, product_name: product.trim(), category, image_url, likes: 0, author: author.trim(), comment: comment.trim() });
       onSuccess(pop);
-    } catch(e) {
-      setError("エラー: " + e.message);
-    } finally { setLoading(false); }
+    } catch(e) { setError("エラー: " + e.message); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -216,6 +189,10 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             <select value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14 }}>
               {CATEGORIES.map(c=><option key={c}>{c}</option>)}
             </select>
+          </div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>コメント <span style={{ fontWeight:400, color:"#bbb" }}>（任意）</span></div>
+            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder="例：脂がのっていておすすめ！刺身・塩焼きに。" rows={3} style={{ width:"100%", padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>画像</div>
@@ -286,6 +263,16 @@ function PopDetail({ pop, onClose, onDelete, onLiked }) {
             </div>
             <div style={{ fontSize:12, color:"#bbb" }}>{formatDate(pop.created_at)}</div>
           </div>
+          {pop.author && (
+            <div style={{ fontSize:13, color:"#555", marginBottom: pop.comment ? 6 : 14 }}>
+              <span style={{ fontWeight:700 }}>投稿者：</span>{pop.author}
+            </div>
+          )}
+          {pop.comment && (
+            <div style={{ fontSize:13, color:"#444", background:"#f7f7f9", borderRadius:10, padding:"10px 12px", marginBottom:14, lineHeight:1.7, whiteSpace:"pre-wrap" }}>
+              💬 {pop.comment}
+            </div>
+          )}
           <div style={{ display:"flex", gap:10, marginTop:14 }}>
             <button className="like-btn" onClick={handleLike} style={{ flex:1, background:liked?"#fff0f0":"#f5f5f5", border:liked?"2px solid #ff6b6b":"2px solid #eee", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:liked?"default":"pointer", color:liked?"#ff6b6b":"#666" }}>
               ❤️ {likes}
@@ -303,6 +290,31 @@ function PopDetail({ pop, onClose, onDelete, onLiked }) {
   );
 }
 
+// ── Pop Card (shared) ──
+function PopCard({ pop, index, onClick }) {
+  return (
+    <div
+      style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(index,10)*0.04}s both`, transition:"all 0.15s" }}
+      onClick={()=>onClick(pop)}
+      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
+      <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
+        {pop.image_url
+          ? <img src={pop.image_url} style={{ width:"100%", display:"block" }} />
+          : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"#ccc", fontSize:30 }}>🐟</div>}
+        {pop.likes>0 && <div style={{ position:"absolute", top:6, right:6, background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>❤️{pop.likes}</div>}
+      </div>
+      <div style={{ padding:"10px 12px" }}>
+        <div style={{ fontWeight:800, fontSize:13, marginBottom:4 }}>{pop.product_name}</div>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div style={{ fontSize:11, color:"#888" }}>{pop.store_name}</div>
+          <div style={{ fontSize:11, background:"#f0f0f0", padding:"2px 8px", borderRadius:20, fontWeight:700, color:"#666" }}>{pop.category}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Board Tab ──
 function BoardTab({ currentStore }) {
   const [pops, setPops] = useState([]);
@@ -314,10 +326,8 @@ function BoardTab({ currentStore }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try {
-      const data = await api.list(fStore, fCat);
-      setPops(data);
-    } catch(e) { console.error(e); }
+    try { const data = await api.list(fStore, fCat); setPops(data); }
+    catch(e) { console.error(e); }
     finally { setLoading(false); }
   }, [fStore, fCat]);
 
@@ -329,11 +339,11 @@ function BoardTab({ currentStore }) {
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 0" }}>
-        <div style={{ display:"flex", justifyContent:"flex-end", gap:10, marginBottom:16 }}>
+        <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginBottom:14 }}>
           <button onClick={()=>setShowUp(true)} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
           <button onClick={load} style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
         </div>
-        <div style={{ display:"flex", gap:10, marginBottom:16, overflowX:"auto", paddingBottom:4 }}>
+        <div style={{ display:"flex", gap:10, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
               style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"10px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
@@ -365,27 +375,7 @@ function BoardTab({ currentStore }) {
           </div>
         ) : (
           <div style={{ columns:"200px 4", gap:14 }}>
-            {filtered.map((pop,i)=>(
-              <div key={pop.id}
-                style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both`, transition:"all 0.15s" }}
-                onClick={()=>setSel(pop)}
-                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
-                onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
-                <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
-                  {pop.image_url
-                    ? <img src={pop.image_url} style={{ width:"100%", display:"block" }} />
-                    : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"#ccc", fontSize:30 }}>🐟</div>}
-                  {pop.likes>0 && <div style={{ position:"absolute", top:6, right:6, background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>❤️{pop.likes}</div>}
-                </div>
-                <div style={{ padding:"10px 12px" }}>
-                  <div style={{ fontWeight:800, fontSize:13, marginBottom:4 }}>{pop.product_name}</div>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <div style={{ fontSize:11, color:"#888" }}>{pop.store_name}</div>
-                    <div style={{ fontSize:11, background:"#f0f0f0", padding:"2px 8px", borderRadius:20, fontWeight:700, color:"#666" }}>{pop.category}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
           </div>
         )}
       </div>
@@ -398,155 +388,119 @@ function BoardTab({ currentStore }) {
   );
 }
 
-// ── Requests Tab ──
-function RequestsTab({ currentStore }) {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+// ── Search Tab ──
+function SearchTab() {
+  const [allPops, setAllPops] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [fStore, setFStore] = useState("");
-  const [fStatus, setFStatus] = useState("");
-  const [form, setForm] = useState({ store_name: currentStore||STORES[0], product_name:"", details:"", category:CATEGORIES[0], priority:"普通" });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [fCat, setFCat] = useState("");
+  const [sel, setSel] = useState(null);
 
-  const load = useCallback(async () => {
+  // 初回は検索バーにフォーカスが当たった段階 or 文字入力時にロード
+  const ensureLoaded = async () => {
+    if (loaded || loading) return;
     setLoading(true);
-    try { const data = await api.listRequests(fStore); setRequests(data); }
-    catch(e) {} finally { setLoading(false); }
-  }, [fStore]);
-
-  useEffect(() => { load(); }, [load]);
-
-  const filtered = fStatus ? requests.filter(r=>r.status===fStatus) : requests;
-
-  const submit = async () => {
-    if (!form.product_name.trim()) { setError("商品名を入力してください"); return; }
-    setSubmitting(true); setError("");
-    try {
-      const req = await api.insertRequest({ ...form, status:"未対応" });
-      setRequests(r=>[req,...r]);
-      setShowForm(false);
-      setForm(f=>({...f, product_name:"", details:""}));
-    } catch(e) { setError("エラー: "+e.message); }
-    finally { setSubmitting(false); }
+    try { const data = await api.listAll(); setAllPops(data); setLoaded(true); }
+    catch(e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
-  const updateStatus = async (id, status) => {
-    try {
-      const updated = await api.updateRequestStatus(id, status);
-      setRequests(r=>r.map(x=>x.id===id?updated:x));
-    } catch(e) {}
-  };
+  const q = search.trim().toLowerCase();
+  const results = !loaded ? [] : allPops.filter(p => {
+    const matchStore  = !fStore || p.store_name === fStore;
+    const matchCat    = !fCat   || p.category === fCat;
+    const matchSearch = !q ||
+      (p.product_name||"").toLowerCase().includes(q) ||
+      (p.store_name||"").toLowerCase().includes(q) ||
+      (p.category||"").toLowerCase().includes(q);
+    return matchStore && matchCat && matchSearch;
+  });
 
-  const del = async (id) => {
-    if (!confirm("削除しますか？")) return;
-    try { await api.delRequest(id); setRequests(r=>r.filter(x=>x.id!==id)); } catch(e) {}
-  };
-
-  const prioColor = p => p==="緊急"?"#dc2626":p==="急ぎ"?"#d97706":"#6b7280";
-  const statColor = s => s==="対応済み"?"#16a34a":s==="検討中"?"#7c3aed":"#6b7280";
+  const hasFilter = q || fStore || fCat;
 
   return (
-    <div style={{ maxWidth:700, margin:"0 auto", padding:"16px 16px 40px" }}>
-      <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap", alignItems:"center" }}>
-        <select value={fStore} onChange={e=>setFStore(e.target.value)} style={{ padding:"8px 12px", border:"2px solid #e8e8e8", borderRadius:10, fontSize:13, fontWeight:700, background:"white", cursor:"pointer", outline:"none" }}>
-          <option value="">全店舗</option>
-          {STORES.map(s=><option key={s}>{s}</option>)}
-        </select>
-        {["","未対応","検討中","対応済み"].map(s=>(
-          <button key={s||"all"} onClick={()=>setFStatus(s)}
-            style={{ padding:"7px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer", borderColor:fStatus===s?"#7c3aed":"#ddd", background:fStatus===s?"#7c3aed":"white", color:fStatus===s?"white":"#666" }}>
-            {s||"すべて"}
-          </button>
-        ))}
-        <button onClick={()=>setShowForm(f=>!f)}
-          style={{ marginLeft:"auto", background:showForm?"#555":"#7c3aed", color:"white", border:"none", borderRadius:10, padding:"9px 16px", fontSize:13, fontWeight:900, cursor:"pointer" }}>
-          {showForm?"✕ 閉じる":"＋ 要望を投稿"}
-        </button>
-      </div>
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:"24px 16px 40px" }}>
 
-      {showForm && (
-        <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:20, boxShadow:"0 2px 12px rgba(0,0,0,0.08)" }}>
-          <div style={{ fontWeight:900, fontSize:15, marginBottom:16, color:"#7c3aed" }}>📋 新しい要望</div>
-          <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-            <div style={{ display:"flex", gap:10 }}>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:11, fontWeight:700, color:"#666", marginBottom:4 }}>店舗</div>
-                <select value={form.store_name} onChange={e=>setForm(f=>({...f,store_name:e.target.value}))} style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13 }}>
-                  {STORES.map(s=><option key={s}>{s}</option>)}
-                </select>
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:11, fontWeight:700, color:"#666", marginBottom:4 }}>カテゴリ</div>
-                <select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))} style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13 }}>
-                  {CATEGORIES.map(c=><option key={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, color:"#666", marginBottom:4 }}>商品名 *</div>
-              <input value={form.product_name} onChange={e=>setForm(f=>({...f,product_name:e.target.value}))} placeholder="例：真鯛（2〜3人前）" style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, outline:"none" }} />
-            </div>
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, color:"#666", marginBottom:4 }}>詳細・メモ</div>
-              <textarea value={form.details} onChange={e=>setForm(f=>({...f,details:e.target.value}))} placeholder="サイズ、個数、参考価格など..." rows={3} style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
-            </div>
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, color:"#666", marginBottom:4 }}>優先度</div>
-              <div style={{ display:"flex", gap:8 }}>
-                {PRIORITIES.map(p=>(
-                  <button key={p} onClick={()=>setForm(f=>({...f,priority:p}))}
-                    style={{ flex:1, padding:"8px", borderRadius:8, border:"2px solid", cursor:"pointer", fontWeight:700, fontSize:13, borderColor:form.priority===p?prioColor(p):"#eee", background:form.priority===p?prioColor(p):"white", color:form.priority===p?"white":"#666" }}>
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {error && <div style={{ color:"#e05c00", fontSize:13 }}>{error}</div>}
-            <button onClick={submit} disabled={submitting} style={{ background:"#7c3aed", color:"white", border:"none", borderRadius:10, padding:"12px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:submitting?0.6:1 }}>
-              {submitting?"送信中...":"投稿する"}
+      {/* 検索ボックス */}
+      <div style={{ background:"white", borderRadius:18, padding:"20px 20px 18px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
+        <div style={{ fontSize:15, fontWeight:900, color:"#111", marginBottom:14 }}>🔍 ポップを検索</div>
+        <div style={{ position:"relative", marginBottom:14 }}>
+          <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#ccc", pointerEvents:"none" }}>🔍</span>
+          <input
+            type="text"
+            value={search}
+            onChange={e=>{ setSearch(e.target.value); ensureLoaded(); }}
+            onFocus={ensureLoaded}
+            placeholder="商品名・店舗名・カテゴリで検索..."
+            style={{ width:"100%", padding:"13px 42px 13px 46px", border:"2px solid #e8e8e8", borderRadius:12, fontSize:15, outline:"none", transition:"border-color 0.15s", background:"#fafafa" }}
+            onFocus2={e=>e.target.style.borderColor="#e05c00"}
+            onBlur={e=>e.target.style.borderColor="#e8e8e8"}
+          />
+          {search && (
+            <button onClick={()=>setSearch("")}
+              style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"#ddd", border:"none", borderRadius:"50%", width:24, height:24, cursor:"pointer", fontSize:13, color:"#666", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              ✕
             </button>
-          </div>
+          )}
         </div>
-      )}
 
-      {loading ? (
-        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>読み込み中...</div>
-      ) : filtered.length===0 ? (
-        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
-          <div style={{ fontSize:40, marginBottom:12 }}>📋</div>
-          <div>要望がまだありません</div>
-        </div>
-      ) : (
-        <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-          {filtered.map(req=>(
-            <div key={req.id} style={{ background:"white", borderRadius:14, padding:16, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", animation:"fadeUp 0.3s ease both" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
-                <div>
-                  <span style={{ fontWeight:900, fontSize:15 }}>{req.product_name}</span>
-                  <span style={{ fontSize:12, color:"#888", marginLeft:8 }}>{req.store_name} · {req.category}</span>
-                </div>
-                <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:prioColor(req.priority), background:prioColor(req.priority)+"22", padding:"2px 8px", borderRadius:20 }}>{req.priority}</span>
-                  <button onClick={()=>del(req.id)} style={{ background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:14 }}>✕</button>
-                </div>
-              </div>
-              {req.details && <div style={{ fontSize:13, color:"#666", marginBottom:10 }}>{req.details}</div>}
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <div style={{ fontSize:11, color:"#bbb" }}>{timeAgo(req.created_at)}</div>
-                <div style={{ display:"flex", gap:6 }}>
-                  {STATUSES.map(s=>(
-                    <button key={s} onClick={()=>updateStatus(req.id,s)}
-                      style={{ padding:"4px 10px", borderRadius:20, fontSize:11, fontWeight:700, border:"2px solid", cursor:"pointer", borderColor:req.status===s?statColor(s):"#eee", background:req.status===s?statColor(s):"white", color:req.status===s?"white":"#aaa" }}>
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+        {/* 店舗フィルター */}
+        <div style={{ display:"flex", gap:8, marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
+          {[{lbl:"全店舗",val:""},...STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
+            <button key={lbl} onClick={()=>{ setFStore(val); ensureLoaded(); }}
+              style={{ padding:"5px 13px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, flexShrink:0, borderColor:fStore===val?"#e05c00":"#ddd", background:fStore===val?"#e05c00":"white", color:fStore===val?"white":"#666", whiteSpace:"nowrap" }}>
+              {lbl}
+            </button>
           ))}
         </div>
+
+        {/* カテゴリフィルター */}
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {["",...CATEGORIES].map(c=>(
+            <button key={c||"all"} onClick={()=>{ setFCat(c); ensureLoaded(); }}
+              style={{ padding:"5px 13px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+              {c||"すべて"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 結果エリア */}
+      {loading ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
+          <div style={{ fontSize:36, marginBottom:10 }}>🐠</div>
+          <div style={{ animation:"pulse 1.5s infinite" }}>読み込み中...</div>
+        </div>
+      ) : !hasFilter ? (
+        <div style={{ textAlign:"center", padding:60, color:"#ccc" }}>
+          <div style={{ fontSize:50, marginBottom:12 }}>🔍</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>キーワードや店舗・カテゴリを選んで検索</div>
+        </div>
+      ) : results.length === 0 ? (
+        <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
+          <div style={{ fontSize:50, marginBottom:12 }}>😔</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>一致するポップが見つかりません</div>
+          <div style={{ fontSize:13, marginTop:6 }}>別のキーワードで試してみてください</div>
+        </div>
+      ) : (
+        <>
+          <div style={{ fontSize:13, color:"#888", fontWeight:700, marginBottom:12 }}>
+            {q && <span>「<span style={{ color:"#e05c00" }}>{search}</span>」</span>}
+            {(fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fStore,fCat].filter(Boolean).join(" · ")} </span>}
+            の検索結果：<span style={{ color:"#111" }}>{results.length}件</span>
+          </div>
+          <div style={{ columns:"200px 4", gap:14 }}>
+            {results.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
+          </div>
+        </>
       )}
+
+      {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
+        onDelete={id=>{ setAllPops(p=>p.filter(x=>x.id!==id)); setSel(null); }}
+        onLiked={(id,likes)=>setAllPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
+      />}
     </div>
   );
 }
@@ -748,25 +702,20 @@ function AiPopTab() {
 
   const copyTemplate = (id, text) => {
     navigator.clipboard.writeText(text).then(() => {
-      setCopied(id);
-      setTimeout(() => setCopied(null), 2500);
+      setCopied(id); setTimeout(() => setCopied(null), 2500);
     }).catch(() => {
-      // fallback for older browsers
       const ta = document.createElement("textarea");
       ta.value = text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
-      setCopied(id);
-      setTimeout(() => setCopied(null), 2500);
+      setCopied(id); setTimeout(() => setCopied(null), 2500);
     });
   };
 
   return (
     <div style={{ maxWidth:660, margin:"0 auto", padding:"20px 16px 60px" }}>
-
-      {/* Hero header */}
       <div style={{ background:"linear-gradient(135deg,#0077b6 0%,#00b4d8 100%)", borderRadius:18, padding:"22px 24px", marginBottom:24, color:"white", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", right:-10, top:-10, fontSize:80, opacity:0.12 }}>✏️</div>
         <div style={{ fontSize:22, fontWeight:900, marginBottom:6 }}>✏️ AI ポップ作成</div>
@@ -775,17 +724,10 @@ function AiPopTab() {
           プロ品質のポップがすぐに作れます！
         </div>
       </div>
-
-      {/* How to use */}
       <div style={{ background:"#fffbeb", border:"2px solid #fde68a", borderRadius:14, padding:"16px 18px", marginBottom:16 }}>
         <div style={{ fontWeight:900, fontSize:14, color:"#92400e", marginBottom:12 }}>📖 使い方（4ステップ）</div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px 14px" }}>
-          {[
-            ["①","「コピー」ボタンを押す"],
-            ["②","ChatGPT か Gemini を開く"],
-            ["③","貼り付けて空欄を埋めて送信"],
-            ["④","生成された画像を保存・印刷！"]
-          ].map(([num,text])=>(
+          {[["①","「コピー」ボタンを押す"],["②","ChatGPT か Gemini を開く"],["③","貼り付けて空欄を埋めて送信"],["④","生成された画像を保存・印刷！"]].map(([num,text])=>(
             <div key={num} style={{ display:"flex", alignItems:"center", gap:8, fontSize:13, color:"#78350f" }}>
               <div style={{ width:24, height:24, background:"#fde68a", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:900, flexShrink:0 }}>{num}</div>
               <div>{text}</div>
@@ -793,54 +735,35 @@ function AiPopTab() {
           ))}
         </div>
       </div>
-
-      {/* Background removal advice */}
       <div style={{ background:"#f0fdf4", border:"2px solid #86efac", borderRadius:14, padding:"16px 18px", marginBottom:24 }}>
         <div style={{ fontWeight:900, fontSize:14, color:"#166534", marginBottom:10 }}>💡 作成アドバイス</div>
-        <div style={{ fontSize:13, color:"#166534", lineHeight:1.75 }}>
-          作成したポップに背景や不要な部分があれば、AIに以下を追加で伝えてください：
-        </div>
+        <div style={{ fontSize:13, color:"#166534", lineHeight:1.75 }}>作成したポップに背景や不要な部分があれば、AIに以下を追加で伝えてください：</div>
         <div style={{ display:"flex", flexDirection:"column", gap:8, marginTop:10 }}>
           <div style={{ background:"white", border:"1px solid #86efac", borderRadius:8, padding:"10px 12px", fontSize:13, color:"#333", fontWeight:600 }}>
-            縦向きの場合：<br />
-            <span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは縦A4（210×297mm）でポップ部分のみで作成」</span>
+            縦向きの場合：<br /><span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは縦A4（210×297mm）でポップ部分のみで作成」</span>
           </div>
           <div style={{ background:"white", border:"1px solid #86efac", borderRadius:8, padding:"10px 12px", fontSize:13, color:"#333", fontWeight:600 }}>
-            横向きの場合：<br />
-            <span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成」</span>
+            横向きの場合：<br /><span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成」</span>
           </div>
         </div>
       </div>
-
-      {/* Template cards */}
       {PROMPT_TEMPLATES.map(tpl => (
         <div key={tpl.id} style={{ background:"white", borderRadius:18, overflow:"hidden", boxShadow:"0 4px 16px rgba(0,0,0,0.09)", marginBottom:20, animation:"fadeUp 0.3s ease both" }}>
-
-          {/* Card top bar */}
           <div style={{ background:`linear-gradient(135deg,${tpl.color},${tpl.color}bb)`, padding:"16px 20px" }}>
             <div style={{ fontSize:19, fontWeight:900, color:"white", marginBottom:4 }}>{tpl.emoji} {tpl.title}</div>
             <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginBottom:10 }}>{tpl.description}</div>
             <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-              {tpl.tools.map(t=>(
-                <span key={t} style={{ background:"rgba(255,255,255,0.22)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20 }}>{t}</span>
-              ))}
+              {tpl.tools.map(t=><span key={t} style={{ background:"rgba(255,255,255,0.22)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20 }}>{t}</span>)}
             </div>
           </div>
-
           <div style={{ padding:"18px 20px" }}>
-
-            {/* Template preview box */}
             <div style={{ background:"#f7f7f9", borderRadius:12, padding:"14px 16px", marginBottom:8 }}>
-              <div style={{ fontSize:11, fontWeight:800, color:"#999", letterSpacing:"0.05em", marginBottom:8, textTransform:"uppercase" }}>📋 テンプレート</div>
+              <div style={{ fontSize:11, fontWeight:800, color:"#999", letterSpacing:"0.05em", marginBottom:8 }}>📋 テンプレート</div>
               <pre style={{ fontSize:14, color:"#333", whiteSpace:"pre-wrap", lineHeight:1.9, fontFamily:"inherit", margin:0 }}>{tpl.template}</pre>
             </div>
-
-            {/* Price note */}
             <div style={{ fontSize:12, color:"#888", background:"#fffbeb", border:"1px solid #fde68a", borderRadius:8, padding:"8px 12px", marginBottom:14 }}>
-              ※ 売価欄、売価を記入したくない場合は、【価格】は「表記なし」と入力してください。
+              ※ 売価を記入したくない場合は、【価格】は「表記なし」と入力してください。
             </div>
-
-            {/* Sample accordion */}
             <button onClick={()=>setShowSample(s=>({...s,[tpl.id]:!s[tpl.id]}))}
               style={{ width:"100%", background:showSample[tpl.id]?tpl.lightColor:"#f7f7f9", color:showSample[tpl.id]?tpl.color:"#666", border:`2px solid ${showSample[tpl.id]?tpl.color+"60":"#eee"}`, borderRadius:10, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textAlign:"left", marginBottom: showSample[tpl.id] ? 0 : 16, borderBottomLeftRadius: showSample[tpl.id] ? 0 : 10, borderBottomRightRadius: showSample[tpl.id] ? 0 : 10, transition:"all 0.2s" }}>
               {showSample[tpl.id] ? "▲ サンプルを閉じる" : "▼ 記入サンプルを見る（参考）"}
@@ -851,32 +774,13 @@ function AiPopTab() {
                 <pre style={{ fontSize:14, color:"#444", whiteSpace:"pre-wrap", lineHeight:1.9, fontFamily:"inherit", margin:0 }}>{tpl.sample}</pre>
               </div>
             )}
-
-            {/* Copy button */}
             <button onClick={()=>copyTemplate(tpl.id, tpl.template)}
-              style={{
-                width:"100%",
-                background: copied===tpl.id ? "#16a34a" : tpl.color,
-                color:"white",
-                border:"none",
-                borderRadius:14,
-                padding:"15px",
-                fontSize:16,
-                fontWeight:900,
-                cursor:"pointer",
-                transition:"all 0.25s",
-                letterSpacing:"0.03em",
-                boxShadow: copied===tpl.id ? "0 4px 16px rgba(22,163,74,0.35)" : `0 4px 16px ${tpl.color}44`,
-                transform: copied===tpl.id ? "scale(0.98)" : "scale(1)"
-              }}>
+              style={{ width:"100%", background: copied===tpl.id ? "#16a34a" : tpl.color, color:"white", border:"none", borderRadius:14, padding:"15px", fontSize:16, fontWeight:900, cursor:"pointer", transition:"all 0.25s", boxShadow: copied===tpl.id ? "0 4px 16px rgba(22,163,74,0.35)" : `0 4px 16px ${tpl.color}44`, transform: copied===tpl.id ? "scale(0.98)" : "scale(1)" }}>
               {copied===tpl.id ? "✅ コピーしました！AIに貼り付けてください" : "📋 テンプレートをコピー"}
             </button>
-
           </div>
         </div>
       ))}
-
-
     </div>
   );
 }
@@ -887,9 +791,9 @@ function App() {
   const [currentStore, setCurrentStore] = useState(STORES[0]);
 
   const tabs = [
-    { key:"board",    label:"📌 ポップ一覧", color:"#e05c00" },
-    { key:"ai",       label:"✏️ ポップ作成",    color:"#0077b6" },
-    { key:"requests", label:"📋 要望ボード", color:"#7c3aed" },
+    { key:"board",  label:"📌 ポップ一覧", color:"#e05c00" },
+    { key:"ai",     label:"✏️ ポップ作成",  color:"#0077b6" },
+    { key:"search", label:"🔍 検索",        color:"#059669" },
   ];
 
   return (
@@ -918,9 +822,9 @@ function App() {
         </div>
       </div>
 
-      {tab==="board"    && <BoardTab currentStore={currentStore} />}
-      {tab==="requests" && <RequestsTab currentStore={currentStore} />}
-      {tab==="ai"       && <AiPopTab />}
+      {tab==="board"  && <BoardTab currentStore={currentStore} />}
+      {tab==="ai"     && <AiPopTab />}
+      {tab==="search" && <SearchTab />}
     </div>
   );
 }
