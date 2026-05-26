@@ -785,15 +785,207 @@ function AiPopTab() {
   );
 }
 
+// ── Pop Generator Tab ──
+function PopGeneratorTab() {
+  const [mode, setMode] = useState("new");
+  const [size, setSize] = useState("縦");
+  const [fields, setFields] = useState({ product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
+  const [prompt, setPrompt] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const setF = (k, v) => setFields(f => ({...f, [k]: v}));
+
+  const SIZES = [
+    { key:"縦", label:"縦A4（210×297mm）" },
+    { key:"横", label:"横A4（297×210mm）" },
+  ];
+  const sizeLabel = SIZES.find(s=>s.key===size).label;
+
+  const generate = () => {
+    if (mode === "new") {
+      setPrompt(
+        `あなたはスーパーの鮮魚売り場専門のデザイナーです。\n` +
+        `【商品】${fields.product}\n` +
+        `【用途】${fields.usage}\n` +
+        `【価格】${fields.price || "表記なし"}\n` +
+        `【一言アピール】${fields.appeal}\n` +
+        `【サイズ】${sizeLabel}\n` +
+        `【雰囲気】${fields.mood}\n` +
+        `このPOPの画像を作ってください。`
+      );
+    } else if (mode === "bg") {
+      if (size === "縦") {
+        setPrompt(`背景の売り場は必要ないんだ。サイズ縦A4（210×297mm）でポップ部分のみで作成して`);
+      } else {
+        setPrompt(`背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成して`);
+      }
+    } else {
+      const p = fields.refProduct || "　";
+      const n = fields.refNoShow || p;
+      setPrompt(
+        `この画像をレイアウト、配色のみを参考に、「${p}」のポップをサイズ${sizeLabel}で作成してください\n※「${n}」の表記はしないでください`
+      );
+    }
+  };
+
+  const copy = () => {
+    if (!prompt) return;
+    navigator.clipboard.writeText(prompt).catch(() => {
+      const ta = document.createElement("textarea");
+      ta.value = prompt;
+      document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); document.body.removeChild(ta);
+    });
+    setCopied(true);
+    setTimeout(() => { setCopied(false); setPrompt(""); }, 2000);
+  };
+
+  const inputStyle = { width:"100%", padding:"11px 13px", borderRadius:8, border:"1px solid #3a3a3a", background:"#2a2a2a", color:"white", fontSize:14, outline:"none", fontFamily:"inherit" };
+  const labelStyle = { fontSize:12, color:"#999", marginBottom:5 };
+
+  const MODES = [
+    { key:"new", label:"① 新規POP作成" },
+    { key:"bg",  label:"② 背景修正" },
+    { key:"ref", label:"③ 参考画像あり" },
+  ];
+
+  return (
+    <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px 60px" }}>
+      <div style={{ background:"#111", borderRadius:16, padding:"24px 22px", color:"white" }}>
+
+        <div style={{ fontSize:16, fontWeight:900, marginBottom:22, color:"#eee" }}>
+          🐟 鮮魚売り場 POPジェネレーター
+        </div>
+
+        {/* モード選択 */}
+        <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>モード選択</div>
+        <div style={{ display:"flex", gap:8, marginBottom:22 }}>
+          {MODES.map(m=>(
+            <button key={m.key} onClick={()=>{ setMode(m.key); setPrompt(""); }}
+              style={{ flex:1, padding:"12px 6px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
+                background: mode===m.key ? "#8B6914" : "#2a2a2a",
+                color: mode===m.key ? "white" : "#aaa", transition:"all 0.15s" }}>
+              {m.label}
+            </button>
+          ))}
+        </div>
+
+        {/* サイズ選択 */}
+        <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>サイズ</div>
+        <div style={{ display:"flex", gap:8, marginBottom:22 }}>
+          {SIZES.map(s=>(
+            <button key={s.key} onClick={()=>setSize(s.key)}
+              style={{ flex:1, padding:"12px", borderRadius:8, cursor:"pointer", fontSize:13, fontWeight:700,
+                border:`2px solid ${size===s.key ? "#8B6914" : "#3a3a3a"}`,
+                background:"#1e1e1e", color: size===s.key ? "white" : "#777", transition:"all 0.15s" }}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        {/* モード①：新規POP作成 */}
+        {mode === "new" && (
+          <>
+            <div style={{ fontSize:12, color:"#888", marginBottom:12 }}>入力</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
+              <div>
+                <div style={labelStyle}>商品</div>
+                <input value={fields.product} onChange={e=>setF("product",e.target.value)} placeholder="例：天然マダイ（1尾）" style={inputStyle} />
+              </div>
+              <div>
+                <div style={labelStyle}>用途</div>
+                <input value={fields.usage} onChange={e=>setF("usage",e.target.value)} placeholder="例：お刺身・塩焼き" style={inputStyle} />
+              </div>
+              <div>
+                <div style={labelStyle}>価格</div>
+                <input value={fields.price} onChange={e=>setF("price",e.target.value)} placeholder="例：980円（税込）" style={inputStyle} />
+              </div>
+              <div>
+                <div style={labelStyle}>一言アピール</div>
+                <input value={fields.appeal} onChange={e=>setF("appeal",e.target.value)} placeholder="例：産地直送！鮮度抜群" style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ marginBottom:4 }}>
+              <div style={labelStyle}>雰囲気</div>
+              <input value={fields.mood} onChange={e=>setF("mood",e.target.value)} placeholder="例：夏らしい涼しげなデザイン、和風テイスト" style={inputStyle} />
+            </div>
+          </>
+        )}
+
+        {/* モード②：背景修正 */}
+        {mode === "bg" && (
+          <div style={{ background:"#1e1e1e", border:"1px solid #3a3a3a", borderRadius:8, padding:"13px 15px", fontSize:13, color:"#aaa", lineHeight:1.8, marginBottom:4 }}>
+            💡 Geminiで修正したいPOP画像を貼り付けてから、下のプロンプトをコピーして送信してください。
+          </div>
+        )}
+
+        {/* モード③：参考画像あり */}
+        {mode === "ref" && (
+          <>
+            <div style={{ background:"#1a2a1a", border:"1px solid #2d4a2d", borderRadius:8, padding:"11px 13px", fontSize:12, color:"#7ec87e", lineHeight:1.75, marginBottom:14 }}>
+              💡 Geminiに参考にしたいPOP画像を先にアップロードしてから、生成したプロンプトを貼り付けてください。
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:4 }}>
+              <div>
+                <div style={labelStyle}>ポップの内容（商品名など）</div>
+                <input value={fields.refProduct} onChange={e=>setF("refProduct",e.target.value)} placeholder="例：天然マダイ お刺身用" style={inputStyle} />
+              </div>
+              <div>
+                <div style={labelStyle}>表記しない内容 <span style={{ color:"#555" }}>（空欄の場合は上と同じ）</span></div>
+                <input value={fields.refNoShow} onChange={e=>setF("refNoShow",e.target.value)} placeholder="例：天然マダイ" style={inputStyle} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* 区切り */}
+        <div style={{ borderTop:"1px solid #2a2a2a", margin:"18px 0 14px" }} />
+
+        {/* 生成されたプロンプト */}
+        <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>生成されたプロンプト</div>
+        <textarea
+          value={prompt}
+          readOnly
+          placeholder="← 上の項目を入力して「プロンプト生成」を押してください"
+          rows={5}
+          style={{ width:"100%", padding:"12px 13px", borderRadius:8, border:"1px solid #2a2a2a", background:"#1a1a1a",
+            color: prompt ? "#eee" : "#555", fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none", lineHeight:1.75, marginBottom:12 }}
+        />
+
+        {/* ボタン */}
+        <div style={{ display:"flex", gap:8 }}>
+          <button onClick={generate}
+            style={{ flex:3, padding:"14px", borderRadius:8, border:"1px solid #3a3a3a", background:"#222",
+              color:"#ddd", fontSize:14, fontWeight:700, cursor:"pointer" }}
+            onMouseEnter={e=>e.currentTarget.style.background="#2e2e2e"}
+            onMouseLeave={e=>e.currentTarget.style.background="#222"}>
+            プロンプト生成
+          </button>
+          <button onClick={copy} disabled={!prompt}
+            style={{ flex:1, padding:"14px", borderRadius:8, border:"none",
+              background: copied ? "#16a34a" : (prompt ? "#8B6914" : "#333"),
+              color:"white", fontSize:14, fontWeight:700,
+              cursor: prompt ? "pointer" : "default",
+              opacity: !prompt ? 0.4 : 1, transition:"all 0.2s" }}>
+            {copied ? "✅" : "コピー"}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ──
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
 
   const tabs = [
-    { key:"board",  label:"📌 ポップ一覧", color:"#e05c00" },
-    { key:"ai",     label:"✏️ ポップ作成",  color:"#0077b6" },
-    { key:"search", label:"🔍 検索",        color:"#059669" },
+    { key:"board",  label:"📌 ポップ一覧",       color:"#e05c00" },
+    { key:"gen",    label:"🎨 ポップジェネレーター", color:"#8B6914" },
+    { key:"ai",     label:"✏️ ポップ作成",         color:"#0077b6" },
+    { key:"search", label:"🔍 検索",               color:"#059669" },
   ];
 
   return (
@@ -823,6 +1015,7 @@ function App() {
       </div>
 
       {tab==="board"  && <BoardTab currentStore={currentStore} />}
+      {tab==="gen"    && <PopGeneratorTab />}
       {tab==="ai"     && <AiPopTab />}
       {tab==="search" && <SearchTab />}
     </div>
