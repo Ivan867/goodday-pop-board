@@ -216,6 +216,11 @@ function PopDetail({ pop, onClose, onDelete, onLiked }) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes||0);
   const [deleting, setDeleting] = useState(false);
+  const [showDelConfirm, setShowDelConfirm] = useState(false);
+  const [pwInput, setPwInput] = useState("");
+  const [pwError, setPwError] = useState("");
+
+  const CORRECT_PW = "6930021";
 
   const handleLike = async () => {
     if (liked) return;
@@ -235,8 +240,12 @@ function PopDetail({ pop, onClose, onDelete, onLiked }) {
     a.click();
   };
 
-  const handleDelete = async () => {
-    if (!confirm("このポップを削除しますか？")) return;
+  const handleDeleteConfirm = async () => {
+    if (pwInput !== CORRECT_PW) {
+      setPwError("パスワードが違います");
+      setPwInput("");
+      return;
+    }
     setDeleting(true);
     try {
       await api.del(pop.id);
@@ -273,14 +282,45 @@ function PopDetail({ pop, onClose, onDelete, onLiked }) {
               💬 {pop.comment}
             </div>
           )}
-          <div style={{ display:"flex", gap:10, marginTop:14 }}>
+
+          {/* パスワード確認エリア */}
+          {showDelConfirm && (
+            <div style={{ background:"#fff5f5", border:"2px solid #ffd0d0", borderRadius:12, padding:"14px", marginBottom:12, animation:"fadeUp 0.15s ease" }}>
+              <div style={{ fontSize:13, fontWeight:700, color:"#d05050", marginBottom:10 }}>🗑 本当に削除しますか？</div>
+              <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>ヒント：本社の郵便番号</div>
+              <div style={{ display:"flex", gap:8 }}>
+                <input
+                  type="password"
+                  value={pwInput}
+                  onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
+                  onKeyDown={e=>e.key==="Enter" && handleDeleteConfirm()}
+                  placeholder="パスワードを入力"
+                  autoFocus
+                  style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"#e05c00":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }}
+                />
+                <button onClick={handleDeleteConfirm} disabled={deleting}
+                  style={{ padding:"9px 16px", background:"#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", opacity:deleting?0.6:1 }}>
+                  {deleting ? "…" : "削除"}
+                </button>
+                <button onClick={()=>{ setShowDelConfirm(false); setPwInput(""); setPwError(""); }}
+                  style={{ padding:"9px 12px", background:"#eee", color:"#666", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                  戻る
+                </button>
+              </div>
+              {pwError && <div style={{ fontSize:12, color:"#e05c00", fontWeight:700, marginTop:8 }}>⚠️ {pwError}</div>}
+            </div>
+          )}
+
+          <div style={{ display:"flex", gap:10, marginTop: showDelConfirm ? 0 : 14 }}>
             <button className="like-btn" onClick={handleLike} style={{ flex:1, background:liked?"#fff0f0":"#f5f5f5", border:liked?"2px solid #ff6b6b":"2px solid #eee", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:liked?"default":"pointer", color:liked?"#ff6b6b":"#666" }}>
               ❤️ {likes}
             </button>
             <button onClick={handleDownload} style={{ flex:1, background:"#f0f4ff", border:"2px solid #c7d7ff", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:"pointer", color:"#4060d0" }}>
               ⬇️ 保存
             </button>
-            <button onClick={handleDelete} disabled={deleting} style={{ flex:1, background:"#fff5f5", border:"2px solid #ffd0d0", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:"pointer", color:"#d05050" }}>
+            <button onClick={()=>{ setShowDelConfirm(true); setPwInput(""); setPwError(""); }}
+              disabled={showDelConfirm}
+              style={{ flex:1, background:"#fff5f5", border:"2px solid #ffd0d0", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:"pointer", color:"#d05050", opacity:showDelConfirm?0.4:1 }}>
               🗑 削除
             </button>
           </div>
