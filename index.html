@@ -23,6 +23,8 @@ const { useState, useEffect, useCallback } = React;
 
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
 const CATEGORIES = ["鮮魚","刺身","寿司","惣菜","広告","特売","行事","塩干","その他"];
+const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
+const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
 
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
@@ -134,6 +136,27 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json();
     return new Set(data.map(c => c.pop_id));
+  },
+  async listFloorPhotos(store, cat) {
+    let url = `${SB_URL}/rest/v1/floor_photos?select=*&order=created_at.desc`;
+    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
+    if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
+    const r = await fetch(url, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertFloorPhoto(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/floor_photos`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async delFloorPhoto(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/floor_photos?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
   }
 };
 
@@ -240,7 +263,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
   const [comments, setComments] = useState([]);
-  const [cStore, setCStore] = useState(STORES[0]);
+  const [cStore, setCStore] = useState("バイヤー");
   const [cText, setCText] = useState("");
   const [cSubmitting, setCSubmitting] = useState(false);
   const [cError, setCError] = useState("");
@@ -768,155 +791,8 @@ function BlogTab() {
   );
 }
 
-// ── AI POP作成 Tab ──
-const PROMPT_TEMPLATES = [
-  {
-    id: "fresh-fish-pop",
-    emoji: "🐟",
-    title: "鮮魚ポップ プロンプト（縦向き）",
-    description: "スーパーの鮮魚売り場向けポップをAIで生成するプロンプトです",
-    color: "#0077b6",
-    lightColor: "#e0f2fe",
-    tools: ["ChatGPT (GPT-4o)", "Gemini", "Claude"],
-    template:
-`あなたはスーパーの鮮魚売り場専門のデザイナーです。
-【商品】
-【用途】
-【価格】
-【一言アピール】
-【サイズ】縦A4（210×297mm）
-【雰囲気】
-このPOPの画像を作ってください。`,
-    sample:
-`あなたはスーパーの鮮魚売り場専門のデザイナーです。
-【商品】真鯛（刺身用・2〜3人前）
-【用途】刺身・カルパッチョ
-【価格】100gあたり 税別 499円 税込 539円
-【一言アピール】今が旬！地物の鮮度抜群な真鯛
-【サイズ】縦A4（210×297mm）
-【雰囲気】爽やかで高級感のある和風デザイン
-このPOPの画像を作ってください。`
-  },
-  {
-    id: "fresh-fish-pop-landscape",
-    emoji: "🐟",
-    title: "鮮魚ポップ プロンプト（横向き）",
-    description: "スーパーの鮮魚売り場向けポップをAIで生成するプロンプトです",
-    color: "#0096c7",
-    lightColor: "#e0f7ff",
-    tools: ["ChatGPT (GPT-4o)", "Gemini", "Claude"],
-    template:
-`あなたはスーパーの鮮魚売り場専門のデザイナーです。
-【商品】
-【用途】
-【価格】
-【一言アピール】
-【サイズ】横A4（297×210mm）
-【雰囲気】
-このPOPの画像を作ってください。`,
-    sample:
-`あなたはスーパーの鮮魚売り場専門のデザイナーです。
-【商品】真鯛（刺身用・2〜3人前）
-【用途】刺身・カルパッチョ
-【価格】100gあたり 税別 499円 税込 539円
-【一言アピール】今が旬！地物の鮮度抜群な真鯛
-【サイズ】横A4（297×210mm）
-【雰囲気】爽やかで高級感のある和風デザイン
-このPOPの画像を作ってください。`
-  }
-];
-
-function AiPopTab() {
-  const [copied, setCopied] = useState(null);
-  const [showSample, setShowSample] = useState({});
-
-  const copyTemplate = (id, text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(id); setTimeout(() => setCopied(null), 2500);
-    }).catch(() => {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopied(id); setTimeout(() => setCopied(null), 2500);
-    });
-  };
-
-  return (
-    <div style={{ maxWidth:660, margin:"0 auto", padding:"20px 16px 60px" }}>
-      <div style={{ background:"linear-gradient(135deg,#0077b6 0%,#00b4d8 100%)", borderRadius:18, padding:"22px 24px", marginBottom:24, color:"white", position:"relative", overflow:"hidden" }}>
-        <div style={{ position:"absolute", right:-10, top:-10, fontSize:80, opacity:0.12 }}>✏️</div>
-        <div style={{ fontSize:22, fontWeight:900, marginBottom:6 }}>✏️ AI ポップ作成</div>
-        <div style={{ fontSize:14, opacity:0.9, lineHeight:1.7 }}>
-          プロンプトをコピーして ChatGPT・Gemini などの AI に貼り付けるだけ。<br />
-          プロ品質のポップがすぐに作れます！
-        </div>
-      </div>
-      <div style={{ background:"#fffbeb", border:"2px solid #fde68a", borderRadius:14, padding:"16px 18px", marginBottom:16 }}>
-        <div style={{ fontWeight:900, fontSize:14, color:"#92400e", marginBottom:12 }}>📖 使い方（4ステップ）</div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px 14px" }}>
-          {[["①","「コピー」ボタンを押す"],["②","ChatGPT か Gemini を開く"],["③","貼り付けて空欄を埋めて送信"],["④","生成された画像を保存・印刷！"]].map(([num,text])=>(
-            <div key={num} style={{ display:"flex", alignItems:"center", gap:8, fontSize:13, color:"#78350f" }}>
-              <div style={{ width:24, height:24, background:"#fde68a", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:900, flexShrink:0 }}>{num}</div>
-              <div>{text}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={{ background:"#f0fdf4", border:"2px solid #86efac", borderRadius:14, padding:"16px 18px", marginBottom:24 }}>
-        <div style={{ fontWeight:900, fontSize:14, color:"#166534", marginBottom:10 }}>💡 作成アドバイス</div>
-        <div style={{ fontSize:13, color:"#166534", lineHeight:1.75 }}>作成したポップに背景や不要な部分があれば、AIに以下を追加で伝えてください：</div>
-        <div style={{ display:"flex", flexDirection:"column", gap:8, marginTop:10 }}>
-          <div style={{ background:"white", border:"1px solid #86efac", borderRadius:8, padding:"10px 12px", fontSize:13, color:"#333", fontWeight:600 }}>
-            縦向きの場合：<br /><span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは縦A4（210×297mm）でポップ部分のみで作成」</span>
-          </div>
-          <div style={{ background:"white", border:"1px solid #86efac", borderRadius:8, padding:"10px 12px", fontSize:13, color:"#333", fontWeight:600 }}>
-            横向きの場合：<br /><span style={{ color:"#166534", fontWeight:700 }}>「背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成」</span>
-          </div>
-        </div>
-      </div>
-      {PROMPT_TEMPLATES.map(tpl => (
-        <div key={tpl.id} style={{ background:"white", borderRadius:18, overflow:"hidden", boxShadow:"0 4px 16px rgba(0,0,0,0.09)", marginBottom:20, animation:"fadeUp 0.3s ease both" }}>
-          <div style={{ background:`linear-gradient(135deg,${tpl.color},${tpl.color}bb)`, padding:"16px 20px" }}>
-            <div style={{ fontSize:19, fontWeight:900, color:"white", marginBottom:4 }}>{tpl.emoji} {tpl.title}</div>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginBottom:10 }}>{tpl.description}</div>
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-              {tpl.tools.map(t=><span key={t} style={{ background:"rgba(255,255,255,0.22)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20 }}>{t}</span>)}
-            </div>
-          </div>
-          <div style={{ padding:"18px 20px" }}>
-            <div style={{ background:"#f7f7f9", borderRadius:12, padding:"14px 16px", marginBottom:8 }}>
-              <div style={{ fontSize:11, fontWeight:800, color:"#999", letterSpacing:"0.05em", marginBottom:8 }}>📋 テンプレート</div>
-              <pre style={{ fontSize:14, color:"#333", whiteSpace:"pre-wrap", lineHeight:1.9, fontFamily:"inherit", margin:0 }}>{tpl.template}</pre>
-            </div>
-            <div style={{ fontSize:12, color:"#888", background:"#fffbeb", border:"1px solid #fde68a", borderRadius:8, padding:"8px 12px", marginBottom:14 }}>
-              ※ 売価を記入したくない場合は、【価格】は「表記なし」と入力してください。
-            </div>
-            <button onClick={()=>setShowSample(s=>({...s,[tpl.id]:!s[tpl.id]}))}
-              style={{ width:"100%", background:showSample[tpl.id]?tpl.lightColor:"#f7f7f9", color:showSample[tpl.id]?tpl.color:"#666", border:`2px solid ${showSample[tpl.id]?tpl.color+"60":"#eee"}`, borderRadius:10, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textAlign:"left", marginBottom: showSample[tpl.id] ? 0 : 16, borderBottomLeftRadius: showSample[tpl.id] ? 0 : 10, borderBottomRightRadius: showSample[tpl.id] ? 0 : 10, transition:"all 0.2s" }}>
-              {showSample[tpl.id] ? "▲ サンプルを閉じる" : "▼ 記入サンプルを見る（参考）"}
-            </button>
-            {showSample[tpl.id] && (
-              <div style={{ background:tpl.lightColor, border:`2px solid ${tpl.color+"60"}`, borderTop:"none", borderRadius:"0 0 10px 10px", padding:"14px 16px", marginBottom:16 }}>
-                <div style={{ fontSize:11, fontWeight:800, color:tpl.color, marginBottom:8 }}>✏️ 記入例</div>
-                <pre style={{ fontSize:14, color:"#444", whiteSpace:"pre-wrap", lineHeight:1.9, fontFamily:"inherit", margin:0 }}>{tpl.sample}</pre>
-              </div>
-            )}
-            <button onClick={()=>copyTemplate(tpl.id, tpl.template)}
-              style={{ width:"100%", background: copied===tpl.id ? "#16a34a" : tpl.color, color:"white", border:"none", borderRadius:14, padding:"15px", fontSize:16, fontWeight:900, cursor:"pointer", transition:"all 0.25s", boxShadow: copied===tpl.id ? "0 4px 16px rgba(22,163,74,0.35)" : `0 4px 16px ${tpl.color}44`, transform: copied===tpl.id ? "scale(0.98)" : "scale(1)" }}>
-              {copied===tpl.id ? "✅ コピーしました！AIに貼り付けてください" : "📋 テンプレートをコピー"}
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Pop Generator Tab ──
-function PopGeneratorTab() {
+// ── POP作成ツール Tab（統合版）──
+function PopToolTab() {
   const [mode, setMode] = useState("new");
   const [size, setSize] = useState("縦");
   const [fields, setFields] = useState({ product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
@@ -924,6 +800,7 @@ function PopGeneratorTab() {
   const [copied, setCopied] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState("");
+  const [showTips, setShowTips] = useState(false);
   const scanInputRef = React.useRef(null);
 
   const setF = (k, v) => setFields(f => ({...f, [k]: v}));
@@ -934,7 +811,6 @@ function PopGeneratorTab() {
   ];
   const sizeLabel = SIZES.find(s=>s.key===size).label;
 
-  // 画像をbase64に変換
   const toBase64 = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result.split(",")[1]);
@@ -942,12 +818,10 @@ function PopGeneratorTab() {
     reader.readAsDataURL(file);
   });
 
-  // Edge Functionを呼んで自動入力
   const handleScan = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setScanning(true);
-    setScanError("");
+    setScanning(true); setScanError("");
     try {
       const imageBase64 = await toBase64(file);
       const res = await fetch(`${SB_URL}/functions/v1/extract-pop`, {
@@ -966,12 +840,8 @@ function PopGeneratorTab() {
         appeal:  data.appeal  || f.appeal,
         mood:    data.mood    || f.mood,
       }));
-    } catch(err) {
-      setScanError("読み取りに失敗しました：" + err.message);
-    } finally {
-      setScanning(false);
-      e.target.value = "";
-    }
+    } catch(err) { setScanError("読み取りに失敗しました：" + err.message); }
+    finally { setScanning(false); e.target.value = ""; }
   };
 
   const generate = () => {
@@ -987,17 +857,14 @@ function PopGeneratorTab() {
         `このPOPの画像を作ってください。`
       );
     } else if (mode === "bg") {
-      if (size === "縦") {
-        setPrompt(`背景の売り場は必要ないんだ。サイズ縦A4（210×297mm）でポップ部分のみで作成して`);
-      } else {
-        setPrompt(`背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成して`);
-      }
+      setPrompt(size === "縦"
+        ? `背景の売り場は必要ないんだ。サイズ縦A4（210×297mm）でポップ部分のみで作成して`
+        : `背景の売り場は必要なし、サイズは横A4（297×210mm）でポップ部分のみで作成して`
+      );
     } else {
       const p = fields.refProduct || "　";
       const n = fields.refNoShow || p;
-      setPrompt(
-        `この画像をレイアウト、配色のみを参考に、「${p}」のポップをサイズ${sizeLabel}で作成してください\n※「${n}」の表記はしないでください`
-      );
+      setPrompt(`この画像をレイアウト、配色のみを参考に、「${p}」のポップをサイズ${sizeLabel}で作成してください\n※「${n}」の表記はしないでください`);
     }
   };
 
@@ -1013,9 +880,8 @@ function PopGeneratorTab() {
     setTimeout(() => { setCopied(false); setPrompt(""); }, 2000);
   };
 
-  const inputStyle = { width:"100%", padding:"11px 13px", borderRadius:8, border:"1px solid #3a3a3a", background:"#2a2a2a", color:"white", fontSize:14, outline:"none", fontFamily:"inherit" };
-  const labelStyle = { fontSize:12, color:"#999", marginBottom:5 };
-
+  const inp = { width:"100%", padding:"11px 13px", borderRadius:8, border:"1px solid #3a3a3a", background:"#2a2a2a", color:"white", fontSize:14, outline:"none", fontFamily:"inherit" };
+  const lbl = { fontSize:12, color:"#999", marginBottom:5 };
   const MODES = [
     { key:"new", label:"① 新規POP作成" },
     { key:"bg",  label:"② 背景修正" },
@@ -1026,29 +892,26 @@ function PopGeneratorTab() {
     <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px 60px" }}>
       <div style={{ background:"#111", borderRadius:16, padding:"24px 22px", color:"white" }}>
 
-        <div style={{ fontSize:16, fontWeight:900, marginBottom:22, color:"#eee" }}>
-          🐟 鮮魚売り場 POPジェネレーター
-        </div>
+        <div style={{ fontSize:16, fontWeight:900, marginBottom:20, color:"#eee" }}>🐟 鮮魚売り場 POP作成ツール</div>
 
-        {/* モード選択 */}
+        {/* モード */}
         <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>モード選択</div>
-        <div style={{ display:"flex", gap:8, marginBottom:22 }}>
+        <div style={{ display:"flex", gap:8, marginBottom:20 }}>
           {MODES.map(m=>(
             <button key={m.key} onClick={()=>{ setMode(m.key); setPrompt(""); }}
-              style={{ flex:1, padding:"12px 6px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
-                background: mode===m.key ? "#8B6914" : "#2a2a2a",
-                color: mode===m.key ? "white" : "#aaa", transition:"all 0.15s" }}>
+              style={{ flex:1, padding:"11px 6px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
+                background: mode===m.key ? "#8B6914" : "#2a2a2a", color: mode===m.key ? "white" : "#aaa", transition:"all 0.15s" }}>
               {m.label}
             </button>
           ))}
         </div>
 
-        {/* サイズ選択 */}
+        {/* サイズ */}
         <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>サイズ</div>
-        <div style={{ display:"flex", gap:8, marginBottom:22 }}>
+        <div style={{ display:"flex", gap:8, marginBottom:20 }}>
           {SIZES.map(s=>(
             <button key={s.key} onClick={()=>setSize(s.key)}
-              style={{ flex:1, padding:"12px", borderRadius:8, cursor:"pointer", fontSize:13, fontWeight:700,
+              style={{ flex:1, padding:"11px", borderRadius:8, cursor:"pointer", fontSize:13, fontWeight:700,
                 border:`2px solid ${size===s.key ? "#8B6914" : "#3a3a3a"}`,
                 background:"#1e1e1e", color: size===s.key ? "white" : "#777", transition:"all 0.15s" }}>
               {s.label}
@@ -1056,70 +919,44 @@ function PopGeneratorTab() {
           ))}
         </div>
 
-        {/* モード①：新規POP作成 */}
+        {/* モード① */}
         {mode === "new" && (
           <>
-            {/* 📷 画像スキャンボタン */}
-            <div style={{ marginBottom:16 }}>
-              <input ref={scanInputRef} type="file" accept="image/*" onChange={handleScan} style={{ display:"none" }} />
-              <button onClick={()=>scanInputRef.current.click()} disabled={scanning}
-                style={{ width:"100%", padding:"11px", borderRadius:8, border:"1px dashed #8B6914",
-                  background: scanning ? "#1a1a0a" : "#1e1800",
-                  color: scanning ? "#888" : "#c8a840", fontSize:13, fontWeight:700,
-                  cursor: scanning ? "default" : "pointer", transition:"all 0.15s" }}>
-                {scanning ? "⏳ AI読み取り中..." : "📷 既存POPから自動入力（AI読み取り）"}
-              </button>
-              {scanError && <div style={{ fontSize:12, color:"#e05c00", marginTop:6 }}>⚠️ {scanError}</div>}
-            </div>
-
-            <div style={{ fontSize:12, color:"#888", marginBottom:12 }}>入力</div>
+            <input ref={scanInputRef} type="file" accept="image/*" onChange={handleScan} style={{ display:"none" }} />
+            <button onClick={()=>scanInputRef.current.click()} disabled={scanning}
+              style={{ width:"100%", padding:"11px", borderRadius:8, border:"1px dashed #8B6914", marginBottom:16,
+                background: scanning ? "#1a1a0a" : "#1e1800", color: scanning ? "#888" : "#c8a840",
+                fontSize:13, fontWeight:700, cursor: scanning ? "default" : "pointer" }}>
+              {scanning ? "⏳ AI読み取り中..." : "📷 既存POPから自動入力（AI読み取り）"}
+            </button>
+            {scanError && <div style={{ fontSize:12, color:"#e05c00", marginBottom:10 }}>⚠️ {scanError}</div>}
+            <div style={{ fontSize:12, color:"#888", marginBottom:10 }}>入力</div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
-              <div>
-                <div style={labelStyle}>商品</div>
-                <input value={fields.product} onChange={e=>setF("product",e.target.value)} placeholder="例：天然マダイ（1尾）" style={inputStyle} />
-              </div>
-              <div>
-                <div style={labelStyle}>用途</div>
-                <input value={fields.usage} onChange={e=>setF("usage",e.target.value)} placeholder="例：お刺身・塩焼き" style={inputStyle} />
-              </div>
-              <div>
-                <div style={labelStyle}>価格</div>
-                <input value={fields.price} onChange={e=>setF("price",e.target.value)} placeholder="例：980円（税込）" style={inputStyle} />
-              </div>
-              <div>
-                <div style={labelStyle}>一言アピール</div>
-                <input value={fields.appeal} onChange={e=>setF("appeal",e.target.value)} placeholder="例：産地直送！鮮度抜群" style={inputStyle} />
-              </div>
+              <div><div style={lbl}>商品</div><input value={fields.product} onChange={e=>setF("product",e.target.value)} placeholder="例：天然マダイ（1尾）" style={inp} /></div>
+              <div><div style={lbl}>用途</div><input value={fields.usage} onChange={e=>setF("usage",e.target.value)} placeholder="例：お刺身・塩焼き" style={inp} /></div>
+              <div><div style={lbl}>価格</div><input value={fields.price} onChange={e=>setF("price",e.target.value)} placeholder="例：980円（税込）" style={inp} /></div>
+              <div><div style={lbl}>一言アピール</div><input value={fields.appeal} onChange={e=>setF("appeal",e.target.value)} placeholder="例：産地直送！鮮度抜群" style={inp} /></div>
             </div>
-            <div style={{ marginBottom:4 }}>
-              <div style={labelStyle}>雰囲気</div>
-              <input value={fields.mood} onChange={e=>setF("mood",e.target.value)} placeholder="例：夏らしい涼しげなデザイン、和風テイスト" style={inputStyle} />
-            </div>
+            <div><div style={lbl}>雰囲気</div><input value={fields.mood} onChange={e=>setF("mood",e.target.value)} placeholder="例：夏らしい涼しげなデザイン、和風テイスト" style={inp} /></div>
           </>
         )}
 
-        {/* モード②：背景修正 */}
+        {/* モード② */}
         {mode === "bg" && (
-          <div style={{ background:"#1e1e1e", border:"1px solid #3a3a3a", borderRadius:8, padding:"13px 15px", fontSize:13, color:"#aaa", lineHeight:1.8, marginBottom:4 }}>
+          <div style={{ background:"#1e1e1e", border:"1px solid #3a3a3a", borderRadius:8, padding:"13px 15px", fontSize:13, color:"#aaa", lineHeight:1.8 }}>
             💡 Geminiで修正したいPOP画像を貼り付けてから、下のプロンプトをコピーして送信してください。
           </div>
         )}
 
-        {/* モード③：参考画像あり */}
+        {/* モード③ */}
         {mode === "ref" && (
           <>
             <div style={{ background:"#1a2a1a", border:"1px solid #2d4a2d", borderRadius:8, padding:"11px 13px", fontSize:12, color:"#7ec87e", lineHeight:1.75, marginBottom:14 }}>
               💡 Geminiに参考にしたいPOP画像を先にアップロードしてから、生成したプロンプトを貼り付けてください。
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:4 }}>
-              <div>
-                <div style={labelStyle}>ポップの内容（商品名など）</div>
-                <input value={fields.refProduct} onChange={e=>setF("refProduct",e.target.value)} placeholder="例：天然マダイ お刺身用" style={inputStyle} />
-              </div>
-              <div>
-                <div style={labelStyle}>表記しない内容 <span style={{ color:"#555" }}>（空欄の場合は上と同じ）</span></div>
-                <input value={fields.refNoShow} onChange={e=>setF("refNoShow",e.target.value)} placeholder="例：天然マダイ" style={inputStyle} />
-              </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              <div><div style={lbl}>ポップの内容（商品名など）</div><input value={fields.refProduct} onChange={e=>setF("refProduct",e.target.value)} placeholder="例：天然マダイ お刺身用" style={inp} /></div>
+              <div><div style={lbl}>表記しない内容 <span style={{ color:"#555" }}>（空欄の場合は上と同じ）</span></div><input value={fields.refNoShow} onChange={e=>setF("refNoShow",e.target.value)} placeholder="例：天然マダイ" style={inp} /></div>
             </div>
           </>
         )}
@@ -1129,20 +966,14 @@ function PopGeneratorTab() {
 
         {/* 生成されたプロンプト */}
         <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>生成されたプロンプト</div>
-        <textarea
-          value={prompt}
-          readOnly
-          placeholder="← 上の項目を入力して「プロンプト生成」を押してください"
-          rows={5}
+        <textarea value={prompt} readOnly placeholder="← 上の項目を入力して「プロンプト生成」を押してください" rows={5}
           style={{ width:"100%", padding:"12px 13px", borderRadius:8, border:"1px solid #2a2a2a", background:"#1a1a1a",
-            color: prompt ? "#eee" : "#555", fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none", lineHeight:1.75, marginBottom:12 }}
-        />
+            color: prompt ? "#eee" : "#555", fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none", lineHeight:1.75, marginBottom:12 }} />
 
         {/* ボタン */}
-        <div style={{ display:"flex", gap:8 }}>
+        <div style={{ display:"flex", gap:8, marginBottom:16 }}>
           <button onClick={generate}
-            style={{ flex:3, padding:"14px", borderRadius:8, border:"1px solid #3a3a3a", background:"#222",
-              color:"#ddd", fontSize:14, fontWeight:700, cursor:"pointer" }}
+            style={{ flex:3, padding:"14px", borderRadius:8, border:"1px solid #3a3a3a", background:"#222", color:"#ddd", fontSize:14, fontWeight:700, cursor:"pointer" }}
             onMouseEnter={e=>e.currentTarget.style.background="#2e2e2e"}
             onMouseLeave={e=>e.currentTarget.style.background="#222"}>
             プロンプト生成
@@ -1150,18 +981,376 @@ function PopGeneratorTab() {
           <button onClick={copy} disabled={!prompt}
             style={{ flex:1, padding:"14px", borderRadius:8, border:"none",
               background: copied ? "#16a34a" : (prompt ? "#8B6914" : "#333"),
-              color:"white", fontSize:14, fontWeight:700,
-              cursor: prompt ? "pointer" : "default",
+              color:"white", fontSize:14, fontWeight:700, cursor: prompt ? "pointer" : "default",
               opacity: !prompt ? 0.4 : 1, transition:"all 0.2s" }}>
             {copied ? "✅" : "コピー"}
           </button>
         </div>
+
+        {/* 使い方ヒント（折りたたみ） */}
+        <button onClick={()=>setShowTips(t=>!t)}
+          style={{ width:"100%", background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:8, padding:"10px 14px",
+            color:"#666", fontSize:12, fontWeight:700, cursor:"pointer", textAlign:"left", transition:"all 0.15s" }}>
+          {showTips ? "▲ 使い方・ヒントを閉じる" : "▼ 使い方・ヒントを見る"}
+        </button>
+        {showTips && (
+          <div style={{ marginTop:12, display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ background:"#1a1a0a", border:"1px solid #3a3a00", borderRadius:10, padding:"13px 15px" }}>
+              <div style={{ fontSize:12, fontWeight:800, color:"#c8a840", marginBottom:8 }}>📖 使い方（4ステップ）</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px 12px" }}>
+                {[["①","モードとサイズを選ぶ"],["②","入力欄を埋める"],["③","「プロンプト生成」を押す"],["④","「コピー」→Geminiに貼り付け"]].map(([n,t])=>(
+                  <div key={n} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:"#aaa" }}>
+                    <div style={{ width:20, height:20, background:"#3a3a00", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:900, color:"#c8a840", flexShrink:0 }}>{n}</div>
+                    <div>{t}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ background:"#0a1a0a", border:"1px solid #1a3a1a", borderRadius:10, padding:"13px 15px", fontSize:12, color:"#7ec87e", lineHeight:1.75 }}>
+              💡 <strong style={{ color:"#52c87e" }}>価格を入れたくない場合</strong>は価格欄を空欄にすると「表記なし」が自動で入ります。
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
   );
 }
 
+// ── Floor Photo Tab ──
+function FloorPhotoTab() {
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState("gallery"); // "gallery" | "compare"
+  const [fStore, setFStore] = useState("");
+  const [fCat, setFCat] = useState("");
+  const [compareCat, setCompareCat] = useState(FLOOR_CATS[0]);
+  const [showUp, setShowUp] = useState(false);
+  const [sel, setSel] = useState(null);
+  const [delTarget, setDelTarget] = useState(null);
+  const [pwInput, setPwInput] = useState("");
+  const [pwError, setPwError] = useState("");
+  const CORRECT_PW = "6930021";
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const data = await api.listFloorPhotos("", ""); setPhotos(data); }
+    catch(e) { console.error(e); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = photos.filter(p =>
+    (!fStore || p.store_name === fStore) &&
+    (!fCat   || p.category === fCat)
+  );
+
+  // 比較モード：カテゴリー選択 → 各店舗の最新写真を並べる
+  const compareData = FLOOR_STORES.filter(s => s !== "推奨モデル").map(store => ({
+    store,
+    photos: photos.filter(p => p.store_name === store && p.category === compareCat)
+  }));
+
+  const handleDelete = async () => {
+    if (pwInput !== CORRECT_PW) { setPwError("パスワードが違います"); setPwInput(""); return; }
+    try {
+      await api.delFloorPhoto(delTarget.id);
+      setPhotos(p => p.filter(x => x.id !== delTarget.id));
+      setDelTarget(null); setSel(null); setPwInput(""); setPwError("");
+    } catch(e) { alert("削除に失敗しました"); }
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+
+      {/* ヘッダーバー */}
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"14px 16px" }}>
+        <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
+          <div style={{ color:"white", fontSize:14, fontWeight:700, opacity:0.9 }}>各店の売場写真を共有・比較</div>
+          <div style={{ display:"flex", gap:8 }}>
+            <button onClick={()=>setMode("gallery")}
+              style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
+                background: mode==="gallery" ? "white" : "rgba(255,255,255,0.2)",
+                color: mode==="gallery" ? "#1a6b3a" : "white" }}>
+              📷 ギャラリー
+            </button>
+            <button onClick={()=>setMode("compare")}
+              style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
+                background: mode==="compare" ? "white" : "rgba(255,255,255,0.2)",
+                color: mode==="compare" ? "#1a6b3a" : "white" }}>
+              🔀 店舗比較
+            </button>
+            <button onClick={()=>setShowUp(true)}
+              style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:900,
+                background:"#e05c00", color:"white" }}>
+              ＋ 投稿
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ギャラリーモード ── */}
+      {mode === "gallery" && (
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 40px" }}>
+          {/* フィルター */}
+          <div style={{ display:"flex", gap:8, marginBottom:12, overflowX:"auto", paddingBottom:4 }}>
+            {[{lbl:"全店舗",val:""},...FLOOR_STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
+              <button key={lbl} onClick={()=>setFStore(val)}
+                style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer", flexShrink:0,
+                  borderColor:fStore===val?"#1a6b3a":"#ddd", background:fStore===val?"#1a6b3a":"white", color:fStore===val?"white":"#666" }}>
+                {lbl}
+              </button>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+            {["",...FLOOR_CATS].map(c=>(
+              <button key={c||"all"} onClick={()=>setFCat(c)}
+                style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer",
+                  borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+                {c||"すべて"}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
+              <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
+              <div style={{ animation:"pulse 1.5s infinite" }}>読み込み中...</div>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
+              <div style={{ fontSize:50, marginBottom:16 }}>📷</div>
+              <div style={{ fontWeight:800, fontSize:16, color:"#888" }}>写真がまだありません</div>
+              <div style={{ fontSize:13, marginTop:6 }}>「＋ 投稿」ボタンから売場写真を共有しましょう</div>
+            </div>
+          ) : (
+            <div style={{ columns:"200px 4", gap:14 }}>
+              {filtered.map((photo,i)=>(
+                <div key={photo.id}
+                  style={{ breakInside:"avoid", marginBottom:14, borderRadius:14, overflow:"hidden", background:"white",
+                    boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both`, transition:"all 0.15s" }}
+                  onClick={()=>setSel(photo)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
+                  <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
+                    <img src={photo.image_url} style={{ width:"100%", display:"block" }} />
+                    <div style={{ position:"absolute", top:6, left:6, background:"rgba(26,107,58,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 8px", borderRadius:20 }}>{photo.category}</div>
+                  </div>
+                  <div style={{ padding:"10px 12px" }}>
+                    <div style={{ fontWeight:800, fontSize:13, marginBottom:3 }}>{photo.store_name}</div>
+                    {photo.comment && <div style={{ fontSize:12, color:"#666", marginBottom:3, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{photo.comment}</div>}
+                    <div style={{ fontSize:11, color:"#bbb" }}>{timeAgo(photo.created_at)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── 店舗比較モード ── */}
+      {mode === "compare" && (
+        <div style={{ maxWidth:1400, margin:"0 auto", padding:"16px 16px 40px" }}>
+          {/* カテゴリー選択 */}
+          <div style={{ background:"white", borderRadius:14, padding:"16px 18px", marginBottom:20, boxShadow:"0 2px 10px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize:13, fontWeight:800, color:"#333", marginBottom:12 }}>カテゴリーを選んで各店舗を比較</div>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+              {FLOOR_CATS.map(c=>(
+                <button key={c} onClick={()=>setCompareCat(c)}
+                  style={{ padding:"8px 18px", borderRadius:20, fontSize:13, fontWeight:700, border:"2px solid", cursor:"pointer",
+                    borderColor:compareCat===c?"#1a6b3a":"#ddd",
+                    background:compareCat===c?"#1a6b3a":"white",
+                    color:compareCat===c?"white":"#666" }}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading ? (
+            <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>読み込み中...</div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:14 }}>
+              {compareData.map(({store, photos:storePhotos})=>(
+                <div key={store} style={{ background:"white", borderRadius:14, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.07)" }}>
+                  {/* 店舗名ヘッダー */}
+                  <div style={{ background:"#1a6b3a", padding:"10px 14px" }}>
+                    <div style={{ fontSize:13, fontWeight:900, color:"white" }}>{store}</div>
+                    <div style={{ fontSize:11, color:"rgba(255,255,255,0.7)", marginTop:2 }}>{storePhotos.length}枚</div>
+                  </div>
+
+                  {storePhotos.length === 0 ? (
+                    <div style={{ padding:"30px 14px", textAlign:"center", color:"#ccc" }}>
+                      <div style={{ fontSize:28, marginBottom:8 }}>📷</div>
+                      <div style={{ fontSize:12 }}>写真なし</div>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* 最新写真をメイン表示 */}
+                      <div style={{ cursor:"pointer", position:"relative" }} onClick={()=>setSel(storePhotos[0])}>
+                        <img src={storePhotos[0].image_url} style={{ width:"100%", display:"block", maxHeight:220, objectFit:"cover" }} />
+                        <div style={{ position:"absolute", bottom:6, right:6, background:"rgba(0,0,0,0.55)", color:"white", fontSize:11, padding:"2px 7px", borderRadius:10 }}>
+                          {timeAgo(storePhotos[0].created_at)}
+                        </div>
+                      </div>
+                      {storePhotos[0].comment && (
+                        <div style={{ padding:"8px 12px", fontSize:12, color:"#555", borderBottom:"1px solid #f0f0f0", lineHeight:1.5 }}>
+                          {storePhotos[0].comment}
+                        </div>
+                      )}
+                      {/* 過去の写真サムネイル */}
+                      {storePhotos.length > 1 && (
+                        <div style={{ display:"flex", gap:4, padding:"8px 10px", overflowX:"auto" }}>
+                          {storePhotos.slice(1).map(p=>(
+                            <img key={p.id} src={p.image_url} onClick={()=>setSel(p)}
+                              style={{ width:50, height:50, objectFit:"cover", borderRadius:6, cursor:"pointer", flexShrink:0, opacity:0.75 }} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── アップロードモーダル ── */}
+      {showUp && <FloorUploadModal onClose={()=>setShowUp(false)} onSuccess={p=>{setPhotos(prev=>[p,...prev]);setShowUp(false);}} />}
+
+      {/* ── 詳細モーダル ── */}
+      {sel && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }} onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}>
+          <div style={{ background:"white", borderRadius:20, width:"100%", maxWidth:500, maxHeight:"90vh", overflowY:"auto", animation:"fadeUp 0.2s ease" }} onClick={e=>e.stopPropagation()}>
+            <div style={{ position:"relative" }}>
+              <img src={sel.image_url} style={{ width:"100%", display:"block", borderRadius:"20px 20px 0 0" }} />
+              <button onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}
+                style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.5)", border:"none", color:"white", fontSize:18, width:36, height:36, borderRadius:"50%", cursor:"pointer" }}>✕</button>
+              <div style={{ position:"absolute", top:12, left:12, background:"rgba(26,107,58,0.9)", color:"white", fontSize:12, fontWeight:800, padding:"3px 10px", borderRadius:20 }}>{sel.category}</div>
+            </div>
+            <div style={{ padding:"16px 20px" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+                <div>
+                  <div style={{ fontSize:17, fontWeight:900 }}>{sel.store_name}</div>
+                  {sel.author && <div style={{ fontSize:13, color:"#888", marginTop:2 }}>投稿者：{sel.author}</div>}
+                </div>
+                <div style={{ fontSize:12, color:"#bbb" }}>{formatDate(sel.created_at)}</div>
+              </div>
+              {sel.comment && (
+                <div style={{ fontSize:14, color:"#444", background:"#f7f7f9", borderRadius:10, padding:"10px 12px", lineHeight:1.7, whiteSpace:"pre-wrap", marginBottom:14 }}>
+                  {sel.comment}
+                </div>
+              )}
+
+              {/* 削除エリア */}
+              {delTarget?.id === sel.id ? (
+                <div style={{ background:"#fff5f5", border:"2px solid #ffd0d0", borderRadius:12, padding:"14px", marginBottom:12 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#d05050", marginBottom:8 }}>🗑 本当に削除しますか？</div>
+                  <div style={{ fontSize:12, color:"#888", marginBottom:8 }}>ヒント：本社の郵便番号</div>
+                  <div style={{ display:"flex", gap:8 }}>
+                    <input type="password" value={pwInput} onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
+                      onKeyDown={e=>e.key==="Enter"&&handleDelete()} placeholder="パスワード" autoFocus
+                      style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"#e05c00":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }} />
+                    <button onClick={handleDelete} style={{ padding:"9px 14px", background:"#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>削除</button>
+                    <button onClick={()=>{ setDelTarget(null); setPwInput(""); setPwError(""); }}
+                      style={{ padding:"9px 12px", background:"#eee", color:"#666", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>戻る</button>
+                  </div>
+                  {pwError && <div style={{ fontSize:12, color:"#e05c00", marginTop:6 }}>⚠️ {pwError}</div>}
+                </div>
+              ) : (
+                <button onClick={()=>setDelTarget(sel)}
+                  style={{ width:"100%", background:"#fff5f5", border:"2px solid #ffd0d0", borderRadius:12, padding:"10px", fontSize:14, fontWeight:700, cursor:"pointer", color:"#d05050" }}>
+                  🗑 削除
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FloorUploadModal({ onClose, onSuccess }) {
+  const [store, setStore] = useState(FLOOR_STORES[0]);
+  const [category, setCategory] = useState(FLOOR_CATS[0]);
+  const [author, setAuthor] = useState("");
+  const [comment, setComment] = useState("");
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const onFile = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  };
+
+  const submit = async () => {
+    if (!file)          { setError("写真を選択してください"); return; }
+    if (!author.trim()) { setError("お名前を入力してください"); return; }
+    setLoading(true); setError("");
+    try {
+      const image_url = await api.upload(file);
+      const photo = await api.insertFloorPhoto({ store_name: store, category, image_url, author: author.trim(), comment: comment.trim() });
+      onSuccess(photo);
+    } catch(e) { setError("エラー: " + e.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }}>
+      <div style={{ background:"white", borderRadius:20, padding:26, width:"100%", maxWidth:400, animation:"fadeUp 0.2s ease" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
+          <div style={{ fontSize:17, fontWeight:900 }}>📷 売場写真を投稿</div>
+          <button onClick={onClose} style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#999" }}>✕</button>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:13 }}>
+          <div style={{ display:"flex", gap:10 }}>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>店舗</div>
+              <select value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, outline:"none" }}>
+                {FLOOR_STORES.map(s=><option key={s}>{s}</option>)}
+              </select>
+            </div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>カテゴリー</div>
+              <select value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, outline:"none" }}>
+                {FLOOR_CATS.map(c=><option key={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>お名前 <span style={{ color:"#e05c00" }}>*</span></div>
+            <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎"
+              style={{ width:"100%", padding:"9px 12px", border:"2px solid #eee", borderRadius:8, fontSize:14, outline:"none" }} />
+          </div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>コメント <span style={{ fontWeight:400, color:"#bbb" }}>（任意）</span></div>
+            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder="売り場の状況や工夫など..." rows={2}
+              style={{ width:"100%", padding:"9px 12px", border:"2px solid #eee", borderRadius:8, fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
+          </div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>写真 <span style={{ color:"#e05c00" }}>*</span></div>
+            <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
+              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"#aaa", fontSize:14 }}>📷 タップして選択</div>}
+              <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
+            </label>
+          </div>
+          {error && <div style={{ color:"#e05c00", fontSize:13, fontWeight:600 }}>{error}</div>}
+          <button onClick={submit} disabled={loading}
+            style={{ background:"#1a6b3a", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
+            {loading ? "投稿中..." : "投稿する"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Main App ──
 function App() {
@@ -1169,10 +1358,10 @@ function App() {
   const [currentStore, setCurrentStore] = useState(STORES[0]);
 
   const tabs = [
-    { key:"board",  label:"📌 ポップ一覧",       color:"#e05c00" },
-    { key:"gen",    label:"🎨 ポップジェネレーター", color:"#8B6914" },
-    { key:"ai",     label:"✏️ ポップ作成",         color:"#0077b6" },
-    { key:"search", label:"🔍 検索",               color:"#059669" },
+    { key:"board",  label:"📌 ポップ一覧", color:"#e05c00" },
+    { key:"floor",  label:"📸 売場写真",   color:"#1a6b3a" },
+    { key:"tool",   label:"✏️ POP作成",    color:"#8B6914" },
+    { key:"search", label:"🔍",            color:"#059669" },
   ];
 
   return (
@@ -1202,8 +1391,8 @@ function App() {
       </div>
 
       {tab==="board"  && <BoardTab currentStore={currentStore} />}
-      {tab==="gen"    && <PopGeneratorTab />}
-      {tab==="ai"     && <AiPopTab />}
+      {tab==="floor"  && <FloorPhotoTab />}
+      {tab==="tool"   && <PopToolTab />}
       {tab==="search" && <SearchTab />}
     </div>
   );
