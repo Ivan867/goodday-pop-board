@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GoodDay 鮮魚Dock</title>
+<title>GoodDay 鮮魚共有</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -763,7 +763,7 @@ function BlogTab() {
   return (
     <div>
       <div style={{ background:"linear-gradient(135deg,#2d6a4f 0%,#40916c 100%)", padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <div style={{ color:"rgba(255,255,255,0.8)", fontSize:13 }}>鮮魚売り場の情報共有スペース</div>
+        <div style={{ color:"rgba(255,255,255,0.8)", fontSize:13 }}>鮮魚部の情報共有スペース</div>
         <button onClick={()=>setShowForm(f=>!f)} style={{ background:showForm?"#2d5a3d":"#52b788", color:"white", border:"none", borderRadius:10, padding:"9px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
           {showForm?"✕ 閉じる":"＋ 投稿"}
         </button>
@@ -1372,7 +1372,7 @@ function App() {
             <div style={{ background:"linear-gradient(135deg,#e05c00,#ff8c42)", width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🐟</div>
             <div>
               <div style={{ fontSize:15, fontWeight:900, color:"#111" }}>GoodDay 鮮魚DOCK</div>
-              <div style={{ fontSize:10, color:"#aaa" }}>鮮魚売り場</div>
+              <div style={{ fontSize:10, color:"#aaa" }}>鮮魚部</div>
             </div>
           </div>
           <select value={currentStore} onChange={e=>setCurrentStore(e.target.value)}
