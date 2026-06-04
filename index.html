@@ -482,7 +482,7 @@ function BoardTab({ currentStore, actionsRef }) {
     setLoading(true);
     try {
       const [data, cIds] = await Promise.all([
-        api.list(fStore, fCat),
+        api.listAll(),
         api.listCommentedPopIds()
       ]);
       setPops(data);
@@ -490,7 +490,7 @@ function BoardTab({ currentStore, actionsRef }) {
     }
     catch(e) { console.error(e); }
     finally { setLoading(false); }
-  }, [fStore, fCat]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
@@ -505,7 +505,7 @@ function BoardTab({ currentStore, actionsRef }) {
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 0" }}>
         <div style={{ display:"flex", gap:10, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
-          {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
+          {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,cnt:counts[s],val:s}))].map(({lbl,cnt,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
               style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"10px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
               <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
