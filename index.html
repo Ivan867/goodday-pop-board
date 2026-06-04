@@ -1071,7 +1071,7 @@ function FloorPhotoTab() {
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(66px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(60px + env(safe-area-inset-bottom))" }}>
 
       {/* ヘッダーバー */}
       <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"14px 16px" }}>
@@ -1607,7 +1607,7 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(66px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(60px + env(safe-area-inset-bottom))" }}>
       <div style={{ background:"white", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -1639,8 +1639,8 @@ function App() {
           const active = tab===key;
           return (
             <button key={key} onClick={()=>setTab(key)}
-              style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, padding:"9px 2px 8px", border:"none", background:"transparent", cursor:"pointer", color: active?color:"#8a8a8a", transition:"color 0.15s" }}>
-              <span style={{ fontSize:21, lineHeight:1, opacity: active?1:0.55, transform: active?"translateY(-1px)":"none", transition:"all 0.15s" }}>{icon}</span>
+              style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, padding:"6px 2px 6px", border:"none", background:"transparent", cursor:"pointer", color: active?color:"#8a8a8a", transition:"color 0.15s" }}>
+              <span style={{ fontSize:25, lineHeight:1, opacity: active?1:0.55, transform: active?"translateY(-1px)":"none", transition:"all 0.15s" }}>{icon}</span>
               <span style={{ fontSize:10, fontWeight: active?800:600, letterSpacing:0.2 }}>{text}</span>
             </button>
           );
