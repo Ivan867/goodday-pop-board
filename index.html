@@ -1511,7 +1511,7 @@ function BarcodeTab() {
           style={{ display:"block", border:`2px dashed ${over?ACCENT:"#e0e0e0"}`, borderRadius:12, padding:"26px 16px",
             textAlign:"center", cursor:"pointer", background: over?"#eef4ff":"#fafafa", transition:"all 0.15s" }}>
           <div style={{ fontWeight:700, color:"#444" }}>エクセルをドロップ、またはタップして選択</div>
-          <div style={{ fontSize:12, color:"#aaa", marginTop:6 }}>.xlsx / .xls（バイヤーの商品テーブル）</div>
+          <div style={{ fontSize:12, color:"#aaa", marginTop:6 }}>.xlsx / .xls</div>
           <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={e=>handleFile(e.target.files[0])} style={{ display:"none" }} />
         </label>
         {fileName && <div style={{ fontSize:13, color:ACCENT, fontWeight:700, marginTop:10 }}>✓ {fileName}（{items.length}商品）</div>}
