@@ -469,7 +469,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
 }
 
 // ── Board Tab ──
-function BoardTab({ currentStore }) {
+function BoardTab({ currentStore, actionsRef }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fStore, setFStore] = useState("");
@@ -494,16 +494,16 @@ function BoardTab({ currentStore }) {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    if (actionsRef) actionsRef.current = { refresh: load, openUpload: () => setShowUp(true) };
+  }, [load, actionsRef]);
+
   const counts = pops.reduce((a,p) => { a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
   const filtered = pops.filter(p => (!fStore||p.store_name===fStore) && (!fCat||p.category===fCat));
 
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 0" }}>
-        <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginBottom:14 }}>
-          <button onClick={()=>setShowUp(true)} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
-          <button onClick={load} style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
-        </div>
         <div style={{ display:"flex", gap:10, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.map(s=>({lbl:s,cnt:counts[s]||0,val:s}))].map(({lbl,cnt,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
@@ -1596,6 +1596,7 @@ function BarcodeTab() {
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
+  const boardActions = React.useRef({});
 
   const tabs = [
     { key:"board",  label:"📌 ポップ", color:"#e05c00" },
@@ -1616,10 +1617,14 @@ function App() {
               <div style={{ fontSize:10, color:"#aaa" }}>鮮魚部</div>
             </div>
           </div>
-          <select value={currentStore} onChange={e=>setCurrentStore(e.target.value)}
-            style={{ padding:"8px 12px", border:"2px solid #e05c00", borderRadius:10, fontSize:13, fontWeight:700, color:"#e05c00", background:"#fff9f5", cursor:"pointer", outline:"none" }}>
-            {STORES.map(s=><option key={s}>{s}</option>)}
-          </select>
+          {tab==="board" && (
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
+                style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
+              <button onClick={()=>boardActions.current.openUpload && boardActions.current.openUpload()}
+                style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
+            </div>
+          )}
         </div>
         <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 16px", display:"flex", overflowX:"auto" }}>
           {tabs.map(({key,label,color})=>(
@@ -1631,7 +1636,7 @@ function App() {
         </div>
       </div>
 
-      {tab==="board"  && <BoardTab currentStore={currentStore} />}
+      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} />}
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab />}
       {tab==="tool"   && <PopToolTab />}
