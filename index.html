@@ -249,7 +249,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>画像</div>
             <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:"20px", textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
-              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"#aaa", fontSize:14 }}>📷 タップして選択</div>}
+              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"#777", fontSize:14 }}>📷 タップして選択</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>
@@ -401,7 +401,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
           {/* ── コメントスレッド ── */}
           <div style={{ borderTop:"2px solid #f0f0f0", marginTop:20, paddingTop:16 }}>
             <div style={{ fontSize:13, fontWeight:900, color:"#333", marginBottom:12 }}>
-              💬 コメント {comments.length > 0 && <span style={{ color:"#aaa", fontWeight:400 }}>（{comments.length}件）</span>}
+              💬 コメント {comments.length > 0 && <span style={{ color:"#777", fontWeight:400 }}>（{comments.length}件）</span>}
             </div>
             {comments.length === 0 ? (
               <div style={{ fontSize:13, color:"#ccc", textAlign:"center", padding:"12px 0 16px" }}>まだコメントはありません</div>
@@ -509,7 +509,7 @@ function BoardTab({ currentStore, actionsRef }) {
             <div key={lbl} onClick={()=>setFStore(val)}
               style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"10px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
               <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
-              <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#aaa", whiteSpace:"nowrap" }}>{lbl}</div>
+              <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#777", whiteSpace:"nowrap" }}>{lbl}</div>
             </div>
           ))}
         </div>
@@ -638,12 +638,12 @@ function SearchTab() {
       ) : !hasFilter ? (
         <div style={{ textAlign:"center", padding:60, color:"#ccc" }}>
           <div style={{ fontSize:50, marginBottom:12 }}>🔍</div>
-          <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>キーワードや店舗・カテゴリを選んで検索</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"#777" }}>キーワードや店舗・カテゴリを選んで検索</div>
         </div>
       ) : results.length === 0 ? (
         <div style={{ textAlign:"center", padding:60, color:"#bbb" }}>
           <div style={{ fontSize:50, marginBottom:12 }}>😔</div>
-          <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>一致するポップが見つかりません</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"#777" }}>一致するポップが見つかりません</div>
           <div style={{ fontSize:13, marginTop:6 }}>別のキーワードで試してみてください</div>
         </div>
       ) : (
@@ -787,7 +787,7 @@ function BlogTab() {
         ) : posts.length===0 ? (
           <div style={{ textAlign:"center", padding:80 }}>
             <div style={{ fontSize:40, marginBottom:12 }}>🐟</div>
-            <div style={{ fontSize:15, color:"#aaa" }}>まだ投稿がありません</div>
+            <div style={{ fontSize:15, color:"#777" }}>まだ投稿がありません</div>
           </div>
         ) : (
           <div style={{ display:"grid", gap:14 }}>
@@ -1071,7 +1071,7 @@ function FloorPhotoTab() {
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(66px + env(safe-area-inset-bottom))" }}>
 
       {/* ヘッダーバー */}
       <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"14px 16px" }}>
@@ -1346,7 +1346,7 @@ function FloorUploadModal({ onClose, onSuccess }) {
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>写真 <span style={{ color:"#e05c00" }}>*</span></div>
             <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
-              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"#aaa", fontSize:14 }}>📷 タップして選択</div>}
+              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"#777", fontSize:14 }}>📷 タップして選択</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>
@@ -1511,7 +1511,7 @@ function BarcodeTab() {
           style={{ display:"block", border:`2px dashed ${over?ACCENT:"#e0e0e0"}`, borderRadius:12, padding:"26px 16px",
             textAlign:"center", cursor:"pointer", background: over?"#eef4ff":"#fafafa", transition:"all 0.15s" }}>
           <div style={{ fontWeight:700, color:"#444" }}>エクセルをドロップ、またはタップして選択</div>
-          <div style={{ fontSize:12, color:"#aaa", marginTop:6 }}>.xlsx / .xls</div>
+          <div style={{ fontSize:12, color:"#777", marginTop:6 }}>.xlsx / .xls</div>
           <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={e=>handleFile(e.target.files[0])} style={{ display:"none" }} />
         </label>
         {fileName && <div style={{ fontSize:13, color:ACCENT, fontWeight:700, marginTop:10 }}>✓ {fileName}（{items.length}商品）</div>}
@@ -1576,7 +1576,7 @@ function BarcodeTab() {
             </div>
 
             {/* 画面プレビュー */}
-            <div style={{ fontSize:12, color:"#aaa", fontWeight:700, marginBottom:8 }}>プレビュー</div>
+            <div style={{ fontSize:12, color:"#777", fontWeight:700, marginBottom:8 }}>プレビュー</div>
             <div ref={previewRef} style={{ background:"#f7f8fa", border:"1px solid #eee", borderRadius:10, padding:"16px", minHeight:80 }}>
               {chosen.length === 0
                 ? <div style={{ textAlign:"center", color:"#bbb", padding:"24px 0" }}>商品を選ぶとここにプレビューが表示されます</div>
@@ -1599,22 +1599,22 @@ function App() {
   const boardActions = React.useRef({});
 
   const tabs = [
-    { key:"board",  label:"📌 ポップ", color:"#e05c00" },
-    { key:"barcode", label:"🏷 バーコード", color:"#1f6feb" },
-    { key:"floor",  label:"📸 売場写真",   color:"#1a6b3a" },
-    { key:"tool",   label:"✏️ POP作成",    color:"#8B6914" },
-    { key:"search", label:"🔍",            color:"#059669" },
+    { key:"board",   icon:"📌", text:"ポップ",     color:"#e05c00" },
+    { key:"barcode", icon:"🏷", text:"バーコード", color:"#1f6feb" },
+    { key:"floor",   icon:"📸", text:"売り場",     color:"#1a6b3a" },
+    { key:"tool",    icon:"✏️", text:"作成",       color:"#8B6914" },
+    { key:"search",  icon:"🔍", text:"検索",       color:"#059669" },
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(66px + env(safe-area-inset-bottom))" }}>
       <div style={{ background:"white", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             <div style={{ background:"linear-gradient(135deg,#e05c00,#ff8c42)", width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🐟</div>
             <div>
               <div style={{ fontSize:15, fontWeight:900, color:"#111" }}>GoodDay 鮮魚共有</div>
-              <div style={{ fontSize:10, color:"#aaa" }}>鮮魚部</div>
+              <div style={{ fontSize:10, color:"#777" }}>鮮魚部</div>
             </div>
           </div>
           {tab==="board" && (
@@ -1626,14 +1626,6 @@ function App() {
             </div>
           )}
         </div>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 16px", display:"flex", overflowX:"auto" }}>
-          {tabs.map(({key,label,color})=>(
-            <button key={key} onClick={()=>setTab(key)}
-              style={{ padding:"10px 16px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", borderBottom:`3px solid ${tab===key?color:"transparent"}`, color:tab===key?color:"#aaa", transition:"all 0.15s", whiteSpace:"nowrap", flexShrink:0 }}>
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} />}
@@ -1641,6 +1633,19 @@ function App() {
       {tab==="floor"  && <FloorPhotoTab />}
       {tab==="tool"   && <PopToolTab />}
       {tab==="search" && <SearchTab />}
+
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, background:"rgba(255,255,255,0.96)", backdropFilter:"saturate(180%) blur(12px)", WebkitBackdropFilter:"saturate(180%) blur(12px)", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.06)", display:"flex", zIndex:100, paddingBottom:"env(safe-area-inset-bottom)" }}>
+        {tabs.map(({key,icon,text,color})=>{
+          const active = tab===key;
+          return (
+            <button key={key} onClick={()=>setTab(key)}
+              style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, padding:"9px 2px 8px", border:"none", background:"transparent", cursor:"pointer", color: active?color:"#8a8a8a", transition:"color 0.15s" }}>
+              <span style={{ fontSize:21, lineHeight:1, opacity: active?1:0.55, transform: active?"translateY(-1px)":"none", transition:"all 0.15s" }}>{icon}</span>
+              <span style={{ fontSize:10, fontWeight: active?800:600, letterSpacing:0.2 }}>{text}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
