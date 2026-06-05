@@ -216,12 +216,12 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }}>
-      <div style={{ background:"white", borderRadius:20, padding:28, width:"100%", maxWidth:400, animation:"fadeUp 0.2s ease" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+      <div style={{ background:"white", borderRadius:20, padding:"20px 22px 22px", width:"100%", maxWidth:400, maxHeight:"90vh", overflowY:"auto", animation:"fadeUp 0.2s ease" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
           <div style={{ fontSize:18, fontWeight:900 }}>ポップをアップロード</div>
           <button onClick={onClose} style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#999" }}>✕</button>
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:11 }}>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>店舗</div>
             <select value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14 }}>
@@ -248,7 +248,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>画像</div>
-            <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:"20px", textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
+            <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:"14px", textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
               {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"#aaa", fontSize:14 }}>📷 タップして選択</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
@@ -1649,6 +1649,7 @@ function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
   const boardActions = React.useRef({});
+  const [showUpload, setShowUpload] = useState(false);
 
   const tabs = [
     { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
@@ -1659,12 +1660,8 @@ function App() {
   ];
 
   const boardButtons = tab === "board" ? (
-    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-      <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
-        style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
-      <button onClick={()=>boardActions.current.openUpload && boardActions.current.openUpload()}
-        style={{ background:"#e05c00", color:"white", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:900, cursor:"pointer" }}>＋ アップロード</button>
-    </div>
+    <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
+      style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"9px 12px", fontSize:15, cursor:"pointer" }}>↺</button>
   ) : null;
 
   return (
@@ -1691,18 +1688,25 @@ function App() {
 
       {/* 下部固定ナビ */}
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {tabs.map(({key,icon,label,color})=>{
-          const active = tab===key;
+        {[...tabs.slice(0,4), { key:"__post", label:"投稿", color:"#e05c00", action:true }, ...tabs.slice(4)].map(({key,icon,label,color,action})=>{
+          const active = !action && tab===key;
+          const onClick = action ? () => { setTab("board"); setShowUpload(true); } : () => setTab(key);
           return (
-            <button key={key} onClick={()=>setTab(key)}
+            <button key={key} onClick={onClick}
               style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 2px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
               {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
-              <span style={{ fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>
-              <span style={{ fontSize:11, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{label}</span>
+              {action
+                ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>}
+              <span style={{ fontSize:11, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
             </button>
           );
         })}
       </div>
+
+      {showUpload && <UploadModal currentStore={currentStore}
+        onClose={()=>setShowUpload(false)}
+        onSuccess={()=>{ setShowUpload(false); if (boardActions.current && boardActions.current.refresh) boardActions.current.refresh(); }} />}
     </div>
   );
 }
