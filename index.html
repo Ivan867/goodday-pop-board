@@ -1651,10 +1651,10 @@ function App() {
   const boardActions = React.useRef({});
 
   const tabs = [
-    { key:"board",   icon:"📌", label:"ポップ",     color:"#e05c00" },
+    { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
     { key:"barcode", icon:"🏷", label:"バーコード", color:"#1f6feb" },
     { key:"floor",   icon:"📸", label:"売場写真",   color:"#1a6b3a" },
-    { key:"tool",    icon:"✏️", label:"POP作成",    color:"#8B6914" },
+    { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
   ];
 
@@ -1674,8 +1674,8 @@ function App() {
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             <div style={{ background:"linear-gradient(135deg,#e05c00,#ff8c42)", width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🐟</div>
             <div>
-              <div style={{ fontSize:15, fontWeight:900, color:"#111" }}>GoodDay 鮮魚共有</div>
-              <div style={{ fontSize:10, color:"#aaa" }}>鮮魚部</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#111" }}>ポップ共有</div>
+              <div style={{ fontSize:10, color:"#aaa" }}>GoodDay 鮮魚部</div>
             </div>
           </div>
           <WeatherWidget />
