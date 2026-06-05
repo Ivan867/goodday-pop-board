@@ -1623,10 +1623,10 @@ function WeatherWidget() {
     const hi = Math.round(daily.temperature_2m_max[i]);
     const lo = Math.round(daily.temperature_2m_min[i]);
     return (
-      <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-        <span style={{ fontSize:11, color:"#aaa", fontWeight:700 }}>{label}</span>
-        <span style={{ fontSize:15 }}>{w.e}</span>
-        <span style={{ fontSize:12, fontWeight:700 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:3, whiteSpace:"nowrap" }}>
+        <span style={{ fontSize:10, color:"#aaa", fontWeight:700 }}>{label}</span>
+        <span style={{ fontSize:13 }}>{w.e}</span>
+        <span style={{ fontSize:11, fontWeight:700 }}>
           <span style={{ color:"#e05c00" }}>{hi}°</span>
           <span style={{ color:"#ccc" }}>/</span>
           <span style={{ color:"#4a86c5" }}>{lo}°</span>
@@ -1636,9 +1636,9 @@ function WeatherWidget() {
   };
 
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:12, background:"#f7f8fa", border:"1px solid #eee", borderRadius:10, padding:"6px 12px" }}>
+    <div style={{ display:"flex", alignItems:"center", gap:8, background:"#f7f8fa", border:"1px solid #eee", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0 }}>
       <Day label="今日" i={0} />
-      <div style={{ width:1, height:16, background:"#e0e0e0" }} />
+      <div style={{ width:1, height:14, background:"#e0e0e0" }} />
       <Day label="明日" i={1} />
     </div>
   );
@@ -1651,11 +1651,11 @@ function App() {
   const boardActions = React.useRef({});
 
   const tabs = [
-    { key:"board",  label:"📌 ポップ", color:"#e05c00" },
-    { key:"barcode", label:"🏷 バーコード", color:"#1f6feb" },
-    { key:"floor",  label:"📸 売場写真",   color:"#1a6b3a" },
-    { key:"tool",   label:"✏️ POP作成",    color:"#8B6914" },
-    { key:"search", label:"🔍",            color:"#059669" },
+    { key:"board",   icon:"📌", label:"ポップ",     color:"#e05c00" },
+    { key:"barcode", icon:"🏷", label:"バーコード", color:"#1f6feb" },
+    { key:"floor",   icon:"📸", label:"売場写真",   color:"#1a6b3a" },
+    { key:"tool",    icon:"✏️", label:"POP作成",    color:"#8B6914" },
+    { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
   ];
 
   const boardButtons = tab === "board" ? (
@@ -1668,7 +1668,7 @@ function App() {
   ) : null;
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(82px + env(safe-area-inset-bottom))" }}>
       <div style={{ background:"white", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -1681,14 +1681,6 @@ function App() {
           <WeatherWidget />
           {boardButtons}
         </div>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 16px", display:"flex", overflowX:"auto" }}>
-          {tabs.map(({key,label,color})=>(
-            <button key={key} onClick={()=>setTab(key)}
-              style={{ padding:"10px 16px", fontSize:13, fontWeight:800, border:"none", background:"transparent", cursor:"pointer", borderBottom:`3px solid ${tab===key?color:"transparent"}`, color:tab===key?color:"#aaa", transition:"all 0.15s", whiteSpace:"nowrap", flexShrink:0 }}>
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} />}
@@ -1696,6 +1688,21 @@ function App() {
       {tab==="floor"  && <FloorPhotoTab />}
       {tab==="tool"   && <PopToolTab />}
       {tab==="search" && <SearchTab />}
+
+      {/* 下部固定ナビ */}
+      <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
+        {tabs.map(({key,icon,label,color})=>{
+          const active = tab===key;
+          return (
+            <button key={key} onClick={()=>setTab(key)}
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 2px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+              {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
+              <span style={{ fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>
+              <span style={{ fontSize:11, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
