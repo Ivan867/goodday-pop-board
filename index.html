@@ -34,6 +34,14 @@ const STORES = ["北部店","木次店","大田店","斐川店","医大通り店
 const CATEGORIES = ["鮮魚","刺身","寿司","惣菜","広告","特売","行事","塩干","その他"];
 const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
 const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
+// ワンタップ定型文。type: "reaction"（反応・お礼）/ "feedback"（作者への修正依頼）。自由に足し引きOK。
+const QUICK_REPLIES = [
+  { text: "使わせてもらいます！", type: "reaction" },
+  { text: "売れました！",       type: "reaction" },
+  { text: "ありがとうございます", type: "reaction" },
+  { text: "文字を大きめが良さそう", type: "feedback" },
+  { text: "価格を目立たせたい",   type: "feedback" },
+];
 
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
@@ -264,7 +272,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 }
 
 // ── Pop Detail Modal ──
-function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
+function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromPop }) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes||0);
   const [deleting, setDeleting] = useState(false);
@@ -325,6 +333,17 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
       const newC = await api.addComment(pop.id, cStore, cText.trim());
       setComments(c => [...c, newC]);
       setCText("");
+      onCommented && onCommented(pop.id);
+    } catch(e) { setCError("送信に失敗しました"); }
+    finally { setCSubmitting(false); }
+  };
+
+  const handleQuickReply = async (text) => {
+    if (cSubmitting) return;
+    setCSubmitting(true); setCError("");
+    try {
+      const newC = await api.addComment(pop.id, "", text);
+      setComments(c => [...c, newC]);
       onCommented && onCommented(pop.id);
     } catch(e) { setCError("送信に失敗しました"); }
     finally { setCSubmitting(false); }
@@ -398,6 +417,13 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
             </button>
           </div>
 
+          {onCreateFromPop && (
+            <button onClick={()=>{ onCreateFromPop(pop); onClose(); }}
+              style={{ width:"100%", marginTop:10, background:"#8B6914", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:14, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+              🎨 このPOPを元に作る
+            </button>
+          )}
+
           {/* ── コメントスレッド ── */}
           <div style={{ borderTop:"2px solid #f0f0f0", marginTop:20, paddingTop:16 }}>
             <div style={{ fontSize:13, fontWeight:900, color:"#333", marginBottom:12 }}>
@@ -410,7 +436,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
                 {comments.map(c => (
                   <div key={c.id} style={{ background:"#f7f7f9", borderRadius:12, padding:"10px 13px" }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
-                      <div style={{ fontSize:12, fontWeight:800, color:"#e05c00" }}>{c.store_name}</div>
+                      <div style={{ fontSize:12, fontWeight:800, color: c.store_name ? "#e05c00" : "#bbb" }}>{c.store_name || "ワンタップ返信"}</div>
                       <div style={{ fontSize:11, color:"#bbb" }}>{timeAgo(c.created_at)}</div>
                     </div>
                     <div style={{ fontSize:13, color:"#333", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{c.comment}</div>
@@ -419,7 +445,23 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented }) {
               </div>
             )}
             <div style={{ background:"#fafafa", borderRadius:12, padding:"12px 14px", border:"2px solid #eee" }}>
-              <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:8 }}>コメントを投稿</div>
+              <div style={{ fontSize:11, fontWeight:700, color:"#999", marginBottom:6 }}>ワンタップ返信 <span style={{ fontWeight:400, color:"#bbb" }}>（タップで送信）</span></div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:14 }}>
+                {QUICK_REPLIES.map(q => {
+                  const isFb = q.type === "feedback";
+                  return (
+                    <button key={q.text} onClick={()=>handleQuickReply(q.text)} disabled={cSubmitting}
+                      style={{ background: isFb ? "#eef3f8" : "#fff3ea", color: isFb ? "#3a6ea5" : "#e05c00",
+                        border: `2px solid ${isFb ? "#cfe0ef" : "#ffd9bd"}`, borderRadius:22, padding:"10px 15px",
+                        fontSize:13.5, fontWeight:800, cursor:"pointer", lineHeight:1.2, opacity:cSubmitting?0.5:1,
+                        WebkitTapHighlightColor:"transparent" }}>
+                      {q.text}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ borderTop:"1px solid #eee", margin:"0 -14px 12px", paddingTop:12 }} />
+              <div style={{ fontSize:11, fontWeight:700, color:"#999", marginBottom:6 }}>自分でコメント <span style={{ fontWeight:400, color:"#bbb" }}>（店舗を選んで投稿）</span></div>
               <select value={cStore} onChange={e=>setCStore(e.target.value)}
                 style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, marginBottom:8, outline:"none", background:"white" }}>
                 {STORES.map(s=><option key={s}>{s}</option>)}
@@ -469,7 +511,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
 }
 
 // ── Board Tab ──
-function BoardTab({ currentStore, actionsRef }) {
+function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fStore, setFStore] = useState("");
@@ -545,13 +587,14 @@ function BoardTab({ currentStore, actionsRef }) {
         onDelete={id=>setPops(p=>p.filter(x=>x.id!==id))}
         onLiked={(id,likes)=>setPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
         onCommented={id=>setCommentedIds(s=>new Set([...s, id]))}
+        onCreateFromPop={onCreateFromPop}
       />}
     </>
   );
 }
 
 // ── Search Tab ──
-function SearchTab() {
+function SearchTab({ onCreateFromPop }) {
   const [allPops, setAllPops] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -662,6 +705,7 @@ function SearchTab() {
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
         onDelete={id=>{ setAllPops(p=>p.filter(x=>x.id!==id)); setSel(null); }}
         onLiked={(id,likes)=>setAllPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
+        onCreateFromPop={onCreateFromPop}
       />}
     </div>
   );
@@ -801,10 +845,13 @@ function BlogTab() {
 }
 
 // ── POP作成ツール Tab（統合版）──
-function PopToolTab() {
-  const [mode, setMode] = useState("new");
+function PopToolTab({ seed, onSeedConsumed }) {
+  const [mode, setMode] = useState(seed ? "ref" : "new");
   const [size, setSize] = useState("縦");
-  const [fields, setFields] = useState({ product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
+  const [fields, setFields] = useState(seed
+    ? { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow: seed.product || "" }
+    : { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
+  const [refImage] = useState(seed?.image_url || null);
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -813,6 +860,8 @@ function PopToolTab() {
   const scanInputRef = React.useRef(null);
 
   const setF = (k, v) => setFields(f => ({...f, [k]: v}));
+
+  useEffect(() => { if (seed && onSeedConsumed) onSeedConsumed(); }, []);
 
   const SIZES = [
     { key:"縦", label:"縦A4（210×297mm）" },
@@ -963,6 +1012,15 @@ function PopToolTab() {
             <div style={{ background:"#1a2a1a", border:"1px solid #2d4a2d", borderRadius:8, padding:"11px 13px", fontSize:12, color:"#7ec87e", lineHeight:1.75, marginBottom:14 }}>
               💡 Geminiに参考にしたいPOP画像を先にアップロードしてから、生成したプロンプトを貼り付けてください。
             </div>
+            {refImage && (
+              <div style={{ background:"#1e1e1e", border:"1px solid #3a3a3a", borderRadius:8, padding:"11px 13px", marginBottom:14, display:"flex", gap:12, alignItems:"center" }}>
+                <img src={refImage} style={{ width:64, height:64, objectFit:"cover", borderRadius:6, flexShrink:0, background:"#111" }} />
+                <div style={{ fontSize:12, color:"#c8a840", lineHeight:1.7 }}>
+                  <div style={{ fontWeight:800, marginBottom:2 }}>📎 このPOPを参照元にします</div>
+                  <div style={{ color:"#999" }}>この画像を長押しで保存し、AIにアップロードしてから下のプロンプトを貼り付けてください。</div>
+                </div>
+              </div>
+            )}
             <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               <div><div style={lbl}>ポップの内容（商品名など）</div><input value={fields.refProduct} onChange={e=>setF("refProduct",e.target.value)} placeholder="例：天然マダイ お刺身用" style={inp} /></div>
               <div><div style={lbl}>表記しない内容 <span style={{ color:"#555" }}>（空欄の場合は上と同じ）</span></div><input value={fields.refNoShow} onChange={e=>setF("refNoShow",e.target.value)} placeholder="例：天然マダイ" style={inp} /></div>
@@ -1650,6 +1708,12 @@ function App() {
   const [currentStore, setCurrentStore] = useState(STORES[0]);
   const boardActions = React.useRef({});
   const [showUpload, setShowUpload] = useState(false);
+  const [toolSeed, setToolSeed] = useState(null);
+
+  const handleCreateFromPop = (pop) => {
+    setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
+    setTab("tool");
+  };
 
   const tabs = [
     { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
@@ -1679,11 +1743,11 @@ function App() {
         </div>
       </div>
 
-      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} />}
+      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} />}
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab />}
-      {tab==="tool"   && <PopToolTab />}
-      {tab==="search" && <SearchTab />}
+      {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
+      {tab==="search" && <SearchTab onCreateFromPop={handleCreateFromPop} />}
 
       {/* 下部固定ナビ */}
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
