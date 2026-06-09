@@ -42,6 +42,16 @@ const QUICK_REPLIES = [
   { text: "文字を大きめが良さそう", type: "feedback" },
   { text: "価格を目立たせたい",   type: "feedback" },
 ];
+// 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
+const ANNOUNCEMENTS = [
+  { date:"2026-06-09", type:"新機能", title:"「このPOPを元に作る」を追加", body:"POP詳細画面から、そのPOPのレイアウト・配色を下敷きにして別商品のPOPを作れるようになりました。作成タブが自動で「参考画像あり」モードで開きます。" },
+  { date:"2026-06-09", type:"新機能", title:"ワンタップ返信を追加", body:"POPに「使わせてもらいます！」「売れました！」などをワンタップで送れるようになりました。店舗を選ばず気軽に押せます。" },
+];
+const ANN_TYPES = {
+  "新機能":   { bg:"#eafaf0", color:"#1a6b3a", border:"#bfe6cd" },
+  "修正":     { bg:"#eef3f8", color:"#1f6feb", border:"#cfe0ef" },
+  "お知らせ": { bg:"#f3f3f5", color:"#6b7280", border:"#e0e0e5" },
+};
 
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
@@ -1702,6 +1712,34 @@ function WeatherWidget() {
   );
 }
 
+// ── 開発・お知らせ Tab ──
+function DevTab() {
+  return (
+    <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px 60px" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#111", marginBottom:4 }}>開発・お知らせ</div>
+      <div style={{ fontSize:12, color:"#999", marginBottom:20 }}>アプリの更新履歴とお知らせ</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+        {ANNOUNCEMENTS.map((a,i)=>{
+          const t = ANN_TYPES[a.type] || ANN_TYPES["お知らせ"];
+          return (
+            <div key={i} style={{ background:"white", borderRadius:14, padding:"16px 18px", border:"1px solid #ececec", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+                <span style={{ background:t.bg, color:t.color, border:`1px solid ${t.border}`, borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:800 }}>{a.type}</span>
+                <span style={{ fontSize:11, color:"#bbb", fontWeight:700 }}>{a.date}</span>
+              </div>
+              <div style={{ fontSize:15, fontWeight:800, color:"#222", marginBottom:6 }}>{a.title}</div>
+              <div style={{ fontSize:13, color:"#555", lineHeight:1.75, whiteSpace:"pre-wrap" }}>{a.body}</div>
+            </div>
+          );
+        })}
+        {ANNOUNCEMENTS.length === 0 && (
+          <div style={{ textAlign:"center", color:"#bbb", fontSize:13, padding:"40px 0" }}>まだお知らせはありません</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ──
 function App() {
   const [tab, setTab] = useState("board");
@@ -1717,10 +1755,11 @@ function App() {
 
   const tabs = [
     { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
-    { key:"barcode", icon:"🏷", label:"バーコード", color:"#1f6feb" },
-    { key:"floor",   icon:"📸", label:"売場写真",   color:"#1a6b3a" },
+    { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
+    { key:"barcode", icon:"🏷", label:"バーコード", color:"#1f6feb" },
+    { key:"dev",     icon:"ℹ️", label:"開発",       color:"#6b7280" },
   ];
 
   const boardButtons = tab === "board" ? (
@@ -1748,20 +1787,21 @@ function App() {
       {tab==="floor"  && <FloorPhotoTab />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="search" && <SearchTab onCreateFromPop={handleCreateFromPop} />}
+      {tab==="dev"    && <DevTab />}
 
       {/* 下部固定ナビ */}
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[...tabs.slice(0,4), { key:"__post", label:"投稿", color:"#e05c00", action:true }, ...tabs.slice(4)].map(({key,icon,label,color,action})=>{
+        {[tabs[0], tabs[1], tabs[2], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[3], tabs[4], tabs[5]].map(({key,icon,label,color,action})=>{
           const active = !action && tab===key;
           const onClick = action ? () => { setTab("board"); setShowUpload(true); } : () => setTab(key);
           return (
             <button key={key} onClick={onClick}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 2px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 1px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
               {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>}
-              <span style={{ fontSize:11, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
+              <span style={{ fontSize:10, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
             </button>
           );
         })}
