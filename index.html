@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)" />
 <title>GoodDay 鮮魚共有</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -509,12 +511,10 @@ function PopCard({ pop, index, onClick, hasComment }) {
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>❤️{pop.likes}</div>}
         </div>
       </div>
-      <div style={{ padding:"10px 12px" }}>
-        <div style={{ fontWeight:800, fontSize:13, marginBottom:4 }}>{pop.product_name}</div>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontSize:11, color:"#888" }}>{pop.store_name}</div>
-          <div style={{ fontSize:11, background:"#f0f0f0", padding:"2px 8px", borderRadius:20, fontWeight:700, color:"#666" }}>{pop.category}</div>
-        </div>
+      <div style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
+        <div style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.product_name}</div>
+        <div style={{ fontSize:11, color:"#888", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
+        <div style={{ fontSize:11, background:"#f0f0f0", padding:"2px 8px", borderRadius:20, fontWeight:700, color:"#666", whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
       </div>
     </div>
   );
@@ -556,10 +556,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 0" }}>
-        <div style={{ display:"flex", gap:10, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
+        <div style={{ display:"flex", gap:6, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,cnt:counts[s],val:s}))].map(({lbl,cnt,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
-              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"4px 16px", minWidth:70, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
+              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"4px 9px", minWidth:52, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
               <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
               <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#aaa", whiteSpace:"nowrap" }}>{lbl}</div>
             </div>
@@ -699,7 +699,7 @@ function SearchTab({ onCreateFromPop }) {
         ) : (
           <div>
             <div style={{ fontSize:13, fontWeight:800, color:"#999", marginBottom:12, paddingLeft:2 }}>みんなのポップ（{allPops.length}）</div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(92px, 1fr))", gap:5 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(92px, 1fr))", gap:2 }}>
               {allPops.map(pop=>(
                 <img key={pop.id} src={pop.image_url} loading="lazy" onClick={()=>setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"#f0f0f0", display:"block" }} />
@@ -1772,7 +1772,7 @@ function App() {
     { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
-    { key:"barcode", icon:"🏷", label:"バーコード", color:"#1f6feb" },
+    { key:"barcode", icon:"🏷", label:"リスト",     color:"#1f6feb" },
     { key:"dev",     icon:"ℹ️", label:"開発",       color:"#6b7280" },
   ];
 
@@ -1805,7 +1805,7 @@ function App() {
 
       {/* 下部固定ナビ */}
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[1], tabs[2], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[3], tabs[4], tabs[5]].map(({key,icon,label,color,action})=>{
+        {[tabs[0], tabs[1], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], tabs[4], tabs[5]].map(({key,icon,label,color,action})=>{
           const active = !action && tab===key;
           const onClick = action ? () => { setTab("board"); setShowUpload(true); } : () => setTab(key);
           return (
