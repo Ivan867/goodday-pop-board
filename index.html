@@ -1761,6 +1761,7 @@ function App() {
   const boardActions = React.useRef({});
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const handleCreateFromPop = (pop) => {
     setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
@@ -1805,9 +1806,9 @@ function App() {
 
       {/* 下部固定ナビ */}
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[1], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], tabs[4], tabs[5]].map(({key,icon,label,color,action})=>{
-          const active = !action && tab===key;
-          const onClick = action ? () => { setTab("board"); setShowUpload(true); } : () => setTab(key);
+        {[tabs[0], tabs[1], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
+          const active = more ? (tab==="barcode"||tab==="dev") : (!action && tab===key);
+          const onClick = action ? () => { setTab("board"); setShowUpload(true); } : more ? () => setMoreOpen(v=>!v) : () => { setMoreOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
               style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 1px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
@@ -1815,11 +1816,26 @@ function App() {
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>}
-              <span style={{ fontSize:10, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
+              <span style={{ fontSize:12, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
             </button>
           );
         })}
       </div>
+
+      {moreOpen && (
+        <>
+          <div onClick={()=>setMoreOpen(false)}
+            style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
+          <div style={{ position:"fixed", right:10, bottom:"calc(80px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
+            {[{key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"開発"}].map((o,i)=>(
+              <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
+                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i===0?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
+                <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {showUpload && <UploadModal currentStore={currentStore}
         onClose={()=>setShowUpload(false)}
