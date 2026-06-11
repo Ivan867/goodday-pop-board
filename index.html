@@ -555,17 +555,16 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
 
   return (
     <>
-      <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 0" }}>
-        <div style={{ display:"flex", gap:6, marginBottom:14, overflowX:"auto", paddingBottom:4 }}>
+      <div style={{ maxWidth:1080, margin:"0 auto", padding:"8px 16px 0" }}>
+        <div style={{ display:"flex", gap:6, marginBottom:8, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,cnt:counts[s],val:s}))].map(({lbl,cnt,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
-              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"4px 9px", minWidth:52, textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
-              <div style={{ fontSize:20, fontWeight:900, color:fStore===val?"white":"#111" }}>{cnt}</div>
-              <div style={{ fontSize:10, fontWeight:700, color:fStore===val?"rgba(255,255,255,0.8)":"#aaa", whiteSpace:"nowrap" }}>{lbl}</div>
+              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"7px 13px", textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
+              <div style={{ fontSize:13, fontWeight:800, color:fStore===val?"white":"#555", whiteSpace:"nowrap" }}>{lbl}</div>
             </div>
           ))}
         </div>
-        <div style={{ display:"flex", gap:5, marginBottom:20, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:5, marginBottom:12, flexWrap:"wrap" }}>
           {["",...CATEGORIES].map(c=>(
             <button key={c||"all"} onClick={()=>setFCat(c)}
               style={{ padding:"4px 7px", borderRadius:11, fontSize:11, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
@@ -1730,7 +1729,7 @@ function WeatherWidget() {
 function DevTab() {
   return (
     <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px 60px" }}>
-      <div style={{ fontSize:18, fontWeight:900, color:"#111", marginBottom:4 }}>開発・お知らせ</div>
+      <div style={{ fontSize:18, fontWeight:900, color:"#111", marginBottom:4 }}>お知らせ</div>
       <div style={{ fontSize:12, color:"#999", marginBottom:20 }}>アプリの更新履歴とお知らせ</div>
       <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
         {ANNOUNCEMENTS.map((a,i)=>{
@@ -1774,7 +1773,7 @@ function App() {
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
     { key:"barcode", icon:"🏷", label:"リスト",     color:"#1f6feb" },
-    { key:"dev",     icon:"ℹ️", label:"開発",       color:"#6b7280" },
+    { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
   ];
 
   const boardButtons = tab === "board" ? (
@@ -1827,7 +1826,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(80px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"開発"}].map((o,i)=>(
+            {[{key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i===0?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}
