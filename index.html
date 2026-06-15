@@ -585,7 +585,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
         )}
       </div>
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onSuccess={pop=>{setPops(p=>[pop,...p]);setShowUp(false);}} />}
-      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(72px + env(safe-area-inset-bottom))", zIndex:150, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -3px 12px rgba(0,0,0,0.06)", padding:"8px 12px" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(48px + env(safe-area-inset-bottom))", zIndex:150, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -3px 12px rgba(0,0,0,0.06)", padding:"8px 12px" }}>
         <div style={{ display:"flex", gap:6, overflowX:"auto", paddingBottom:2, marginBottom:7 }}>
           {[{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
             <div key={lbl} onClick={()=>setFStore(val)}
@@ -1797,12 +1797,12 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(82px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(56px + env(safe-area-inset-bottom))" }}>
       <div style={{ background:"white", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-          <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0 }}>
-            <div style={{ fontSize:16, fontWeight:900, color:"#111", whiteSpace:"nowrap" }}>鮮魚ポップ共有</div>
-            <div style={{ fontSize:10, fontWeight:700, color:"#bbb", whiteSpace:"nowrap" }}>GoodDay</div>
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
+          <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0, flex:1, overflow:"hidden" }}>
+            <div style={{ fontSize:15, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>鮮魚ポップ共有</div>
+            <div style={{ fontSize:10, fontWeight:700, color:"#bbb", whiteSpace:"nowrap", flexShrink:0 }}>GoodDay</div>
           </div>
           <WeatherWidget />
         </div>
@@ -1818,24 +1818,23 @@ function App() {
       {/* 下部固定ナビ */}
       {tab==="board" && !moreOpen && (
         <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
-          style={{ position:"fixed", right:16, bottom:"calc(164px + env(safe-area-inset-bottom))", zIndex:160,
+          style={{ position:"fixed", right:16, bottom:"calc(140px + env(safe-area-inset-bottom))", zIndex:160,
             width:46, height:46, borderRadius:"50%", background:"white", color:"#e05c00",
             border:"1px solid #eee", boxShadow:"0 3px 14px rgba(0,0,0,0.22)", fontSize:21, cursor:"pointer",
             display:"flex", alignItems:"center", justifyContent:"center", WebkitTapHighlightColor:"transparent" }}>↺</button>
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[1], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
-          const active = more ? (tab==="barcode"||tab==="dev") : (!action && tab===key);
+        {[tabs[0], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
+          const active = more ? (tab==="barcode"||tab==="dev"||tab==="floor") : (!action && tab===key);
           const onClick = action ? () => { setTab("board"); setShowUpload(true); } : more ? () => setMoreOpen(v=>!v) : () => { setMoreOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"12px 1px 14px", display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"9px 1px 11px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:23, lineHeight:1, opacity: active?1:0.5, filter: active?"none":"grayscale(35%)" }}>{icon}</span>}
-              <span style={{ fontSize:12, fontWeight:800, color: action?color:(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{label}</span>
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{label}</span>}
             </button>
           );
         })}
@@ -1846,9 +1845,9 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(80px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i)=>(
+            {[{key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i===0?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
+                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<2?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}
               </button>
             ))}
