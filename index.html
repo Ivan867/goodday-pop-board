@@ -9,12 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
@@ -58,6 +52,19 @@ const ANN_TYPES = {
   "修正":     { bg:"#eef3f8", color:"#1f6feb", border:"#cfe0ef" },
   "お知らせ": { bg:"#f3f3f5", color:"#6b7280", border:"#e0e0e5" },
 };
+// 必要になったときだけ外部ライブラリを読み込む（初回ロードを軽くするため）
+const XLSX_SRC = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src; s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("load failed: " + src));
+    document.head.appendChild(s);
+  });
+}
 
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
@@ -508,7 +515,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
       <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} style={{ width:"100%", display:"block" }} />
+          ? <img src={pop.image_url} loading="lazy" decoding="async" style={{ width:"100%", display:"block" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"#ccc", fontSize:30 }}>🐟</div>}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
           {hasComment && <div style={{ background:"rgba(224,92,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>💬</div>}
@@ -559,25 +566,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
 
   return (
     <>
-      <div style={{ maxWidth:1080, margin:"0 auto", padding:"8px 16px 0" }}>
-        <div style={{ display:"flex", gap:6, marginBottom:8, overflowX:"auto", paddingBottom:4 }}>
-          {[{lbl:"全店舗",cnt:pops.length,val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,cnt:counts[s],val:s}))].map(({lbl,cnt,val})=>(
-            <div key={lbl} onClick={()=>setFStore(val)}
-              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"7px 13px", textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
-              <div style={{ fontSize:13, fontWeight:800, color:fStore===val?"white":"#555", whiteSpace:"nowrap" }}>{lbl}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display:"flex", gap:5, marginBottom:12, flexWrap:"wrap" }}>
-          {["",...CATEGORIES].map(c=>(
-            <button key={c||"all"} onClick={()=>setFCat(c)}
-              style={{ padding:"4px 7px", borderRadius:11, fontSize:11, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
-              {c||"すべて"}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 16px 20px" }}>
+      <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px 84px" }}>
         {loading ? (
           <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
             <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
@@ -596,6 +585,25 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
         )}
       </div>
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onSuccess={pop=>{setPops(p=>[pop,...p]);setShowUp(false);}} />}
+      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(72px + env(safe-area-inset-bottom))", zIndex:150, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -3px 12px rgba(0,0,0,0.06)", padding:"8px 12px" }}>
+        <div style={{ display:"flex", gap:6, overflowX:"auto", paddingBottom:2, marginBottom:7 }}>
+          {[{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
+            <div key={lbl} onClick={()=>setFStore(val)}
+              style={{ background:fStore===val?"#e05c00":"white", borderRadius:12, padding:"7px 13px", textAlign:"center", cursor:"pointer", border:"2px solid", borderColor:fStore===val?"#e05c00":"#e8e8e8", flexShrink:0 }}>
+              <div style={{ fontSize:13, fontWeight:800, color:fStore===val?"white":"#555", whiteSpace:"nowrap" }}>{lbl}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display:"flex", gap:5, overflowX:"auto", paddingBottom:2 }}>
+          {["",...CATEGORIES].map(c=>(
+            <button key={c||"all"} onClick={()=>setFCat(c)}
+              style={{ padding:"5px 9px", borderRadius:11, fontSize:11, border:"2px solid", cursor:"pointer", fontWeight:700, whiteSpace:"nowrap", flexShrink:0, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+              {c||"すべて"}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
         onDelete={id=>setPops(p=>p.filter(x=>x.id!==id))}
         onLiked={(id,likes)=>setPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
@@ -1450,6 +1458,14 @@ function FloorUploadModal({ onClose, onSuccess }) {
 function BarcodeTab() {
   const ACCENT = "#1f6feb";
   const [items, setItems] = useState([]);
+  const [libsReady, setLibsReady] = useState(typeof XLSX !== "undefined" && typeof JsBarcode !== "undefined");
+  useEffect(() => {
+    let alive = true;
+    Promise.all([loadScriptOnce(XLSX_SRC), loadScriptOnce(JSBARCODE_SRC)])
+      .then(() => { if (alive) setLibsReady(true); })
+      .catch(e => console.error(e));
+    return () => { alive = false; };
+  }, []);
   const [fileName, setFileName] = useState("");
   const [err, setErr] = useState("");
   const [selected, setSelected] = useState(() => new Set());
@@ -1558,7 +1574,7 @@ function BarcodeTab() {
     };
     draw(previewRef.current);
     draw(portalEl);
-  }, [selected, items, cols, showName, portalEl]);
+  }, [selected, items, cols, showName, portalEl, libsReady]);
 
   const labelStyle = {
     border:"1px solid #cfd8de", borderRadius:6, padding:"5mm 4mm 4mm",
@@ -1780,23 +1796,15 @@ function App() {
     { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
   ];
 
-  const boardButtons = tab === "board" ? (
-    <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
-      style={{ background:"#f5f5f5", color:"#666", border:"none", borderRadius:9, padding:"6px 10px", fontSize:15, cursor:"pointer" }}>↺</button>
-  ) : null;
-
   return (
     <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(82px + env(safe-area-inset-bottom))" }}>
       <div style={{ background:"white", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div>
-              <div style={{ fontSize:15, fontWeight:900, color:"#111" }}>ポップ共有</div>
-              <div style={{ fontSize:10, color:"#aaa" }}>GoodDay 鮮魚部</div>
-            </div>
+          <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0 }}>
+            <div style={{ fontSize:16, fontWeight:900, color:"#111", whiteSpace:"nowrap" }}>鮮魚ポップ共有</div>
+            <div style={{ fontSize:10, fontWeight:700, color:"#bbb", whiteSpace:"nowrap" }}>GoodDay</div>
           </div>
           <WeatherWidget />
-          {boardButtons}
         </div>
       </div>
 
@@ -1808,6 +1816,14 @@ function App() {
       {tab==="dev"    && <DevTab />}
 
       {/* 下部固定ナビ */}
+      {tab==="board" && !moreOpen && (
+        <button onClick={()=>boardActions.current.refresh && boardActions.current.refresh()} title="更新"
+          style={{ position:"fixed", right:16, bottom:"calc(164px + env(safe-area-inset-bottom))", zIndex:160,
+            width:46, height:46, borderRadius:"50%", background:"white", color:"#e05c00",
+            border:"1px solid #eee", boxShadow:"0 3px 14px rgba(0,0,0,0.22)", fontSize:21, cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", WebkitTapHighlightColor:"transparent" }}>↺</button>
+      )}
+
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[1], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
           const active = more ? (tab==="barcode"||tab==="dev") : (!action && tab===key);
