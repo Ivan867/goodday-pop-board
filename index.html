@@ -716,13 +716,13 @@ function SearchTab({ onCreateFromPop }) {
   });
 
   const hasFilter = q || fStore || fCat;
+  const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:"24px 16px 40px" }}>
 
       {/* 検索ボックス */}
-      <div style={{ background:"white", borderRadius:18, padding:"20px 20px 18px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
-        <div style={{ fontSize:15, fontWeight:900, color:"#111", marginBottom:14 }}>🔍 ポップを検索</div>
+      <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
         <div style={{ position:"relative", marginBottom:14 }}>
           <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#ccc", pointerEvents:"none" }}>🔍</span>
           <input
@@ -745,7 +745,7 @@ function SearchTab({ onCreateFromPop }) {
 
         {/* 店舗フィルター */}
         <div style={{ display:"flex", gap:8, marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
-          {[{lbl:"全店舗",val:""},...STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
+          {[{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
             <button key={lbl} onClick={()=>{ setFStore(val); ensureLoaded(); }}
               style={{ padding:"5px 13px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, flexShrink:0, borderColor:fStore===val?"#e05c00":"#ddd", background:fStore===val?"#e05c00":"white", color:fStore===val?"white":"#666", whiteSpace:"nowrap" }}>
               {lbl}
@@ -754,10 +754,10 @@ function SearchTab({ onCreateFromPop }) {
         </div>
 
         {/* カテゴリフィルター */}
-        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:5, flexWrap:"nowrap", overflowX:"auto", paddingBottom:2 }}>
           {["",...CATEGORIES].map(c=>(
             <button key={c||"all"} onClick={()=>{ setFCat(c); ensureLoaded(); }}
-              style={{ padding:"5px 13px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+              style={{ padding:"4px 10px", borderRadius:20, fontSize:11, border:"2px solid", cursor:"pointer", fontWeight:700, flexShrink:0, whiteSpace:"nowrap", borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
               {c||"すべて"}
             </button>
           ))}
@@ -779,7 +779,7 @@ function SearchTab({ onCreateFromPop }) {
         ) : (
           <div>
             <div style={{ fontSize:13, fontWeight:800, color:"#999", marginBottom:12, paddingLeft:2 }}>みんなのポップ（{allPops.length}）</div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(92px, 1fr))", gap:2 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
               {allPops.map(pop=>(
                 <img key={pop.id} src={pop.image_url} loading="lazy" onClick={()=>setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"#f0f0f0", display:"block" }} />
@@ -1877,7 +1877,7 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(56px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
       <div style={{ position:"sticky", top:0, zIndex:100 }}>
         {/* 白いバー：タイトルと一緒にスクロールで流れて消える（ガラス効果なし） */}
         <div style={{ position:"absolute", inset:0, background:"#fff", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", opacity:1-scrollP, pointerEvents:"none" }} />
@@ -1907,11 +1907,10 @@ function App() {
           const onClick = action ? () => { setTab("board"); setShowUpload(true); } : more ? () => setMoreOpen(v=>!v) : () => { setMoreOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"9px 1px 11px", display:"flex", flexDirection:"column", alignItems:"center" }}>
-              {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"11px 1px 13px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?21:13, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?23:16, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
         })}
