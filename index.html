@@ -544,7 +544,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
 }
 
 // ── Board Tab ──
-function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
+function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fStore, setFStore] = useState("");
@@ -552,7 +552,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
   const [showUp, setShowUp] = useState(false);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
-  const [radialOpen, setRadialOpen] = useState(false);
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
 
@@ -590,9 +589,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
 
   const storeItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))];
   const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
-  const storePos = arcPositions(storeItems.length, 100, 86, 178);
-  const catPos = arcPositions(catItems.length, 158, 92, 178);
-  const HUB_BOTTOM = "calc(62px + env(safe-area-inset-bottom))";
+  const storePos = arcPositions(storeItems.length, 104, 30, 150);
+  const catPos = arcPositions(catItems.length, 152, 22, 158);
+  const FAN_BOTTOM = "calc(64px + env(safe-area-inset-bottom))";
 
   return (
     <>
@@ -619,15 +618,15 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
         <div onClick={()=>{ setRadialOpen(false); setRadialChanged(false); }}
           style={{ position:"fixed", inset:0, zIndex:160 }} />
       )}
-      <div style={{ position:"fixed", right:14, bottom:HUB_BOTTOM, width:1, height:1, zIndex:165 }}>
+      <div style={{ position:"fixed", left:"50%", bottom:FAN_BOTTOM, width:1, height:1, zIndex:165 }}>
         {storeItems.map((it,i) => {
           const active = it.val === fStore;
           const delay = radialOpen ? (50+i*30) : 0;
           return (
             <button key={"s"+it.val} onClick={(e)=>{ e.stopPropagation(); pickStore(it.val); }}
               style={{
-                position:"absolute", right:0, bottom:0, transformOrigin:"100% 100%",
-                transform: radialOpen ? `translate(${storePos[i].tx}px, ${storePos[i].ty}px) scale(1)` : "scale(0.2)",
+                position:"absolute", left:0, bottom:0, transformOrigin:"50% 100%",
+                transform: radialOpen ? `translate(-50%,0) translate(${storePos[i].tx}px, ${storePos[i].ty}px) scale(1)` : "translate(-50%,0) scale(0.2)",
                 opacity: radialOpen?1:0, pointerEvents: radialOpen?"auto":"none",
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
@@ -646,8 +645,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
           return (
             <button key={"c"+it.val} onClick={(e)=>{ e.stopPropagation(); pickCat(it.val); }}
               style={{
-                position:"absolute", right:0, bottom:0, transformOrigin:"100% 100%",
-                transform: radialOpen ? `translate(${catPos[i].tx}px, ${catPos[i].ty}px) scale(1)` : "scale(0.2)",
+                position:"absolute", left:0, bottom:0, transformOrigin:"50% 100%",
+                transform: radialOpen ? `translate(-50%,0) translate(${catPos[i].tx}px, ${catPos[i].ty}px) scale(1)` : "translate(-50%,0) scale(0.2)",
                 opacity: radialOpen?1:0, pointerEvents: radialOpen?"auto":"none",
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
@@ -660,21 +659,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
             </button>
           );
         })}
-      </div>
-
-      <div style={{ position:"fixed", right:14, bottom:HUB_BOTTOM, zIndex:170 }}>
-        <button onClick={handleHubClick} title={radialChanged?"更新":"フィルター"}
-          style={{
-            width: radialChanged?58:50, height: radialChanged?58:50, borderRadius:"50%", border:"none", cursor:"pointer",
-            background: radialChanged?"#e05c00":"white", color: radialChanged?"#fff":"#e05c00",
-            fontSize: radialChanged?24:20,
-            boxShadow: radialOpen ? "0 0 0 4px rgba(224,92,0,0.18), 0 3px 14px rgba(0,0,0,0.16)" : (radialChanged?"0 4px 18px rgba(224,92,0,0.45)":"0 3px 14px rgba(0,0,0,0.16)"),
-            display:"flex", alignItems:"center", justifyContent:"center", WebkitTapHighlightColor:"transparent",
-            transform: hubSpin ? "rotate(-360deg)" : "rotate(0deg)",
-            animation: radialChanged ? "radialPulse 0.5s ease" : "none",
-            transition:"transform .45s, background .3s, box-shadow .3s, color .3s, width .3s, height .3s, font-size .3s" }}>
-          {radialChanged ? "↺" : "⌖"}
-        </button>
       </div>
 
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
@@ -1854,6 +1838,7 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
 
   useEffect(() => {
@@ -1896,7 +1881,7 @@ function App() {
         </div>
       </div>
 
-      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} />}
+      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
@@ -1906,14 +1891,20 @@ function App() {
       {/* 下部固定ナビ */}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
-          const active = more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool") : (!action && tab===key);
-          const onClick = action ? () => { setTab("board"); setShowUpload(true); } : more ? () => setMoreOpen(v=>!v) : () => { setMoreOpen(false); setTab(key); };
+        {[tabs[0], tabs[3], { key:"__filter", filter:true, color:"#e05c00" }, { key:"__post", label:"投稿", color:"#e05c00", action:true }, { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool") : (!action && tab===key);
+          const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
+            : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
+            : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
+            : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
               style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"11px 1px 13px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              {active && !filter && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
+                : filter
+                ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>⌖</span>
                 : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?23:16, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
