@@ -615,6 +615,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
         )}
       </div>
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onSuccess={pop=>{setPops(p=>[pop,...p]);setShowUp(false);}} />}
+      {radialOpen && (
+        <div onClick={()=>{ setRadialOpen(false); setRadialChanged(false); }}
+          style={{ position:"fixed", inset:0, zIndex:160 }} />
+      )}
       <div style={{ position:"fixed", right:14, bottom:HUB_BOTTOM, width:1, height:1, zIndex:165 }}>
         {storeItems.map((it,i) => {
           const active = it.val === fStore;
@@ -1829,7 +1833,7 @@ function DevTab() {
                 <span style={{ background:t.bg, color:t.color, border:`1px solid ${t.border}`, borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:800 }}>{a.type}</span>
                 <span style={{ fontSize:11, color:"#bbb", fontWeight:700 }}>{a.date}</span>
               </div>
-              <div style={{ fontSize:15, fontWeight:800, color:"#222", marginBottom:6 }}>{a.title}</div>            
+              <div style={{ fontSize:15, fontWeight:800, color:"#222", marginBottom:6 }}>{a.title}</div>
               <div style={{ fontSize:13, color:"#555", lineHeight:1.75, whiteSpace:"pre-wrap" }}>{a.body}</div>
             </div>
           );
