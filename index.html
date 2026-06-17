@@ -589,8 +589,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
   const storeItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))];
   const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
-  const storePos = arcPositions(storeItems.length, 104, 30, 150);
-  const catPos = arcPositions(catItems.length, 152, 22, 158);
+  const storePos = arcPositions(storeItems.length, 104, 150, 30);
+  const catPos = arcPositions(catItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(64px + env(safe-area-inset-bottom))";
 
   return (
@@ -1904,7 +1904,7 @@ function App() {
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : filter
-                ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>⌖</span>
+                ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
                 : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?23:16, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
