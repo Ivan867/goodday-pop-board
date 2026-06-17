@@ -552,7 +552,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
   const [showUp, setShowUp] = useState(false);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
-  const [radialOpen, setRadialOpen] = useState(true);
+  const [radialOpen, setRadialOpen] = useState(false);
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
 
@@ -590,8 +590,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop }) {
 
   const storeItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))];
   const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
-  const storePos = arcPositions(storeItems.length, 128, 86, 178);
-  const catPos = arcPositions(catItems.length, 206, 92, 178);
+  const storePos = arcPositions(storeItems.length, 100, 86, 178);
+  const catPos = arcPositions(catItems.length, 158, 92, 178);
   const HUB_BOTTOM = "calc(62px + env(safe-area-inset-bottom))";
 
   return (
@@ -1878,19 +1878,17 @@ function App() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(56px + env(safe-area-inset-bottom))" }}>
-      <div style={{
-        background: `rgba(255,255,255,${0.97 - scrollP*0.42})`,
-        backdropFilter: scrollP>0.05 ? `blur(${scrollP*16}px) saturate(160%)` : "none",
-        WebkitBackdropFilter: scrollP>0.05 ? `blur(${scrollP*16}px) saturate(160%)` : "none",
-        boxShadow:"0 2px 12px rgba(0,0,0,0.08)", borderBottom: scrollP>0.05 ? "1px solid rgba(255,255,255,0.4)" : "none",
-        position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
+      <div style={{ position:"sticky", top:0, zIndex:100 }}>
+        {/* 白いバー：タイトルと一緒にスクロールで流れて消える（ガラス効果なし） */}
+        <div style={{ position:"absolute", inset:0, background:"#fff", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", opacity:1-scrollP, pointerEvents:"none" }} />
+        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
           <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0, flex:1, overflow:"hidden",
-            transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP }}>
+            transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
             <div style={{ fontSize:15, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>鮮魚ポップ共有</div>
             <div style={{ fontSize:10, fontWeight:700, color:"#bbb", whiteSpace:"nowrap", flexShrink:0 }}>GoodDay</div>
           </div>
-          <div style={{ opacity:1-scrollP*0.7 }}><WeatherWidget /></div>
+          {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
+          <div style={{ flexShrink:0 }}><WeatherWidget /></div>
         </div>
       </div>
 
@@ -1904,8 +1902,8 @@ function App() {
       {/* 下部固定ナビ */}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, tabs[2], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
-          const active = more ? (tab==="barcode"||tab==="dev"||tab==="floor") : (!action && tab===key);
+        {[tabs[0], tabs[3], { key:"__post", label:"投稿", color:"#e05c00", action:true }, { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more})=>{
+          const active = more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool") : (!action && tab===key);
           const onClick = action ? () => { setTab("board"); setShowUpload(true); } : more ? () => setMoreOpen(v=>!v) : () => { setMoreOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
@@ -1913,7 +1911,7 @@ function App() {
               {active && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{label}</span>}
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?21:13, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
         })}
@@ -1924,9 +1922,9 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(80px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i)=>(
+            {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<2?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
+                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}
               </button>
             ))}
