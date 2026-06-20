@@ -592,7 +592,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
   const storePos = arcPositions(storeItems.length, 104, 150, 30);
   const catPos = arcPositions(catItems.length, 152, 158, 22);
-  const FAN_BOTTOM = "calc(64px + env(safe-area-inset-bottom))";
+  const FAN_BOTTOM = "calc(76px + env(safe-area-inset-bottom))";
 
   return (
     <>
@@ -708,30 +708,10 @@ function SearchTab({ onCreateFromPop }) {
   const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
 
   return (
-    <div style={{ maxWidth:1080, margin:"0 auto", padding:"24px 16px 40px" }}>
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 84px" }}>
 
       {/* 検索ボックス */}
       <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
-        <div style={{ position:"relative", marginBottom:14 }}>
-          <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#ccc", pointerEvents:"none" }}>🔍</span>
-          <input
-            type="text"
-            value={search}
-            onChange={e=>{ setSearch(e.target.value); ensureLoaded(); }}
-            onFocus={ensureLoaded}
-            placeholder="商品名・店舗名・カテゴリで検索..."
-            style={{ width:"100%", padding:"13px 42px 13px 46px", border:"2px solid #e8e8e8", borderRadius:12, fontSize:15, outline:"none", transition:"border-color 0.15s", background:"#fafafa" }}
-            onFocus2={e=>e.target.style.borderColor="#e05c00"}
-            onBlur={e=>e.target.style.borderColor="#e8e8e8"}
-          />
-          {search && (
-            <button onClick={()=>setSearch("")}
-              style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"#ddd", border:"none", borderRadius:"50%", width:24, height:24, cursor:"pointer", fontSize:13, color:"#666", display:"flex", alignItems:"center", justifyContent:"center" }}>
-              ✕
-            </button>
-          )}
-        </div>
-
         {/* 店舗フィルター */}
         <div style={{ display:"flex", gap:8, marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
           {[{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
@@ -752,8 +732,8 @@ function SearchTab({ onCreateFromPop }) {
           ))}
         </div>
 
-        {/* よく使う検索ワード */}
-        <div style={{ display:"flex", gap:6, flexWrap:"nowrap", overflowX:"auto", paddingTop:11, marginTop:11, borderTop:"1px solid #f1f1f1" }}>
+        {/* よく使う検索ワード（折り返しで全部表示） */}
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10 }}>
           {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","父の日","鮭","対面","夏"].map(w=>{
             const on = search===w;
             return (
@@ -764,6 +744,7 @@ function SearchTab({ onCreateFromPop }) {
             );
           })}
         </div>
+
       </div>
 
       {/* 結果エリア */}
@@ -813,6 +794,28 @@ function SearchTab({ onCreateFromPop }) {
         onLiked={(id,likes)=>setAllPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
         onCreateFromPop={onCreateFromPop}
       />}
+
+      {/* 画面下部固定の検索バー（ナビのすぐ上） */}
+      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(74px + env(safe-area-inset-bottom))", zIndex:150, background:"rgba(255,255,255,0.97)", borderTop:"1px solid #ececec", boxShadow:"0 -3px 14px rgba(0,0,0,0.07)", padding:"9px 14px" }}>
+        <div style={{ maxWidth:1080, margin:"0 auto", position:"relative" }}>
+          <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#ccc", pointerEvents:"none" }}>🔍</span>
+          <input
+            type="text"
+            value={search}
+            onChange={e=>{ setSearch(e.target.value); ensureLoaded(); }}
+            onFocus={ensureLoaded}
+            placeholder="商品名・店舗名・カテゴリで検索..."
+            style={{ width:"100%", boxSizing:"border-box", padding:"12px 42px 12px 46px", border:"2px solid #e8e8e8", borderRadius:12, fontSize:15, outline:"none", background:"#fafafa" }}
+            onBlur={e=>e.target.style.borderColor="#e8e8e8"}
+          />
+          {search && (
+            <button onClick={()=>setSearch("")}
+              style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"#ddd", border:"none", borderRadius:"50%", width:24, height:24, cursor:"pointer", fontSize:13, color:"#666", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1932,7 +1935,7 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(74px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -1949,7 +1952,6 @@ function App() {
           <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0, flex:1, overflow:"hidden",
             transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
             <div style={{ fontSize:15, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>鮮魚ポップ共有</div>
-            <div style={{ fontSize:10, fontWeight:700, color:"#bbb", whiteSpace:"nowrap", flexShrink:0 }}>GoodDay</div>
           </div>
           {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
           <div style={{ flexShrink:0 }}><WeatherWidget /></div>
@@ -1974,13 +1976,13 @@ function App() {
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={onClick}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"11px 1px 13px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"15px 1px 17px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {active && !filter && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : filter
                 ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?23:16, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
         })}
@@ -1990,7 +1992,7 @@ function App() {
         <>
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
-          <div style={{ position:"fixed", right:10, bottom:"calc(80px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
+          <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
             {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
