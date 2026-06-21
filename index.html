@@ -17,6 +17,9 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 @keyframes radialPulse { 0% { transform:scale(1); } 35% { transform:scale(1.16); } 100% { transform:scale(1); } }
 @keyframes liked { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1); } }
 @keyframes spin { to { transform:rotate(360deg); } }
+@keyframes gneFloat { 0% { opacity:0; transform:translateY(8px) scale(0.5); } 25% { opacity:1; } 100% { opacity:0; transform:translateY(-20px) scale(1.15); } }
+@keyframes gneBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+@keyframes gneGlow { 0%,100% { box-shadow:0 3px 12px rgba(224,92,0,0.45); } 50% { box-shadow:0 4px 22px rgba(255,150,40,0.95); } }
 .like-btn:active { animation: liked 0.3s ease; }
 #barcode-print-portal { display: none; }
 @media print {
@@ -36,18 +39,11 @@ const STORES = ["北部店","木次店","大田店","斐川店","医大通り店
 const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","日替","塩干","その他"];
 const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
 const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
-// ワンタップ定型文。type: "reaction"（反応・お礼）/ "feedback"（作者への修正依頼）。自由に足し引きOK。
-const QUICK_REPLIES = [
-  { text: "使わせてもらいます！", type: "reaction" },
-  { text: "売れました！",       type: "reaction" },
-  { text: "ありがとうございます", type: "reaction" },
-  { text: "文字を大きめが良さそう", type: "feedback" },
-  { text: "価格を目立たせたい",   type: "feedback" },
-];
+// 管理画面のパスワード（あなただけが知る値。GitHub で直接ここを書き換えてください）
+const ADMIN_PASS = "6511";
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
   { date:"2026-06-09", type:"新機能", title:"「このPOPを元に作る」を追加", body:"POP詳細画面から、そのPOPのレイアウト・配色を下敷きにして別商品のPOPを作れるようになりました。作成タブが自動で「参考画像あり」モードで開きます。" },
-  { date:"2026-06-09", type:"新機能", title:"ワンタップ返信を追加", body:"POPに「使わせてもらいます！」「売れました！」などをワンタップで送れるようになりました。店舗を選ばず気軽に押せます。" },
 ];
 const ANN_TYPES = {
   "新機能":   { bg:"#eafaf0", color:"#1a6b3a", border:"#bfe6cd" },
@@ -57,6 +53,10 @@ const ANN_TYPES = {
 // 必要になったときだけ外部ライブラリを読み込む（初回ロードを軽くするため）
 const XLSX_SRC = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
+const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const GNE_FONT_NAME = "Noto Sans JP";
+// ★本番はフル版Blackのwoff2をSupabase Storageに置いてこのURLを差し替え（全漢字カバー＆環境差ゼロ）
+const GNE_FONT_URL = "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-900-normal.woff2";
 function loadScriptOnce(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -95,6 +95,15 @@ const api = {
     });
     if (!r.ok) throw new Error(await r.text());
     return (await r.json())[0];
+  },
+  async setArchivedMany(ids, archived) {
+    if (!ids.length) return;
+    const r = await fetch(`${SB_URL}/rest/v1/pops?id=in.(${ids.join(",")})`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
+      body: JSON.stringify({ archived })
+    });
+    if (!r.ok) throw new Error(await r.text());
   },
   async del(id) {
     const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
@@ -481,22 +490,6 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               </div>
             )}
             <div style={{ background:"#fafafa", borderRadius:12, padding:"12px 14px", border:"2px solid #eee" }}>
-              <div style={{ fontSize:11, fontWeight:700, color:"#999", marginBottom:6 }}>ワンタップ返信 <span style={{ fontWeight:400, color:"#bbb" }}>（タップで送信）</span></div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:14 }}>
-                {QUICK_REPLIES.map(q => {
-                  const isFb = q.type === "feedback";
-                  return (
-                    <button key={q.text} onClick={()=>handleQuickReply(q.text)} disabled={cSubmitting}
-                      style={{ background: isFb ? "#eef3f8" : "#fff3ea", color: isFb ? "#3a6ea5" : "#e05c00",
-                        border: `2px solid ${isFb ? "#cfe0ef" : "#ffd9bd"}`, borderRadius:22, padding:"10px 15px",
-                        fontSize:13.5, fontWeight:800, cursor:"pointer", lineHeight:1.2, opacity:cSubmitting?0.5:1,
-                        WebkitTapHighlightColor:"transparent" }}>
-                      {q.text}
-                    </button>
-                  );
-                })}
-              </div>
-              <div style={{ borderTop:"1px solid #eee", margin:"0 -14px 12px", paddingTop:12 }} />
               <div style={{ fontSize:11, fontWeight:700, color:"#999", marginBottom:6 }}>自分でコメント <span style={{ fontWeight:400, color:"#bbb" }}>（店舗を選んで投稿）</span></div>
               <select value={cStore} onChange={e=>setCStore(e.target.value)}
                 style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, marginBottom:8, outline:"none", background:"white" }}>
@@ -563,7 +556,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         api.listAll(),
         api.listCommentedPopIds()
       ]);
-      setPops(data);
+      setPops(data.filter(p => !p.archived));
       setCommentedIds(cIds);
     }
     catch(e) { console.error(e); }
@@ -686,7 +679,7 @@ function SearchTab({ onCreateFromPop }) {
   const ensureLoaded = async () => {
     if (loaded || loading) return;
     setLoading(true);
-    try { const data = await api.listAll(); setAllPops(data); setLoaded(true); }
+    try { const data = await api.listAll(); setAllPops(data.filter(p => !p.archived)); setLoaded(true); }
     catch(e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -1848,8 +1841,400 @@ function DevTab() {
 }
 
 // ── Main App ──
+// ===== GNE：POP画像ジェネレーター（Canvasで柄テンプレに文字を焼く） =====
+const GNE_LAYOUT = {
+  origin:   { x:44,  y:1118, size:84,  fill:"#ffffff", stroke:"#141414", sw:9,  align:"left",   maxW:1130 },
+  name:     { x:600, y:1296, size:210, fill:"#ffffff", stroke:"#141414", sw:15, align:"center", maxW:1130 },
+  count:    { x:46,  y:1588, size:140, fill:"#ffffff", stroke:"#141414", sw:12, align:"left",   maxW:235  },
+  price:    { x:548, y:1545, size:255, fill:"#e31414", stroke:"#ffffff", sw:12, align:"center", maxW:560  },
+  plus:     { x:872, y:1548, size:54,  fill:"#e31414", stroke:"#ffffff", sw:4,  align:"center" },
+  yen:      { x:868, y:1628, size:58,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
+  taxLabel: { x:1050,y:1552, size:62,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
+  taxPrice: { x:1048,y:1632, size:74,  fill:"#e31414", stroke:"#ffffff", sw:5,  align:"center" },
+};
+const GNE_FIXED = { plus:"+税", yen:"円", taxLabel:"税込価格" };
+const GNE_W = 1200, GNE_H = 1697;
+const GNE_FONT_STACK = `"${GNE_FONT_NAME}", "Hiragino Sans", "Yu Gothic", sans-serif`;
+
+function gneCalcTax(price, mode) {
+  const raw = price * 1.08;
+  if (mode === "ceil") return Math.ceil(raw);
+  if (mode === "floor") return Math.floor(raw);
+  return Math.round(raw);
+}
+function gneSanitize(s) { return String(s).replace(/[\\/:*?"<>|]/g, "_").trim(); }
+
+function gneDrawField(ctx, text, cfg) {
+  if (text == null || text === "") return;
+  text = String(text);
+  let size = cfg.size;
+  ctx.textAlign = cfg.align;
+  ctx.textBaseline = "middle";
+  ctx.font = `900 ${size}px ${GNE_FONT_STACK}`;
+  if (cfg.maxW) {
+    while (ctx.measureText(text).width > cfg.maxW && size > 12) {
+      size -= 4;
+      ctx.font = `900 ${size}px ${GNE_FONT_STACK}`;
+    }
+  }
+  ctx.lineJoin = "round";
+  ctx.miterLimit = 2;
+  ctx.strokeStyle = cfg.stroke;
+  ctx.lineWidth = cfg.sw * 2;
+  ctx.strokeText(text, cfg.x, cfg.y);
+  ctx.fillStyle = cfg.fill;
+  ctx.fillText(text, cfg.x, cfg.y);
+}
+
+function gneRender(ctx, f, tpl, taxMode) {
+  ctx.clearRect(0, 0, GNE_W, GNE_H);
+  if (tpl) {
+    ctx.drawImage(tpl, 0, 0, GNE_W, GNE_H);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, GNE_H);
+    g.addColorStop(0, "#cdddee"); g.addColorStop(1, "#aac2dd");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, GNE_W, GNE_H);
+    ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.fillRect(40, 40, GNE_W - 80, 940);
+    ctx.fillStyle = "#5a708c"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `900 46px ${GNE_FONT_STACK}`;
+    ctx.fillText("テンプレ画像を選択してください", GNE_W / 2, 500);
+  }
+  if (f.origin) gneDrawField(ctx, f.origin, GNE_LAYOUT.origin);
+  if (f.name)   gneDrawField(ctx, f.name,   GNE_LAYOUT.name);
+  if (f.count)  gneDrawField(ctx, f.count,  GNE_LAYOUT.count);
+  if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
+    const p = parseInt(f.price, 10);
+    gneDrawField(ctx, String(p), GNE_LAYOUT.price);
+    gneDrawField(ctx, `${gneCalcTax(p, taxMode)}円`, GNE_LAYOUT.taxPrice);
+  }
+  gneDrawField(ctx, GNE_FIXED.plus, GNE_LAYOUT.plus);
+  gneDrawField(ctx, GNE_FIXED.yen, GNE_LAYOUT.yen);
+  gneDrawField(ctx, GNE_FIXED.taxLabel, GNE_LAYOUT.taxLabel);
+}
+
+function GeneratorTab() {
+  const previewRef = React.useRef(null);
+  const tplInput = React.useRef(null);
+  const xlsxInput = React.useRef(null);
+  const [tpl, setTpl] = useState(null);
+  const [fontReady, setFontReady] = useState(false);
+  const [fontFailed, setFontFailed] = useState(false);
+  const [taxMode, setTaxMode] = useState("ceil");
+  const [f, setF] = useState({ origin:"鹿児島県産（養殖・解凍）", name:"うなぎかば焼き", count:"1尾", price:"2390" });
+  const [rows, setRows] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+
+  // フォント(woff2)をFontFaceで直接ロード。失敗してもシステム代替で描画継続。
+  useEffect(() => {
+    let cancelled = false;
+    const finish = (ok) => { if (cancelled) return; if (!ok) setFontFailed(true); setFontReady(true); };
+    try {
+      if (!(document.fonts && window.FontFace)) { finish(false); return; }
+      const face = new FontFace(GNE_FONT_NAME, `url(${GNE_FONT_URL})`, { weight:"900" });
+      face.load().then((lf) => { if (cancelled) return; document.fonts.add(lf); finish(true); }).catch(() => finish(false));
+      setTimeout(() => finish(false), 6000);
+    } catch (e) { finish(false); }
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    const cv = previewRef.current; if (!cv) return;
+    gneRender(cv.getContext("2d"), f, tpl, taxMode);
+  }, [f, tpl, taxMode, fontReady]);
+
+  const onTpl = (file) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { setTpl(img); URL.revokeObjectURL(url); };
+    img.src = url;
+  };
+
+  const downloadOne = () => {
+    const cv = previewRef.current;
+    cv.toBlob((b) => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = (gneSanitize(f.name) || "pop") + ".png"; a.click(); URL.revokeObjectURL(a.href); }, "image/png");
+  };
+
+  const onExcel = async (file) => {
+    if (!file) return;
+    setStatus("読み込み中…");
+    try {
+      await loadScriptOnce(XLSX_SRC);
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(new Uint8Array(buf), { type:"array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, { defval:"" });
+      const rs = json.map((r) => ({ origin:r["産地"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "" })).filter((r) => r.name);
+      setRows(rs);
+      setStatus(`${rs.length} 件を読み込みました`);
+    } catch (e) { setStatus("Excel読み込みに失敗しました"); }
+  };
+
+  const renderBlob = (row) => new Promise((res) => {
+    const c = document.createElement("canvas"); c.width = GNE_W; c.height = GNE_H;
+    gneRender(c.getContext("2d"), row, tpl, taxMode);
+    c.toBlob((b) => res(b), "image/png");
+  });
+
+  const generateZip = useCallback(async () => {
+    if (!rows.length) return;
+    setBusy(true); setStatus("生成中…");
+    try {
+      await loadScriptOnce(JSZIP_SRC);
+      const zip = new JSZip(); const used = {};
+      for (let i = 0; i < rows.length; i++) {
+        const blob = await renderBlob(rows[i]);
+        let base = gneSanitize(rows[i].name) || `pop_${i + 1}`;
+        if (used[base]) { used[base]++; base = `${base}_${used[base]}`; } else { used[base] = 1; }
+        zip.file(`${base}.png`, blob);
+        setStatus(`生成中… ${i + 1}/${rows.length}`);
+      }
+      const out = await zip.generateAsync({ type:"blob" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(out); a.download = "pop_output.zip"; a.click(); URL.revokeObjectURL(a.href);
+      setStatus(`完了：${rows.length} 件を ZIP 出力しました`);
+    } catch (e) { setStatus("ZIP生成に失敗しました（通信制限の可能性）"); }
+    finally { setBusy(false); }
+  }, [rows, tpl, taxMode]);
+
+  const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
+  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode)}円` : "—";
+  const fontNote = !fontReady ? "（フォント読込中…）" : fontFailed ? "（システム代替で描画中・FONT_URL確認）" : "";
+
+  const card = { background:"#fff", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.06)", padding:16 };
+  const ACC = "#7c3aed";
+
+  return (
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>🅖 GNE｜POP画像ジェネレーター</div>
+      <div style={{ fontSize:13, color:"#888", marginBottom:16 }}>柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。</div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:14 }}>
+        <div style={card}>
+          <div style={{ fontSize:14, fontWeight:800, color:"#333", marginBottom:8 }}>🖼 テンプレ画像（文字なし・1200×1697推奨）</div>
+          <button onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"#fafafa", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"#555", cursor:"pointer" }}>画像を選択</button>
+          {tpl && <span style={{ marginLeft:10, fontSize:12, color:"#1a6b3a", fontWeight:700 }}>読込済み</span>}
+          <input ref={tplInput} type="file" accept="image/*" onChange={(e) => onTpl(e.target.files[0])} style={{ display:"none" }} />
+        </div>
+
+        <div style={card}>
+          <div style={{ fontSize:12, color:"#aaa", marginBottom:8 }}>プレビュー {fontNote}</div>
+          <canvas ref={previewRef} width={GNE_W} height={GNE_H} style={{ width:"100%", height:"auto", borderRadius:10, border:"1px solid #eee", display:"block" }} />
+        </div>
+
+        <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
+          <div style={{ fontSize:14, fontWeight:800, color:"#333" }}>単品入力（ライブプレビュー）</div>
+          {[["産地","origin"],["商品名","name"],["個数","count"],["本体価格","price"]].map(([label, key]) => (
+            <div key={key}>
+              <div style={{ fontSize:12, color:"#888", marginBottom:4 }}>{label}</div>
+              <input value={f[key]} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
+                style={{ width:"100%", border:"1px solid #ddd", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
+            </div>
+          ))}
+          <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
+            <span style={{ fontSize:12, color:"#888" }}>税込丸め</span>
+            <select value={taxMode} onChange={(e) => setTaxMode(e.target.value)} style={{ border:"1px solid #ddd", borderRadius:8, padding:"6px 8px", fontSize:14 }}>
+              <option value="ceil">切り上げ</option>
+              <option value="round">四捨五入</option>
+              <option value="floor">切り捨て</option>
+            </select>
+            <span style={{ fontSize:12, color:"#888" }}>税込：<b style={{ color:"#333" }}>{taxPreview}</b></span>
+          </div>
+          <button onClick={downloadOne} style={{ width:"100%", border:"none", background:ACC, color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:"pointer" }}>⬇ この1枚を PNG ダウンロード</button>
+        </div>
+
+        <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
+          <div style={{ fontSize:14, fontWeight:800, color:"#333" }}>📊 Excel 一括（products.xlsx）</div>
+          <div style={{ fontSize:12, color:"#888" }}>列：産地／商品名／個数／本体価格。読み込んで ZIP で一括出力。</div>
+          <button onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"#fafafa", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"#555", cursor:"pointer", width:"fit-content" }}>.xlsx を選択</button>
+          <input ref={xlsxInput} type="file" accept=".xlsx,.xls" onChange={(e) => onExcel(e.target.files[0])} style={{ display:"none" }} />
+          <button onClick={generateZip} disabled={!rows.length || busy}
+            style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "#cbb8ef" : "#1a6b3a", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>
+            {busy ? "生成中…" : (rows.length ? `⬇ ${rows.length} 件を ZIP 出力` : "ファイル未読込")}
+          </button>
+          {status && <div style={{ fontSize:12, color:"#888" }}>{status}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ===== 管理画面：パスワードで解錠 → 公開中POPを選んでアーカイブ／公開に戻す =====
+function AdminTab() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [gpw, setGpw] = useState("");
+  const [gErr, setGErr] = useState("");
+
+  const [pops, setPops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState("active"); // active | archived
+  const [sel, setSel] = useState({});
+  const [applying, setApplying] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const d = await api.listAll(); setPops(d); }
+    catch (e) { console.error(e); }
+    finally { setLoading(false); }
+  }, []);
+  useEffect(() => { if (unlocked) load(); }, [unlocked, load]);
+
+  const tryUnlock = () => {
+    if (gpw === ADMIN_PASS) { setUnlocked(true); setGErr(""); }
+    else setGErr("パスワードが違います");
+  };
+
+  if (!unlocked) {
+    return (
+      <div style={{ maxWidth:420, margin:"0 auto", padding:"60px 20px", animation:"fadeUp .3s ease" }}>
+        <div style={{ background:"#fff", borderRadius:16, boxShadow:"0 2px 14px rgba(0,0,0,0.07)", padding:24, textAlign:"center" }}>
+          <div style={{ fontSize:34, marginBottom:8 }}>🔒</div>
+          <div style={{ fontSize:17, fontWeight:900, color:"#222", marginBottom:6 }}>管理画面</div>
+          <div style={{ fontSize:13, color:"#888", marginBottom:18 }}>パスワードを入力してください</div>
+          <input type="password" value={gpw} autoFocus inputMode="numeric"
+            onChange={e => { setGpw(e.target.value); setGErr(""); }}
+            onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
+            placeholder="パスワード"
+            style={{ width:"100%", border:"2px solid #eee", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
+          {gErr && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
+          <button onClick={tryUnlock}
+            style={{ width:"100%", border:"none", background:"#e05c00", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:"pointer" }}>解錠する</button>
+        </div>
+      </div>
+    );
+  }
+
+  const list = pops.filter(p => view === "archived" ? p.archived : !p.archived);
+  const selIds = Object.keys(sel).filter(k => sel[k]);
+  const toArchive = view === "active";
+  const aCount = pops.filter(p => !p.archived).length;
+  const arCount = pops.filter(p => p.archived).length;
+
+  const toggle = (id) => setSel(s => ({ ...s, [id]: !s[id] }));
+  const switchView = (v) => { setView(v); setSel({}); };
+  const apply = async () => {
+    if (!selIds.length) return;
+    setApplying(true);
+    try { await api.setArchivedMany(selIds, toArchive); setSel({}); await load(); }
+    catch (e) { alert("更新に失敗しました（archived列の追加SQLは実行済みですか？）"); }
+    finally { setApplying(false); }
+  };
+
+  const seg = (v, label, n) => (
+    <button onClick={() => switchView(v)}
+      style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:800,
+        background: view===v ? "#e05c00" : "#fff", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
+      {label}（{n}）
+    </button>
+  );
+
+  return (
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:130, animation:"fadeUp .3s ease" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>🔒 管理画面</div>
+      <div style={{ fontSize:13, color:"#888", marginBottom:14 }}>写真をタップして選び、まとめてアーカイブ／公開に戻せます。</div>
+
+      <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #eee", marginBottom:14 }}>
+        {seg("active","公開中",aCount)}
+        {seg("archived","アーカイブ済み",arCount)}
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign:"center", color:"#aaa", padding:"40px 0", fontSize:14 }}>読み込み中…</div>
+      ) : list.length === 0 ? (
+        <div style={{ textAlign:"center", color:"#bbb", padding:"40px 0", fontSize:14 }}>
+          {view==="archived" ? "アーカイブ済みのPOPはありません" : "公開中のPOPはありません"}
+        </div>
+      ) : (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(108px, 1fr))", gap:10 }}>
+          {list.map(p => {
+            const on = !!sel[p.id];
+            return (
+              <button key={p.id} onClick={() => toggle(p.id)}
+                style={{ position:"relative", border: on ? "3px solid #e05c00" : "1px solid #eee", borderRadius:12, overflow:"hidden",
+                  background:"#fff", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"#f0f0f0", opacity: on ? 0.85 : 1 }} />
+                {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"#e05c00", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
+                <div style={{ padding:"6px 8px" }}>
+                  <div style={{ fontSize:12, fontWeight:800, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
+                  <div style={{ fontSize:11, color:"#999", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {selIds.length > 0 && (
+        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(74px + env(safe-area-inset-bottom))", zIndex:190,
+          background:"#fff", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.1)", padding:"12px 16px",
+          display:"flex", alignItems:"center", gap:12 }}>
+          <span style={{ fontSize:14, fontWeight:800, color:"#333" }}>{selIds.length}件 選択中</span>
+          <button onClick={() => setSel({})}
+            style={{ marginLeft:"auto", border:"1px solid #ddd", background:"#fff", color:"#888", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
+          <button onClick={apply} disabled={applying}
+            style={{ border:"none", background: toArchive ? "#e05c00" : "#1a6b3a", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
+            {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== アーカイブ：販売終了POPの保管庫（誰でも閲覧可・読み取り専用） =====
+function ArchiveTab({ onCreateFromPop }) {
+  const [pops, setPops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sel, setSel] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try { const d = await api.listAll(); if (alive) setPops(d.filter(p => p.archived)); }
+      catch (e) { console.error(e); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  return (
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:90, animation:"fadeUp .3s ease" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>🗄 アーカイブ</div>
+      <div style={{ fontSize:13, color:"#888", marginBottom:14 }}>販売が終わったPOPの保管庫です。過去の参考にどうぞ。</div>
+
+      {loading ? (
+        <div style={{ textAlign:"center", color:"#aaa", padding:"50px 0", fontSize:14 }}>読み込み中…</div>
+      ) : pops.length === 0 ? (
+        <div style={{ textAlign:"center", padding:60, color:"#ccc" }}>
+          <div style={{ fontSize:46, marginBottom:12 }}>🗄</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>アーカイブはまだ空です</div>
+          <div style={{ fontSize:13, marginTop:6, color:"#bbb" }}>管理画面からPOPをアーカイブできます</div>
+        </div>
+      ) : (
+        <>
+          <div style={{ fontSize:13, fontWeight:800, color:"#999", marginBottom:12, paddingLeft:2 }}>アーカイブ済み（{pops.length}）</div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
+            {pops.map(pop => (
+              <img key={pop.id} src={pop.image_url} loading="lazy" onClick={() => setSel(pop)}
+                style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"#f0f0f0", display:"block" }} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {sel && <PopDetail pop={sel} onClose={() => setSel(null)}
+        onDelete={id => { setPops(p => p.filter(x => x.id !== id)); setSel(null); }}
+        onLiked={(id, likes) => setPops(p => p.map(x => x.id === id ? { ...x, likes } : x))}
+        onCreateFromPop={onCreateFromPop}
+      />}
+    </div>
+  );
+}
+
 function App() {
   const [tab, setTab] = useState("board");
+  const [showGneHint, setShowGneHint] = useState(true);
   const [currentStore, setCurrentStore] = useState(STORES[0]);
   const boardActions = React.useRef({});
   const [showUpload, setShowUpload] = useState(false);
@@ -1932,6 +2317,7 @@ function App() {
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
     { key:"barcode", icon:"🏷", label:"リスト",     color:"#1f6feb" },
     { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
+    { key:"gne",     icon:"🅖", label:"GNE",      color:"#7c3aed" },
   ];
 
   return (
@@ -1963,26 +2349,39 @@ function App() {
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} />}
+      {tab==="gne"    && <GeneratorTab />}
+      {tab==="admin"  && <AdminTab />}
+      {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
       {tab==="dev"    && <DevTab />}
 
       {/* 下部固定ナビ */}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
-        {[tabs[0], tabs[3], { key:"__filter", filter:true, color:"#e05c00" }, { key:"__post", label:"投稿", color:"#e05c00", action:true }, { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool") : (!action && tab===key);
+        {[tabs[0], tabs[3], tabs[6], { key:"__filter", filter:true, color:"#e05c00" }, { key:"__post", label:"投稿", color:"#e05c00", action:true }, { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
-            <button key={key} onClick={onClick}
+            <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
               style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"15px 1px 17px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              {key==="gne" && showGneHint && (
+                <div style={{ position:"absolute", bottom:"100%", left:"50%", transform:"translateX(-50%)", marginBottom:9, zIndex:260, pointerEvents:"none", display:"flex", flexDirection:"column", alignItems:"center" }}>
+                  <span style={{ position:"absolute", left:-16, bottom:18, fontSize:13, animation:"gneFloat 1.6s ease-in-out infinite" }}>✨</span>
+                  <span style={{ position:"absolute", right:-15, bottom:24, fontSize:11, animation:"gneFloat 1.9s ease-in-out infinite", animationDelay:".5s" }}>⭐</span>
+                  <span style={{ position:"absolute", left:6, bottom:30, fontSize:10, animation:"gneFloat 1.7s ease-in-out infinite", animationDelay:".9s" }}>✨</span>
+                  <span style={{ position:"absolute", right:4, bottom:8, fontSize:12, animation:"gneFloat 2.1s ease-in-out infinite", animationDelay:"1.2s" }}>⭐</span>
+                  <div style={{ background:"linear-gradient(135deg,#ff8a3d,#e05c00)", color:"#fff", fontWeight:900, fontSize:11.5, padding:"6px 12px", borderRadius:14, whiteSpace:"nowrap", animation:"gneBounce 1.1s ease-in-out infinite, gneGlow 1.4s ease-in-out infinite" }}>✨新機能！POP生成</div>
+                  <div style={{ width:0, height:0, borderLeft:"7px solid transparent", borderRight:"7px solid transparent", borderTop:"8px solid #e05c00", marginTop:-1, animation:"gneBounce 1.1s ease-in-out infinite" }} />
+                </div>
+              )}
               {active && !filter && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : filter
                 ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: (key==="gne"&&showGneHint)?"#e05c00":(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
         })}
@@ -1993,7 +2392,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}].map((o,i,arr)=>(
+            {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}
