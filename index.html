@@ -57,6 +57,15 @@ const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min
 const GNE_FONT_NAME = "Noto Sans JP";
 // ★本番はフル版Blackのwoff2をSupabase Storageに置いてこのURLを差し替え（全漢字カバー＆環境差ゼロ）
 const GNE_FONT_URL = "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-900-normal.woff2";
+// GNEで選べるフォント（選択時に woff2 を遅延ロード）。本番は Supabase Storage に置いた woff2 URL に差し替え可。
+const GNE_FONTS = [
+  { id:"noto",   label:"ゴシック太",  family:"Noto Sans JP",    weight:"900", url:"https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-900-normal.woff2" },
+  { id:"dela",   label:"極太ポップ",  family:"Dela Gothic One", weight:"400", url:"https://cdn.jsdelivr.net/fontsource/fonts/dela-gothic-one@latest/japanese-400-normal.woff2" },
+  { id:"mochiy", label:"丸ゴシック",  family:"Mochiy Pop One",  weight:"400", url:"https://cdn.jsdelivr.net/fontsource/fonts/mochiy-pop-one@latest/japanese-400-normal.woff2" },
+  { id:"reggae", label:"レゲエ体",    family:"Reggae One",      weight:"400", url:"https://cdn.jsdelivr.net/fontsource/fonts/reggae-one@latest/japanese-400-normal.woff2" },
+  { id:"yuji",   label:"筆文字",      family:"Yuji Syuku",      weight:"400", url:"https://cdn.jsdelivr.net/fontsource/fonts/yuji-syuku@latest/japanese-400-normal.woff2" },
+  { id:"hachi",  label:"手書き丸",    family:"Hachi Maru Pop",  weight:"400", url:"https://cdn.jsdelivr.net/fontsource/fonts/hachi-maru-pop@latest/japanese-400-normal.woff2" },
+];
 function loadScriptOnce(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -666,7 +675,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 }
 
 // ── Search Tab ──
-function SearchTab({ onCreateFromPop }) {
+function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   const [allPops, setAllPops] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -699,12 +708,27 @@ function SearchTab({ onCreateFromPop }) {
 
   const hasFilter = q || fStore || fCat;
   const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
+  const fanStoreItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))];
+  const fanCatItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
+  const fanStorePos = arcPositions(fanStoreItems.length, 104, 150, 30);
+  const fanCatPos = arcPositions(fanCatItems.length, 152, 158, 22);
+  const FAN_BOTTOM = "calc(76px + env(safe-area-inset-bottom))";
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 84px" }}>
 
       {/* 検索ボックス */}
       <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
+        {/* 検索入力（最上部） */}
+        <div style={{ position:"relative", marginBottom:12 }}>
+          <span style={{ position:"absolute", left:13, top:"50%", transform:"translateY(-50%)", fontSize:17, color:"#ccc", pointerEvents:"none" }}>🔍</span>
+          <input type="text" value={search} onChange={e=>{ setSearch(e.target.value); ensureLoaded(); }} onFocus={ensureLoaded}
+            placeholder="商品名・店舗名・カテゴリで検索..."
+            style={{ width:"100%", boxSizing:"border-box", padding:"12px 40px 12px 44px", border:"2px solid #e8e8e8", borderRadius:12, fontSize:15, outline:"none", background:"#fafafa" }} />
+          {search && (
+            <button onClick={()=>setSearch("")} style={{ position:"absolute", right:11, top:"50%", transform:"translateY(-50%)", background:"#ddd", border:"none", borderRadius:"50%", width:24, height:24, cursor:"pointer", fontSize:13, color:"#666", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+          )}
+        </div>
         {/* 店舗フィルター */}
         <div style={{ display:"flex", gap:8, marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
           {[{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
@@ -782,33 +806,56 @@ function SearchTab({ onCreateFromPop }) {
         </>
       )}
 
+      {radialOpen && (
+        <div onClick={()=>setRadialOpen(false)} style={{ position:"fixed", inset:0, zIndex:160 }} />
+      )}
+      <div style={{ position:"fixed", left:"50%", bottom:FAN_BOTTOM, width:1, height:1, zIndex:165 }}>
+        {fanStoreItems.map((it,i) => {
+          const active = it.val === fStore;
+          const delay = radialOpen ? (50+i*30) : 0;
+          return (
+            <button key={"s"+it.val} onClick={(e)=>{ e.stopPropagation(); setFStore(it.val); ensureLoaded(); }}
+              style={{ position:"absolute", left:0, bottom:0, transformOrigin:"50% 100%",
+                transform: radialOpen ? `translate(-50%,0) translate(${fanStorePos[i].tx}px, ${fanStorePos[i].ty}px) scale(1)` : "translate(-50%,0) scale(0.2)",
+                opacity: radialOpen?1:0, pointerEvents: radialOpen?"auto":"none",
+                transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
+                transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
+                transitionDelay:`${delay}ms, ${delay}ms`,
+                padding:"8px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight:800, borderRadius:20,
+                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
+                background: active?"#e05c00":"white", color: active?"#fff":"#b54900",
+                border:`2px solid ${active?"#e05c00":"#ffd9bd"}` }}>
+              {it.lbl}
+            </button>
+          );
+        })}
+        {fanCatItems.map((it,i) => {
+          const active = it.val === fCat;
+          const delay = radialOpen ? (170+i*30) : 0;
+          return (
+            <button key={"c"+it.val} onClick={(e)=>{ e.stopPropagation(); setFCat(it.val); ensureLoaded(); }}
+              style={{ position:"absolute", left:0, bottom:0, transformOrigin:"50% 100%",
+                transform: radialOpen ? `translate(-50%,0) translate(${fanCatPos[i].tx}px, ${fanCatPos[i].ty}px) scale(1)` : "translate(-50%,0) scale(0.2)",
+                opacity: radialOpen?1:0, pointerEvents: radialOpen?"auto":"none",
+                transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
+                transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
+                transitionDelay:`${delay}ms, ${delay}ms`,
+                padding:"6px 11px", whiteSpace:"nowrap", fontSize:12, fontWeight:800, borderRadius:20,
+                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
+                background: active?"#111":"white", color: active?"#fff":"#555",
+                border:`2px solid ${active?"#111":"#ddd"}` }}>
+              {it.lbl}
+            </button>
+          );
+        })}
+      </div>
+
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
         onDelete={id=>{ setAllPops(p=>p.filter(x=>x.id!==id)); setSel(null); }}
         onLiked={(id,likes)=>setAllPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
         onCreateFromPop={onCreateFromPop}
       />}
 
-      {/* 画面下部固定の検索バー（ナビのすぐ上） */}
-      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(74px + env(safe-area-inset-bottom))", zIndex:150, background:"rgba(255,255,255,0.97)", borderTop:"1px solid #ececec", boxShadow:"0 -3px 14px rgba(0,0,0,0.07)", padding:"9px 14px" }}>
-        <div style={{ maxWidth:1080, margin:"0 auto", position:"relative" }}>
-          <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#ccc", pointerEvents:"none" }}>🔍</span>
-          <input
-            type="text"
-            value={search}
-            onChange={e=>{ setSearch(e.target.value); ensureLoaded(); }}
-            onFocus={ensureLoaded}
-            placeholder="商品名・店舗名・カテゴリで検索..."
-            style={{ width:"100%", boxSizing:"border-box", padding:"12px 42px 12px 46px", border:"2px solid #e8e8e8", borderRadius:12, fontSize:15, outline:"none", background:"#fafafa" }}
-            onBlur={e=>e.target.style.borderColor="#e8e8e8"}
-          />
-          {search && (
-            <button onClick={()=>setSearch("")}
-              style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"#ddd", border:"none", borderRadius:"50%", width:24, height:24, cursor:"pointer", fontSize:13, color:"#666", display:"flex", alignItems:"center", justifyContent:"center" }}>
-              ✕
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
@@ -1864,17 +1911,19 @@ function gneCalcTax(price, mode) {
 }
 function gneSanitize(s) { return String(s).replace(/[\\/:*?"<>|]/g, "_").trim(); }
 
-function gneDrawField(ctx, text, cfg) {
+function gneDrawField(ctx, text, cfg, font) {
   if (text == null || text === "") return;
   text = String(text);
+  const fam = font ? `"${font.family}", "Hiragino Sans", sans-serif` : GNE_FONT_STACK;
+  const wt = font ? font.weight : "900";
   let size = cfg.size;
   ctx.textAlign = cfg.align;
   ctx.textBaseline = "middle";
-  ctx.font = `900 ${size}px ${GNE_FONT_STACK}`;
+  ctx.font = `${wt} ${size}px ${fam}`;
   if (cfg.maxW) {
     while (ctx.measureText(text).width > cfg.maxW && size > 12) {
       size -= 4;
-      ctx.font = `900 ${size}px ${GNE_FONT_STACK}`;
+      ctx.font = `${wt} ${size}px ${fam}`;
     }
   }
   ctx.lineJoin = "round";
@@ -1886,7 +1935,7 @@ function gneDrawField(ctx, text, cfg) {
   ctx.fillText(text, cfg.x, cfg.y);
 }
 
-function gneRender(ctx, f, tpl, taxMode) {
+function gneRender(ctx, f, tpl, taxMode, font) {
   ctx.clearRect(0, 0, GNE_W, GNE_H);
   if (tpl) {
     ctx.drawImage(tpl, 0, 0, GNE_W, GNE_H);
@@ -1899,17 +1948,17 @@ function gneRender(ctx, f, tpl, taxMode) {
     ctx.font = `900 46px ${GNE_FONT_STACK}`;
     ctx.fillText("テンプレ画像を選択してください", GNE_W / 2, 500);
   }
-  if (f.origin) gneDrawField(ctx, f.origin, GNE_LAYOUT.origin);
-  if (f.name)   gneDrawField(ctx, f.name,   GNE_LAYOUT.name);
-  if (f.count)  gneDrawField(ctx, f.count,  GNE_LAYOUT.count);
+  if (f.origin) gneDrawField(ctx, f.origin, GNE_LAYOUT.origin, font);
+  if (f.name)   gneDrawField(ctx, f.name,   GNE_LAYOUT.name, font);
+  if (f.count)  gneDrawField(ctx, f.count,  GNE_LAYOUT.count, font);
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
     const p = parseInt(f.price, 10);
-    gneDrawField(ctx, String(p), GNE_LAYOUT.price);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode)}円`, GNE_LAYOUT.taxPrice);
+    gneDrawField(ctx, String(p), GNE_LAYOUT.price, font);
+    gneDrawField(ctx, `${gneCalcTax(p, taxMode)}円`, GNE_LAYOUT.taxPrice, font);
   }
-  gneDrawField(ctx, GNE_FIXED.plus, GNE_LAYOUT.plus);
-  gneDrawField(ctx, GNE_FIXED.yen, GNE_LAYOUT.yen);
-  gneDrawField(ctx, GNE_FIXED.taxLabel, GNE_LAYOUT.taxLabel);
+  gneDrawField(ctx, GNE_FIXED.plus, GNE_LAYOUT.plus, font);
+  gneDrawField(ctx, GNE_FIXED.yen, GNE_LAYOUT.yen, font);
+  gneDrawField(ctx, GNE_FIXED.taxLabel, GNE_LAYOUT.taxLabel, font);
 }
 
 function GeneratorTab() {
@@ -1917,31 +1966,31 @@ function GeneratorTab() {
   const tplInput = React.useRef(null);
   const xlsxInput = React.useRef(null);
   const [tpl, setTpl] = useState(null);
-  const [fontReady, setFontReady] = useState(false);
-  const [fontFailed, setFontFailed] = useState(false);
+  const [fontId, setFontId] = useState(GNE_FONTS[0].id);
+  const [loadedFonts, setLoadedFonts] = useState({});
+  const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
   const [taxMode, setTaxMode] = useState("ceil");
   const [f, setF] = useState({ origin:"鹿児島県産（養殖・解凍）", name:"うなぎかば焼き", count:"1尾", price:"2390" });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
 
-  // フォント(woff2)をFontFaceで直接ロード。失敗してもシステム代替で描画継続。
+  // 選択フォント(woff2)をFontFaceで遅延ロード（読み込み済みはスキップ）
   useEffect(() => {
+    if (loadedFonts[font.family]) return;
+    if (!(document.fonts && window.FontFace)) return;
     let cancelled = false;
-    const finish = (ok) => { if (cancelled) return; if (!ok) setFontFailed(true); setFontReady(true); };
-    try {
-      if (!(document.fonts && window.FontFace)) { finish(false); return; }
-      const face = new FontFace(GNE_FONT_NAME, `url(${GNE_FONT_URL})`, { weight:"900" });
-      face.load().then((lf) => { if (cancelled) return; document.fonts.add(lf); finish(true); }).catch(() => finish(false));
-      setTimeout(() => finish(false), 6000);
-    } catch (e) { finish(false); }
+    const face = new FontFace(font.family, `url(${font.url})`, { weight: font.weight });
+    face.load()
+      .then((lf) => { if (cancelled) return; document.fonts.add(lf); setLoadedFonts((s) => ({ ...s, [font.family]: true })); })
+      .catch(() => { if (!cancelled) setLoadedFonts((s) => ({ ...s, [font.family]: "failed" })); });
     return () => { cancelled = true; };
-  }, []);
+  }, [fontId]);
 
   useEffect(() => {
     const cv = previewRef.current; if (!cv) return;
-    gneRender(cv.getContext("2d"), f, tpl, taxMode);
-  }, [f, tpl, taxMode, fontReady]);
+    gneRender(cv.getContext("2d"), f, tpl, taxMode, font);
+  }, [f, tpl, taxMode, fontId, loadedFonts]);
 
   const onTpl = (file) => {
     if (!file) return;
@@ -1973,7 +2022,7 @@ function GeneratorTab() {
 
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = GNE_W; c.height = GNE_H;
-    gneRender(c.getContext("2d"), row, tpl, taxMode);
+    gneRender(c.getContext("2d"), row, tpl, taxMode, font);
     c.toBlob((b) => res(b), "image/png");
   });
 
@@ -1995,11 +2044,12 @@ function GeneratorTab() {
       setStatus(`完了：${rows.length} 件を ZIP 出力しました`);
     } catch (e) { setStatus("ZIP生成に失敗しました（通信制限の可能性）"); }
     finally { setBusy(false); }
-  }, [rows, tpl, taxMode]);
+  }, [rows, tpl, taxMode, fontId]);
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
   const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode)}円` : "—";
-  const fontNote = !fontReady ? "（フォント読込中…）" : fontFailed ? "（システム代替で描画中・FONT_URL確認）" : "";
+  const fontSt = loadedFonts[font.family];
+  const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
 
   const card = { background:"#fff", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.06)", padding:16 };
   const ACC = "#7c3aed";
@@ -2009,7 +2059,7 @@ function GeneratorTab() {
       <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>🅖 GNE｜POP画像ジェネレーター</div>
       <div style={{ fontSize:13, color:"#888", marginBottom:16 }}>柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。</div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:14 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr)", gap:14 }}>
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"#333", marginBottom:8 }}>🖼 テンプレ画像（文字なし・1200×1697推奨）</div>
           <button onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"#fafafa", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"#555", cursor:"pointer" }}>画像を選択</button>
@@ -2019,7 +2069,23 @@ function GeneratorTab() {
 
         <div style={card}>
           <div style={{ fontSize:12, color:"#aaa", marginBottom:8 }}>プレビュー {fontNote}</div>
-          <canvas ref={previewRef} width={GNE_W} height={GNE_H} style={{ width:"100%", height:"auto", borderRadius:10, border:"1px solid #eee", display:"block" }} />
+          <canvas ref={previewRef} width={GNE_W} height={GNE_H} style={{ width:"100%", maxWidth:"100%", height:"auto", borderRadius:10, border:"1px solid #eee", display:"block" }} />
+        </div>
+
+        <div style={card}>
+          <div style={{ fontSize:14, fontWeight:800, color:"#333", marginBottom:10 }}>🔤 フォント</div>
+          <div style={{ display:"flex", gap:8, overflowX:"auto", paddingBottom:4 }}>
+            {GNE_FONTS.map(o => {
+              const on = o.id === fontId;
+              return (
+                <button key={o.id} onClick={() => setFontId(o.id)}
+                  style={{ flexShrink:0, border:`2px solid ${on?ACC:"#e6e0f5"}`, background:on?ACC:"#faf8ff", color:on?"#fff":"#6b4bb0",
+                    borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
@@ -2349,7 +2415,7 @@ function App() {
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
-      {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} />}
+      {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="admin"  && <AdminTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -2359,11 +2425,11 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne") : key==="search" ? radialOpen : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
-            : key==="search" ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
+            : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
@@ -2394,7 +2460,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
