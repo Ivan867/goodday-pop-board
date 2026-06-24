@@ -105,6 +105,32 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return (await r.json())[0];
   },
+  async listRequests() {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?select=*&order=created_at.desc`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertRequest(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async updateRequest(id, patch) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
+      body: JSON.stringify(patch)
+    });
+    if (!r.ok) throw new Error(await r.text());
+  },
+  async delRequest(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+  },
   async setArchivedMany(ids, archived) {
     if (!ids.length) return;
     const r = await fetch(`${SB_URL}/rest/v1/pops?id=in.(${ids.join(",")})`, {
@@ -246,7 +272,7 @@ function formatDate(d) {
 
 // ── Upload Modal ──
 function UploadModal({ currentStore, onClose, onSuccess }) {
-  const [store, setStore] = useState(currentStore||STORES[0]);
+  const [store, setStore] = useState("木次店");
   const [author, setAuthor] = useState("");
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
@@ -292,7 +318,10 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>お名前 <span style={{ color:"#e05c00" }}>*</span></div>
-            <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎" style={{ width:"100%", padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }} />
+            <div style={{ display:"flex", gap:8, alignItems:"stretch" }}>
+              <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎" style={{ flex:1, minWidth:0, padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }} />
+              <button type="button" onClick={()=>setAuthor("勝部")} title="勝部を入力" style={{ flexShrink:0, width:46, border:"2px solid #ffd9bd", background:"#fff3ea", color:"#e05c00", fontWeight:900, fontSize:18, borderRadius:10, cursor:"pointer", lineHeight:1 }}>※</button>
+            </div>
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>商品名</div>
@@ -557,6 +586,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
+  const [showNotice, setShowNotice] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -578,6 +608,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     if (actionsRef) actionsRef.current = { refresh: load, openUpload: () => setShowUp(true) };
   }, [load, actionsRef]);
 
+  useEffect(() => {
+    if (!showNotice) return;
+    const onScroll = () => setShowNotice(false);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [showNotice]);
+
   const counts = pops.reduce((a,p) => { a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
   const filtered = pops.filter(p => (!fStore||p.store_name===fStore) && (!fCat||p.category===fCat));
 
@@ -594,11 +631,19 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
   const storePos = arcPositions(storeItems.length, 104, 150, 30);
   const catPos = arcPositions(catItems.length, 152, 158, 22);
-  const FAN_BOTTOM = "calc(76px + env(safe-area-inset-bottom))";
+  const FAN_BOTTOM = "calc(80px + env(safe-area-inset-bottom))";
 
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px 130px" }}>
+        {showNotice && !radialOpen && (
+          <div onClick={() => setShowNotice(false)}
+            style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
+            <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(224,92,0,0.18)" }}>
+              <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。</span>
+            </div>
+          </div>
+        )}
         {loading ? (
           <div style={{ textAlign:"center", padding:80, color:"#bbb" }}>
             <div style={{ fontSize:36, marginBottom:12 }}>🐠</div>
@@ -712,7 +757,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   const fanCatItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
   const fanStorePos = arcPositions(fanStoreItems.length, 104, 150, 30);
   const fanCatPos = arcPositions(fanCatItems.length, 152, 158, 22);
-  const FAN_BOTTOM = "calc(76px + env(safe-area-inset-bottom))";
+  const FAN_BOTTOM = "calc(80px + env(safe-area-inset-bottom))";
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 84px" }}>
@@ -2126,25 +2171,35 @@ function GeneratorTab() {
 }
 
 
-// ===== 管理画面：パスワードで解錠 → 公開中POPを選んでアーカイブ／公開に戻す =====
+// ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
 function AdminTab() {
   const [unlocked, setUnlocked] = useState(false);
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
+  const [section, setSection] = useState("req"); // req | archive
 
+  // アーカイブ管理用
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("active"); // active | archived
   const [sel, setSel] = useState({});
   const [applying, setApplying] = useState(false);
 
+  // 依頼一覧用
+  const [reqs, setReqs] = useState([]);
+  const [reqLoading, setReqLoading] = useState(true);
+
   const load = useCallback(async () => {
     setLoading(true);
     try { const d = await api.listAll(); setPops(d); }
-    catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    catch (e) { console.error(e); } finally { setLoading(false); }
   }, []);
-  useEffect(() => { if (unlocked) load(); }, [unlocked, load]);
+  const loadReqs = useCallback(async () => {
+    setReqLoading(true);
+    try { const d = await api.listRequests(); setReqs(d); }
+    catch (e) { console.error(e); } finally { setReqLoading(false); }
+  }, []);
+  useEffect(() => { if (unlocked) { load(); loadReqs(); } }, [unlocked, load, loadReqs]);
 
   const tryUnlock = () => {
     if (gpw === ADMIN_PASS) { setUnlocked(true); setGErr(""); }
@@ -2162,7 +2217,7 @@ function AdminTab() {
             onChange={e => { setGpw(e.target.value); setGErr(""); }}
             onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
             placeholder="パスワード"
-            style={{ width:"100%", border:"2px solid #eee", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
+            style={{ width:"100%", boxSizing:"border-box", border:"2px solid #eee", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
           {gErr && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
           <button onClick={tryUnlock}
             style={{ width:"100%", border:"none", background:"#e05c00", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:"pointer" }}>解錠する</button>
@@ -2171,12 +2226,12 @@ function AdminTab() {
     );
   }
 
+  // ---- アーカイブ管理 ----
   const list = pops.filter(p => view === "archived" ? p.archived : !p.archived);
   const selIds = Object.keys(sel).filter(k => sel[k]);
   const toArchive = view === "active";
   const aCount = pops.filter(p => !p.archived).length;
   const arCount = pops.filter(p => p.archived).length;
-
   const toggle = (id) => setSel(s => ({ ...s, [id]: !s[id] }));
   const switchView = (v) => { setView(v); setSel({}); };
   const apply = async () => {
@@ -2186,7 +2241,6 @@ function AdminTab() {
     catch (e) { alert("更新に失敗しました（archived列の追加SQLは実行済みですか？）"); }
     finally { setApplying(false); }
   };
-
   const seg = (v, label, n) => (
     <button onClick={() => switchView(v)}
       style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:800,
@@ -2195,44 +2249,110 @@ function AdminTab() {
     </button>
   );
 
-  return (
-    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:130, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>🔒 管理画面</div>
-      <div style={{ fontSize:13, color:"#888", marginBottom:14 }}>写真をタップして選び、まとめてアーカイブ／公開に戻せます。</div>
+  // ---- 依頼 ----
+  const openReqs = reqs.filter(r => r.status !== "対応済み").length;
+  const setReqStatus = async (r, status) => {
+    try { await api.updateRequest(r.id, { status }); setReqs(rs => rs.map(x => x.id === r.id ? { ...x, status } : x)); }
+    catch (e) { alert("更新に失敗しました"); }
+  };
+  const delReq = async (r) => {
+    if (!confirm("この依頼を削除しますか？")) return;
+    try { await api.delRequest(r.id); setReqs(rs => rs.filter(x => x.id !== r.id)); }
+    catch (e) { alert("削除に失敗しました"); }
+  };
+  const fmtDate = (s) => { try { const d = new Date(s); return `${d.getMonth()+1}/${d.getDate()}`; } catch(e){ return ""; } };
 
-      <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #eee", marginBottom:14 }}>
-        {seg("active","公開中",aCount)}
-        {seg("archived","アーカイブ済み",arCount)}
+  const mainSeg = (v, label) => (
+    <button onClick={() => setSection(v)}
+      style={{ flex:1, border:"none", padding:"11px", fontSize:14, fontWeight:800,
+        background: section===v ? "#222" : "#fff", color: section===v ? "#fff" : "#888", cursor:"pointer" }}>{label}</button>
+  );
+
+  return (
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:140, animation:"fadeUp .3s ease" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:12 }}>🔒 管理画面</div>
+
+      <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #e2e2e2", marginBottom:16 }}>
+        {mainSeg("req", `📥 依頼${openReqs ? `（${openReqs}）` : ""}`)}
+        {mainSeg("archive", "🗄 アーカイブ")}
       </div>
 
-      {loading ? (
-        <div style={{ textAlign:"center", color:"#aaa", padding:"40px 0", fontSize:14 }}>読み込み中…</div>
-      ) : list.length === 0 ? (
-        <div style={{ textAlign:"center", color:"#bbb", padding:"40px 0", fontSize:14 }}>
-          {view==="archived" ? "アーカイブ済みのPOPはありません" : "公開中のPOPはありません"}
-        </div>
-      ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(108px, 1fr))", gap:10 }}>
-          {list.map(p => {
-            const on = !!sel[p.id];
-            return (
-              <button key={p.id} onClick={() => toggle(p.id)}
-                style={{ position:"relative", border: on ? "3px solid #e05c00" : "1px solid #eee", borderRadius:12, overflow:"hidden",
-                  background:"#fff", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"#f0f0f0", opacity: on ? 0.85 : 1 }} />
-                {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"#e05c00", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
-                <div style={{ padding:"6px 8px" }}>
-                  <div style={{ fontSize:12, fontWeight:800, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
-                  <div style={{ fontSize:11, color:"#999", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
+      {section === "req" && (
+        reqLoading ? (
+          <div style={{ textAlign:"center", color:"#aaa", padding:"40px 0", fontSize:14 }}>読み込み中…</div>
+        ) : reqs.length === 0 ? (
+          <div style={{ textAlign:"center", padding:50, color:"#ccc" }}>
+            <div style={{ fontSize:42, marginBottom:10 }}>📭</div>
+            <div style={{ fontSize:15, fontWeight:700, color:"#aaa" }}>依頼はまだありません</div>
+            <div style={{ fontSize:13, marginTop:6, color:"#bbb" }}>「ポップ依頼」からみんなが投稿できます</div>
+          </div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            {reqs.map(r => {
+              const done = r.status === "対応済み";
+              const urgent = r.priority === "急ぎ";
+              return (
+                <div key={r.id} style={{ background:"#fff", borderRadius:14, boxShadow:"0 2px 10px rgba(0,0,0,0.06)", padding:14, borderLeft:`5px solid ${done?"#bbb":urgent?"#e01010":"#e05c00"}`, opacity:done?0.6:1 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
+                    {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>🔥急ぎ</span>}
+                    {done && <span style={{ background:"#bbb", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>対応済み</span>}
+                    <span style={{ fontSize:15, fontWeight:900, color:"#222" }}>{r.product_name}</span>
+                    <span style={{ marginLeft:"auto", fontSize:11, color:"#bbb" }}>{fmtDate(r.created_at)}</span>
+                  </div>
+                  <div style={{ fontSize:12, color:"#999", marginBottom: r.reason ? 8 : 10 }}>{r.store_name}</div>
+                  {r.reason && <div style={{ fontSize:13, color:"#555", lineHeight:1.5, background:"#fafafa", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
+                  <div style={{ display:"flex", gap:8 }}>
+                    <button onClick={()=>setReqStatus(r, done?"未対応":"対応済み")}
+                      style={{ flex:1, border:"none", background:done?"#eee":"#1a6b3a", color:done?"#888":"#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
+                      {done?"未対応に戻す":"対応済みにする"}
+                    </button>
+                    <button onClick={()=>delReq(r)}
+                      style={{ border:"1px solid #f0d0d0", background:"#fff", color:"#d33", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px 14px", cursor:"pointer" }}>削除</button>
+                  </div>
                 </div>
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
+        )
+      )}
+
+      {section === "archive" && (
+        <div>
+          <div style={{ fontSize:13, color:"#888", marginBottom:14 }}>写真をタップして選び、まとめてアーカイブ／公開に戻せます。</div>
+          <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #eee", marginBottom:14 }}>
+            {seg("active","公開中",aCount)}
+            {seg("archived","アーカイブ済み",arCount)}
+          </div>
+          {loading ? (
+            <div style={{ textAlign:"center", color:"#aaa", padding:"40px 0", fontSize:14 }}>読み込み中…</div>
+          ) : list.length === 0 ? (
+            <div style={{ textAlign:"center", color:"#bbb", padding:"40px 0", fontSize:14 }}>
+              {view==="archived" ? "アーカイブ済みのPOPはありません" : "公開中のPOPはありません"}
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(108px, 1fr))", gap:10 }}>
+              {list.map(p => {
+                const on = !!sel[p.id];
+                return (
+                  <button key={p.id} onClick={() => toggle(p.id)}
+                    style={{ position:"relative", border: on ? "3px solid #e05c00" : "1px solid #eee", borderRadius:12, overflow:"hidden",
+                      background:"#fff", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                    <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"#f0f0f0", opacity: on ? 0.85 : 1 }} />
+                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"#e05c00", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
+                    <div style={{ padding:"6px 8px" }}>
+                      <div style={{ fontSize:12, fontWeight:800, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
+                      <div style={{ fontSize:11, color:"#999", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {selIds.length > 0 && (
-        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(74px + env(safe-area-inset-bottom))", zIndex:190,
+      {section === "archive" && selIds.length > 0 && (
+        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:190,
           background:"#fff", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.1)", padding:"12px 16px",
           display:"flex", alignItems:"center", gap:12 }}>
           <span style={{ fontSize:14, fontWeight:800, color:"#333" }}>{selIds.length}件 選択中</span>
@@ -2294,6 +2414,88 @@ function ArchiveTab({ onCreateFromPop }) {
         onLiked={(id, likes) => setPops(p => p.map(x => x.id === id ? { ...x, likes } : x))}
         onCreateFromPop={onCreateFromPop}
       />}
+    </div>
+  );
+}
+
+// ===== ポップ依頼：作ってほしいPOPの依頼フォーム（誰でも投稿可） =====
+function RequestTab() {
+  const [store, setStore] = useState("");
+  const [product, setProduct] = useState("");
+  const [priority, setPriority] = useState("普通");
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async () => {
+    if (!product.trim()) { setError("商品名を入力してください"); return; }
+    setBusy(true); setError("");
+    try {
+      await api.insertRequest({ store_name: store || "未指定", product_name: product.trim(), reason: reason.trim(), author: "匿名", priority });
+      setDone(true);
+    } catch (e) { setError("送信に失敗しました: " + e.message); }
+    finally { setBusy(false); }
+  };
+  const reset = () => { setProduct(""); setReason(""); setPriority("普通"); setDone(false); setError(""); };
+
+  const card = { background:"#fff", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.06)", padding:16 };
+  const lbl = { fontSize:12, color:"#888", marginBottom:5, fontWeight:700 };
+  const inp = { width:"100%", boxSizing:"border-box", border:"1px solid #ddd", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", background:"#fff" };
+
+  if (done) {
+    return (
+      <div style={{ maxWidth:560, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
+        <div style={{ ...card, textAlign:"center", padding:"40px 24px" }}>
+          <div style={{ fontSize:46, marginBottom:10 }}>✅</div>
+          <div style={{ fontSize:17, fontWeight:900, color:"#222", marginBottom:6 }}>依頼を送信しました</div>
+          <div style={{ fontSize:13, color:"#888", marginBottom:20, lineHeight:1.6 }}>担当者に届きました。POPができるまでお待ちください。</div>
+          <button onClick={reset} style={{ border:"none", background:"#e05c00", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて依頼する</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth:560, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
+      <div style={{ fontSize:18, fontWeight:900, color:"#222", marginBottom:4 }}>📝 ポップ依頼</div>
+      <div style={{ fontSize:13, color:"#888", marginBottom:16 }}>作ってほしいPOPをここから依頼できます。内容は担当者に届きます。</div>
+      <div style={{ ...card, display:"flex", flexDirection:"column", gap:14 }}>
+        <div>
+          <div style={lbl}>商品名 <span style={{ color:"#e05c00" }}>*</span></div>
+          <input value={product} onChange={e=>setProduct(e.target.value)} placeholder="例：生本まぐろ 中トロ" style={inp} />
+        </div>
+        <div>
+          <div style={lbl}>店舗</div>
+          <select value={store} onChange={e=>setStore(e.target.value)} style={inp}>
+            <option value="">未指定</option>
+            {STORES.map(s=><option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <div style={lbl}>優先度</div>
+          <div style={{ display:"flex", gap:8 }}>
+            {["普通","急ぎ"].map(pr=>{
+              const on = priority===pr; const urgent = pr==="急ぎ";
+              return (
+                <button key={pr} onClick={()=>setPriority(pr)}
+                  style={{ flex:1, border:`2px solid ${on?(urgent?"#e01010":"#e05c00"):"#eee"}`, background:on?(urgent?"#fff0f0":"#fff3ea"):"#fff", color:on?(urgent?"#e01010":"#e05c00"):"#999", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
+                  {urgent?"🔥 急ぎ":"普通"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <div style={lbl}>要望・メモ</div>
+          <textarea value={reason} onChange={e=>setReason(e.target.value)} placeholder="サイズ、訴求ポイント、産地、希望日など" rows={3} style={{ ...inp, resize:"vertical", lineHeight:1.5 }} />
+        </div>
+        {error && <div style={{ fontSize:13, color:"#e01010", fontWeight:700 }}>{error}</div>}
+        <button onClick={submit} disabled={busy}
+          style={{ border:"none", background:"#e05c00", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
+          {busy ? "送信中…" : "依頼を送信"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -2387,7 +2589,7 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(74px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(78px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -2418,6 +2620,7 @@ function App() {
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="admin"  && <AdminTab />}
+      {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
       {tab==="dev"    && <DevTab />}
 
@@ -2425,7 +2628,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne") : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -2433,7 +2636,7 @@ function App() {
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"15px 1px 17px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"17px 1px 19px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {more && showGneHint && (
                 <div style={{ position:"absolute", bottom:"100%", right:0, marginBottom:9, zIndex:260, pointerEvents:"none", display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
                   <span style={{ position:"absolute", left:-2, bottom:20, fontSize:13, animation:"gneFloat 1.6s ease-in-out infinite" }}>✨</span>
@@ -2460,7 +2663,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
