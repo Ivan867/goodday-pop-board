@@ -41,10 +41,11 @@ const STORES = ["北部店","木次店","大田店","斐川店","医大通り店
 const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","日替","塩干","その他"];
 const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
 const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
-// 管理画面のパスワード（あなただけが知る値。GitHub で直接ここを書き換えてください）
-const ADMIN_PASS = "6511";
+// パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-25", type:"新機能", title:"相場計算タブ", body:"先週の売価と今週の売価を入れるだけで「先週より◯割安」をすぐ計算できます。POP用の文言もコピーできます。原価＋利益率から売価を出す計算もできます（☰メニューの「相場計算」）。" },
+  { date:"2026-06-25", type:"改善", title:"GNEの税率を変更できるように", body:"POP画像ジェネレーターの税込計算で、税率を1〜10%から選べるようになりました（初期値は8%）。税込価格の横に選択中の税率も表示します。" },
   { date:"2026-06-24", type:"改善", title:"画面デザインを刷新", body:"投稿・POP詳細・売場写真などのポップアップを、下からスッと出るシート型に統一しました。見出しを大きく・余白を広げて見やすく。投稿ボタンは上部の見出し横に移動しています。" },
   { date:"2026-06-24", type:"新機能", title:"ポップ依頼", body:"作ってほしいPOPをアプリから依頼できるようになりました（☰メニューの「ポップ依頼」）。届いた依頼は担当者だけが管理画面で確認・対応できます。" },
   { date:"2026-06-24", type:"修正", title:"表示まわりの不具合を修正", body:"画面をドラッグした時に下のバーが浮いて余白が出る問題と、GNEの表示が大きすぎる問題を修正しました。" },
@@ -252,6 +253,16 @@ const api = {
   async delFloorPhoto(id) {
     const r = await fetch(`${SB_URL}/rest/v1/floor_photos?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
+  },
+  // パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない）
+  async verifyPassword(purpose, password) {
+    const r = await fetch(`${SB_URL}/rest/v1/rpc/verify_password`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_purpose: purpose, p_password: password })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json()) === true;
   }
 };
 
@@ -378,8 +389,6 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   const [cSubmitting, setCSubmitting] = useState(false);
   const [cError, setCError] = useState("");
 
-  const CORRECT_PW = "6930021";
-
   useEffect(() => {
     api.listComments(pop.id).then(setComments).catch(()=>{});
   }, [pop.id]);
@@ -403,13 +412,16 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   };
 
   const handleDeleteConfirm = async () => {
-    if (pwInput !== CORRECT_PW) {
-      setPwError("パスワードが違います");
-      setPwInput("");
-      return;
-    }
-    setDeleting(true);
+    if (deleting) return;
+    setDeleting(true); setPwError("");
     try {
+      const ok = await api.verifyPassword("delete", pwInput);
+      if (!ok) {
+        setPwError("パスワードが違います");
+        setPwInput("");
+        setDeleting(false);
+        return;
+      }
       await api.del(pop.id);
       onDelete(pop.id);
       onClose();
@@ -463,8 +475,9 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             </div>
           )}
           {pop.comment && (
-            <div style={{ fontSize:13, color:"#444", background:"#f7f7f9", borderRadius:10, padding:"10px 12px", lineHeight:1.7, whiteSpace:"pre-wrap", marginTop:8 }}>
-              💬 {pop.comment}
+            <div style={{ display:"flex", gap:9, alignItems:"flex-start", background:"#fafafb", border:"1px solid #efeff1", borderRadius:10, padding:"11px 13px", marginTop:8 }}>
+              <span style={{ fontSize:11, color:"#9a9aa0", fontWeight:700, letterSpacing:".04em", paddingTop:1, whiteSpace:"nowrap" }}>コメント</span>
+              <span style={{ fontSize:13.5, color:"#2c2c30", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{pop.comment}</span>
             </div>
           )}
 
@@ -485,7 +498,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                 />
                 <button onClick={handleDeleteConfirm} disabled={deleting}
                   style={{ padding:"9px 16px", background:"#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", opacity:deleting?0.6:1 }}>
-                  {deleting ? "…" : "削除"}
+                  {deleting ? "確認中…" : "削除"}
                 </button>
                 <button onClick={()=>{ setShowDelConfirm(false); setPwInput(""); setPwError(""); }}
                   style={{ padding:"9px 12px", background:"#eee", color:"#666", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>
@@ -519,20 +532,23 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
           {/* ── コメントスレッド ── */}
           <div style={{ borderTop:"2px solid #f0f0f0", marginTop:20, paddingTop:16 }}>
-            <div style={{ fontSize:13, fontWeight:900, color:"#333", marginBottom:12 }}>
-              💬 コメント {comments.length > 0 && <span style={{ color:"#aaa", fontWeight:400 }}>（{comments.length}件）</span>}
+            <div style={{ fontSize:13, fontWeight:800, color:"#333", marginBottom:12, letterSpacing:".02em" }}>
+              コメント {comments.length > 0 && <span style={{ color:"#b6b6bb", fontWeight:400 }}>{comments.length}件</span>}
             </div>
             {comments.length === 0 ? (
               <div style={{ fontSize:13, color:"#ccc", textAlign:"center", padding:"12px 0 16px" }}>まだコメントはありません</div>
             ) : (
-              <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:16 }}>
+              <div style={{ display:"flex", flexDirection:"column", gap:16, marginBottom:16 }}>
                 {comments.map(c => (
-                  <div key={c.id} style={{ background:"#f7f7f9", borderRadius:12, padding:"10px 13px" }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
-                      <div style={{ fontSize:12, fontWeight:800, color: c.store_name ? "#e05c00" : "#bbb" }}>{c.store_name || "ワンタップ返信"}</div>
-                      <div style={{ fontSize:11, color:"#bbb" }}>{timeAgo(c.created_at)}</div>
+                  <div key={c.id} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
+                    <div style={{ width:28, height:28, borderRadius:"50%", background: c.store_name ? "#ececed" : "#f4f4f5", color: c.store_name ? "#6b6b70" : "#b6b6bb", fontSize:12, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{c.store_name ? c.store_name.slice(0,1) : "·"}</div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:3 }}>
+                        <span style={{ fontSize:12.5, fontWeight:700, color: c.store_name ? "#2c2c30" : "#9a9aa0" }}>{c.store_name || "ワンタップ返信"}</span>
+                        <span style={{ fontSize:11, color:"#b6b6bb" }}>{timeAgo(c.created_at)}</span>
+                      </div>
+                      <div style={{ fontSize:13.5, color:"#3a3a3e", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{c.comment}</div>
                     </div>
-                    <div style={{ fontSize:13, color:"#333", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{c.comment}</div>
                   </div>
                 ))}
               </div>
@@ -1301,7 +1317,7 @@ function FloorPhotoTab() {
   const [delTarget, setDelTarget] = useState(null);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
-  const CORRECT_PW = "6930021";
+  const [fDeleting, setFDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -1324,12 +1340,16 @@ function FloorPhotoTab() {
   }));
 
   const handleDelete = async () => {
-    if (pwInput !== CORRECT_PW) { setPwError("パスワードが違います"); setPwInput(""); return; }
+    if (fDeleting) return;
+    setFDeleting(true); setPwError("");
     try {
+      const ok = await api.verifyPassword("delete", pwInput);
+      if (!ok) { setPwError("パスワードが違います"); setPwInput(""); setFDeleting(false); return; }
       await api.delFloorPhoto(delTarget.id);
       setPhotos(p => p.filter(x => x.id !== delTarget.id));
       setDelTarget(null); setSel(null); setPwInput(""); setPwError("");
     } catch(e) { alert("削除に失敗しました"); }
+    finally { setFDeleting(false); }
   };
 
   return (
@@ -1524,7 +1544,7 @@ function FloorPhotoTab() {
                     <input type="password" value={pwInput} onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
                       onKeyDown={e=>e.key==="Enter"&&handleDelete()} placeholder="パスワード" autoFocus
                       style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"#e05c00":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }} />
-                    <button onClick={handleDelete} style={{ padding:"9px 14px", background:"#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>削除</button>
+                    <button onClick={handleDelete} disabled={fDeleting} style={{ padding:"9px 14px", background: fDeleting ? "#dba0a0" : "#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor: fDeleting ? "default" : "pointer" }}>{fDeleting ? "確認中…" : "削除"}</button>
                     <button onClick={()=>{ setDelTarget(null); setPwInput(""); setPwError(""); }}
                       style={{ padding:"9px 12px", background:"#eee", color:"#666", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>戻る</button>
                   </div>
@@ -1959,8 +1979,9 @@ const GNE_FIXED = { plus:"+税", yen:"円", taxLabel:"税込価格" };
 const GNE_W = 1200, GNE_H = 1697;
 const GNE_FONT_STACK = `"${GNE_FONT_NAME}", "Hiragino Sans", "Yu Gothic", sans-serif`;
 
-function gneCalcTax(price, mode) {
-  const raw = price * 1.08;
+function gneCalcTax(price, mode, rate) {
+  const r = (rate == null || isNaN(+rate)) ? 8 : +rate;
+  const raw = price * (1 + r / 100);
   if (mode === "ceil") return Math.ceil(raw);
   if (mode === "floor") return Math.floor(raw);
   return Math.round(raw);
@@ -1991,7 +2012,7 @@ function gneDrawField(ctx, text, cfg, font) {
   ctx.fillText(text, cfg.x, cfg.y);
 }
 
-function gneRender(ctx, f, tpl, taxMode, font) {
+function gneRender(ctx, f, tpl, taxMode, font, taxRate) {
   ctx.clearRect(0, 0, GNE_W, GNE_H);
   if (tpl) {
     ctx.drawImage(tpl, 0, 0, GNE_W, GNE_H);
@@ -2010,7 +2031,7 @@ function gneRender(ctx, f, tpl, taxMode, font) {
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
     const p = parseInt(f.price, 10);
     gneDrawField(ctx, String(p), GNE_LAYOUT.price, font);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode)}円`, GNE_LAYOUT.taxPrice, font);
+    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, GNE_LAYOUT.taxPrice, font);
   }
   gneDrawField(ctx, GNE_FIXED.plus, GNE_LAYOUT.plus, font);
   gneDrawField(ctx, GNE_FIXED.yen, GNE_LAYOUT.yen, font);
@@ -2026,6 +2047,7 @@ function GeneratorTab() {
   const [loadedFonts, setLoadedFonts] = useState({});
   const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
   const [taxMode, setTaxMode] = useState("ceil");
+  const [taxRate, setTaxRate] = useState(8);
   const [f, setF] = useState({ origin:"鹿児島県産（養殖・解凍）", name:"うなぎかば焼き", count:"1尾", price:"2390" });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -2045,8 +2067,8 @@ function GeneratorTab() {
 
   useEffect(() => {
     const cv = previewRef.current; if (!cv) return;
-    gneRender(cv.getContext("2d"), f, tpl, taxMode, font);
-  }, [f, tpl, taxMode, fontId, loadedFonts]);
+    gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate);
+  }, [f, tpl, taxMode, fontId, loadedFonts, taxRate]);
 
   const onTpl = (file) => {
     if (!file) return;
@@ -2078,7 +2100,7 @@ function GeneratorTab() {
 
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = GNE_W; c.height = GNE_H;
-    gneRender(c.getContext("2d"), row, tpl, taxMode, font);
+    gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate);
     c.toBlob((b) => res(b), "image/png");
   });
 
@@ -2103,7 +2125,7 @@ function GeneratorTab() {
   }, [rows, tpl, taxMode, fontId]);
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
-  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode)}円` : "—";
+  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode, taxRate)}円` : "—";
   const fontSt = loadedFonts[font.family];
   const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
 
@@ -2153,14 +2175,26 @@ function GeneratorTab() {
                 style={{ width:"100%", border:"1px solid #ddd", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
             </div>
           ))}
-          <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-            <span style={{ fontSize:12, color:"#888" }}>税込丸め</span>
-            <select value={taxMode} onChange={(e) => setTaxMode(e.target.value)} style={{ border:"1px solid #ddd", borderRadius:8, padding:"6px 8px", fontSize:14 }}>
-              <option value="ceil">切り上げ</option>
-              <option value="round">四捨五入</option>
-              <option value="floor">切り捨て</option>
-            </select>
-            <span style={{ fontSize:12, color:"#888" }}>税込：<b style={{ color:"#333" }}>{taxPreview}</b></span>
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
+              <span style={{ fontSize:12, color:"#888" }}>税込丸め</span>
+              <select value={taxMode} onChange={(e) => setTaxMode(e.target.value)} style={{ border:"1px solid #ddd", borderRadius:8, padding:"6px 8px", fontSize:14 }}>
+                <option value="ceil">切り上げ</option>
+                <option value="round">四捨五入</option>
+                <option value="floor">切り捨て</option>
+              </select>
+              <span style={{ fontSize:12, color:"#888" }}>税込（{taxRate}%）：<b style={{ color:"#333" }}>{taxPreview}</b></span>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
+              <span style={{ fontSize:12, color:"#888", marginRight:2 }}>税率</span>
+              {[1,2,3,4,5,6,7,8,9,10].map(r => (
+                <button key={r} onClick={() => setTaxRate(r)}
+                  style={{ minWidth:36, padding:"6px 0", borderRadius:8, fontSize:13, fontWeight:800, cursor:"pointer",
+                    border: taxRate === r ? `2px solid ${ACC}` : "1px solid #ddd",
+                    background: taxRate === r ? ACC : "#fff",
+                    color: taxRate === r ? "#fff" : "#555" }}>{r}%</button>
+              ))}
+            </div>
           </div>
           <button onClick={downloadOne} style={{ width:"100%", border:"none", background:ACC, color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:"pointer" }}>⬇ この1枚を PNG ダウンロード</button>
         </div>
@@ -2182,11 +2216,139 @@ function GeneratorTab() {
 }
 
 
+// ===== 相場タブ：先週比の「相場安」計算＋売価計算（プロトタイプ） =====
+function soubaWari(pct) {
+  const w = Math.round(Math.abs(pct) / 10 * 2) / 2; // 0.5割きざみ
+  if (w <= 0) return "";
+  const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
+  return `約${s}割`;
+}
+
+function SoubaTab() {
+  // 先週比
+  const [last, setLast] = useState("199");
+  const [now, setNow] = useState("179");
+  const [copied, setCopied] = useState(false);
+  // 売価計算
+  const [cost, setCost] = useState("");
+  const [margin, setMargin] = useState("30");
+
+  const L = parseFloat(last), N = parseFloat(now);
+  const valid = !isNaN(L) && !isNaN(N) && L > 0 && N > 0;
+  const diff = valid ? L - N : 0;            // +なら安くなった
+  const pct = valid ? (diff / L) * 100 : 0;  // +なら値引き
+  const cheaper = diff > 0.0001;
+  const same = valid && Math.abs(diff) < 0.0001;
+  const wari = soubaWari(pct);
+
+  const phrase = !valid ? ""
+    : same ? "先週と同じ相場です"
+    : cheaper ? `先週より${Math.round(diff)}円 ${wari}（${Math.abs(pct).toFixed(0)}%）おトク！`
+    : `先週より${Math.round(-diff)}円高 ${wari}（${Math.abs(pct).toFixed(0)}%高）`;
+
+  const copyPhrase = async () => {
+    try { await navigator.clipboard.writeText(phrase); setCopied(true); setTimeout(() => setCopied(false), 1500); }
+    catch (e) { /* クリップボード不可環境は無視 */ }
+  };
+
+  // 売価計算（利益率＝売価に対する割合＝値入率）
+  const C = parseFloat(cost), M = parseFloat(margin);
+  const sellValid = !isNaN(C) && C > 0 && !isNaN(M) && M >= 0 && M < 100;
+  const sell = sellValid ? Math.ceil(C / (1 - M / 100)) : null;
+  const profit = sellValid ? sell - Math.round(C) : null;
+  const sellTax = sellValid ? Math.ceil(sell * 1.08) : null;
+
+  const card = { background:"#fff", borderRadius:16, padding:20, marginBottom:16, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" };
+  const lbl = { fontSize:12, color:"#888", marginBottom:6 };
+  const inp = { width:"100%", boxSizing:"border-box", border:"1px solid #ddd", borderRadius:10, padding:"12px", fontSize:18, fontWeight:800, textAlign:"center", outline:"none" };
+  const cell = (t, v, c) => (
+    <div style={{ textAlign:"center" }}>
+      <div style={{ fontSize:11, color:"#888" }}>{t}</div>
+      <div style={{ fontSize:22, fontWeight:900, color:c }}>{v}</div>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:100 }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"16px" }}>
+        <div style={{ maxWidth:560, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>📈 相場計算</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>先週比の「相場安」と、おおよその売価をサッと計算（プロトタイプ）</div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth:560, margin:"0 auto", padding:"16px" }}>
+
+        {/* 先週比 */}
+        <div style={card}>
+          <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>🐟 先週とくらべて何割 相場安？</div>
+          <div style={{ display:"flex", gap:10 }}>
+            <div style={{ flex:1 }}>
+              <div style={lbl}>先週の売価（100g 円）</div>
+              <input value={last} onChange={e => setLast(e.target.value)} inputMode="decimal" style={inp} />
+            </div>
+            <div style={{ alignSelf:"center", paddingTop:18, fontSize:20, color:"#bbb" }}>→</div>
+            <div style={{ flex:1 }}>
+              <div style={lbl}>今週の売価（100g 円）</div>
+              <input value={now} onChange={e => setNow(e.target.value)} inputMode="decimal" style={inp} />
+            </div>
+          </div>
+
+          {valid && (
+            <div style={{ marginTop:14, background: same ? "#f3f4f6" : cheaper ? "#eafaf0" : "#fff4ed", border:`1px solid ${same ? "#e5e7eb" : cheaper ? "#bde9cd" : "#ffd9bf"}`, borderRadius:12, padding:"14px 16px" }}>
+              {!same && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginBottom:12 }}>
+                  {cell("差額", `${Math.round(Math.abs(diff))}円`, cheaper ? "#1a6b3a" : "#e05c00")}
+                  {cell(cheaper ? "値引率" : "値上率", `${Math.abs(pct).toFixed(1)}%`, cheaper ? "#1a6b3a" : "#e05c00")}
+                  {cell("割", wari || "—", cheaper ? "#1a6b3a" : "#e05c00")}
+                </div>
+              )}
+              <div style={{ fontSize:16, fontWeight:900, color:"#222", textAlign:"center", lineHeight:1.5 }}>{phrase}</div>
+              {!same && (
+                <button onClick={copyPhrase} style={{ marginTop:12, width:"100%", border:"none", background: copied ? "#1a6b3a" : "#2d9e5f", color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                  {copied ? "✓ コピーしました" : "POP用の文言をコピー"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 売価計算 */}
+        <div style={card}>
+          <div style={{ fontSize:15, fontWeight:900, color:"#8B6914", marginBottom:4 }}>💰 原価＋利益率 → 売価</div>
+          <div style={{ fontSize:11, color:"#aaa", marginBottom:14 }}>売価 = 原価 ÷（1 − 利益率）。利益率は売価に対する割合（値入率）。</div>
+          <div style={{ display:"flex", gap:10 }}>
+            <div style={{ flex:1 }}>
+              <div style={lbl}>原価（100g 円）</div>
+              <input value={cost} onChange={e => setCost(e.target.value)} inputMode="decimal" placeholder="例：120" style={inp} />
+            </div>
+            <div style={{ flex:1 }}>
+              <div style={lbl}>利益率（%）</div>
+              <input value={margin} onChange={e => setMargin(e.target.value)} inputMode="decimal" style={inp} />
+            </div>
+          </div>
+          {sellValid && (
+            <div style={{ marginTop:14, background:"#fffaf0", border:"1px solid #f0e0c0", borderRadius:12, padding:"14px 16px", display:"flex", justifyContent:"space-around" }}>
+              {cell("売価（税抜）", `${sell}円`, "#8B6914")}
+              {cell("税込（8%）", `${sellTax}円`, "#b8860b")}
+              {cell("利益額", `${profit}円`, "#1a6b3a")}
+            </div>
+          )}
+        </div>
+
+        <div style={{ fontSize:11, color:"#bbb", textAlign:"center", marginTop:4 }}>※ プロトタイプです。計算方法・表示・項目はご要望に合わせて調整できます。</div>
+      </div>
+    </div>
+  );
+}
+
+
 // ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
 function AdminTab() {
   const [unlocked, setUnlocked] = useState(false);
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
+  const [gChecking, setGChecking] = useState(false);
   const [section, setSection] = useState("req"); // req | archive
 
   // アーカイブ管理用
@@ -2212,9 +2374,18 @@ function AdminTab() {
   }, []);
   useEffect(() => { if (unlocked) { load(); loadReqs(); } }, [unlocked, load, loadReqs]);
 
-  const tryUnlock = () => {
-    if (gpw === ADMIN_PASS) { setUnlocked(true); setGErr(""); }
-    else setGErr("パスワードが違います");
+  const tryUnlock = async () => {
+    if (gChecking) return;
+    setGChecking(true); setGErr("");
+    try {
+      const ok = await api.verifyPassword("admin", gpw);
+      if (ok) { setUnlocked(true); setGErr(""); }
+      else { setGErr("パスワードが違います"); }
+    } catch (e) {
+      setGErr("通信に失敗しました。電波を確認してください");
+    } finally {
+      setGChecking(false);
+    }
   };
 
   if (!unlocked) {
@@ -2227,11 +2398,11 @@ function AdminTab() {
           <input type="password" value={gpw} autoFocus inputMode="numeric"
             onChange={e => { setGpw(e.target.value); setGErr(""); }}
             onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-            placeholder="パスワード"
+            placeholder="パスワード" disabled={gChecking}
             style={{ width:"100%", boxSizing:"border-box", border:"2px solid #eee", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
           {gErr && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
-          <button onClick={tryUnlock}
-            style={{ width:"100%", border:"none", background:"#e05c00", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:"pointer" }}>解錠する</button>
+          <button onClick={tryUnlock} disabled={gChecking}
+            style={{ width:"100%", border:"none", background: gChecking ? "#f0b48a" : "#e05c00", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor: gChecking ? "default" : "pointer" }}>{gChecking ? "確認中…" : "解錠する"}</button>
         </div>
       </div>
     );
@@ -2617,7 +2788,7 @@ function App() {
           <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0, flex:1, overflow:"hidden",
             transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
             <div style={{ fontSize:15, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>鮮魚ポップ共有</div>
-            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, alignSelf:"center", display:"inline-flex", alignItems:"center", gap:3, border:"none", background:"#e05c00", color:"#fff", fontWeight:900, fontSize:13, padding:"5px 12px", borderRadius:16, cursor:"pointer", boxShadow:"0 2px 8px rgba(224,92,0,0.3)", whiteSpace:"nowrap" }}><span style={{ fontSize:15, lineHeight:1 }}>＋</span>投稿</button>
+            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, alignSelf:"baseline", border:"none", background:"none", color:"#e05c00", fontWeight:800, fontSize:15, padding:"2px 4px", cursor:"pointer", whiteSpace:"nowrap" }}>＋投稿</button>
           </div>
           {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
           <div style={{ flexShrink:0 }}><WeatherWidget /></div>
@@ -2630,6 +2801,7 @@ function App() {
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
+      {tab==="souba"  && <SoubaTab />}
       {tab==="admin"  && <AdminTab />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -2639,7 +2811,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request") : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -2674,7 +2846,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
