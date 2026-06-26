@@ -40,11 +40,11 @@ const { useState, useEffect, useCallback } = React;
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
 const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","日替","塩干","その他"];
 // 検索の縦タブ用ジャンル（管理画面で勝部だけが選別する）。色は売場でひと目で見分ける用。
-const GENRES = ["塩干","寿司・刺身","切り身・その他","丸魚","行事"];
+const GENRES = ["塩干","寿司・刺身","切身・その他","丸魚","行事"];
 const GENRE_COLORS = {
   "塩干":        { solid:"#378ADD", soft:"#E6F1FB", text:"#0C447C" },
   "寿司・刺身":   { solid:"#D85A30", soft:"#FAECE7", text:"#993C1D" },
-  "切り身・その他": { solid:"#1D9E75", soft:"#E1F5EE", text:"#0F6E56" },
+  "切身・その他": { solid:"#1D9E75", soft:"#E1F5EE", text:"#0F6E56" },
   "丸魚":        { solid:"#639922", soft:"#EAF3DE", text:"#3B6D11" },
   "行事":        { solid:"#6C5CC7", soft:"#EEEDFE", text:"#3C3489" },
 };
@@ -742,10 +742,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"8px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight:800, borderRadius:20,
-                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
-                background: active?"#e05c00":"white", color: active?"#fff":"#b54900",
-                border:`2px solid ${active?"#e05c00":"#ffd9bd"}` }}>
+                padding:"7px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
+                boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
+                background:"#fff", color: active?"#e05c00":"#7a7a7f", border:"none",
+                borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -762,10 +762,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"6px 11px", whiteSpace:"nowrap", fontSize:12, fontWeight:800, borderRadius:20,
-                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
-                background: active?"#111":"white", color: active?"#fff":"#555",
-                border:`2px solid ${active?"#111":"#ddd"}` }}>
+                padding:"6px 12px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
+                boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
+                background:"#fff", color: active?"#111":"#888", border:"none",
+                borderBottom: active?"2.5px solid #111":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -859,32 +859,32 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           )}
         </div>
         {/* 店舗フィルター */}
-        <div style={{ display:"flex", gap:8, marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
+        <div style={{ display:"flex", gap:"0 15px", marginBottom:11, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
             <button key={lbl} onClick={()=>{ setFStore(val); ensureLoaded(); }}
-              style={{ padding:"5px 13px", borderRadius:20, fontSize:12, border:"2px solid", cursor:"pointer", fontWeight:700, flexShrink:0, borderColor:fStore===val?"#e05c00":"#ddd", background:fStore===val?"#e05c00":"white", color:fStore===val?"white":"#666", whiteSpace:"nowrap" }}>
+              style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:13, fontWeight:fStore===val?700:600, color:fStore===val?"#e05c00":"#888", borderBottom:fStore===val?"2px solid #e05c00":"1px solid #ededef" }}>
               {lbl}
             </button>
           ))}
         </div>
 
         {/* カテゴリフィルター */}
-        <div style={{ display:"flex", gap:5, flexWrap:"nowrap", overflowX:"auto", paddingBottom:2 }}>
+        <div style={{ display:"flex", gap:"0 15px", flexWrap:"nowrap", overflowX:"auto", paddingBottom:4 }}>
           {["",...CATEGORIES].map(c=>(
             <button key={c||"all"} onClick={()=>{ setFCat(c); ensureLoaded(); }}
-              style={{ padding:"4px 10px", borderRadius:20, fontSize:11, border:"2px solid", cursor:"pointer", fontWeight:700, flexShrink:0, whiteSpace:"nowrap", borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+              style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:12.5, fontWeight:fCat===c?700:600, color:fCat===c?"#111":"#999", borderBottom:fCat===c?"2px solid #111":"1px solid #ededef" }}>
               {c||"すべて"}
             </button>
           ))}
         </div>
 
         {/* よく使う検索ワード（折り返しで全部表示） */}
-        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10 }}>
+        <div style={{ display:"flex", flexWrap:"wrap", gap:"9px 15px", alignItems:"baseline", marginTop:12 }}>
           {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","父の日","鮭","対面","夏"].map(w=>{
             const on = search===w;
             return (
               <button key={w} onClick={()=>{ setSearch(on?"":w); ensureLoaded(); }}
-                style={{ padding:"5px 12px", borderRadius:20, fontSize:12, border:"1.5px solid", cursor:"pointer", fontWeight:700, flexShrink:0, whiteSpace:"nowrap", borderColor:on?"#e05c00":"#f0d9c8", background:on?"#e05c00":"#fff7f2", color:on?"#fff":"#b54900" }}>
+                style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:on?13.5:13, fontWeight:on?700:600, color:on?"#e05c00":"#7a7a7f", borderBottom:on?"2px solid #e05c00":"1px solid #e7e7e9" }}>
                 {w}
               </button>
             );
@@ -952,10 +952,10 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"8px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight:800, borderRadius:20,
-                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
-                background: active?"#e05c00":"white", color: active?"#fff":"#b54900",
-                border:`2px solid ${active?"#e05c00":"#ffd9bd"}` }}>
+                padding:"7px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
+                boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
+                background:"#fff", color: active?"#e05c00":"#7a7a7f", border:"none",
+                borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -971,10 +971,10 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"6px 11px", whiteSpace:"nowrap", fontSize:12, fontWeight:800, borderRadius:20,
-                boxShadow:"0 3px 10px rgba(0,0,0,0.14)", cursor:"pointer",
-                background: active?"#111":"white", color: active?"#fff":"#555",
-                border:`2px solid ${active?"#111":"#ddd"}` }}>
+                padding:"6px 12px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
+                boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
+                background:"#fff", color: active?"#111":"#888", border:"none",
+                borderBottom: active?"2.5px solid #111":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -2897,13 +2897,13 @@ function App() {
     { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
-    { key:"barcode", icon:"🏷", label:"リスト",     color:"#1f6feb" },
+    { key:"barcode", icon:"🏷", label:"バーコード",     color:"#1f6feb" },
     { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
     { key:"gne",     icon:"🅖", label:"GNE",      color:"#7c3aed" },
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(78px + env(safe-area-inset-bottom))" }}>
+    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(82px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -2951,7 +2951,7 @@ function App() {
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"17px 1px 19px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"19px 1px 21px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {more && showGneHint && (
                 <div style={{ position:"absolute", bottom:"100%", right:0, marginBottom:9, zIndex:260, pointerEvents:"none", display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
                   <span style={{ position:"absolute", left:-2, bottom:20, fontSize:13, animation:"gneFloat 1.6s ease-in-out infinite" }}>✨</span>
@@ -2978,7 +2978,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"リスト"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
