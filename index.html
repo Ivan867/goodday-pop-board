@@ -28,6 +28,8 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
   @page { size: A4 landscape; margin: 10mm; }
   body > #root { display: none !important; }
   #barcode-print-portal { display: block !important; }
+  #barcode-print-portal .bc-page { break-after: page; page-break-after: always; }
+  #barcode-print-portal .bc-page:last-child { break-after: auto; page-break-after: auto; }
   #barcode-print-portal .bc-label { page-break-inside: avoid; break-inside: avoid; }
 }
 </style>
@@ -300,6 +302,33 @@ const api = {
     });
     if (!r.ok) throw new Error(await r.text());
     return (await r.json()) === true;
+  },
+  // 包材・トレーのカテゴリ（プリセット）
+  async listTrayPresets() {
+    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?select=*&order=sort_order.asc`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async createTrayPreset(name, sort_order) {
+    const r = await fetch(`${SB_URL}/rest/v1/tray_presets`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ name, sort_order, items: [] })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async updateTrayPreset(id, patch) {
+    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?id=eq.${id}`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
+      body: JSON.stringify(patch)
+    });
+    if (!r.ok) throw new Error(await r.text());
+  },
+  async deleteTrayPreset(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
   }
 };
 
@@ -1705,50 +1734,90 @@ function FloorUploadModal({ onClose, onSuccess }) {
 }
 
 // ── 発注バーコード Tab ──
+// ドラッグ＋▲▼で並べ替えできるリスト用フック（タッチ対応）
+function useDragList(list, setLocal, persist) {
+  const containerRef = React.useRef(null);
+  const st = React.useRef({ list, idx:-1 });
+  st.current.list = list;
+  const [dragIdx, setDragIdx] = useState(-1);
+
+  const down = (i) => (e) => {
+    e.preventDefault();
+    st.current.idx = i; setDragIdx(i);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+  };
+  const move = (e) => {
+    const di = st.current.idx;
+    if (di < 0) return;
+    e.preventDefault();
+    const cont = containerRef.current; if (!cont) return;
+    const rows = Array.from(cont.querySelectorAll("[data-row]"));
+    const y = e.clientY;
+    let target = rows.length - 1;
+    for (let k=0; k<rows.length; k++) {
+      const r = rows[k].getBoundingClientRect();
+      if (y < r.top + r.height/2) { target = k; break; }
+    }
+    if (target !== di && target >= 0) {
+      const arr = st.current.list.slice();
+      const [m] = arr.splice(di, 1);
+      arr.splice(target, 0, m);
+      st.current.list = arr; st.current.idx = target;
+      setDragIdx(target); setLocal(arr);
+    }
+  };
+  const up = (e) => {
+    const di = st.current.idx;
+    st.current.idx = -1; setDragIdx(-1);
+    if (di >= 0) persist(st.current.list);
+  };
+  return { containerRef, dragIdx, down, move, up };
+}
+
+// バーコードのカテゴリ（発注先コードで仕分け）。codes:null は「すべて（全検索）」。
+// ここを書き換えればカテゴリの中身（どの発注先を含めるか）を調整できる。
+const TRAY_CATS = [
+  { key:"all",    label:"すべて",       codes:null },
+  { key:"tray",   label:"包材・トレー",  codes:["876101","874603"] },
+  { key:"frozen", label:"冷食・たれ",    codes:["220001","300701","200401","180101","402203","420201","680701","301403","420401","101"] },
+  { key:"shizai", label:"資材",         codes:["880401"] },
+  { key:"fresh",  label:"生鮮",         codes:["990001","999901","999902"] },
+];
+
 function BarcodeTab() {
   const ACCENT = "#1f6feb";
-  const [items, setItems] = useState([]);
   const [libsReady, setLibsReady] = useState(typeof XLSX !== "undefined" && typeof JsBarcode !== "undefined");
   useEffect(() => {
     let alive = true;
     Promise.all([loadScriptOnce(XLSX_SRC), loadScriptOnce(JSBARCODE_SRC)])
-      .then(() => { if (alive) setLibsReady(true); })
-      .catch(e => console.error(e));
+      .then(() => { if (alive) setLibsReady(true); }).catch(e => console.error(e));
     return () => { alive = false; };
   }, []);
+
+  const [master, setMaster] = useState([]);            // [{name,bcode,pcode,kubun,haccyu}]（重複除去済み）
+  const [cat, setCat] = useState("tray");              // 選択中カテゴリ
   const [fileName, setFileName] = useState("");
   const [err, setErr] = useState("");
-  const [selected, setSelected] = useState(() => new Set());
-  const [search, setSearch] = useState("");
-  const [cols, setCols] = useState(3);
-  const [showName, setShowName] = useState(true);
   const [over, setOver] = useState(false);
+  const [search, setSearch] = useState("");
+  const [list, setList] = useState([]);                // 作業リスト（印刷対象・順序つき）
+  const [cols, setCols] = useState(4);
+  const [showName, setShowName] = useState(true);
+  const [srcOpen, setSrcOpen] = useState(true);
   const fileRef = React.useRef(null);
+  const cfgRef = React.useRef(null);
   const previewRef = React.useRef(null);
-  const [portalEl] = useState(() => {
-    const el = document.createElement("div");
-    el.id = "barcode-print-portal";
-    return el;
-  });
 
-  useEffect(() => {
-    document.body.appendChild(portalEl);
-    return () => { try { document.body.removeChild(portalEl); } catch(e) {} };
-  }, [portalEl]);
+  const [portalEl] = useState(() => { const el = document.createElement("div"); el.id = "barcode-print-portal"; return el; });
+  useEffect(() => { document.body.appendChild(portalEl); return () => { try { document.body.removeChild(portalEl); } catch(e){} }; }, [portalEl]);
 
   const findCol = (header, cands) => {
-    for (const c of cands) {
-      const i = header.findIndex(x => String(x).replace(/\s/g,"") === c);
-      if (i >= 0) return i;
-    }
-    for (const c of cands) {
-      const key = c.slice(0,6);
-      const i = header.findIndex(x => String(x).includes(key));
-      if (i >= 0) return i;
-    }
+    for (const c of cands) { const i = header.findIndex(x => String(x).replace(/\s/g,"") === c); if (i>=0) return i; }
+    for (const c of cands) { const key = c.slice(0,6); const i = header.findIndex(x => String(x).includes(key)); if (i>=0) return i; }
     return -1;
   };
 
+  // マスタ（エクセル）読み込み：全シート・スキャニングコードのある全商品を取得（区分は問わない）
   const handleFile = (file) => {
     if (!file) return;
     setErr("");
@@ -1757,193 +1826,268 @@ function BarcodeTab() {
       try {
         if (typeof XLSX === "undefined") throw new Error("ライブラリ読み込み中です。少し待って再試行してください");
         const wb = XLSX.read(new Uint8Array(e.target.result), { type:"array" });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:"", raw:false });
-        if (!rows.length) throw new Error("空のファイルです");
-        const header = rows[0];
-        const iKubun = findCol(header, ["スキャニングコード区分1"]);
-        const iScan  = findCol(header, ["スキャニングコード1"]);
-        const iCode  = findCol(header, ["商品コード"]);
-        const iName  = findCol(header, ["商品名(漢字_全角25文字)","商品名(漢字","商品名"]);
-        if (iKubun < 0 || iScan < 0) throw new Error("スキャニングコード列が見つかりません");
-        const out = [], seen = new Set();
-        for (let r=1; r<rows.length; r++) {
-          const row = rows[r]; if (!row) continue;
-          if (String(row[iKubun]).trim() !== "4") continue;
-          const bcode = String(row[iScan]).trim();
-          if (!bcode || seen.has(bcode)) continue;
-          seen.add(bcode);
-          const pcode = iCode>=0 ? String(row[iCode]).trim() : "";
-          let name = iName>=0 ? String(row[iName]||"") : "";
-          name = name.replace(/\u3000/g," ").replace(/\s+/g," ").trim();
-          out.push({ name, pcode, bcode });
-        }
-        if (!out.length) throw new Error("区分4（13桁）のデータが見つかりませんでした");
-        setItems(out);
-        setSelected(new Set());
-        setFileName(file.name);
-      } catch(ex) {
-        setErr(ex.message);
-        setItems([]); setFileName("");
-      }
+        const out = []; const seen = new Set();
+        wb.SheetNames.forEach(sheet => {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header:1, defval:"", raw:false });
+          if (!rows.length) return;
+          const header = rows[0];
+          const iScan  = findCol(header, ["スキャニングコード1"]);
+          const iKubun = findCol(header, ["スキャニングコード区分1"]);
+          const iCode  = findCol(header, ["商品コード"]);
+          const iName  = findCol(header, ["商品名(漢字_全角25文字)","商品名(漢字","商品名"]);
+          const iHac   = findCol(header, ["発注先コード1"]);
+          if (iScan < 0) return;
+          for (let r=1; r<rows.length; r++) {
+            const row = rows[r]; if (!row) continue;
+            const bcode = String(row[iScan]).trim();
+            if (!bcode || seen.has(bcode)) continue;
+            seen.add(bcode);
+            const pcode = iCode>=0 ? String(row[iCode]).trim() : "";
+            const haccyu = iHac>=0 ? String(row[iHac]||"").trim() : "";
+            const kubun = iKubun>=0 ? String(row[iKubun]).trim() : "";
+            let name = iName>=0 ? String(row[iName]||"") : "";
+            name = name.replace(/\u3000/g," ").replace(/\s+/g," ").trim();
+            out.push({ name, pcode, bcode, kubun, haccyu });
+          }
+        });
+        if (!out.length) throw new Error("スキャニングコードのデータが見つかりませんでした");
+        setMaster(out); setFileName(file.name);
+      } catch(ex) { setErr(ex.message); setMaster([]); setFileName(""); }
     };
     reader.readAsArrayBuffer(file);
   };
 
-  const toggle = (bcode) => {
-    setSelected(prev => {
-      const next = new Set(prev);
-      if (next.has(bcode)) next.delete(bcode); else next.add(bcode);
-      return next;
-    });
+  const inList = (bcode) => list.some(it => it.bcode === bcode);
+  const addItem = (it) => { if (inList(it.bcode)) return; setList(prev => [...prev, it]); };
+  const removeItem = (bcode) => setList(prev => prev.filter(it => it.bcode !== bcode));
+  const moveItem = (i, dir) => {
+    setList(prev => { const j=i+dir; if (j<0||j>=prev.length) return prev; const a=prev.slice(); const [m]=a.splice(i,1); a.splice(j,0,m); return a; });
   };
 
-  const q = search.trim().toLowerCase();
-  const visible = items.filter(it =>
-    !q || it.name.toLowerCase().includes(q) || it.pcode.includes(q) || it.bcode.includes(q)
-  );
-  const chosen = items.filter(it => selected.has(it.bcode));
-
-  const selectAllVisible = () => {
-    setSelected(prev => { const next = new Set(prev); visible.forEach(it => next.add(it.bcode)); return next; });
+  // 設定の書き出し／読み込み（テキスト）
+  const exportCfg = () => {
+    if (!list.length) return;
+    const nm = (prompt("保存名（ファイル名）", "発注リスト") || "発注リスト").trim();
+    const data = { type:"tray-list", v:2, savedAt:new Date().toISOString(), items:list };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `${nm}.txt`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   };
-  const clearSel = () => setSelected(new Set());
+  const importCfg = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(String(e.target.result));
+        const items = Array.isArray(parsed) ? parsed : parsed.items;
+        if (!Array.isArray(items)) throw new Error("形式が違います");
+        const clean = items.filter(x => x && x.bcode).map(x => ({ name:x.name||"", pcode:x.pcode||"", bcode:String(x.bcode), kubun:x.kubun||"", haccyu:x.haccyu||"" }));
+        setList(clean); setErr("");
+      } catch(ex) { setErr("設定ファイルを読み込めませんでした"); }
+    };
+    reader.readAsText(file);
+    if (cfgRef.current) cfgRef.current.value = "";
+  };
 
-  // バーコード描画（画面プレビュー＋印刷ポータル）
+  const drag = useDragList(list, setList, setList);
+
   useEffect(() => {
     const draw = (root) => {
       if (!root || typeof JsBarcode === "undefined") return;
       root.querySelectorAll("svg[data-code]").forEach(svg => {
         try {
-          JsBarcode(svg, svg.getAttribute("data-code"), {
-            format:"CODE128", displayValue:false, margin:0,
-            height:60, width: cols>=4 ? 1.4 : (cols===3 ? 1.7 : 2)
-          });
-        } catch(e) {}
+          JsBarcode(svg, svg.getAttribute("data-code"), { format:"CODE128", displayValue:false, margin:0, height:60, width:2 });
+          const w = svg.getAttribute("width"), hh = svg.getAttribute("height");
+          if (w && hh) { svg.setAttribute("viewBox", `0 0 ${w} ${hh}`); svg.removeAttribute("width"); svg.removeAttribute("height"); svg.setAttribute("preserveAspectRatio", "none"); }
+        } catch(e){}
       });
     };
-    draw(previewRef.current);
-    draw(portalEl);
-  }, [selected, items, cols, showName, portalEl, libsReady]);
+    draw(previewRef.current); draw(portalEl);
+  }, [list, cols, showName, portalEl, libsReady]);
 
-  const labelStyle = {
-    border:"1px solid #cfd8de", borderRadius:6, padding:"5mm 4mm 4mm",
-    textAlign:"center", breakInside:"avoid", display:"flex",
-    flexDirection:"column", alignItems:"center", justifyContent:"center", background:"#fff"
-  };
+  // カテゴリ別カウント
+  const catCount = (c) => c.codes===null ? master.length : master.filter(m => c.codes.includes(m.haccyu)).length;
 
-  const renderGrid = () => (
-    <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gap:"6mm" }}>
-      {chosen.map(it => (
-        <div key={it.bcode} className="bc-label" style={labelStyle}>
-          {showName && <div style={{ fontSize:"12pt", fontWeight:700, marginBottom:"2mm", lineHeight:1.3, color:"#000" }}>{it.name}</div>}
-          <svg data-code={it.bcode} style={{ width:"100%", height:"auto", maxHeight:"24mm" }}></svg>
-          <div style={{ fontSize:"9pt", color:"#333", marginTop:"1.5mm" }}>{it.bcode}</div>
-        </div>
-      ))}
+  // 一覧（カテゴリ＋検索で絞り込み）
+  const activeCat = TRAY_CATS.find(c => c.key===cat) || TRAY_CATS[0];
+  const q = search.trim().toLowerCase();
+  const base = activeCat.codes===null ? master : master.filter(m => activeCat.codes.includes(m.haccyu));
+  const srcFiltered = q ? base.filter(it => it.name.toLowerCase().includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
+  const SRC_CAP = 200;
+  const srcShown = srcFiltered.slice(0, SRC_CAP);
+
+  const ROWS = 4;
+  const perPage = cols * ROWS;                 // 4列×4行＝16枚/ページ
+  const pages = [];
+  for (let i=0; i<list.length; i+=perPage) pages.push(list.slice(i, i+perPage));
+
+  // ページ単位で描画。gridAutoFlow:"column" で「列ごとに上→下」の縦順に並ぶ。
+  const renderPages = (forPrint) => pages.map((pg, pi) => (
+    <div key={pi} className="bc-page"
+      style={ forPrint
+        ? { breakAfter:"page", pageBreakAfter:"always" }
+        : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
+      {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"#f7f8fa", padding:"0 8px", fontSize:11, fontWeight:800, color:"#9a9aa0" }}>{pi+1}ページ目（{pg.length}枚）</div>}
+      <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 44mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
+        {pg.map(it => (
+          <div key={it.bcode} className="bc-label"
+            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"1.5mm":"3px", textAlign:"center", breakInside:"avoid", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap: forPrint?"1.5mm":"1px", background:"#fff", overflow:"hidden" }}>
+            {showName && <div style={{ fontSize: forPrint?"24pt":"13px", fontWeight:800, marginBottom:0, lineHeight:1.1, color:"#000", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</div>}
+            <svg data-code={it.bcode} style={{ width:"100%", height: forPrint?"21mm":"34px", display:"block" }}></svg>
+            <div style={{ fontSize: forPrint?"19pt":"11px", fontWeight:700, letterSpacing: forPrint?"0.5mm":"0.2px", color:"#222", marginTop:0 }}>{it.bcode}</div>
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  ));
 
-  const seg = (active) => ({
-    padding:"7px 14px", border:"none", fontSize:13, fontWeight:700, cursor:"pointer",
-    background: active ? ACCENT : "#fff", color: active ? "#fff" : "#888"
-  });
+  const seg = (active) => ({ padding:"7px 14px", border:"none", fontSize:13, fontWeight:700, cursor:"pointer", background: active?ACCENT:"#fff", color: active?"#fff":"#888" });
+  const card = { background:"white", borderRadius:16, padding:"18px 20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 };
 
   return (
-    <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px 60px" }}>
+    <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px 80px" }}>
 
-      {/* STEP 1 アップロード */}
-      <div style={{ background:"white", borderRadius:16, padding:"20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 }}>
-        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:14 }}>① 商品マスター（エクセル）を読み込む</div>
-        <label
-          onDragOver={e=>{e.preventDefault();setOver(true);}}
-          onDragLeave={e=>{e.preventDefault();setOver(false);}}
-          onDrop={e=>{e.preventDefault();setOver(false);handleFile(e.dataTransfer.files[0]);}}
-          style={{ display:"block", border:`2px dashed ${over?ACCENT:"#e0e0e0"}`, borderRadius:12, padding:"26px 16px",
-            textAlign:"center", cursor:"pointer", background: over?"#eef4ff":"#fafafa", transition:"all 0.15s" }}>
-          <div style={{ fontWeight:700, color:"#444" }}>エクセルをドロップ、またはタップして選択</div>
-          <div style={{ fontSize:12, color:"#aaa", marginTop:6 }}>.xlsx / .xls</div>
-          <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={e=>handleFile(e.target.files[0])} style={{ display:"none" }} />
-        </label>
-        {fileName && <div style={{ fontSize:13, color:ACCENT, fontWeight:700, marginTop:10 }}>✓ {fileName}（{items.length}商品）</div>}
+      {/* 設定の保存・読み込み */}
+      <div style={card}>
+        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:12 }}>包材・トレー バーコード</div>
+        <div style={{ display:"flex", gap:9, flexWrap:"wrap" }}>
+          <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>設定を読み込み</button>
+          <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>設定を書き出し（{list.length}）</button>
+          <input ref={cfgRef} type="file" accept=".txt,.json,text/plain" onChange={e=>importCfg(e.target.files[0])} style={{ display:"none" }} />
+        </div>
         {err && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginTop:10 }}>{err}</div>}
       </div>
 
-      {items.length > 0 && (
-        <>
-          {/* STEP 2 選択 */}
-          <div style={{ background:"white", borderRadius:16, padding:"20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 }}>
-            <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:14 }}>② 発注したいトレーを選ぶ</div>
-            <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center", marginBottom:14 }}>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="商品名・コードで絞り込み"
-                style={{ flex:1, minWidth:200, padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }} />
-              <button onClick={selectAllVisible} style={{ background:"#f5f5f5", border:"2px solid #eee", borderRadius:10, padding:"9px 14px", fontSize:13, fontWeight:700, cursor:"pointer", color:"#555" }}>表示中をすべて選択</button>
-              <button onClick={clearSel} style={{ background:"#f5f5f5", border:"2px solid #eee", borderRadius:10, padding:"9px 14px", fontSize:13, fontWeight:700, cursor:"pointer", color:"#555" }}>選択解除</button>
-              <span style={{ fontSize:13, fontWeight:700, color:"#888" }}>選択中 <b style={{ color:ACCENT, fontSize:16 }}>{selected.size}</b> 件</span>
-            </div>
-            <div style={{ border:"1px solid #eee", borderRadius:10, maxHeight:420, overflowY:"auto" }}>
-              {visible.length === 0 ? (
-                <div style={{ padding:40, textAlign:"center", color:"#bbb" }}>該当する商品がありません</div>
-              ) : visible.map(it => {
-                const on = selected.has(it.bcode);
-                return (
-                  <div key={it.bcode} onClick={()=>toggle(it.bcode)}
-                    style={{ display:"grid", gridTemplateColumns:"30px 1fr 130px", alignItems:"center", gap:10,
-                      padding:"9px 14px", borderBottom:"1px solid #f2f2f2", cursor:"pointer",
-                      background: on ? "#eef4ff" : "transparent" }}>
-                    <input type="checkbox" readOnly checked={on} style={{ width:18, height:18, accentColor:ACCENT, cursor:"pointer" }} />
-                    <div style={{ fontWeight:600, fontSize:13.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name || "（名称なし）"}</div>
-                    <div style={{ fontSize:12, color:"#999", fontFamily:"monospace" }}>{it.bcode}</div>
-                  </div>
-                );
-              })}
+      {/* 作業リスト */}
+      <div style={card}>
+        <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", marginBottom:12 }}>
+          <div style={{ fontSize:14, fontWeight:900, color:"#111" }}>発注リスト <span style={{ color:ACCENT }}>{list.length}</span></div>
+          {list.length>0 && <button onClick={()=>{ if(confirm("リストを空にしますか？")) setList([]); }} style={{ border:"none", background:"none", color:"#bbb", fontSize:12, fontWeight:700, cursor:"pointer" }}>すべて消去</button>}
+        </div>
+        {list.length===0 ? (
+          <div style={{ textAlign:"center", color:"#bbb", padding:"26px 0", fontSize:13, lineHeight:1.7 }}>
+            下の一覧からタップで追加、または「設定を読み込み」で復元してください
+          </div>
+        ) : (
+          <div ref={drag.containerRef} style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            {list.map((it,i) => (
+              <div key={it.bcode} data-row
+                style={{ display:"flex", alignItems:"center", gap:10, background: drag.dragIdx===i?"#eef4ff":"#fafbfc", border:"1px solid #eef0f2", borderRadius:10, padding:"9px 11px", boxShadow: drag.dragIdx===i?"0 4px 14px rgba(0,0,0,0.12)":"none" }}>
+                <button onPointerDown={drag.down(i)} onPointerMove={drag.move} onPointerUp={drag.up}
+                  style={{ border:"none", background:"none", cursor:"grab", color:"#c4c4c8", fontSize:18, letterSpacing:"-3px", padding:"0 2px", touchAction:"none", lineHeight:1 }}>⋮⋮</button>
+                <span style={{ width:18, textAlign:"center", fontSize:12, fontWeight:800, color:"#bfbfc4" }}>{i+1}</span>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13.5, fontWeight:700, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
+                  <div style={{ fontSize:11, color:"#9a9aa0", fontFamily:"monospace" }}>{it.bcode}</div>
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+                  <button onClick={()=>moveItem(i,-1)} disabled={i===0} style={{ border:"none", background:"#eef1f5", color:i===0?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:10, cursor:i===0?"default":"pointer", lineHeight:1 }}>▲</button>
+                  <button onClick={()=>moveItem(i,1)} disabled={i===list.length-1} style={{ border:"none", background:"#eef1f5", color:i===list.length-1?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:10, cursor:i===list.length-1?"default":"pointer", lineHeight:1 }}>▼</button>
+                </div>
+                <button onClick={()=>removeItem(it.bcode)} style={{ border:"none", background:"none", color:"#ccc", fontSize:18, cursor:"pointer", padding:"0 2px", lineHeight:1 }}>×</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* マスタから追加（カテゴリ別） */}
+      <div style={card}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", cursor:"pointer" }} onClick={()=>setSrcOpen(o=>!o)}>
+          <div style={{ fontSize:14, fontWeight:900, color:"#111" }}>商品を追加{master.length>0?`（${master.length}件）`:""}</div>
+          <span style={{ color:"#bbb", fontSize:14 }}>{srcOpen?"▲":"▼"}</span>
+        </div>
+
+        {srcOpen && (
+          <div style={{ marginTop:14 }}>
+            {master.length===0 ? (
+              <label
+                onDragOver={e=>{e.preventDefault();setOver(true);}}
+                onDragLeave={e=>{e.preventDefault();setOver(false);}}
+                onDrop={e=>{e.preventDefault();setOver(false);handleFile(e.dataTransfer.files[0]);}}
+                style={{ display:"block", border:`2px dashed ${over?ACCENT:"#e0e0e0"}`, borderRadius:12, padding:"24px 16px", textAlign:"center", cursor:"pointer", background: over?"#eef4ff":"#fafafa" }}>
+                <div style={{ fontWeight:700, color:"#444" }}>商品マスタ（エクセル）をドロップ／タップ</div>
+                <div style={{ fontSize:12, color:"#aaa", marginTop:6 }}>包材・冷食・たれ・資材・生鮮をカテゴリで絞れます</div>
+                <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={e=>handleFile(e.target.files[0])} style={{ display:"none" }} />
+              </label>
+            ) : (
+              <>
+                <div style={{ display:"flex", gap:"0 16px", marginBottom:12, borderBottom:"1px solid #eee", overflowX:"auto" }}>
+                  {TRAY_CATS.map(c => {
+                    const on = cat===c.key;
+                    return (
+                      <button key={c.key} onClick={()=>setCat(c.key)}
+                        style={{ border:"none", background:"none", cursor:"pointer", padding:"4px 0 9px", flexShrink:0, whiteSpace:"nowrap", fontSize:13.5, fontWeight: on?800:600, color: on?ACCENT:"#999", borderBottom: on?`2px solid ${ACCENT}`:"2px solid transparent", marginBottom:-1 }}>
+                        {c.label}<span style={{ fontSize:11, color: on?ACCENT:"#bbb", marginLeft:4 }}>{catCount(c)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:10 }}>
+                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="商品名・コードで絞り込み"
+                    style={{ flex:1, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
+                  <button onClick={()=>{ setMaster([]); setFileName(""); setSearch(""); }} style={{ border:"none", background:"none", color:"#bbb", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>読み直し</button>
+                </div>
+                <div style={{ border:"1px solid #eee", borderRadius:10, maxHeight:360, overflowY:"auto" }}>
+                  {srcShown.length===0 ? (
+                    <div style={{ padding:36, textAlign:"center", color:"#bbb" }}>該当する商品がありません</div>
+                  ) : srcShown.map(it => {
+                    const on = inList(it.bcode);
+                    return (
+                      <div key={it.bcode} onClick={()=>addItem(it)}
+                        style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 13px", borderBottom:"1px solid #f3f3f3", cursor: on?"default":"pointer", background: on?"#f3f8ff":"transparent" }}>
+                        <span style={{ width:20, textAlign:"center", color: on?ACCENT:"#cfcfd3", fontWeight:800, fontSize:15 }}>{on?"✓":"＋"}</span>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13.5, fontWeight:600, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
+                          <div style={{ fontSize:11, color:"#aaa", fontFamily:"monospace" }}>{it.bcode}</div>
+                        </div>
+                        {on && <span style={{ fontSize:11, color:ACCENT, fontWeight:700, whiteSpace:"nowrap" }}>追加済</span>}
+                      </div>
+                    );
+                  })}
+                  {srcFiltered.length > SRC_CAP && (
+                    <div style={{ padding:"12px", textAlign:"center", color:"#bbb", fontSize:12 }}>ほか {srcFiltered.length - SRC_CAP} 件 — 検索で絞り込んでください</div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 印刷 */}
+      <div style={card}>
+        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:14 }}>レイアウトと印刷</div>
+        <div style={{ display:"flex", gap:22, flexWrap:"wrap", alignItems:"center", marginBottom:16 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <span style={{ fontSize:13, fontWeight:700, color:"#888" }}>1行の数</span>
+            <div style={{ display:"inline-flex", border:"1px solid #e2e2e4", borderRadius:8, overflow:"hidden" }}>
+              {[2,3,4].map(c=>(<button key={c} onClick={()=>setCols(c)} style={{ ...seg(cols===c), borderRight: c<4?"1px solid #eee":"none" }}>{c}列</button>))}
             </div>
           </div>
-
-          {/* STEP 3 印刷 */}
-          <div style={{ background:"white", borderRadius:16, padding:"20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 }}>
-            <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:14 }}>③ レイアウトと印刷</div>
-            <div style={{ display:"flex", gap:22, flexWrap:"wrap", alignItems:"center", marginBottom:16 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <span style={{ fontSize:13, fontWeight:700, color:"#888" }}>1行の数</span>
-                <div style={{ display:"inline-flex", border:"2px solid #eee", borderRadius:8, overflow:"hidden" }}>
-                  {[2,3,4].map(c=>(
-                    <button key={c} onClick={()=>setCols(c)} style={{ ...seg(cols===c), borderRight: c<4?"1px solid #eee":"none" }}>{c}列</button>
-                  ))}
-                </div>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <span style={{ fontSize:13, fontWeight:700, color:"#888" }}>商品名</span>
-                <div style={{ display:"inline-flex", border:"2px solid #eee", borderRadius:8, overflow:"hidden" }}>
-                  <button onClick={()=>setShowName(true)} style={{ ...seg(showName), borderRight:"1px solid #eee" }}>表示</button>
-                  <button onClick={()=>setShowName(false)} style={seg(!showName)}>コードのみ</button>
-                </div>
-              </div>
-              <button onClick={()=>window.print()} disabled={chosen.length===0}
-                style={{ marginLeft:"auto", background: chosen.length? ACCENT : "#ccc", color:"white", border:"none", borderRadius:10,
-                  padding:"12px 22px", fontSize:14, fontWeight:900, cursor: chosen.length?"pointer":"not-allowed" }}>
-                A4横で印刷（{chosen.length}件）
-              </button>
-            </div>
-
-            {/* 画面プレビュー */}
-            <div style={{ fontSize:12, color:"#aaa", fontWeight:700, marginBottom:8 }}>プレビュー</div>
-            <div ref={previewRef} style={{ background:"#f7f8fa", border:"1px solid #eee", borderRadius:10, padding:"16px", minHeight:80 }}>
-              {chosen.length === 0
-                ? <div style={{ textAlign:"center", color:"#bbb", padding:"24px 0" }}>商品を選ぶとここにプレビューが表示されます</div>
-                : renderGrid()}
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <span style={{ fontSize:13, fontWeight:700, color:"#888" }}>商品名</span>
+            <div style={{ display:"inline-flex", border:"1px solid #e2e2e4", borderRadius:8, overflow:"hidden" }}>
+              <button onClick={()=>setShowName(true)} style={{ ...seg(showName), borderRight:"1px solid #eee" }}>表示</button>
+              <button onClick={()=>setShowName(false)} style={seg(!showName)}>コードのみ</button>
             </div>
           </div>
-        </>
-      )}
+          <button onClick={()=>window.print()} disabled={list.length===0}
+            style={{ marginLeft:"auto", background: list.length?ACCENT:"#ccc", color:"white", border:"none", borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:900, cursor: list.length?"pointer":"not-allowed" }}>
+            A4横で印刷（{list.length}件・{pages.length}ページ）
+          </button>
+        </div>
+        <div style={{ fontSize:12, color:"#aaa", fontWeight:700, marginBottom:8 }}>プレビュー</div>
+        <div ref={previewRef} style={{ background:"#f7f8fa", border:"1px solid #eee", borderRadius:10, padding:"16px", minHeight:80 }}>
+          {list.length===0 ? <div style={{ textAlign:"center", color:"#bbb", padding:"24px 0" }}>リストに追加するとここにプレビューが表示されます</div> : renderPages(false)}
+        </div>
+      </div>
 
-      {/* 印刷用ポータル（画面では非表示・印刷時のみ表示） */}
-      {ReactDOM.createPortal(renderGrid(), portalEl)}
+      {ReactDOM.createPortal(<>{renderPages(true)}</>, portalEl)}
     </div>
   );
 }
-
-// ── 天気ウィジェット ──
 function WeatherWidget() {
   const [daily, setDaily] = useState(null);
   useEffect(() => {
