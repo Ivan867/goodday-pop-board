@@ -75,6 +75,15 @@ const ANN_TYPES = {
 };
 // 必要になったときだけ外部ライブラリを読み込む（初回ロードを軽くするため）
 const XLSX_SRC = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+
+// 日本語の表記揺れ吸収：全角半角・大小・カタカナ/ひらがなを統一して検索用の共通形にする
+function normJa(s) {
+  if (s == null) return "";
+  return String(s)
+    .normalize("NFKC")                                              // 全角→半角・互換文字を標準化
+    .toLowerCase()
+    .replace(/[\u30a1-\u30f6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60)); // カタカナ→ひらがな
+}
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
 const GNE_FONT_NAME = "Noto Sans JP";
@@ -833,15 +842,15 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
   useEffect(() => { ensureLoaded(); }, []);
 
-  const q = search.trim().toLowerCase();
+  const q = normJa(search.trim());
   const results = !loaded ? [] : allPops.filter(p => {
     const matchStore  = !fStore || p.store_name === fStore;
     const matchCat    = !fCat   || p.category === fCat;
     const matchGenre  = !fGenre || p.genre === fGenre;
     const matchSearch = !q ||
-      (p.product_name||"").toLowerCase().includes(q) ||
-      (p.store_name||"").toLowerCase().includes(q) ||
-      (p.category||"").toLowerCase().includes(q);
+      normJa(p.product_name).includes(q) ||
+      normJa(p.store_name).includes(q) ||
+      normJa(p.category).includes(q);
     return matchStore && matchCat && matchGenre && matchSearch;
   });
 
@@ -876,7 +885,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           })}
         </div>
       {/* 検索ボックス */}
-      <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20 }}>
+      <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20, marginLeft:46 }}>
         {/* 検索入力（最上部） */}
         <div style={{ position:"relative", marginBottom:12 }}>
           
@@ -1867,7 +1876,7 @@ function BarcodeTab() {
   // 設定の書き出し／読み込み（テキスト）
   const exportCfg = () => {
     if (!list.length) return;
-    const nm = (prompt("保存名（ファイル名）", "発注リスト") || "発注リスト").trim();
+    const nm = (prompt("プリセット名（ファイル名）", "発注リスト") || "発注リスト").trim();
     const data = { type:"tray-list", v:2, savedAt:new Date().toISOString(), items:list };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type:"text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -1884,7 +1893,7 @@ function BarcodeTab() {
         if (!Array.isArray(items)) throw new Error("形式が違います");
         const clean = items.filter(x => x && x.bcode).map(x => ({ name:x.name||"", pcode:x.pcode||"", bcode:String(x.bcode), kubun:x.kubun||"", haccyu:x.haccyu||"" }));
         setList(clean); setErr("");
-      } catch(ex) { setErr("設定ファイルを読み込めませんでした"); }
+      } catch(ex) { setErr("プリセットを読み込めませんでした"); }
     };
     reader.readAsText(file);
     if (cfgRef.current) cfgRef.current.value = "";
@@ -1897,7 +1906,7 @@ function BarcodeTab() {
       if (!root || typeof JsBarcode === "undefined") return;
       root.querySelectorAll("svg[data-code]").forEach(svg => {
         try {
-          JsBarcode(svg, svg.getAttribute("data-code"), { format:"CODE128", displayValue:false, margin:0, height:60, width:2 });
+          JsBarcode(svg, svg.getAttribute("data-code"), { format:"CODE128", displayValue:false, margin:0, height:42, width:2 });
           const w = svg.getAttribute("width"), hh = svg.getAttribute("height");
           if (w && hh) { svg.setAttribute("viewBox", `0 0 ${w} ${hh}`); svg.removeAttribute("width"); svg.removeAttribute("height"); svg.setAttribute("preserveAspectRatio", "none"); }
         } catch(e){}
@@ -1911,11 +1920,10 @@ function BarcodeTab() {
 
   // 一覧（カテゴリ＋検索で絞り込み）
   const activeCat = TRAY_CATS.find(c => c.key===cat) || TRAY_CATS[0];
-  const q = search.trim().toLowerCase();
+  const q = normJa(search.trim());
   const base = activeCat.codes===null ? master : master.filter(m => activeCat.codes.includes(m.haccyu));
-  const srcFiltered = q ? base.filter(it => it.name.toLowerCase().includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
-  const SRC_CAP = 200;
-  const srcShown = srcFiltered.slice(0, SRC_CAP);
+  const srcFiltered = q ? base.filter(it => normJa(it.name).includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
+  const srcShown = srcFiltered;
 
   const ROWS = 4;
   const perPage = cols * ROWS;                 // 4列×4行＝16枚/ページ
@@ -1929,13 +1937,15 @@ function BarcodeTab() {
         ? { breakAfter:"page", pageBreakAfter:"always" }
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"#f7f8fa", padding:"0 8px", fontSize:11, fontWeight:800, color:"#9a9aa0" }}>{pi+1}ページ目（{pg.length}枚）</div>}
-      <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 44mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
+      <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
         {pg.map(it => (
           <div key={it.bcode} className="bc-label"
-            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"1.5mm":"3px", textAlign:"center", breakInside:"avoid", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap: forPrint?"1.5mm":"1px", background:"#fff", overflow:"hidden" }}>
-            {showName && <div style={{ fontSize: forPrint?"24pt":"13px", fontWeight:800, marginBottom:0, lineHeight:1.1, color:"#000", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</div>}
-            <svg data-code={it.bcode} style={{ width:"100%", height: forPrint?"21mm":"34px", display:"block" }}></svg>
-            <div style={{ fontSize: forPrint?"19pt":"11px", fontWeight:700, letterSpacing: forPrint?"0.5mm":"0.2px", color:"#222", marginTop:0 }}>{it.bcode}</div>
+            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
+            {showName && <div style={{ fontSize: forPrint?"16pt":"10px", fontWeight:800, lineHeight:1, color:"#000", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</div>}
+            <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
+              <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
+            </div>
+            <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"#222", lineHeight:1 }}>{it.bcode}</div>
           </div>
         ))}
       </div>
@@ -1950,10 +1960,11 @@ function BarcodeTab() {
 
       {/* 設定の保存・読み込み */}
       <div style={card}>
-        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:12 }}>包材・トレー バーコード</div>
+        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:10 }}>発注バーコード</div>
+        <div style={{ fontSize:12, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"7px 11px", marginBottom:13, lineHeight:1.55 }}>※ この画面はパソコンのブラウザでの操作を推奨します（iPhoneでは一覧が多いと動作が重くなる場合があります）。</div>
         <div style={{ display:"flex", gap:9, flexWrap:"wrap" }}>
-          <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>設定を読み込み</button>
-          <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>設定を書き出し（{list.length}）</button>
+          <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>プリセット読み込み</button>
+          <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>プリセット保存（{list.length}）</button>
           <input ref={cfgRef} type="file" accept=".txt,.json,text/plain" onChange={e=>importCfg(e.target.files[0])} style={{ display:"none" }} />
         </div>
         {err && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginTop:10 }}>{err}</div>}
@@ -1967,7 +1978,7 @@ function BarcodeTab() {
         </div>
         {list.length===0 ? (
           <div style={{ textAlign:"center", color:"#bbb", padding:"26px 0", fontSize:13, lineHeight:1.7 }}>
-            下の一覧からタップで追加、または「設定を読み込み」で復元してください
+            下の一覧からタップで追加、または「プリセット読み込み」で復元してください
           </div>
         ) : (
           <div ref={drag.containerRef} style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -2029,7 +2040,7 @@ function BarcodeTab() {
                     style={{ flex:1, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
                   <button onClick={()=>{ setMaster([]); setFileName(""); setSearch(""); }} style={{ border:"none", background:"none", color:"#bbb", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>読み直し</button>
                 </div>
-                <div style={{ border:"1px solid #eee", borderRadius:10, maxHeight:360, overflowY:"auto" }}>
+                <div style={{ border:"1px solid #eee", borderRadius:10, maxHeight:720, overflowY:"auto" }}>
                   {srcShown.length===0 ? (
                     <div style={{ padding:36, textAlign:"center", color:"#bbb" }}>該当する商品がありません</div>
                   ) : srcShown.map(it => {
@@ -2046,9 +2057,6 @@ function BarcodeTab() {
                       </div>
                     );
                   })}
-                  {srcFiltered.length > SRC_CAP && (
-                    <div style={{ padding:"12px", textAlign:"center", color:"#bbb", fontSize:12 }}>ほか {srcFiltered.length - SRC_CAP} 件 — 検索で絞り込んでください</div>
-                  )}
                 </div>
               </>
             )}
