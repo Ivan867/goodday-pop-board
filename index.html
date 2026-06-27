@@ -56,6 +56,10 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"新機能", title:"発注バーコード生成（大幅刷新）", body:"☰メニューの「発注バーコード生成」を作り直しました。商品マスタ（エクセル）から、包材・トレー／冷食・たれ／資材／生鮮のカテゴリ別に商品を探し、タップで発注リストに追加できます。ドラッグや▲▼で並べ替え、選んだ内容はテキストのプリセットとして保存・読み込み可能。A4横1枚に16枚（4×4・縦順）のバーコードを印刷でき、商品名は幅に合わせて自動調整、プリセット名は各ページの右下に印刷されます。※この画面はパソコンでの操作を推奨します。" },
+  { date:"2026-06-27", type:"新機能", title:"相場計算からPOPをすぐ作成", body:"相場計算で出した「おトク文」や「売価」を、ワンタップでPOP作成に渡せるようになりました。先週比カードの「このおトク文でPOPを作成」や、売価計算カードの「この売価でPOPを作成」を押すと、作成タブの入力欄に自動で入ります。" },
+  { date:"2026-06-27", type:"改善", title:"検索の表記ゆれに対応", body:"商品検索とPOP検索で、カタカナ・ひらがな・全角・半角の違いを気にせず探せるようになりました。「マグロ」でも「まぐろ」でも同じものがヒットします。" },
+  { date:"2026-06-27", type:"改善", title:"ジャンル「丸魚提案」を追加", body:"検索の左の縦タブに「丸魚提案」を追加しました（行事の下）。振り分けは管理画面の「ジャンル選別」から行えます。" },
   { date:"2026-06-25", type:"新機能", title:"検索にジャンルの付箋タブ", body:"検索画面の左端に「寿司・刺身／切り身／丸魚」の縦タブが付きました。タップでそのジャンルだけに絞り込めます。ジャンルの振り分けは管理画面の「ジャンル選別」から行います（未分類のPOPをワンタップで仕分け）。" },
   { date:"2026-06-25", type:"改善", title:"表示を軽量化", body:"掲示板・検索・アーカイブの読み込みを、必要な分だけ取得する方式に変更しました。投稿が増えても重くなりにくくなっています。" },
   { date:"2026-06-25", type:"新機能", title:"相場計算タブ", body:"先週の売価と今週の売価を入れるだけで「先週より◯割安」をすぐ計算できます。POP用の文言もコピーできます。原価＋利益率から売価を出す計算もできます（☰メニューの「相場計算」）。" },
@@ -116,7 +120,7 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
@@ -693,12 +697,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [data, cIds] = await Promise.all([
-        api.listActive(),
-        api.listCommentedPopIds()
-      ]);
+      const data = await api.listActive();
       setPops(data);
-      setCommentedIds(cIds);
     }
     catch(e) { console.error(e); }
     finally { setLoading(false); }
@@ -759,7 +759,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           </div>
         ) : (
           <div style={{ columns:"200px 4", gap:14 }}>
-            {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} hasComment={commentedIds.has(pop.id)} />)}
+            {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
           </div>
         )}
       </div>
@@ -1165,12 +1165,16 @@ function BlogTab() {
 
 // ── POP作成ツール Tab（統合版）──
 function PopToolTab({ seed, onSeedConsumed }) {
-  const [mode, setMode] = useState(seed ? "ref" : "new");
+  const isRefSeed = !!(seed && seed.image_url);
+  const [mode, setMode] = useState(isRefSeed ? "ref" : "new");
   const [size, setSize] = useState("縦");
-  const [fields, setFields] = useState(seed
-    ? { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow: seed.product || "" }
-    : { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
-  const [refImage] = useState(seed?.image_url || null);
+  const [fields, setFields] = useState(
+    isRefSeed
+      ? { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow: seed.product || "" }
+      : seed
+        ? { product: seed.product||"", usage: seed.usage||"", price: seed.price||"", appeal: seed.appeal||"", mood: seed.mood||"", refProduct:"", refNoShow:"" }
+        : { product:"", usage:"", price:"", appeal:"", mood:"", refProduct:"", refNoShow:"" });
+  const [refImage] = useState(isRefSeed ? seed.image_url : null);
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -2447,7 +2451,7 @@ function soubaWari(pct) {
   return `約${s}割`;
 }
 
-function SoubaTab() {
+function SoubaTab({ onCreatePop }) {
   // 先週比
   const [last, setLast] = useState("199");
   const [now, setNow] = useState("179");
@@ -2528,9 +2532,16 @@ function SoubaTab() {
               )}
               <div style={{ fontSize:16, fontWeight:900, color:"#222", textAlign:"center", lineHeight:1.5 }}>{phrase}</div>
               {!same && (
+                <>
                 <button onClick={copyPhrase} style={{ marginTop:12, width:"100%", border:"none", background: copied ? "#1a6b3a" : "#2d9e5f", color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
                   {copied ? "✓ コピーしました" : "POP用の文言をコピー"}
                 </button>
+                {cheaper && onCreatePop && (
+                  <button onClick={()=>onCreatePop({ appeal: phrase })} style={{ marginTop:8, width:"100%", border:"1px solid #2d9e5f", background:"#fff", color:"#1a6b3a", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                    このおトク文でPOPを作成 →
+                  </button>
+                )}
+                </>
               )}
             </div>
           )}
@@ -2551,11 +2562,18 @@ function SoubaTab() {
             </div>
           </div>
           {sellValid && (
+            <>
             <div style={{ marginTop:14, background:"#fffaf0", border:"1px solid #f0e0c0", borderRadius:12, padding:"14px 16px", display:"flex", justifyContent:"space-around" }}>
               {cell("売価（税抜）", `${sell}円`, "#8B6914")}
               {cell("税込（8%）", `${sellTax}円`, "#b8860b")}
               {cell("利益額", `${profit}円`, "#1a6b3a")}
             </div>
+            {onCreatePop && (
+              <button onClick={()=>onCreatePop({ price: `${sell}円（税込${sellTax}円）` })} style={{ marginTop:10, width:"100%", border:"1px solid #b8860b", background:"#fff", color:"#8B6914", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                この売価でPOPを作成 →
+              </button>
+            )}
+            </>
           )}
         </div>
 
@@ -3054,6 +3072,7 @@ function App() {
     setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
     setTab("tool");
   };
+  const handleCreatePop = (seed) => { setToolSeed(seed); setTab("tool"); };
 
   const tabs = [
     { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
@@ -3096,7 +3115,7 @@ function App() {
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
-      {tab==="souba"  && <SoubaTab />}
+      {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
       {tab==="admin"  && <AdminTab />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
