@@ -40,15 +40,16 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 const { useState, useEffect, useCallback } = React;
 
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
-const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","日替","塩干","その他"];
+const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","塩干","その他"];
 // 検索の縦タブ用ジャンル（管理画面で勝部だけが選別する）。色は売場でひと目で見分ける用。
-const GENRES = ["塩干","寿司・刺身","切身・その他","丸魚","行事"];
+const GENRES = ["塩干","寿司・刺身","切身・その他","丸魚","行事","丸魚提案"];
 const GENRE_COLORS = {
   "塩干":        { solid:"#378ADD", soft:"#E6F1FB", text:"#0C447C" },
   "寿司・刺身":   { solid:"#D85A30", soft:"#FAECE7", text:"#993C1D" },
   "切身・その他": { solid:"#1D9E75", soft:"#E1F5EE", text:"#0F6E56" },
   "丸魚":        { solid:"#639922", soft:"#EAF3DE", text:"#3B6D11" },
   "行事":        { solid:"#6C5CC7", soft:"#EEEDFE", text:"#3C3489" },
+  "丸魚提案":     { solid:"#C7892B", soft:"#F8EFDD", text:"#8A5A12" },
 };
 const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
 const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
@@ -918,7 +919,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
         {/* よく使う検索ワード（折り返しで全部表示） */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:"9px 15px", alignItems:"baseline", marginTop:12 }}>
-          {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","父の日","鮭","対面","夏"].map(w=>{
+          {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","鮭","対面","夏"].map(w=>{
             const on = search===w;
             return (
               <button key={w} onClick={()=>{ setSearch(on?"":w); ensureLoaded(); }}
