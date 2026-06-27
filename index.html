@@ -1812,6 +1812,7 @@ function BarcodeTab() {
   const [list, setList] = useState([]);                // 作業リスト（印刷対象・順序つき）
   const [cols, setCols] = useState(4);
   const [showName, setShowName] = useState(true);
+  const [listName, setListName] = useState("");
   const [srcOpen, setSrcOpen] = useState(true);
   const fileRef = React.useRef(null);
   const cfgRef = React.useRef(null);
@@ -1876,8 +1877,9 @@ function BarcodeTab() {
   // 設定の書き出し／読み込み（テキスト）
   const exportCfg = () => {
     if (!list.length) return;
-    const nm = (prompt("プリセット名（ファイル名）", "発注リスト") || "発注リスト").trim();
-    const data = { type:"tray-list", v:2, savedAt:new Date().toISOString(), items:list };
+    const nm = (prompt("プリセット名（ファイル名）", listName || "発注リスト") || "発注リスト").trim();
+    setListName(nm);
+    const data = { type:"tray-list", v:2, name:nm, savedAt:new Date().toISOString(), items:list };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type:"text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = `${nm}.txt`;
@@ -1892,7 +1894,7 @@ function BarcodeTab() {
         const items = Array.isArray(parsed) ? parsed : parsed.items;
         if (!Array.isArray(items)) throw new Error("形式が違います");
         const clean = items.filter(x => x && x.bcode).map(x => ({ name:x.name||"", pcode:x.pcode||"", bcode:String(x.bcode), kubun:x.kubun||"", haccyu:x.haccyu||"" }));
-        setList(clean); setErr("");
+        setList(clean); if (parsed && parsed.name) setListName(parsed.name); setErr("");
       } catch(ex) { setErr("プリセットを読み込めませんでした"); }
     };
     reader.readAsText(file);
@@ -1939,7 +1941,7 @@ function BarcodeTab() {
   const renderPages = (forPrint) => pages.map((pg, pi) => (
     <div key={pi} className="bc-page"
       style={ forPrint
-        ? { breakAfter:"page", pageBreakAfter:"always" }
+        ? { breakAfter:"page", pageBreakAfter:"always", position:"relative" }
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"#f7f8fa", padding:"0 8px", fontSize:11, fontWeight:800, color:"#9a9aa0" }}>{pi+1}ページ目（{pg.length}枚）</div>}
       <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
@@ -1954,6 +1956,7 @@ function BarcodeTab() {
           </div>
         ))}
       </div>
+      {listName && <div style={{ position:"absolute", right: forPrint?"3mm":"8px", bottom: forPrint?"2mm":"7px", fontSize: forPrint?"10pt":"9px", fontWeight:700, color:"#555", letterSpacing:".02em" }}>{listName}</div>}
     </div>
   ));
 
@@ -1972,6 +1975,8 @@ function BarcodeTab() {
           <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>プリセット保存（{list.length}）</button>
           <input ref={cfgRef} type="file" accept=".txt,.json,text/plain" onChange={e=>importCfg(e.target.files[0])} style={{ display:"none" }} />
         </div>
+        <input value={listName} onChange={e=>setListName(e.target.value)} placeholder="プリセット名（印刷の右下に表示されます）"
+          style={{ width:"100%", boxSizing:"border-box", marginTop:11, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
         {err && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginTop:10 }}>{err}</div>}
       </div>
 
