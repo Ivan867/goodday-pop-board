@@ -1930,6 +1930,11 @@ function BarcodeTab() {
   const pages = [];
   for (let i=0; i<list.length; i+=perPage) pages.push(list.slice(i, i+perPage));
 
+  // 商品名を幅に合わせて自動縮小（全角=1em・半角≒0.55emで概算し、セル幅に収まるptを算出）
+  const _emUnits = (name) => { let u=0; for (const c of String(name||"")) u += /[\u3040-\u30ff\u3400-\u9fff\uff00-\uffef\u2e80-\u303f]/.test(c) ? 1.0 : 0.55; return u || 1; };
+  const _availMm = 277/cols - 7;                       // セル内で名前に使えるおおよその幅(mm)
+  const nameFitPt = (name) => Math.max(7, Math.min(16, (_availMm*2.835)/_emUnits(name)));
+
   // ページ単位で描画。gridAutoFlow:"column" で「列ごとに上→下」の縦順に並ぶ。
   const renderPages = (forPrint) => pages.map((pg, pi) => (
     <div key={pi} className="bc-page"
@@ -1941,7 +1946,7 @@ function BarcodeTab() {
         {pg.map(it => (
           <div key={it.bcode} className="bc-label"
             style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
-            {showName && <div style={{ fontSize: forPrint?"16pt":"10px", fontWeight:800, lineHeight:1, color:"#000", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</div>}
+            {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "10px", fontWeight:800, lineHeight:1.1, color:"#000", width:"100%", overflow:"hidden", whiteSpace: forPrint?"normal":"nowrap", textOverflow: forPrint?"clip":"ellipsis", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
               <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
             </div>
