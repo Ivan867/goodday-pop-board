@@ -25,7 +25,7 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 .like-btn:active { animation: liked 0.3s ease; }
 #barcode-print-portal { display: none; }
 @media print {
-  @page { size: A4 landscape; margin: 10mm; }
+  @page { size: A4 landscape; margin: 8mm; }
   body > #root { display: none !important; }
   #barcode-print-portal { display: block !important; }
   #barcode-print-portal .bc-page { break-after: page; page-break-after: always; }
@@ -1941,7 +1941,7 @@ function BarcodeTab() {
   const renderPages = (forPrint) => pages.map((pg, pi) => (
     <div key={pi} className="bc-page"
       style={ forPrint
-        ? { breakAfter:"page", pageBreakAfter:"always", position:"relative" }
+        ? { breakAfter:"page", pageBreakAfter:"always", position:"relative", height:"192mm" }
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"#f7f8fa", padding:"0 8px", fontSize:11, fontWeight:800, color:"#9a9aa0" }}>{pi+1}ページ目（{pg.length}枚）</div>}
       <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
@@ -1956,7 +1956,7 @@ function BarcodeTab() {
           </div>
         ))}
       </div>
-      {listName && <div style={{ position:"absolute", right: forPrint?"3mm":"8px", bottom: forPrint?"2mm":"7px", fontSize: forPrint?"10pt":"9px", fontWeight:700, color:"#555", letterSpacing:".02em" }}>{listName}</div>}
+      {listName && <div style={{ position:"absolute", right: forPrint?"4mm":"8px", bottom: forPrint?"2mm":"7px", fontSize: forPrint?"20pt":"18px", fontWeight:800, color:"#444", letterSpacing:".02em" }}>{listName}</div>}
     </div>
   ));
 
@@ -3059,7 +3059,7 @@ function App() {
     { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
-    { key:"barcode", icon:"🏷", label:"バーコード",     color:"#1f6feb" },
+    { key:"barcode", icon:"🏷", label:"発注バーコード生成", color:"#1f6feb" },
     { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
     { key:"gne",     icon:"🅖", label:"GNE",      color:"#7c3aed" },
   ];
@@ -3140,7 +3140,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
