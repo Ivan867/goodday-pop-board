@@ -2,9 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#ffffff" />
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="鮮魚共有" />
 <title>GoodDay 鮮魚共有</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -50,12 +54,14 @@ const GENRE_COLORS = {
   "丸魚":        { solid:"#639922", soft:"#EAF3DE", text:"#3B6D11" },
   "行事":        { solid:"#6C5CC7", soft:"#EEEDFE", text:"#3C3489" },
   "丸魚提案":     { solid:"#C7892B", soft:"#F8EFDD", text:"#8A5A12" },
+  "除外":        { solid:"#8A9099", soft:"#EEF0F2", text:"#565B61" },
 };
 const FLOOR_CATS = ["対面","丸魚","切身","刺身","寿司","塩干","その他"];
 const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","推奨モデル"];
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"改善", title:"ホーム画面に追加でフルスクリーン対応", body:"アプリを「ホーム画面に追加」して起動すると、Safariのバーが消えてフルスクリーンで使えます。スクロール時に下のメニューバーが少しズレる現象（iPhone・Safariのツールバーの開閉が原因）も起きなくなります。iPhoneは共有ボタン→「ホーム画面に追加」から登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコード生成（大幅刷新）", body:"☰メニューの「発注バーコード生成」を作り直しました。商品マスタ（エクセル）から、包材・トレー／冷食・たれ／資材／生鮮のカテゴリ別に商品を探し、タップで発注リストに追加できます。ドラッグや▲▼で並べ替え、選んだ内容はテキストのプリセットとして保存・読み込み可能。A4横1枚に16枚（4×4・縦順）のバーコードを印刷でき、商品名は幅に合わせて自動調整、プリセット名は各ページの右下に印刷されます。※この画面はパソコンでの操作を推奨します。" },
   { date:"2026-06-27", type:"新機能", title:"相場計算からPOPをすぐ作成", body:"相場計算で出した「おトク文」や「売価」を、ワンタップでPOP作成に渡せるようになりました。先週比カードの「このおトク文でPOPを作成」や、売価計算カードの「この売価でPOPを作成」を押すと、作成タブの入力欄に自動で入ります。" },
   { date:"2026-06-27", type:"改善", title:"検索の表記ゆれに対応", body:"商品検索とPOP検索で、カタカナ・ひらがな・全角・半角の違いを気にせず探せるようになりました。「マグロ」でも「まぐろ」でも同じものがヒットします。" },
@@ -852,7 +858,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
       normJa(p.product_name).includes(q) ||
       normJa(p.store_name).includes(q) ||
       normJa(p.category).includes(q);
-    return matchStore && matchCat && matchGenre && matchSearch;
+    return p.genre !== "除外" && matchStore && matchCat && matchGenre && matchSearch;
   });
 
   const hasFilter = q || fStore || fCat || fGenre;
@@ -2758,10 +2764,10 @@ function AdminTab() {
       {section === "genre" && (
         <div>
           <div style={{ fontSize:13, color:"#888", marginBottom:14, lineHeight:1.6 }}>
-            検索画面の左タブで使うジャンルを、ここで振り分けます。ボタンをタップで設定（同じものをもう一度タップで未分類に戻す）。公開中のPOPのみ表示。
+            検索画面の左タブで使うジャンルを、ここで振り分けます。ボタンをタップで設定（同じものをもう一度タップで未分類に戻す）。公開中のPOPのみ表示。「除外」を選ぶと、そのPOPは検索結果に出なくなります（一覧には残り、左タブにも出ません）。
           </div>
           <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
-            {["未分類", ...GENRES].map(g => {
+            {["未分類", ...GENRES, "除外"].map(g => {
               const on = gFilter === g;
               const c = GENRE_COLORS[g];
               return (
@@ -2790,7 +2796,7 @@ function AdminTab() {
                     <div style={{ fontSize:14, fontWeight:800, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
                     <div style={{ fontSize:12, color:"#999", marginBottom:8 }}>{p.store_name}{p.category ? ` ・ ${p.category}` : ""}</div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                      {GENRES.map(g => {
+                      {[...GENRES, "除外"].map(g => {
                         const gc = GENRE_COLORS[g];
                         const on = p.genre === g;
                         return (
