@@ -61,6 +61,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"新機能", title:"プロンプト集（記録＆手引き）", body:"☰メニューに「プロンプト集」を追加しました。うまくいったAI画像と、そのプロンプトを画像付きで保存でき、ワンタップでプロンプトをコピーして再利用できます。「手引き」タブには、プロンプトの読み解き方や、画像を再利用するコツをまとめています。" },
   { date:"2026-06-27", type:"改善", title:"ホーム画面に追加でフルスクリーン対応", body:"アプリを「ホーム画面に追加」して起動すると、Safariのバーが消えてフルスクリーンで使えます。スクロール時に下のメニューバーが少しズレる現象（iPhone・Safariのツールバーの開閉が原因）も起きなくなります。iPhoneは共有ボタン→「ホーム画面に追加」から登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコード生成（大幅刷新）", body:"☰メニューの「発注バーコード生成」を作り直しました。商品マスタ（エクセル）から、包材・トレー／冷食・たれ／資材／生鮮のカテゴリ別に商品を探し、タップで発注リストに追加できます。ドラッグや▲▼で並べ替え、選んだ内容はテキストのプリセットとして保存・読み込み可能。A4横1枚に16枚（4×4・縦順）のバーコードを印刷でき、商品名は幅に合わせて自動調整、プリセット名は各ページの右下に印刷されます。※この画面はパソコンでの操作を推奨します。" },
   { date:"2026-06-27", type:"新機能", title:"相場計算からPOPをすぐ作成", body:"相場計算で出した「おトク文」や「売価」を、ワンタップでPOP作成に渡せるようになりました。先週比カードの「このおトク文でPOPを作成」や、売価計算カードの「この売価でPOPを作成」を押すと、作成タブの入力欄に自動で入ります。" },
@@ -348,6 +349,25 @@ const api = {
   },
   async deleteTrayPreset(id) {
     const r = await fetch(`${SB_URL}/rest/v1/tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+  },
+  // プロンプト記録集
+  async listPrompts() {
+    const r = await fetch(`${SB_URL}/rest/v1/prompt_library?select=*&order=created_at.desc`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertPrompt(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/prompt_library`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async delPrompt(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/prompt_library?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
   }
 };
@@ -2117,6 +2137,164 @@ function BarcodeTab() {
     </div>
   );
 }
+function PromptCard({ it, accent, onDelete }) {
+  const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
+  const longText = (it.prompt || "").length > 180;
+  const copy = () => {
+    const t = it.prompt || "";
+    const done = () => { setCopied(true); setTimeout(()=>setCopied(false), 1500); };
+    const fb = () => { const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done).catch(fb);
+    else fb();
+  };
+  return (
+    <div style={{ background:"white", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16, overflow:"hidden" }}>
+      {it.image_url && <img src={it.image_url} alt="" onClick={()=>setOpen(o=>!o)} style={{ width:"100%", maxHeight: open?"none":340, objectFit:"cover", display:"block", cursor:"zoom-in" }} />}
+      <div style={{ padding:"13px 15px 15px" }}>
+        {it.title && <div style={{ fontSize:15, fontWeight:800, color:"#222", marginBottom:9 }}>{it.title}</div>}
+        <div style={{ position:"relative", background:"#f7f7fa", border:"1px solid #ececf2", borderRadius:10, padding:"11px 12px", fontSize:13, lineHeight:1.6, color:"#333", whiteSpace:"pre-wrap", wordBreak:"break-word", maxHeight: open?"none":150, overflow:"hidden" }}>
+          {it.prompt}
+          {!open && longText && <div style={{ position:"absolute", left:0, right:0, bottom:0, height:42, background:"linear-gradient(transparent,#f7f7fa)" }} />}
+        </div>
+        {longText && <button onClick={()=>setOpen(o=>!o)} style={{ border:"none", background:"none", color:"#888", fontSize:12, fontWeight:700, cursor:"pointer", marginTop:6, padding:0 }}>{open?"閉じる":"全文を見る"}</button>}
+        <div style={{ display:"flex", alignItems:"center", gap:12, marginTop:11 }}>
+          <button onClick={copy} style={{ flex:1, border:"none", background: copied?"#1a6b3a":accent, color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>{copied?"✓ コピーしました":"プロンプトをコピー"}</button>
+          <button onClick={onDelete} style={{ border:"none", background:"none", color:"#ccc", fontSize:13, fontWeight:700, cursor:"pointer" }}>削除</button>
+        </div>
+        <div style={{ fontSize:11, color:"#aaa", marginTop:8 }}>{it.author || "匿名"}</div>
+      </div>
+    </div>
+  );
+}
+
+function PromptAddModal({ accent, onClose, onPosted }) {
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [title, setTitle] = useState("");
+  const [ptext, setPtext] = useState("");
+  const [author, setAuthor] = useState("");
+  const [busy, setBusy] = useState(false);
+  const input = { width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", marginBottom:11 };
+  const pick = (f) => { if(!f) return; setFile(f); setPreview(URL.createObjectURL(f)); };
+  const submit = async () => {
+    if (!ptext.trim()) { alert("プロンプトを入力してください"); return; }
+    setBusy(true);
+    try {
+      let image_url = null;
+      if (file) image_url = await api.upload(file);
+      const row = await api.insertPrompt({ title:title.trim(), prompt:ptext.trim(), image_url, author:author.trim()||"匿名" });
+      onPosted(row);
+    } catch(e){ alert("保存に失敗しました"); setBusy(false); }
+  };
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:1000, display:"flex", alignItems:"flex-end" }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", width:"100%", borderRadius:"20px 20px 0 0", padding:"10px 18px calc(20px + env(safe-area-inset-bottom))", maxHeight:"90vh", overflowY:"auto", animation:"sheetUp 0.28s ease" }}>
+        <div style={{ width:40, height:4, background:"#ddd", borderRadius:2, margin:"6px auto 14px" }} />
+        <div style={{ fontSize:16, fontWeight:900, color:"#222", marginBottom:14 }}>プロンプトを追加</div>
+        <label style={{ display:"block", border:"2px dashed #d8d8e0", borderRadius:12, padding: preview?0:"22px", textAlign:"center", cursor:"pointer", overflow:"hidden", marginBottom:13 }}>
+          {preview ? <img src={preview} alt="" style={{ width:"100%", display:"block" }} /> : <div style={{ color:"#999", fontWeight:700 }}>画像を選ぶ（任意）</div>}
+          <input type="file" accept="image/*" onChange={e=>pick(e.target.files[0])} style={{ display:"none" }} />
+        </label>
+        <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="タイトル（例：刺身盛り 縦POP）" style={input} />
+        <textarea value={ptext} onChange={e=>setPtext(e.target.value)} placeholder="使ったプロンプトをここに貼り付け" rows={6} style={{ ...input, resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+        <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="お名前（任意）" style={input} />
+        <button onClick={submit} disabled={busy} style={{ width:"100%", border:"none", background: busy?"#bbb":accent, color:"#fff", borderRadius:12, padding:"13px", fontSize:15, fontWeight:800, cursor: busy?"default":"pointer", marginTop:4 }}>{busy?"保存中…":"保存する"}</button>
+      </div>
+    </div>
+  );
+}
+
+function PromptGuide({ accent }) {
+  const sec = { background:"white", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", padding:"16px 18px", marginBottom:14 };
+  const hd  = { fontSize:15, fontWeight:900, color:"#222", marginBottom:10 };
+  const p   = { fontSize:13.5, lineHeight:1.8, color:"#444", margin:"0 0 10px" };
+  const tag = { display:"inline-block", background:"#f1edff", color:accent, fontWeight:700, fontSize:12.5, borderRadius:7, padding:"3px 9px", margin:"0 6px 6px 0" };
+  return (
+    <div>
+      <div style={sec}>
+        <div style={hd}>プロンプトの読み解き方</div>
+        <p style={p}>良いプロンプトを見つけたら、次の要素に分解すると「どこを変えれば自分用になるか」が見えます。コピーした文を、この単位で書き換えていくのがコツです。</p>
+        <div>
+          <span style={tag}>被写体（何を）</span><span style={tag}>構図・アングル</span><span style={tag}>ライティング（光）</span><span style={tag}>質感・素材</span>
+          <span style={tag}>背景</span><span style={tag}>色味・雰囲気</span><span style={tag}>文字・レイアウト</span><span style={tag}>仕上げ（縦横比・解像度）</span>
+        </div>
+        <p style={{ ...p, margin:"10px 0 0" }}>例：「まぐろの刺身（被写体）を / 真上から（アングル）/ 柔らかい自然光で（光）/ 黒い石の皿に（背景）/ 高級感のある雰囲気で（色味）/ 縦A4（仕上げ）」のように、( )の部分だけ自分の商品に差し替えれば再利用できます。</p>
+      </div>
+
+      <div style={sec}>
+        <div style={hd}>画像を再利用する手順</div>
+        <p style={p}>1. 記録集から、近いイメージの画像と「プロンプトをコピー」。</p>
+        <p style={p}>2. GeminiやChatGPTに、その画像を一緒に添付する（「この画像を参考に」と伝える）。</p>
+        <p style={p}>3. コピーしたプロンプトを貼り、変えたい所だけ書き換える。よく使う指示：</p>
+        <div>
+          <span style={tag}>商品だけ差し替え</span><span style={tag}>背景だけ変更</span><span style={tag}>色味はそのまま</span>
+          <span style={tag}>文字を入れる/消す</span><span style={tag}>縦→横にする</span><span style={tag}>同じ構図で</span>
+        </div>
+        <p style={{ ...p, margin:"10px 0 0" }}>「この画像の構図・雰囲気はそのままで、商品を〇〇に変えて」と伝えると、雰囲気を保ったまま中身だけ差し替えられます。</p>
+      </div>
+
+      <div style={sec}>
+        <div style={hd}>うまくいくコツ</div>
+        <p style={p}>・POPに文字を入れる時は、画像生成では文字が崩れやすいので、文字なしで作って後から差し込むのも手。</p>
+        <p style={p}>・縦横比は最初に指定（縦A4／横A4）。後から変えると崩れやすい。</p>
+        <p style={p}>・うまくいったプロンプトは必ずこの「記録集」に画像付きで残す。次から探す手間が消えます。</p>
+      </div>
+    </div>
+  );
+}
+
+function PromptTab() {
+  const ACCENT = "#7c5cff";
+  const [seg, setSeg] = useState("list");
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const load = () => { setLoading(true); api.listPrompts().then(d=>{ setItems(d); setLoading(false); }).catch(()=>setLoading(false)); };
+  useEffect(() => { load(); }, []);
+
+  const remove = async (it) => {
+    const pw = prompt("削除パスワードを入力");
+    if (pw === null) return;
+    try {
+      const ok = await api.verifyPassword("delete", pw);
+      if (!ok) { alert("パスワードが違います"); return; }
+      await api.delPrompt(it.id);
+      setItems(s => s.filter(x => x.id !== it.id));
+    } catch(e){ alert("削除に失敗しました"); }
+  };
+
+  const segBtn = (k,label) => (
+    <button onClick={()=>setSeg(k)} style={{ flex:1, border:"none", background:"none", padding:"11px 0", fontSize:14, fontWeight: seg===k?800:600, color: seg===k?ACCENT:"#999", borderBottom: seg===k?`2.5px solid ${ACCENT}`:"2.5px solid transparent", cursor:"pointer" }}>{label}</button>
+  );
+
+  return (
+    <div style={{ maxWidth:760, margin:"0 auto", padding:"16px 16px 84px" }}>
+      <div style={{ display:"flex", marginBottom:16, borderBottom:"1px solid #eee" }}>
+        {segBtn("list","プロンプト記録集")}
+        {segBtn("guide","手引き")}
+      </div>
+
+      {seg==="list" ? (
+        <>
+          <button onClick={()=>setShowAdd(true)} style={{ width:"100%", border:"none", background:ACCENT, color:"#fff", borderRadius:12, padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer", marginBottom:16 }}>＋ プロンプトを追加</button>
+          {loading ? (
+            <div style={{ textAlign:"center", color:"#bbb", padding:"40px 0" }}>読み込み中…</div>
+          ) : items.length===0 ? (
+            <div style={{ textAlign:"center", color:"#bbb", padding:"40px 16px", fontSize:13.5, lineHeight:1.8 }}>まだ登録がありません。<br/>うまくいった画像とプロンプトを「＋ プロンプトを追加」から残しておくと、次から再利用できます。</div>
+          ) : (
+            items.map(it => <PromptCard key={it.id} it={it} accent={ACCENT} onDelete={()=>remove(it)} />)
+          )}
+        </>
+      ) : (
+        <PromptGuide accent={ACCENT} />
+      )}
+
+      {showAdd && <PromptAddModal accent={ACCENT} onClose={()=>setShowAdd(false)} onPosted={(row)=>{ setItems(s=>[row, ...s]); setShowAdd(false); }} />}
+    </div>
+  );
+}
+
 function WeatherWidget() {
   const [daily, setDaily] = useState(null);
   useEffect(() => {
@@ -3119,6 +3297,7 @@ function App() {
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
+      {tab==="prompts" && <PromptTab />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
@@ -3131,7 +3310,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba") : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="prompts") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -3166,7 +3345,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
