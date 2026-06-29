@@ -61,6 +61,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"新機能", title:"発注バーコードに「共有プリセット」", body:"よく使う発注プリセットを全店で共有できるようにしました。発注バーコードのタブに一覧が出て、「読込」で発注リストに取り込み、「DL」でファイル保存できます。なお、安全のため商品マスター（エクセル）を読み込むまでは使用できません（一覧は表示されますが、先にマスターの読み込みが必要です）。プリセットは.txtを複数まとめて登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"プロンプト集（記録＆手引き）", body:"☰メニューに「プロンプト集」を追加しました。うまくいったAI画像と、そのプロンプトを画像付きで保存でき、ワンタップでプロンプトをコピーして再利用できます。「手引き」タブには、プロンプトの読み解き方や、画像を再利用するコツをまとめています。" },
   { date:"2026-06-27", type:"改善", title:"ホーム画面に追加でフルスクリーン対応", body:"アプリを「ホーム画面に追加」して起動すると、Safariのバーが消えてフルスクリーンで使えます。スクロール時に下のメニューバーが少しズレる現象（iPhone・Safariのツールバーの開閉が原因）も起きなくなります。iPhoneは共有ボタン→「ホーム画面に追加」から登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコード生成（大幅刷新）", body:"☰メニューの「発注バーコード生成」を作り直しました。商品マスタ（エクセル）から、包材・トレー／冷食・たれ／資材／生鮮のカテゴリ別に商品を探し、タップで発注リストに追加できます。ドラッグや▲▼で並べ替え、選んだ内容はテキストのプリセットとして保存・読み込み可能。A4横1枚に16枚（4×4・縦順）のバーコードを印刷でき、商品名は幅に合わせて自動調整、プリセット名は各ページの右下に印刷されます。※この画面はパソコンでの操作を推奨します。" },
@@ -368,6 +369,25 @@ const api = {
   },
   async delPrompt(id) {
     const r = await fetch(`${SB_URL}/rest/v1/prompt_library?id=eq.${id}`, { method: "DELETE", headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+  },
+  // 発注バーコードの共有プリセット
+  async listSharedPresets() {
+    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets?select=*&order=sort_order.asc,created_at.asc`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async insertSharedPreset(data) {
+    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets`, {
+      method: "POST",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
+  },
+  async delSharedPreset(id) {
+    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
   }
 };
@@ -1847,6 +1867,9 @@ function BarcodeTab() {
   const [srcOpen, setSrcOpen] = useState(true);
   const fileRef = React.useRef(null);
   const cfgRef = React.useRef(null);
+  const sharedRef = React.useRef(null);
+  const [shared, setShared] = useState([]);
+  const [sharedLoad, setSharedLoad] = useState(true);
   const previewRef = React.useRef(null);
 
   const [portalEl] = useState(() => { const el = document.createElement("div"); el.id = "barcode-print-portal"; return el; });
@@ -1935,6 +1958,51 @@ function BarcodeTab() {
   const drag = useDragList(list, setList, setList);
 
   useEffect(() => {
+    api.listSharedPresets().then(d => { setShared(d); setSharedLoad(false); }).catch(() => setSharedLoad(false));
+  }, []);
+  const cleanItems = (items) => (items || []).filter(x => x && x.bcode).map(x => ({ name:x.name||"", pcode:x.pcode||"", bcode:String(x.bcode), kubun:x.kubun||"", haccyu:x.haccyu||"" }));
+  const readText = (f) => new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(String(e.target.result)); r.onerror = rej; r.readAsText(f); });
+  const loadShared = (p) => {
+    if (master.length === 0) return;
+    setList(cleanItems(p.data && p.data.items));
+    setListName(p.name || (p.data && p.data.name) || ""); setErr("");
+    window.scrollTo({ top:0, behavior:"smooth" });
+  };
+  const downloadShared = (p) => {
+    if (master.length === 0) return;
+    const data = { type:"tray-list", v:2, name:p.name||"preset", items: cleanItems(p.data && p.data.items) };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href=url; a.download=`${p.name||"preset"}.txt`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  };
+  const uploadShared = async (files) => {
+    const arr = Array.from(files || []); if (!arr.length) return;
+    let base = shared.length;
+    for (const f of arr) {
+      try {
+        const parsed = JSON.parse(await readText(f));
+        const items = Array.isArray(parsed) ? parsed : parsed.items;
+        if (!Array.isArray(items)) continue;
+        const nm = (parsed && parsed.name) ? parsed.name : f.name.replace(/\.(txt|json)$/i, "");
+        const row = await api.insertSharedPreset({ name:nm, data:{ type:"tray-list", v:2, name:nm, items: cleanItems(items) }, sort_order: base++ });
+        setShared(s => [...s, row]);
+      } catch(ex) {}
+    }
+    if (sharedRef.current) sharedRef.current.value = "";
+  };
+  const delShared = async (p) => {
+    const pw = prompt("削除パスワードを入力");
+    if (pw === null) return;
+    try {
+      const ok = await api.verifyPassword("delete", pw);
+      if (!ok) { alert("パスワードが違います"); return; }
+      await api.delSharedPreset(p.id);
+      setShared(s => s.filter(x => x.id !== p.id));
+    } catch(ex) { alert("削除に失敗しました"); }
+  };
+
+  useEffect(() => {
     const draw = (root) => {
       if (!root || typeof JsBarcode === "undefined") return;
       root.querySelectorAll("svg[data-code]").forEach(svg => {
@@ -1999,7 +2067,7 @@ function BarcodeTab() {
 
       {/* 設定の保存・読み込み */}
       <div style={card}>
-        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:10 }}>発注バーコード</div>
+        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:10 }}>発注バーコード生成</div>
         <div style={{ fontSize:12, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"7px 11px", marginBottom:13, lineHeight:1.55 }}>※ この画面はパソコンのブラウザでの操作を推奨します（iPhoneでは一覧が多いと動作が重くなる場合があります）。</div>
         <div style={{ display:"flex", gap:9, flexWrap:"wrap" }}>
           <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>プリセット読み込み</button>
@@ -2009,6 +2077,48 @@ function BarcodeTab() {
         <input value={listName} onChange={e=>setListName(e.target.value)} placeholder="プリセット名（印刷の右下に表示されます）"
           style={{ width:"100%", boxSizing:"border-box", marginTop:11, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
         {err && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginTop:10 }}>{err}</div>}
+      </div>
+
+      {/* 共有プリセット */}
+      <div style={card}>
+        <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:4 }}>共有プリセット</div>
+        <div style={{ fontSize:12, color:"#777", marginBottom:12, lineHeight:1.55 }}>みんなで使う発注プリセットの一覧です。「読込」で発注リストに入り、「DL」でファイルを保存できます。</div>
+        {master.length===0 && (
+          <div style={{ fontSize:12.5, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"9px 12px", marginBottom:12, lineHeight:1.6, fontWeight:700 }}>
+            ⚠ 先に下の「商品を追加」で商品マスター（エクセル）を読み込んでください。読み込むと、ここから使えるようになります。
+          </div>
+        )}
+        {sharedLoad ? (
+          <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>読み込み中…</div>
+        ) : shared.length===0 ? (
+          <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>まだ登録がありません</div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+            {shared.map(p => {
+              const cnt = ((p.data && p.data.items) || []).length;
+              const on = master.length>0;
+              return (
+                <div key={p.id} style={{ display:"flex", alignItems:"center", gap:8, background:"#fafbfc", border:"1px solid #eef0f2", borderRadius:10, padding:"8px 11px", opacity: on?1:0.55 }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name || "（無名）"}</div>
+                    <div style={{ fontSize:11, color:"#9a9aa0" }}>{cnt}点</div>
+                  </div>
+                  <button onClick={()=>loadShared(p)} disabled={!on} title={on?"発注リストに読み込み":"先に商品マスターを読み込んでください"}
+                    style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>読込</button>
+                  <button onClick={()=>downloadShared(p)} disabled={!on} title={on?"ファイルをダウンロード":"先に商品マスターを読み込んでください"}
+                    style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
+                  <button onClick={()=>delShared(p)} title="削除" style={{ border:"none", background:"none", color:"#ccc", fontSize:18, cursor:"pointer", padding:"0 2px", lineHeight:1 }}>×</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div style={{ marginTop:12, borderTop:"1px solid #f0f0f2", paddingTop:12 }}>
+          <button onClick={()=>sharedRef.current && sharedRef.current.click()}
+            style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"#555", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ プリセットを登録（ファイル選択・複数可）</button>
+          <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
+          <div style={{ fontSize:11, color:"#aaa", marginTop:7, lineHeight:1.5 }}>「プリセット保存」で書き出した.txtを選んで登録できます。複数まとめて選択OK。全店で共有されます。</div>
+        </div>
       </div>
 
       {/* 作業リスト */}
