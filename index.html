@@ -61,6 +61,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"修正", title:"発注バーコードの並びズレを修正", body:"発注バーコードのプレビュー・印刷で、Windowsのパソコンだとマス目が不揃いにズレることがある問題を直しました。商品名や番号の幅に関係なく、必ず等間隔で並ぶようにしています。" },
   { date:"2026-06-27", type:"新機能", title:"一時お知らせバナー（管理者用）", body:"不具合などの際に、メインページの上部へ注意バナーを出せるようにしました。管理画面の「お知らせ」から、表示のON/OFFと文章を設定して保存すると、全店の画面に反映されます。復旧したらOFFにして保存してください。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコードに「共有プリセット」", body:"よく使う発注プリセットを全店で共有できるようにしました。発注バーコードのタブに一覧が出て、「読込」で発注リストに取り込み、「DL」でファイル保存できます。なお、安全のため商品マスター（エクセル）を読み込むまでは使用できません（一覧は表示されますが、先にマスターの読み込みが必要です）。プリセットは.txtを複数まとめて登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"プロンプト集（記録＆手引き）", body:"☰メニューに「プロンプト集」を追加しました。うまくいったAI画像と、そのプロンプトを画像付きで保存でき、ワンタップでプロンプトをコピーして再利用できます。「手引き」タブには、プロンプトの読み解き方や、画像を再利用するコツをまとめています。" },
@@ -2060,10 +2061,10 @@ function BarcodeTab() {
         ? { breakAfter:"page", pageBreakAfter:"always", position:"relative", height:"192mm" }
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"#f7f8fa", padding:"0 8px", fontSize:11, fontWeight:800, color:"#9a9aa0" }}>{pi+1}ページ目（{pg.length}枚）</div>}
-      <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, 1fr)`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
+      <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},minmax(0,1fr))`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, minmax(0,1fr))`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
         {pg.map(it => (
           <div key={it.bcode} className="bc-label"
-            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
+            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
             {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
               <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
