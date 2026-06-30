@@ -61,6 +61,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"新機能", title:"一時お知らせバナー（管理者用）", body:"不具合などの際に、メインページの上部へ注意バナーを出せるようにしました。管理画面の「お知らせ」から、表示のON/OFFと文章を設定して保存すると、全店の画面に反映されます。復旧したらOFFにして保存してください。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコードに「共有プリセット」", body:"よく使う発注プリセットを全店で共有できるようにしました。発注バーコードのタブに一覧が出て、「読込」で発注リストに取り込み、「DL」でファイル保存できます。なお、安全のため商品マスター（エクセル）を読み込むまでは使用できません（一覧は表示されますが、先にマスターの読み込みが必要です）。プリセットは.txtを複数まとめて登録できます。" },
   { date:"2026-06-27", type:"新機能", title:"プロンプト集（記録＆手引き）", body:"☰メニューに「プロンプト集」を追加しました。うまくいったAI画像と、そのプロンプトを画像付きで保存でき、ワンタップでプロンプトをコピーして再利用できます。「手引き」タブには、プロンプトの読み解き方や、画像を再利用するコツをまとめています。" },
   { date:"2026-06-27", type:"改善", title:"ホーム画面に追加でフルスクリーン対応", body:"アプリを「ホーム画面に追加」して起動すると、Safariのバーが消えてフルスクリーンで使えます。スクロール時に下のメニューバーが少しズレる現象（iPhone・Safariのツールバーの開閉が原因）も起きなくなります。iPhoneは共有ボタン→「ホーム画面に追加」から登録できます。" },
@@ -389,6 +390,22 @@ const api = {
   async delSharedPreset(id) {
     const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
     if (!r.ok) throw new Error(await r.text());
+  },
+  // 一時お知らせ／機能停止バナー（全店共有）
+  async getNotice() {
+    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1&select=enabled,message,updated_at`, { headers: h() });
+    if (!r.ok) throw new Error(await r.text());
+    const rows = await r.json();
+    return rows[0] || { enabled:false, message:"" };
+  },
+  async updateNotice(patch) {
+    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1`, {
+      method: "PATCH",
+      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ ...patch, updated_at: new Date().toISOString() })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json())[0];
   }
 };
 
@@ -2879,7 +2896,7 @@ function SoubaTab({ onCreatePop }) {
 
 
 // ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
-function AdminTab() {
+function AdminTab({ onNoticeChange }) {
   const [unlocked, setUnlocked] = useState(false);
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
@@ -3008,7 +3025,10 @@ function AdminTab() {
         {mainSeg("req", `依頼${openReqs ? `（${openReqs}）` : ""}`)}
         {mainSeg("genre", `ジャンル選別${genreCount("未分類") ? `（${genreCount("未分類")}）` : ""}`)}
         {mainSeg("archive", "アーカイブ")}
+        {mainSeg("notice", "お知らせ")}
       </div>
+
+      {section === "notice" && <NoticeAdmin onNoticeChange={onNoticeChange} />}
 
       {section === "req" && (
         reqLoading ? (
@@ -3289,6 +3309,62 @@ function RequestTab() {
   );
 }
 
+function NoticeAdmin({ onNoticeChange }) {
+  const [enabled, setEnabled] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    api.getNotice().then(n => { setEnabled(!!n.enabled); setMessage(n.message || ""); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
+  const save = async () => {
+    setSaving(true); setSaved(false);
+    try {
+      const row = await api.updateNotice({ enabled, message: message.trim() });
+      const next = { enabled: row ? !!row.enabled : enabled, message: row ? (row.message || "") : message.trim() };
+      if (onNoticeChange) onNoticeChange(next);
+      setSaved(true); setTimeout(() => setSaved(false), 2000);
+    } catch(e) { alert("保存に失敗しました"); }
+    setSaving(false);
+  };
+  const card = { background:"#fff", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", padding:"16px 18px", marginBottom:14 };
+  if (loading) return <div style={{ textAlign:"center", color:"#bbb", padding:"30px 0" }}>読み込み中…</div>;
+  return (
+    <div>
+      <div style={{ ...card, fontSize:13, color:"#555", lineHeight:1.7 }}>
+        不具合などのときに、<b>全店のメインページ上部</b>にお知らせ（注意）バナーを表示できます。ONにして保存すると、みんなの画面に反映されます。直ったらOFFにして保存してください。
+      </div>
+      <div style={card}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+          <div style={{ fontSize:15, fontWeight:900, color:"#222" }}>バナーを表示する</div>
+          <button onClick={() => setEnabled(v => !v)}
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"#e05c00":"#d4d4d8", transition:"background .2s" }}>
+            <span style={{ position:"absolute", top:3, left: enabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
+          </button>
+        </div>
+        <div style={{ fontSize:12, color: enabled?"#e05c00":"#999", fontWeight:700, marginBottom:14 }}>{enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"}</div>
+
+        <div style={{ fontSize:13, fontWeight:800, color:"#444", marginBottom:6 }}>お知らせ文</div>
+        <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4}
+          placeholder="例：発注バーコードの印刷がWindowsで一部ずれる不具合のため、印刷機能を一時調整中です。MacやiPhoneでは利用できます。"
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+
+        <div style={{ fontSize:12, color:"#888", margin:"14px 0 6px", fontWeight:700 }}>プレビュー（実際の見え方）</div>
+        <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start" }}>
+          <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
+          <span style={{ whiteSpace:"pre-wrap", color: message.trim()?"#8a4b00":"#c79a6a" }}>{message.trim() || "（ここにお知らせ文が表示されます）"}</span>
+        </div>
+
+        <button onClick={save} disabled={saving}
+          style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"#e05c00"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginTop:16 }}>
+          {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "保存する"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [tab, setTab] = useState("board");
   const [showGneHint, setShowGneHint] = useState(true);
@@ -3302,6 +3378,7 @@ function App() {
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
+  const [notice, setNotice] = useState({ enabled:false, message:"" });
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -3362,6 +3439,8 @@ function App() {
     };
   }, [refreshing, moreOpen, radialOpen, doRefresh]);
 
+  useEffect(() => { api.getNotice().then(setNotice).catch(()=>{}); }, []);
+
   const handleCreateFromPop = (pop) => {
     setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
     setTab("tool");
@@ -3403,6 +3482,14 @@ function App() {
         </div>
       </div>
 
+      {notice.enabled && notice.message && (
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 0" }}>
+          <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+            <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
+            <span style={{ whiteSpace:"pre-wrap" }}>{notice.message}</span>
+          </div>
+        </div>
+      )}
       {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
@@ -3411,7 +3498,7 @@ function App() {
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
-      {tab==="admin"  && <AdminTab />}
+      {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
       {tab==="dev"    && <DevTab />}
