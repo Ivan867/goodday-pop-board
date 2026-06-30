@@ -2047,7 +2047,7 @@ function BarcodeTab() {
         {pg.map(it => (
           <div key={it.bcode} className="bc-label"
             style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
-            {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "10px", fontWeight:800, lineHeight:1.1, color:"#000", width:"100%", overflow:"hidden", whiteSpace: forPrint?"normal":"nowrap", textOverflow: forPrint?"clip":"ellipsis", wordBreak:"break-word" }}>{it.name}</div>}
+            {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
               <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
             </div>
