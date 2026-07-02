@@ -17,6 +17,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overscroll-behavior: none; }
 body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
+.min-vh { min-height: 100vh; min-height: 100dvh; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 @keyframes radialPulse { 0% { transform:scale(1); } 35% { transform:scale(1.16); } 100% { transform:scale(1); } }
@@ -61,6 +62,10 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"改善", title:"ホーム画面の案内メッセージをON/OFF可能に", body:"ホーム画面下に出る「季節のポップは自動でアーカイブされます」という案内（タップ／スクロールで消えるもの）を、管理画面の「お知らせ」からON/OFF・文章編集できるようにしました。緊急お知らせバナーと合わせて、まとめて設定できます。" },
+  { date:"2026-06-27", type:"改善", title:"下メニューを低く・表示ズレを軽減", body:"画面下の「一覧／検索／☰」バーの高さを下げて、余白を詰めました。あわせて、iPhoneでスクロール時に画面がずれて見える問題の対策として、表示領域の高さの取り方を改善しています（dvh対応）。※Safariのアドレスバーの出入りによるズレを完全になくすには、ホーム画面に追加してアプリとして開くのが確実です。" },
+  { date:"2026-06-27", type:"改善", title:"共有プリセットの削除方法を変更", body:"共有プリセットの削除を、管理モード方式に変えました。「🔧 管理モード（削除する）」に管理パスワードを入力して解除すると、チェックで複数選べるようになり、まとめて一括削除できます。パスワード入力のポップアップは廃止しました。" },
+  { date:"2026-06-27", type:"新機能", title:"共有プリセットにPDFを登録できるように", body:"発注バーコードの「共有プリセット」に、完成したバーコード表のPDFを登録できるようにしました。バーコードを自分で生成できない場合でも、PDFを「開く」または「DL」して、そのまま印刷できます。テキスト(.txt)の登録も従来どおり使えます。どちらも商品マスターを読み込むと使用できます。" },
   { date:"2026-06-27", type:"修正", title:"発注バーコードの並びズレを修正", body:"発注バーコードのプレビュー・印刷で、Windowsのパソコンだとマス目が不揃いにズレることがある問題を直しました。商品名や番号の幅に関係なく、必ず等間隔で並ぶようにしています。" },
   { date:"2026-06-27", type:"新機能", title:"一時お知らせバナー（管理者用）", body:"不具合などの際に、メインページの上部へ注意バナーを出せるようにしました。管理画面の「お知らせ」から、表示のON/OFFと文章を設定して保存すると、全店の画面に反映されます。復旧したらOFFにして保存してください。" },
   { date:"2026-06-27", type:"新機能", title:"発注バーコードに「共有プリセット」", body:"よく使う発注プリセットを全店で共有できるようにしました。発注バーコードのタブに一覧が出て、「読込」で発注リストに取り込み、「DL」でファイル保存できます。なお、安全のため商品マスター（エクセル）を読み込むまでは使用できません（一覧は表示されますが、先にマスターの読み込みが必要です）。プリセットは.txtを複数まとめて登録できます。" },
@@ -249,6 +254,17 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
   },
+  async uploadRaw(file) {
+    const safe = (file.name || "file").replace(/[^\w.\-]+/g, "_");
+    const name = `preset_${Date.now()}_${Math.random().toString(36).slice(2)}_${safe}`;
+    const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
+      method: "POST",
+      headers: { ...h(), "Content-Type": file.type || "application/octet-stream", "x-upsert": "true" },
+      body: file
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
+  },
   async listPosts() {
     const r = await fetch(`${SB_URL}/rest/v1/blog_posts?select=*&order=created_at.desc`, { headers: h() });
     if (!r.ok) throw new Error(await r.text());
@@ -394,10 +410,10 @@ const api = {
   },
   // 一時お知らせ／機能停止バナー（全店共有）
   async getNotice() {
-    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1&select=enabled,message,updated_at`, { headers: h() });
+    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1&select=enabled,message,tip_enabled,tip_message,updated_at`, { headers: h() });
     if (!r.ok) throw new Error(await r.text());
     const rows = await r.json();
-    return rows[0] || { enabled:false, message:"" };
+    return rows[0] || { enabled:false, message:"", tip_enabled:true, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。" };
   },
   async updateNotice(patch) {
     const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1`, {
@@ -746,7 +762,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
 }
 
 // ── Board Tab ──
-function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen }) {
+function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen, tipEnabled, tipMessage }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fStore, setFStore] = useState("");
@@ -757,6 +773,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
   const [showNotice, setShowNotice] = useState(true);
+  const tipOn = tipEnabled !== false;
+  const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -802,11 +820,11 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px 130px" }}>
-        {showNotice && !radialOpen && (
+        {tipOn && showNotice && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
             <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(224,92,0,0.18)" }}>
-              <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。</span>
+              <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipText}</span>
             </div>
           </div>
         )}
@@ -1520,7 +1538,7 @@ function FloorPhotoTab() {
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7" }}>
+    <div className="min-vh" style={{ background:"#f5f5f7" }}>
 
       {/* ヘッダーバー */}
       <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"14px 16px" }}>
@@ -1886,6 +1904,14 @@ function BarcodeTab() {
   const fileRef = React.useRef(null);
   const cfgRef = React.useRef(null);
   const sharedRef = React.useRef(null);
+  const pdfRef = React.useRef(null);
+  const [shAdmin, setShAdmin] = useState(false);
+  const [shPwOpen, setShPwOpen] = useState(false);
+  const [shPw, setShPw] = useState("");
+  const [shPwErr, setShPwErr] = useState("");
+  const [shSel, setShSel] = useState(() => new Set());
+  const [shConfirm, setShConfirm] = useState(false);
+  const [shBusy, setShBusy] = useState(false);
   const [shared, setShared] = useState([]);
   const [sharedLoad, setSharedLoad] = useState(true);
   const previewRef = React.useRef(null);
@@ -2009,15 +2035,46 @@ function BarcodeTab() {
     }
     if (sharedRef.current) sharedRef.current.value = "";
   };
-  const delShared = async (p) => {
-    const pw = prompt("削除パスワードを入力");
-    if (pw === null) return;
+  const uploadSharedPdf = async (files) => {
+    const arr = Array.from(files || []).filter(f => /pdf/i.test(f.type) || /\.pdf$/i.test(f.name));
+    if (!arr.length) return;
+    let base = shared.length;
+    for (const f of arr) {
+      try {
+        const url = await api.uploadRaw(f);
+        const nm = f.name.replace(/\.pdf$/i, "");
+        const row = await api.insertSharedPreset({ name: nm, data: {}, pdf_url: url, sort_order: base++ });
+        setShared(s => [...s, row]);
+      } catch(ex) { alert("PDFの登録に失敗しました：" + (f.name || "")); }
+    }
+    if (pdfRef.current) pdfRef.current.value = "";
+  };
+  const downloadPdf = async (p) => {
     try {
-      const ok = await api.verifyPassword("delete", pw);
-      if (!ok) { alert("パスワードが違います"); return; }
-      await api.delSharedPreset(p.id);
-      setShared(s => s.filter(x => x.id !== p.id));
+      const res = await fetch(p.pdf_url);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = (p.name || "preset") + ".pdf";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    } catch(ex) { window.open(p.pdf_url, "_blank"); }
+  };
+  const unlockShAdmin = async () => {
+    try {
+      const ok = await api.verifyPassword("admin", shPw);
+      if (ok) { setShAdmin(true); setShPwOpen(false); setShPw(""); setShPwErr(""); }
+      else setShPwErr("パスワードが違います");
+    } catch(ex) { setShPwErr("確認に失敗しました"); }
+  };
+  const toggleShSel = (id) => setShSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const bulkDelShared = async () => {
+    if (shSel.size === 0) return;
+    setShBusy(true);
+    try {
+      for (const id of Array.from(shSel)) { await api.delSharedPreset(id); }
+      setShared(s => s.filter(x => !shSel.has(x.id)));
+      setShSel(new Set()); setShConfirm(false);
     } catch(ex) { alert("削除に失敗しました"); }
+    setShBusy(false);
   };
 
   useEffect(() => {
@@ -2101,6 +2158,39 @@ function BarcodeTab() {
       <div style={card}>
         <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:4 }}>共有プリセット</div>
         <div style={{ fontSize:12, color:"#777", marginBottom:12, lineHeight:1.55 }}>みんなで使う発注プリセットの一覧です。「読込」で発注リストに入り、「DL」でファイルを保存できます。</div>
+        <div style={{ marginBottom:12 }}>
+          {!shAdmin && !shPwOpen && (
+            <button onClick={()=>{ setShPwOpen(true); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#9a9aa0", fontSize:12, fontWeight:800, cursor:"pointer", padding:0, textDecoration:"underline" }}>🔧 管理モード（削除する）</button>
+          )}
+          {!shAdmin && shPwOpen && (
+            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+              <input type="password" value={shPw} onChange={e=>{ setShPw(e.target.value); setShPwErr(""); }} onKeyDown={e=>{ if(e.key==="Enter") unlockShAdmin(); }} placeholder="管理パスワード"
+                style={{ padding:"8px 11px", border:"1px solid #e2e2e6", borderRadius:8, fontSize:14, width:160, outline:"none" }} />
+              <button onClick={unlockShAdmin} style={{ border:"none", background:"#222", color:"#fff", borderRadius:8, padding:"8px 15px", fontSize:13, fontWeight:800, cursor:"pointer" }}>解除</button>
+              <button onClick={()=>{ setShPwOpen(false); setShPw(""); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>やめる</button>
+              {shPwErr && <span style={{ fontSize:12, color:"#e11", fontWeight:700 }}>{shPwErr}</span>}
+            </div>
+          )}
+          {shAdmin && (
+            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", background:"#fff4e5", border:"1px solid #ffc98a", borderRadius:10, padding:"9px 11px" }}>
+              <span style={{ fontSize:12.5, fontWeight:900, color:"#8a4b00" }}>管理モード：チェックで選択</span>
+              <button onClick={()=>setShSel(new Set(shared.map(x=>x.id)))} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>全選択</button>
+              <button onClick={()=>setShSel(new Set())} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>選択解除</button>
+              <div style={{ flex:1 }} />
+              {!shConfirm ? (
+                <button onClick={()=> shSel.size>0 && setShConfirm(true)} disabled={shSel.size===0}
+                  style={{ border:"none", background: shSel.size?"#c62828":"#e6bcbc", color:"#fff", borderRadius:8, padding:"8px 13px", fontSize:13, fontWeight:800, cursor: shSel.size?"pointer":"default" }}>選択した{shSel.size>0?`${shSel.size}件`:""}を削除</button>
+              ) : (
+                <span style={{ display:"flex", alignItems:"center", gap:6 }}>
+                  <span style={{ fontSize:12.5, fontWeight:800, color:"#8a4b00" }}>{shSel.size}件を削除？</span>
+                  <button onClick={bulkDelShared} disabled={shBusy} style={{ border:"none", background:"#c62828", color:"#fff", borderRadius:8, padding:"8px 12px", fontSize:13, fontWeight:800, cursor:"pointer" }}>{shBusy?"削除中…":"実行"}</button>
+                  <button onClick={()=>setShConfirm(false)} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>キャンセル</button>
+                </span>
+              )}
+              <button onClick={()=>{ setShAdmin(false); setShSel(new Set()); setShConfirm(false); }} style={{ border:"1px solid #ffc98a", background:"#fff", color:"#8a4b00", borderRadius:8, padding:"8px 12px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>終了</button>
+            </div>
+          )}
+        </div>
         {master.length===0 && (
           <div style={{ fontSize:12.5, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"9px 12px", marginBottom:12, lineHeight:1.6, fontWeight:700 }}>
             ⚠ 先に下の「商品を追加」で商品マスター（エクセル）を読み込んでください。読み込むと、ここから使えるようになります。
@@ -2113,29 +2203,51 @@ function BarcodeTab() {
         ) : (
           <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
             {shared.map(p => {
+              const isPdf = !!p.pdf_url;
               const cnt = ((p.data && p.data.items) || []).length;
               const on = master.length>0;
+              const checked = shSel.has(p.id);
               return (
-                <div key={p.id} style={{ display:"flex", alignItems:"center", gap:8, background:"#fafbfc", border:"1px solid #eef0f2", borderRadius:10, padding:"8px 11px", opacity: on?1:0.55 }}>
+                <div key={p.id} onClick={ shAdmin ? ()=>toggleShSel(p.id) : undefined }
+                  style={{ display:"flex", alignItems:"center", gap:8, background: shAdmin&&checked?"#eaf2ff":(isPdf?"#fef6ef":"#fafbfc"), border:`1px solid ${shAdmin&&checked?"#8ab4ff":(isPdf?"#f4d9c4":"#eef0f2")}`, borderRadius:10, padding:"8px 11px", opacity: (shAdmin||on)?1:0.55, cursor: shAdmin?"pointer":"default" }}>
+                  {shAdmin && <input type="checkbox" checked={checked} readOnly style={{ width:18, height:18, accentColor:"#2f6fed", pointerEvents:"none" }} />}
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name || "（無名）"}</div>
-                    <div style={{ fontSize:11, color:"#9a9aa0" }}>{cnt}点</div>
+                    <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                      {isPdf && <span style={{ fontSize:10, fontWeight:900, color:"#c2410c", background:"#ffe8d6", borderRadius:4, padding:"1px 5px", marginRight:6 }}>PDF</span>}
+                      {p.name || "（無名）"}
+                    </div>
+                    <div style={{ fontSize:11, color:"#9a9aa0" }}>{isPdf ? "完成PDF（開く／DLして印刷）" : cnt+"点"}</div>
                   </div>
-                  <button onClick={()=>loadShared(p)} disabled={!on} title={on?"発注リストに読み込み":"先に商品マスターを読み込んでください"}
-                    style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>読込</button>
-                  <button onClick={()=>downloadShared(p)} disabled={!on} title={on?"ファイルをダウンロード":"先に商品マスターを読み込んでください"}
-                    style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
-                  <button onClick={()=>delShared(p)} title="削除" style={{ border:"none", background:"none", color:"#ccc", fontSize:18, cursor:"pointer", padding:"0 2px", lineHeight:1 }}>×</button>
+                  {!shAdmin && (isPdf ? (
+                    <>
+                      <button onClick={()=>{ if(on) window.open(p.pdf_url, "_blank"); }} disabled={!on} title={on?"PDFを開く":"先に商品マスターを読み込んでください"}
+                        style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>開く</button>
+                      <button onClick={()=>on && downloadPdf(p)} disabled={!on} title={on?"PDFをダウンロード":"先に商品マスターを読み込んでください"}
+                        style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={()=>loadShared(p)} disabled={!on} title={on?"発注リストに読み込み":"先に商品マスターを読み込んでください"}
+                        style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>読込</button>
+                      <button onClick={()=>downloadShared(p)} disabled={!on} title={on?"ファイルをダウンロード":"先に商品マスターを読み込んでください"}
+                        style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
+                    </>
+                  ))}
                 </div>
               );
             })}
           </div>
         )}
         <div style={{ marginTop:12, borderTop:"1px solid #f0f0f2", paddingTop:12 }}>
-          <button onClick={()=>sharedRef.current && sharedRef.current.click()}
-            style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"#555", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ プリセットを登録（ファイル選択・複数可）</button>
-          <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
-          <div style={{ fontSize:11, color:"#aaa", marginTop:7, lineHeight:1.5 }}>「プリセット保存」で書き出した.txtを選んで登録できます。複数まとめて選択OK。全店で共有されます。</div>
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+            <button onClick={()=>sharedRef.current && sharedRef.current.click()}
+              style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"#555", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ テキストを登録（.txt・複数可）</button>
+            <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
+            <button onClick={()=>pdfRef.current && pdfRef.current.click()}
+              style={{ border:"1.5px dashed #f0b48a", background:"#fff", color:"#c2410c", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ PDFを登録（完成表・複数可）</button>
+            <input ref={pdfRef} type="file" accept="application/pdf,.pdf" multiple onChange={e=>uploadSharedPdf(e.target.files)} style={{ display:"none" }} />
+          </div>
+          <div style={{ fontSize:11, color:"#aaa", marginTop:8, lineHeight:1.6 }}>テキスト＝「プリセット保存」で書き出した.txt（読込・DLできます）。PDF＝完成したバーコード表（生成できない人向け。開く・DLして印刷）。どちらも全店で共有されます。</div>
         </div>
       </div>
 
@@ -2808,7 +2920,7 @@ function SoubaTab({ onCreatePop }) {
   );
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:100 }}>
+    <div className="min-vh" style={{ background:"#f5f5f7", paddingBottom:100 }}>
       <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"16px" }}>
         <div style={{ maxWidth:560, margin:"0 auto" }}>
           <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>相場計算</div>
@@ -3316,14 +3428,23 @@ function NoticeAdmin({ onNoticeChange }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [tipEnabled, setTipEnabled] = useState(true);
+  const [tipMessage, setTipMessage] = useState("");
   useEffect(() => {
-    api.getNotice().then(n => { setEnabled(!!n.enabled); setMessage(n.message || ""); setLoading(false); }).catch(() => setLoading(false));
+    api.getNotice().then(n => {
+      setEnabled(!!n.enabled); setMessage(n.message || "");
+      setTipEnabled(n.tip_enabled !== false); setTipMessage(n.tip_message || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。");
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
   const save = async () => {
     setSaving(true); setSaved(false);
     try {
-      const row = await api.updateNotice({ enabled, message: message.trim() });
-      const next = { enabled: row ? !!row.enabled : enabled, message: row ? (row.message || "") : message.trim() };
+      const row = await api.updateNotice({ enabled, message: message.trim(), tip_enabled: tipEnabled, tip_message: tipMessage.trim() });
+      const next = {
+        enabled: row ? !!row.enabled : enabled, message: row ? (row.message || "") : message.trim(),
+        tip_enabled: row ? row.tip_enabled !== false : tipEnabled, tip_message: row ? (row.tip_message || "") : tipMessage.trim()
+      };
       if (onNoticeChange) onNoticeChange(next);
       setSaved(true); setTimeout(() => setSaved(false), 2000);
     } catch(e) { alert("保存に失敗しました"); }
@@ -3334,11 +3455,11 @@ function NoticeAdmin({ onNoticeChange }) {
   return (
     <div>
       <div style={{ ...card, fontSize:13, color:"#555", lineHeight:1.7 }}>
-        不具合などのときに、<b>全店のメインページ上部</b>にお知らせ（注意）バナーを表示できます。ONにして保存すると、みんなの画面に反映されます。直ったらOFFにして保存してください。
+        2種類のお知らせを、ここからON/OFFできます。①は不具合などの<b>緊急のお知らせバナー</b>（メインページ上部に固定）、②はホーム画面下に出る<b>案内メッセージ</b>（タップ／スクロールで消えるもの）です。保存すると、みんなの画面に反映されます。
       </div>
       <div style={card}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
-          <div style={{ fontSize:15, fontWeight:900, color:"#222" }}>バナーを表示する</div>
+          <div style={{ fontSize:15, fontWeight:900, color:"#222" }}>① 緊急お知らせバナーを表示する</div>
           <button onClick={() => setEnabled(v => !v)}
             style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"#e05c00":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: enabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
@@ -3357,11 +3478,34 @@ function NoticeAdmin({ onNoticeChange }) {
           <span style={{ whiteSpace:"pre-wrap", color: message.trim()?"#8a4b00":"#c79a6a" }}>{message.trim() || "（ここにお知らせ文が表示されます）"}</span>
         </div>
 
-        <button onClick={save} disabled={saving}
-          style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"#e05c00"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginTop:16 }}>
-          {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "保存する"}
-        </button>
       </div>
+
+      <div style={card}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+          <div style={{ fontSize:15, fontWeight:900, color:"#222" }}>② ホーム画面の案内メッセージ</div>
+          <button onClick={() => setTipEnabled(v => !v)}
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: tipEnabled?"#2f6fed":"#d4d4d8", transition:"background .2s" }}>
+            <span style={{ position:"absolute", top:3, left: tipEnabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
+          </button>
+        </div>
+        <div style={{ fontSize:12, color: tipEnabled?"#2f6fed":"#999", fontWeight:700, marginBottom:6 }}>{tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"}</div>
+        <div style={{ fontSize:11.5, color:"#999", marginBottom:12, lineHeight:1.6 }}>タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。</div>
+
+        <div style={{ fontSize:13, fontWeight:800, color:"#444", marginBottom:6 }}>案内文</div>
+        <textarea value={tipMessage} onChange={e => setTipMessage(e.target.value)} rows={2}
+          placeholder="例：季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。"
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+
+        <div style={{ fontSize:12, color:"#888", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
+        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px" }}>
+          <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipMessage.trim() || "（ここに案内文が表示されます）"}</span>
+        </div>
+      </div>
+
+      <button onClick={save} disabled={saving}
+        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"#e05c00"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
+        {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "まとめて保存する"}
+      </button>
     </div>
   );
 }
@@ -3379,7 +3523,7 @@ function App() {
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
-  const [notice, setNotice] = useState({ enabled:false, message:"" });
+  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:true, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。" });
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -3459,7 +3603,7 @@ function App() {
   ];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f5f7", paddingBottom:"calc(82px + env(safe-area-inset-bottom))" }}>
+    <div className="min-vh" style={{ background:"#f5f5f7", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -3491,7 +3635,7 @@ function App() {
           </div>
         </div>
       )}
-      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
+      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} />}
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
@@ -3516,7 +3660,7 @@ function App() {
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
             <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
-              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"19px 1px 21px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+              style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"10px 1px 11px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {more && showGneHint && (
                 <div style={{ position:"absolute", bottom:"100%", right:0, marginBottom:9, zIndex:260, pointerEvents:"none", display:"flex", flexDirection:"column", alignItems:"flex-end" }}>
                   <span style={{ position:"absolute", left:-2, bottom:20, fontSize:13, animation:"gneFloat 1.6s ease-in-out infinite" }}>✨</span>
