@@ -2683,10 +2683,7 @@ function TodayInfoCard() {
       </div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px", fontSize:12.5, fontWeight:700, color:"#444", lineHeight:1.7 }}>
         {wx && (
-          <span>🌡 出雲市の天気　今日{wmoIcon(wx.code).e} 最高{wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）</span>
-        )}
-        {wx && wx.tmMax != null && (
-          <span>明日{wmoIcon(wx.tmCode).e} <b>{wmoIcon(wx.tmCode).t}</b>・最高{wx.tmMax}°<span style={{ color:dcol(wx.tmDiff) }}>（今日{sign(wx.tmDiff)}）</span></span>
+          <span>📍出雲市　今日{wmoIcon(wx.code).e} {wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）{wx.tmMax != null ? <>　明日{wmoIcon(wx.tmCode).e} {wx.tmMax}°<span style={{ color:dcol(wx.tmDiff) }}>（今日比{sign(wx.tmDiff)}）</span></> : null}</span>
         )}
         {hol && hol.date && (
           <span>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"var(--primary)" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></span>
