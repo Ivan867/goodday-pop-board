@@ -62,6 +62,8 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-06-27", type:"改善", title:"扇形フィルターの動作・見た目を調整", body:"検索画面／ホーム画面で開く店舗・カテゴリの扇形フィルターを、スクロールし始めたら自動で閉じるようにしました（タップでも今までどおり閉じます）。ボタンの文字色をグレーから濃い色に、背景を少し透明に、余白も少し狭くしています。" },
+  { date:"2026-06-27", type:"改善", title:"共有プリセットの見せ方を調整", body:"発注バーコードの共有プリセットを、商品マスターを読み込むまでは中身を表示しないように変更しました（読み込むと表示されます）。また、PDFとテキストをタブで左右に切り替えられるようにして、スクロールを短くしました。「管理モード（削除する）」の位置は一覧の下に移動しています。" },
   { date:"2026-06-27", type:"改善", title:"ホーム画面の案内メッセージをON/OFF可能に", body:"ホーム画面下に出る「季節のポップは自動でアーカイブされます」という案内（タップ／スクロールで消えるもの）を、管理画面の「お知らせ」からON/OFF・文章編集できるようにしました。緊急お知らせバナーと合わせて、まとめて設定できます。" },
   { date:"2026-06-27", type:"改善", title:"下メニューを低く・表示ズレを軽減", body:"画面下の「一覧／検索／☰」バーの高さを下げて、余白を詰めました。あわせて、iPhoneでスクロール時に画面がずれて見える問題の対策として、表示領域の高さの取り方を改善しています（dvh対応）。※Safariのアドレスバーの出入りによるズレを完全になくすには、ホーム画面に追加してアプリとして開くのが確実です。" },
   { date:"2026-06-27", type:"改善", title:"共有プリセットの削除方法を変更", body:"共有プリセットの削除を、管理モード方式に変えました。「🔧 管理モード（削除する）」に管理パスワードを入力して解除すると、チェックで複数選べるようになり、まとめて一括削除できます。パスワード入力のポップアップは廃止しました。" },
@@ -799,6 +801,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     return () => window.removeEventListener("scroll", onScroll);
   }, [showNotice]);
 
+  useEffect(() => {
+    if (!radialOpen) return;
+    const onScroll = () => { setRadialOpen(false); setRadialChanged(false); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [radialOpen]);
+
   const counts = pops.reduce((a,p) => { a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
   const filtered = pops.filter(p => (!fStore||p.store_name===fStore) && (!fCat||p.category===fCat));
 
@@ -863,9 +872,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"7px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
+                padding:"6px 11px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"#fff", color: active?"#e05c00":"#7a7a7f", border:"none",
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#e05c00":"#222", border:"none",
                 borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
@@ -883,9 +892,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"6px 12px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
+                padding:"5px 10px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"#fff", color: active?"#111":"#888", border:"none",
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#111":"#222", border:"none",
                 borderBottom: active?"2.5px solid #111":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
@@ -924,6 +933,13 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   };
 
   useEffect(() => { ensureLoaded(); }, []);
+
+  useEffect(() => {
+    if (!radialOpen) return;
+    const onScroll = () => setRadialOpen(false);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [radialOpen]);
 
   const q = normJa(search.trim());
   const results = !loaded ? [] : allPops.filter(p => {
@@ -1073,9 +1089,9 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"7px 13px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
+                padding:"6px 11px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"#fff", color: active?"#e05c00":"#7a7a7f", border:"none",
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#e05c00":"#222", border:"none",
                 borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
@@ -1092,9 +1108,9 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
                 transitionProperty:"transform, opacity", transitionDuration:"0.6s, 0.4s",
                 transitionTimingFunction:"cubic-bezier(.16,1.18,.3,1), ease",
                 transitionDelay:`${delay}ms, ${delay}ms`,
-                padding:"6px 12px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
+                padding:"5px 10px", whiteSpace:"nowrap", fontSize:12, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"#fff", color: active?"#111":"#888", border:"none",
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#111":"#222", border:"none",
                 borderBottom: active?"2.5px solid #111":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
@@ -1912,6 +1928,7 @@ function BarcodeTab() {
   const [shSel, setShSel] = useState(() => new Set());
   const [shConfirm, setShConfirm] = useState(false);
   const [shBusy, setShBusy] = useState(false);
+  const [shTab, setShTab] = useState("pdf");
   const [shared, setShared] = useState([]);
   const [sharedLoad, setSharedLoad] = useState(true);
   const previewRef = React.useRef(null);
@@ -2143,7 +2160,7 @@ function BarcodeTab() {
       {/* 設定の保存・読み込み */}
       <div style={card}>
         <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:10 }}>発注バーコード生成</div>
-        <div style={{ fontSize:12, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"7px 11px", marginBottom:13, lineHeight:1.55 }}>※ この画面はパソコンのブラウザでの操作を推奨します（iPhoneでは一覧が多いと動作が重くなる場合があります）。</div>
+        <div style={{ fontSize:12, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"7px 11px", marginBottom:13, lineHeight:1.55 }}>※ この画面はパソコンのブラウザでの操作を推奨します（スマートフォンでは一覧が多いと動作が重くなる場合があります）。</div>
         <div style={{ display:"flex", gap:9, flexWrap:"wrap" }}>
           <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>プリセット読み込み</button>
           <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>プリセット保存（{list.length}）</button>
@@ -2157,98 +2174,112 @@ function BarcodeTab() {
       {/* 共有プリセット */}
       <div style={card}>
         <div style={{ fontSize:14, fontWeight:900, color:"#111", marginBottom:4 }}>共有プリセット</div>
-        <div style={{ fontSize:12, color:"#777", marginBottom:12, lineHeight:1.55 }}>みんなで使う発注プリセットの一覧です。「読込」で発注リストに入り、「DL」でファイルを保存できます。</div>
-        <div style={{ marginBottom:12 }}>
-          {!shAdmin && !shPwOpen && (
-            <button onClick={()=>{ setShPwOpen(true); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#9a9aa0", fontSize:12, fontWeight:800, cursor:"pointer", padding:0, textDecoration:"underline" }}>🔧 管理モード（削除する）</button>
-          )}
-          {!shAdmin && shPwOpen && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-              <input type="password" value={shPw} onChange={e=>{ setShPw(e.target.value); setShPwErr(""); }} onKeyDown={e=>{ if(e.key==="Enter") unlockShAdmin(); }} placeholder="管理パスワード"
-                style={{ padding:"8px 11px", border:"1px solid #e2e2e6", borderRadius:8, fontSize:14, width:160, outline:"none" }} />
-              <button onClick={unlockShAdmin} style={{ border:"none", background:"#222", color:"#fff", borderRadius:8, padding:"8px 15px", fontSize:13, fontWeight:800, cursor:"pointer" }}>解除</button>
-              <button onClick={()=>{ setShPwOpen(false); setShPw(""); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>やめる</button>
-              {shPwErr && <span style={{ fontSize:12, color:"#e11", fontWeight:700 }}>{shPwErr}</span>}
+        <div style={{ fontSize:12, color:"#777", marginBottom:12, lineHeight:1.55 }}>みんなで使う発注プリセットです。商品マスターを読み込むと使えるようになります。</div>
+
+        {master.length===0 ? null : (
+          <>
+            <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #e2e2e2", marginBottom:12 }}>
+              <button onClick={()=>setShTab("pdf")}
+                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="pdf"?"#222":"#fff", color: shTab==="pdf"?"#fff":"#888" }}>PDF（すぐ印刷）</button>
+              <button onClick={()=>setShTab("text")}
+                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="text"?"#222":"#fff", color: shTab==="text"?"#fff":"#888" }}>テキスト・プリセット</button>
             </div>
-          )}
-          {shAdmin && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", background:"#fff4e5", border:"1px solid #ffc98a", borderRadius:10, padding:"9px 11px" }}>
-              <span style={{ fontSize:12.5, fontWeight:900, color:"#8a4b00" }}>管理モード：チェックで選択</span>
-              <button onClick={()=>setShSel(new Set(shared.map(x=>x.id)))} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>全選択</button>
-              <button onClick={()=>setShSel(new Set())} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>選択解除</button>
-              <div style={{ flex:1 }} />
-              {!shConfirm ? (
-                <button onClick={()=> shSel.size>0 && setShConfirm(true)} disabled={shSel.size===0}
-                  style={{ border:"none", background: shSel.size?"#c62828":"#e6bcbc", color:"#fff", borderRadius:8, padding:"8px 13px", fontSize:13, fontWeight:800, cursor: shSel.size?"pointer":"default" }}>選択した{shSel.size>0?`${shSel.size}件`:""}を削除</button>
+
+            {sharedLoad ? (
+              <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>読み込み中…</div>
+            ) : (() => {
+              const rows = shared.filter(p => !!p.pdf_url === (shTab==="pdf"));
+              return rows.length===0 ? (
+                <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>まだ登録がありません</div>
               ) : (
-                <span style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <span style={{ fontSize:12.5, fontWeight:800, color:"#8a4b00" }}>{shSel.size}件を削除？</span>
-                  <button onClick={bulkDelShared} disabled={shBusy} style={{ border:"none", background:"#c62828", color:"#fff", borderRadius:8, padding:"8px 12px", fontSize:13, fontWeight:800, cursor:"pointer" }}>{shBusy?"削除中…":"実行"}</button>
-                  <button onClick={()=>setShConfirm(false)} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>キャンセル</button>
-                </span>
-              )}
-              <button onClick={()=>{ setShAdmin(false); setShSel(new Set()); setShConfirm(false); }} style={{ border:"1px solid #ffc98a", background:"#fff", color:"#8a4b00", borderRadius:8, padding:"8px 12px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>終了</button>
-            </div>
-          )}
-        </div>
-        {master.length===0 && (
-          <div style={{ fontSize:12.5, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"9px 12px", marginBottom:12, lineHeight:1.6, fontWeight:700 }}>
-            ⚠ 先に下の「商品を追加」で商品マスター（エクセル）を読み込んでください。読み込むと、ここから使えるようになります。
-          </div>
-        )}
-        {sharedLoad ? (
-          <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>読み込み中…</div>
-        ) : shared.length===0 ? (
-          <div style={{ textAlign:"center", color:"#bbb", padding:"18px 0", fontSize:13 }}>まだ登録がありません</div>
-        ) : (
-          <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-            {shared.map(p => {
-              const isPdf = !!p.pdf_url;
-              const cnt = ((p.data && p.data.items) || []).length;
-              const on = master.length>0;
-              const checked = shSel.has(p.id);
-              return (
-                <div key={p.id} onClick={ shAdmin ? ()=>toggleShSel(p.id) : undefined }
-                  style={{ display:"flex", alignItems:"center", gap:8, background: shAdmin&&checked?"#eaf2ff":(isPdf?"#fef6ef":"#fafbfc"), border:`1px solid ${shAdmin&&checked?"#8ab4ff":(isPdf?"#f4d9c4":"#eef0f2")}`, borderRadius:10, padding:"8px 11px", opacity: (shAdmin||on)?1:0.55, cursor: shAdmin?"pointer":"default" }}>
-                  {shAdmin && <input type="checkbox" checked={checked} readOnly style={{ width:18, height:18, accentColor:"#2f6fed", pointerEvents:"none" }} />}
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                      {isPdf && <span style={{ fontSize:10, fontWeight:900, color:"#c2410c", background:"#ffe8d6", borderRadius:4, padding:"1px 5px", marginRight:6 }}>PDF</span>}
-                      {p.name || "（無名）"}
-                    </div>
-                    <div style={{ fontSize:11, color:"#9a9aa0" }}>{isPdf ? "完成PDF（開く／DLして印刷）" : cnt+"点"}</div>
-                  </div>
-                  {!shAdmin && (isPdf ? (
-                    <>
-                      <button onClick={()=>{ if(on) window.open(p.pdf_url, "_blank"); }} disabled={!on} title={on?"PDFを開く":"先に商品マスターを読み込んでください"}
-                        style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>開く</button>
-                      <button onClick={()=>on && downloadPdf(p)} disabled={!on} title={on?"PDFをダウンロード":"先に商品マスターを読み込んでください"}
-                        style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={()=>loadShared(p)} disabled={!on} title={on?"発注リストに読み込み":"先に商品マスターを読み込んでください"}
-                        style={{ border:"none", background: on?ACCENT:"#ccc", color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>読込</button>
-                      <button onClick={()=>downloadShared(p)} disabled={!on} title={on?"ファイルをダウンロード":"先に商品マスターを読み込んでください"}
-                        style={{ border:`1.5px solid ${on?ACCENT:"#ccc"}`, background:"#fff", color: on?ACCENT:"#ccc", borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor: on?"pointer":"not-allowed" }}>DL</button>
-                    </>
-                  ))}
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {rows.map(p => {
+                    const isPdf = !!p.pdf_url;
+                    const cnt = ((p.data && p.data.items) || []).length;
+                    const checked = shSel.has(p.id);
+                    return (
+                      <div key={p.id} onClick={ shAdmin ? ()=>toggleShSel(p.id) : undefined }
+                        style={{ display:"flex", alignItems:"center", gap:8, background: shAdmin&&checked?"#eaf2ff":(isPdf?"#fef6ef":"#fafbfc"), border:`1px solid ${shAdmin&&checked?"#8ab4ff":(isPdf?"#f4d9c4":"#eef0f2")}`, borderRadius:10, padding:"8px 11px", cursor: shAdmin?"pointer":"default" }}>
+                        {shAdmin && <input type="checkbox" checked={checked} readOnly style={{ width:18, height:18, accentColor:"#2f6fed", pointerEvents:"none" }} />}
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name || "（無名）"}</div>
+                          <div style={{ fontSize:11, color:"#9a9aa0" }}>{isPdf ? "完成PDF（開く／DLして印刷）" : cnt+"点"}</div>
+                        </div>
+                        {!shAdmin && (isPdf ? (
+                          <>
+                            <button onClick={()=>window.open(p.pdf_url, "_blank")}
+                              style={{ border:"none", background:ACCENT, color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>開く</button>
+                            <button onClick={()=>downloadPdf(p)}
+                              style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={()=>loadShared(p)}
+                              style={{ border:"none", background:ACCENT, color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>読込</button>
+                            <button onClick={()=>downloadShared(p)}
+                              style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
+                          </>
+                        ))}
+                      </div>
+                    );
+                  })}
                 </div>
               );
-            })}
-          </div>
+            })()}
+
+            <div style={{ marginTop:12, borderTop:"1px solid #f0f0f2", paddingTop:12 }}>
+              {shTab==="pdf" ? (
+                <>
+                  <button onClick={()=>pdfRef.current && pdfRef.current.click()}
+                    style={{ border:"1.5px dashed #f0b48a", background:"#fff", color:"#c2410c", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ PDFを登録（完成表・複数可）</button>
+                  <input ref={pdfRef} type="file" accept="application/pdf,.pdf" multiple onChange={e=>uploadSharedPdf(e.target.files)} style={{ display:"none" }} />
+                  <div style={{ fontSize:11, color:"#aaa", marginTop:8, lineHeight:1.6 }}>完成したバーコード表のPDFです。生成せず、開く・DLしてそのまま印刷できます。全店で共有されます。</div>
+                </>
+              ) : (
+                <>
+                  <button onClick={()=>sharedRef.current && sharedRef.current.click()}
+                    style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"#555", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ テキストを登録（.txt・複数可）</button>
+                  <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
+                  <div style={{ fontSize:11, color:"#aaa", marginTop:8, lineHeight:1.6 }}>「プリセット保存」で書き出した.txtです。読込・DLできます。全店で共有されます。</div>
+                </>
+              )}
+            </div>
+
+            <div style={{ marginTop:12, borderTop:"1px solid #f0f0f2", paddingTop:12 }}>
+              {!shAdmin && !shPwOpen && (
+                <button onClick={()=>{ setShPwOpen(true); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#9a9aa0", fontSize:12, fontWeight:800, cursor:"pointer", padding:0, textDecoration:"underline" }}>🔧 管理モード（削除する）</button>
+              )}
+              {!shAdmin && shPwOpen && (
+                <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                  <input type="password" value={shPw} onChange={e=>{ setShPw(e.target.value); setShPwErr(""); }} onKeyDown={e=>{ if(e.key==="Enter") unlockShAdmin(); }} placeholder="管理パスワード"
+                    style={{ padding:"8px 11px", border:"1px solid #e2e2e6", borderRadius:8, fontSize:14, width:160, outline:"none" }} />
+                  <button onClick={unlockShAdmin} style={{ border:"none", background:"#222", color:"#fff", borderRadius:8, padding:"8px 15px", fontSize:13, fontWeight:800, cursor:"pointer" }}>解除</button>
+                  <button onClick={()=>{ setShPwOpen(false); setShPw(""); setShPwErr(""); }} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>やめる</button>
+                  {shPwErr && <span style={{ fontSize:12, color:"#e11", fontWeight:700 }}>{shPwErr}</span>}
+                </div>
+              )}
+              {shAdmin && (
+                <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", background:"#fff4e5", border:"1px solid #ffc98a", borderRadius:10, padding:"9px 11px" }}>
+                  <span style={{ fontSize:12.5, fontWeight:900, color:"#8a4b00" }}>管理モード：チェックで選択（今表示中のタブのみ）</span>
+                  <button onClick={()=>setShSel(new Set(shared.filter(p=>!!p.pdf_url===(shTab==="pdf")).map(x=>x.id)))} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>全選択</button>
+                  <button onClick={()=>setShSel(new Set())} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>選択解除</button>
+                  <div style={{ flex:1 }} />
+                  {!shConfirm ? (
+                    <button onClick={()=> shSel.size>0 && setShConfirm(true)} disabled={shSel.size===0}
+                      style={{ border:"none", background: shSel.size?"#c62828":"#e6bcbc", color:"#fff", borderRadius:8, padding:"8px 13px", fontSize:13, fontWeight:800, cursor: shSel.size?"pointer":"default" }}>選択した{shSel.size>0?`${shSel.size}件`:""}を削除</button>
+                  ) : (
+                    <span style={{ display:"flex", alignItems:"center", gap:6 }}>
+                      <span style={{ fontSize:12.5, fontWeight:800, color:"#8a4b00" }}>{shSel.size}件を削除？</span>
+                      <button onClick={bulkDelShared} disabled={shBusy} style={{ border:"none", background:"#c62828", color:"#fff", borderRadius:8, padding:"8px 12px", fontSize:13, fontWeight:800, cursor:"pointer" }}>{shBusy?"削除中…":"実行"}</button>
+                      <button onClick={()=>setShConfirm(false)} style={{ border:"none", background:"none", color:"#999", fontSize:12, fontWeight:700, cursor:"pointer" }}>キャンセル</button>
+                    </span>
+                  )}
+                  <button onClick={()=>{ setShAdmin(false); setShSel(new Set()); setShConfirm(false); }} style={{ border:"1px solid #ffc98a", background:"#fff", color:"#8a4b00", borderRadius:8, padding:"8px 12px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>終了</button>
+                </div>
+              )}
+            </div>
+          </>
         )}
-        <div style={{ marginTop:12, borderTop:"1px solid #f0f0f2", paddingTop:12 }}>
-          <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-            <button onClick={()=>sharedRef.current && sharedRef.current.click()}
-              style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"#555", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ テキストを登録（.txt・複数可）</button>
-            <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
-            <button onClick={()=>pdfRef.current && pdfRef.current.click()}
-              style={{ border:"1.5px dashed #f0b48a", background:"#fff", color:"#c2410c", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ PDFを登録（完成表・複数可）</button>
-            <input ref={pdfRef} type="file" accept="application/pdf,.pdf" multiple onChange={e=>uploadSharedPdf(e.target.files)} style={{ display:"none" }} />
-          </div>
-          <div style={{ fontSize:11, color:"#aaa", marginTop:8, lineHeight:1.6 }}>テキスト＝「プリセット保存」で書き出した.txt（読込・DLできます）。PDF＝完成したバーコード表（生成できない人向け。開く・DLして印刷）。どちらも全店で共有されます。</div>
-        </div>
       </div>
 
       {/* 作業リスト */}
