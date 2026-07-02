@@ -2678,18 +2678,24 @@ function TodayInfoCard() {
   return (
     <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 2px 10px rgba(0,0,0,0.06)", padding:"11px 14px", marginBottom:12 }}>
       <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:6, flexWrap:"wrap" }}>
-        <span style={{ fontSize:12.5, fontWeight:900, color:"#111" }}>今日の売場情報</span>
+        <span style={{ fontSize:12.5, fontWeight:900, color:"#111" }}>今日の情報</span>
         <span style={{ fontSize:11, color:"#aaa", fontWeight:700 }}>{jd(now)}（{wd(now)}）{hol && hol.todayName ? `・今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `・今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</span>
       </div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px", fontSize:12.5, fontWeight:700, color:"#444", lineHeight:1.7 }}>
+      <div style={{ fontSize:12.5, fontWeight:700, color:"#444", lineHeight:1.8, textAlign:"left" }}>
         {wx && (
-          <span>📍出雲市　今日{wmoIcon(wx.code).e} {wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）{wx.tmMax != null ? <>　明日{wmoIcon(wx.tmCode).e} {wx.tmMax}°<span style={{ color:dcol(wx.tmDiff) }}>（今日比{sign(wx.tmDiff)}）</span></> : null}</span>
+          <>
+            <div>今日{wmoIcon(wx.code).e} {wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）</div>
+            {wx.tmMax != null && (
+              <div>明日{wmoIcon(wx.tmCode).e} {wx.tmMax}°<span style={{ color:dcol(wx.tmDiff) }}>（今日比{sign(wx.tmDiff)}）</span></div>
+            )}
+          </>
         )}
+        {wx && (hol && hol.date || events.next) ? <div style={{ height:1, background:"#ececf0", margin:"7px 0" }} /> : null}
         {hol && hol.date && (
-          <span>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"var(--primary)" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></span>
+          <div>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"var(--primary)" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></div>
         )}
         {events.next && (
-          <span>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ color:"var(--primary)" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "（明日）" : `（あと${Math.round((events.next.date - now)/86400000)}日）`}</span>{events.next2 ? <span style={{ color:"#9a9aa0" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</span>
+          <div>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ color:"var(--primary)" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "（明日）" : `（あと${Math.round((events.next.date - now)/86400000)}日）`}</span>{events.next2 ? <span style={{ color:"#9a9aa0" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</div>
         )}
       </div>
       {hint && <div style={{ marginTop:5, fontSize:12, color:"#a8480a", fontWeight:700 }}>💡 {hint}</div>}
