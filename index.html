@@ -62,6 +62,9 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-02", type:"改善", title:"天気の観測地点が分かるように", body:"ヘッダーの天気をタップすると、観測地点の説明が出るようになりました。島根県の簡易地図に「出雲」のピンが表示され、出雲市周辺の予報であることが分かります。ホームの「今日の売場情報」の気温も同じ地点です。" },
+  { date:"2026-07-02", type:"改善", title:"売場情報に行事（ハレの日）を追加", body:"「今日の売場情報」に、土用の丑・半夏生・節分・ひな祭り・七夕・お盆・彼岸・母の日・父の日・クリスマス・大晦日などの行事を追加しました。次の行事とあと何日か、売場と相性の良い商材〈うなぎ・恵方巻など〉も一緒に表示されます。当日は「今日は土用の丑」と出ます。" },
+  { date:"2026-07-02", type:"新機能", title:"ホームに「今日の売場情報」", body:"ホーム画面の上部に、売場づくりに役立つ情報カードを追加しました。今日の最高気温と「昨日との差・先週との差」、次の祝日（連休の場合は期間も）とあと何日かが一目で分かります。気温が大きく変わる日には、おすすめの売り方ヒントも表示されます。" },
   { date:"2026-06-27", type:"改善", title:"扇形フィルターの動作・見た目を調整", body:"検索画面／ホーム画面で開く店舗・カテゴリの扇形フィルターを、スクロールし始めたら自動で閉じるようにしました（タップでも今までどおり閉じます）。ボタンの文字色をグレーから濃い色に、背景を少し透明に、余白も少し狭くしています。" },
   { date:"2026-06-27", type:"改善", title:"共有プリセットの見せ方を調整", body:"発注バーコードの共有プリセットを、商品マスターを読み込むまでは中身を表示しないように変更しました（読み込むと表示されます）。また、PDFとテキストをタブで左右に切り替えられるようにして、スクロールを短くしました。「管理モード（削除する）」の位置は一覧の下に移動しています。" },
   { date:"2026-06-27", type:"改善", title:"ホーム画面の案内メッセージをON/OFF可能に", body:"ホーム画面下に出る「季節のポップは自動でアーカイブされます」という案内（タップ／スクロールで消えるもの）を、管理画面の「お知らせ」からON/OFF・文章編集できるようにしました。緊急お知らせバナーと合わせて、まとめて設定できます。" },
@@ -829,6 +832,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px 130px" }}>
+        <TodayInfoCard />
         {tipOn && showNotice && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
@@ -2566,8 +2570,104 @@ function PromptTab() {
   );
 }
 
+function TodayInfoCard() {
+  const [wx, setWx] = useState(null);
+  const [hol, setHol] = useState(null);
+  useEffect(() => {
+    // 気温：過去7日＋今日を取得して前日差・前週差を計算
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&past_days=7&forecast_days=1")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d || !d.daily || !d.daily.temperature_2m_max) return;
+        const t = d.daily.temperature_2m_max, i = t.length - 1;
+        if (t[i] == null || t[i-1] == null || t[i-7] == null) return;
+        setWx({ today: Math.round(t[i]), dy: Math.round(t[i] - t[i-1]), dw: Math.round(t[i] - t[i-7]), code: d.daily.weather_code[i] });
+      }).catch(() => {});
+    // 祝日：holidays-jp（前年・今年・翌年分）
+    fetch("https://holidays-jp.github.io/api/v1/date.json")
+      .then(r => r.ok ? r.json() : null)
+      .then(hs => {
+        if (!hs) return;
+        const hset = new Set(Object.keys(hs));
+        const now = new Date(); now.setHours(0,0,0,0);
+        const pad = n => String(n).padStart(2, "0");
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        const todayName = hs[fmt(now)] || null;
+        const dates = Object.keys(hs).filter(k => k > fmt(now)).sort();
+        if (!dates.length) { setHol({ todayName }); return; }
+        const next = dates[0];
+        const nd = new Date(next + "T00:00:00");
+        const isOff = d => { const w = d.getDay(); return w === 0 || w === 6 || hset.has(fmt(d)); };
+        let bs = new Date(nd), be = new Date(nd);
+        for (;;) { const q = new Date(bs); q.setDate(q.getDate()-1); if (isOff(q)) bs = q; else break; }
+        for (;;) { const q = new Date(be); q.setDate(q.getDate()+1); if (isOff(q)) be = q; else break; }
+        const len = Math.round((be - bs) / 86400000) + 1;
+        const days = Math.round((nd - now) / 86400000);
+        setHol({ todayName, date: nd, name: hs[next], blockStart: bs, blockEnd: be, len, days });
+      }).catch(() => {});
+  }, []);
+  // ハレの日（行事）：固定日＋年ごとの可変日（土用の丑・彼岸・母の日・父の日）
+  const events = (() => {
+    const now = new Date(); now.setHours(0,0,0,0);
+    const mk = (y, m, d, name, food) => ({ date: new Date(y, m-1, d), name, food });
+    const nthSunday = (y, m, n) => { const first = new Date(y, m-1, 1); const off = (7 - first.getDay()) % 7; return new Date(y, m-1, 1 + off + (n-1)*7); };
+    const USHI = { 2026:[[7,26,"土用の丑"]], 2027:[[7,21,"土用の丑"],[8,2,"土用の二の丑"]], 2028:[[7,27,"土用の丑"]] };
+    const HIGAN = { 2026:[[3,17],[9,20]], 2027:[[3,18],[9,20]], 2028:[[3,17],[9,19]] };
+    const list = [];
+    for (const y of [now.getFullYear(), now.getFullYear()+1]) {
+      list.push(
+        mk(y,1,1,"お正月","刺身・おせち"), mk(y,2,3,"節分","恵方巻"), mk(y,3,3,"ひな祭り","ちらし寿司・はまぐり"),
+        mk(y,5,5,"こどもの日","お祝い・ちらし"), mk(y,7,2,"半夏生","タコ"), mk(y,7,7,"七夕","ちらし・そうめん"),
+        mk(y,8,13,"お盆入り","刺身・お供え"), mk(y,10,31,"ハロウィン",null), mk(y,12,22,"冬至",null),
+        mk(y,12,24,"クリスマス","オードブル・寿司"), mk(y,12,31,"大晦日","刺身・寿司")
+      );
+      const ms = nthSunday(y,5,2); list.push({ date:ms, name:"母の日", food:"ごちそう・お祝い" });
+      const fs = nthSunday(y,6,3); list.push({ date:fs, name:"父の日", food:"ごちそう・晩酌のあて" });
+      (USHI[y]||[]).forEach(([m,d,nm]) => list.push(mk(y,m,d,nm,"うなぎ・スタミナ")));
+      (HIGAN[y]||[]).forEach(([m,d]) => list.push(mk(y,m,d,(m<6?"春":"秋")+"彼岸入り","お供え・お寿司")));
+    }
+    list.forEach(e => e.date.setHours(0,0,0,0));
+    const todayEv = list.find(e => e.date.getTime() === now.getTime()) || null;
+    const up = list.filter(e => e.date > now && (e.date - now)/86400000 <= 60).sort((a,b)=>a.date-b.date);
+    return { todayEv, next: up[0] || null, next2: up[1] || null };
+  })();
+  const jd = d => `${d.getMonth()+1}/${d.getDate()}`;
+  const wd = d => ["日","月","火","水","木","金","土"][d.getDay()];
+  const sign = v => v > 0 ? `+${v}°` : v < 0 ? `${v}°` : "±0°";
+  const dcol = v => v > 0 ? "#e05c00" : v < 0 ? "#4a86c5" : "#888";
+  const rainy = wx && ((wx.code >= 61 && wx.code <= 67) || (wx.code >= 80 && wx.code <= 82) || wx.code >= 95);
+  let hint = null;
+  if (wx) {
+    if (wx.dy >= 3) hint = "昨日よりグッと暑い日。刺身・たたき・冷たい系が動きやすい。";
+    else if (wx.dy <= -3) hint = "昨日より涼しい日。鍋・煮付け・フライなど温か系が動きやすい。";
+    else if (rainy) hint = "雨予報。まとめ買い・簡便系の提案が効きやすい日。";
+  }
+  const now = new Date();
+  return (
+    <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 2px 10px rgba(0,0,0,0.06)", padding:"11px 14px", marginBottom:12 }}>
+      <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:6, flexWrap:"wrap" }}>
+        <span style={{ fontSize:12.5, fontWeight:900, color:"#111" }}>今日の売場情報</span>
+        <span style={{ fontSize:11, color:"#aaa", fontWeight:700 }}>{jd(now)}（{wd(now)}）{hol && hol.todayName ? `・今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `・今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</span>
+      </div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px", fontSize:12.5, fontWeight:700, color:"#444", lineHeight:1.7 }}>
+        {wx && (
+          <span>🌡 出雲市の天気　最高{wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）</span>
+        )}
+        {hol && hol.date && (
+          <span>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"#e05c00" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></span>
+        )}
+        {events.next && (
+          <span>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ color:"#e05c00" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "（明日）" : `（あと${Math.round((events.next.date - now)/86400000)}日）`}</span>{events.next2 ? <span style={{ color:"#9a9aa0" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</span>
+        )}
+      </div>
+      {hint && <div style={{ marginTop:5, fontSize:12, color:"#a8480a", fontWeight:700 }}>💡 {hint}</div>}
+    </div>
+  );
+}
+
 function WeatherWidget() {
   const [daily, setDaily] = useState(null);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=2")
       .then(r => r.ok ? r.json() : null)
@@ -2609,10 +2709,36 @@ function WeatherWidget() {
   };
 
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:8, background:"#f7f8fa", border:"1px solid #eee", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0 }}>
-      <Day label="今日" i={0} />
-      <div style={{ width:1, height:14, background:"#e0e0e0" }} />
-      <Day label="明日" i={1} />
+    <div style={{ position:"relative" }}>
+      <div onClick={() => setOpen(v => !v)}
+        style={{ display:"flex", alignItems:"center", gap:8, background:"#f7f8fa", border:"1px solid #eee", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer" }}>
+        <Day label="今日" i={0} />
+        <div style={{ width:1, height:14, background:"#e0e0e0" }} />
+        <Day label="明日" i={1} />
+      </div>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position:"fixed", inset:0, zIndex:210 }} />
+          <div style={{ position:"absolute", top:"calc(100% + 8px)", right:0, zIndex:211, background:"#fff", borderRadius:14, boxShadow:"0 8px 30px rgba(0,0,0,0.18)", padding:"13px 15px", width:230, animation:"fadeUp .2s ease" }}>
+            <div style={{ fontSize:12.5, fontWeight:900, color:"#111", marginBottom:8 }}>📍 天気の観測地点</div>
+            <svg viewBox="0 0 220 100" style={{ width:"100%", display:"block", marginBottom:8 }}>
+              <path d="M8,62 L30,72 L58,78 L92,74 L112,66 L128,60 L150,50 L172,40 L196,28 L210,20 L212,30 L196,44 L176,56 L154,66 L132,74 L110,82 L86,88 L56,90 L26,84 L6,72 Z"
+                fill="#dce8f5" stroke="#9db8d4" strokeWidth="1.5" strokeLinejoin="round" />
+              <path d="M104,60 L124,52 L146,44 L142,52 L122,60 L106,66 Z" fill="#dce8f5" stroke="#9db8d4" strokeWidth="1.5" strokeLinejoin="round" />
+              <ellipse cx="128" cy="62" rx="10" ry="4" fill="#aecdea" />
+              <circle cx="106" cy="68" r="5" fill="#e05c00" stroke="#fff" strokeWidth="1.5" />
+              <text x="106" y="52" textAnchor="middle" fontSize="11" fontWeight="800" fill="#a8480a">出雲</text>
+              <text x="196" y="16" textAnchor="middle" fontSize="9" fill="#8fa8c2">松江</text>
+              <circle cx="188" cy="30" r="2.5" fill="#8fa8c2" />
+              <text x="30" y="60" fontSize="9" fill="#8fa8c2">浜田</text>
+            </svg>
+            <div style={{ fontSize:11.5, color:"#666", lineHeight:1.7, fontWeight:600 }}>
+              <b>出雲市周辺</b>の予報を表示しています。ホームの「今日の売場情報」の気温も同じ地点です。
+            </div>
+            <div style={{ fontSize:10, color:"#bbb", marginTop:6 }}>データ：Open-Meteo</div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
