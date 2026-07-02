@@ -960,7 +960,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   const hasFilter = q || fStore || fCat || fGenre;
   const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
   const fanStoreItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))];
-  const fanCatItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
+  const fanCatItems = ["",...CATEGORIES.filter(c=>c!=="その他")].map(c=>({lbl:c||"すべて", val:c}));
   const fanStorePos = arcPositions(fanStoreItems.length, 104, 150, 30);
   const fanCatPos = arcPositions(fanCatItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(80px + env(safe-area-inset-bottom))";
@@ -1021,7 +1021,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
         {/* よく使う検索ワード（折り返しで全部表示） */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:"9px 15px", alignItems:"baseline", marginTop:12 }}>
-          {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","鮭","対面","夏"].map(w=>{
+          {["刺身","寿司","切身","マグロ","サーモン","ブリ","鯛","エビ","いか","タコ","カニ","ホタテ","真あじ","生食","鮭","対面","夏","鯖","貝"].map(w=>{
             const on = search===w;
             return (
               <button key={w} onClick={()=>{ setSearch(on?"":w); ensureLoaded(); }}
