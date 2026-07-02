@@ -14,10 +14,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
+:root { --primary: #C24E00; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overscroll-behavior: none; }
 body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #f5f5f7; }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
+#splash { position:fixed; inset:0; z-index:9999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .45s ease; }
+#splash.hide { opacity:0; pointer-events:none; }
+#splash .sp-logo { width:190px; height:auto; filter:drop-shadow(0 8px 22px rgba(200,140,0,0.25)); animation:spPop .7s cubic-bezier(.16,1.3,.3,1) both; }
+#splash .sp-title { font-size:15px; font-weight:900; color:#333; letter-spacing:.08em; animation:spFade .6s ease .3s both; }
+@keyframes spPop { from { transform:scale(.55); opacity:0; } to { transform:scale(1); opacity:1; } }
+@keyframes spFade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 @keyframes radialPulse { 0% { transform:scale(1); } 35% { transform:scale(1.16); } 100% { transform:scale(1); } }
@@ -26,7 +33,7 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 @keyframes sheetUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
 @keyframes gneFloat { 0% { opacity:0; transform:translateY(8px) scale(0.5); } 25% { opacity:1; } 100% { opacity:0; transform:translateY(-20px) scale(1.15); } }
 @keyframes gneBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
-@keyframes gneGlow { 0%,100% { box-shadow:0 3px 12px rgba(224,92,0,0.45); } 50% { box-shadow:0 4px 22px rgba(255,150,40,0.95); } }
+@keyframes gneGlow { 0%,100% { box-shadow:0 3px 12px rgba(194,78,0,0.45); } 50% { box-shadow:0 4px 22px rgba(255,150,40,0.95); } }
 .like-btn:active { animation: liked 0.3s ease; }
 #barcode-print-portal { display: none; }
 @media print {
@@ -40,6 +47,11 @@ body { font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; bac
 </style>
 </head>
 <body>
+<div id="splash">
+  <img class="sp-logo" src="data:image/png;base64,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" alt="Good Day" />
+  <div class="sp-title">鮮魚ポップ共有</div>
+</div>
+<script>window.__splashT0 = Date.now();</script>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useCallback } = React;
@@ -62,6 +74,9 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-02", type:"改善", title:"メインカラーを落ち着いたオレンジに", body:"アプリ全体のメインカラー（投稿・保存・作成などの主要ボタンや強調表示のオレンジ）を、少し落ち着いた色合いに調整しました。機能の変更はありません。" },
+  { date:"2026-07-02", type:"新機能", title:"起動画面（スプラッシュ）を追加", body:"アプリを開いた瞬間に、ロゴマークとタイトルの起動画面が表示されるようになりました。読み込みが終わると、ふわっと消えてホーム画面に切り替わります。" },
+  { date:"2026-07-02", type:"改善", title:"売場情報に明日の天気を追加", body:"「今日の売場情報」に、明日の天気（☀️🌧などのマーク＋晴れ・雨などの文言）と明日の最高気温・今日との差を表示するようにしました。今日の天気にもマークが付いて、ひと目で分かりやすくなっています。" },
   { date:"2026-07-02", type:"改善", title:"天気の観測地点が分かるように", body:"ヘッダーの天気をタップすると、観測地点の説明が出るようになりました。島根県の簡易地図に「出雲」のピンが表示され、出雲市周辺の予報であることが分かります。ホームの「今日の売場情報」の気温も同じ地点です。" },
   { date:"2026-07-02", type:"改善", title:"売場情報に行事（ハレの日）を追加", body:"「今日の売場情報」に、土用の丑・半夏生・節分・ひな祭り・七夕・お盆・彼岸・母の日・父の日・クリスマス・大晦日などの行事を追加しました。次の行事とあと何日か、売場と相性の良い商材〈うなぎ・恵方巻など〉も一緒に表示されます。当日は「今日は土用の丑」と出ます。" },
   { date:"2026-07-02", type:"新機能", title:"ホームに「今日の売場情報」", body:"ホーム画面の上部に、売場づくりに役立つ情報カードを追加しました。今日の最高気温と「昨日との差・先週との差」、次の祝日（連休の場合は期間も）とあと何日かが一目で分かります。気温が大きく変わる日には、おすすめの売り方ヒントも表示されます。" },
@@ -503,10 +518,10 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             </select>
           </div>
           <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>お名前 <span style={{ color:"#e05c00" }}>*</span></div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:6 }}>お名前 <span style={{ color:"var(--primary)" }}>*</span></div>
             <div style={{ display:"flex", gap:8, alignItems:"stretch" }}>
               <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎" style={{ flex:1, minWidth:0, padding:"10px 12px", border:"2px solid #eee", borderRadius:10, fontSize:14, outline:"none" }} />
-              <button type="button" onClick={()=>setAuthor("勝部")} title="勝部を入力" style={{ flexShrink:0, width:46, border:"2px solid #ffd9bd", background:"#fff3ea", color:"#e05c00", fontWeight:900, fontSize:18, borderRadius:10, cursor:"pointer", lineHeight:1 }}>※</button>
+              <button type="button" onClick={()=>setAuthor("勝部")} title="勝部を入力" style={{ flexShrink:0, width:46, border:"2px solid #ffd9bd", background:"#fff3ea", color:"var(--primary)", fontWeight:900, fontSize:18, borderRadius:10, cursor:"pointer", lineHeight:1 }}>※</button>
             </div>
           </div>
           <div>
@@ -530,8 +545,8 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>
-          {error && <div style={{ color:"#e05c00", fontSize:13, fontWeight:600 }}>{error}</div>}
-          <button onClick={submit} disabled={loading} style={{ background:"#e05c00", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
+          {error && <div style={{ color:"var(--primary)", fontSize:13, fontWeight:600 }}>{error}</div>}
+          <button onClick={submit} disabled={loading} style={{ background:"var(--primary)", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
             {loading ? "アップロード中..." : "アップロード"}
           </button>
         </div>
@@ -659,7 +674,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                   onKeyDown={e=>e.key==="Enter" && handleDeleteConfirm()}
                   placeholder="パスワードを入力"
                   autoFocus
-                  style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"#e05c00":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }}
+                  style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"var(--primary)":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }}
                 />
                 <button onClick={handleDeleteConfirm} disabled={deleting}
                   style={{ padding:"9px 16px", background:"#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", opacity:deleting?0.6:1 }}>
@@ -670,7 +685,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                   戻る
                 </button>
               </div>
-              {pwError && <div style={{ fontSize:12, color:"#e05c00", fontWeight:700, marginTop:8 }}>{pwError}</div>}
+              {pwError && <div style={{ fontSize:12, color:"var(--primary)", fontWeight:700, marginTop:8 }}>{pwError}</div>}
             </div>
           )}
 
@@ -726,9 +741,9 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               </select>
               <textarea value={cText} onChange={e=>setCText(e.target.value)} placeholder="コメントを入力..." rows={3}
                 style={{ width:"100%", padding:"9px 10px", border:"2px solid #eee", borderRadius:8, fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none", marginBottom:8 }} />
-              {cError && <div style={{ fontSize:12, color:"#e05c00", marginBottom:6 }}>{cError}</div>}
+              {cError && <div style={{ fontSize:12, color:"var(--primary)", marginBottom:6 }}>{cError}</div>}
               <button onClick={handleAddComment} disabled={cSubmitting}
-                style={{ width:"100%", background:"#e05c00", color:"white", border:"none", borderRadius:8, padding:"10px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1 }}>
+                style={{ width:"100%", background:"var(--primary)", color:"white", border:"none", borderRadius:8, padding:"10px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1 }}>
                 {cSubmitting ? "送信中..." : "コメントする"}
               </button>
             </div>
@@ -753,7 +768,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
           ? <img src={pop.image_url} loading="lazy" decoding="async" style={{ width:"100%", display:"block" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"#ccc", fontSize:13 }}>読み込み中…</div>}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
-          {hasComment && <div style={{ background:"rgba(224,92,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
+          {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
         </div>
       </div>
@@ -836,7 +851,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         {tipOn && showNotice && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
-            <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(224,92,0,0.18)" }}>
+            <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(194,78,0,0.18)" }}>
               <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipText}</span>
             </div>
           </div>
@@ -878,8 +893,8 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 transitionDelay:`${delay}ms, ${delay}ms`,
                 padding:"6px 11px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#e05c00":"#222", border:"none",
-                borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"var(--primary)":"#222", border:"none",
+                borderBottom: active?"2.5px solid var(--primary)":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -1003,7 +1018,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
         <div style={{ display:"flex", gap:"0 15px", marginBottom:11, overflowX:"auto", paddingBottom:4 }}>
           {[{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
             <button key={lbl} onClick={()=>{ setFStore(val); ensureLoaded(); }}
-              style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:13, fontWeight:fStore===val?700:600, color:fStore===val?"#e05c00":"#888", borderBottom:fStore===val?"2px solid #e05c00":"1px solid #ededef" }}>
+              style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:13, fontWeight:fStore===val?700:600, color:fStore===val?"var(--primary)":"#888", borderBottom:fStore===val?"2px solid var(--primary)":"1px solid #ededef" }}>
               {lbl}
             </button>
           ))}
@@ -1025,7 +1040,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             const on = search===w;
             return (
               <button key={w} onClick={()=>{ setSearch(on?"":w); ensureLoaded(); }}
-                style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:on?13.5:13, fontWeight:on?700:600, color:on?"#e05c00":"#7a7a7f", borderBottom:on?"2px solid #e05c00":"1px solid #e7e7e9" }}>
+                style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:on?13.5:13, fontWeight:on?700:600, color:on?"var(--primary)":"#7a7a7f", borderBottom:on?"2px solid var(--primary)":"1px solid #e7e7e9" }}>
                 {w}
               </button>
             );
@@ -1067,7 +1082,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
       ) : (
         <>
           <div style={{ fontSize:13, color:"#888", fontWeight:700, marginBottom:12 }}>
-            {q && <span>「<span style={{ color:"#e05c00" }}>{search}</span>」</span>}
+            {q && <span>「<span style={{ color:"var(--primary)" }}>{search}</span>」</span>}
             {(fGenre||fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fGenre,fStore,fCat].filter(Boolean).join(" · ")} </span>}
             の検索結果：<span style={{ color:"#111" }}>{results.length}件</span>
           </div>
@@ -1095,8 +1110,8 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
                 transitionDelay:`${delay}ms, ${delay}ms`,
                 padding:"6px 11px", whiteSpace:"nowrap", fontSize:13, fontWeight: active?800:700, borderRadius:8,
                 boxShadow:"0 3px 12px rgba(0,0,0,0.12)", cursor:"pointer",
-                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"#e05c00":"#222", border:"none",
-                borderBottom: active?"2.5px solid #e05c00":"2.5px solid transparent" }}>
+                background:"rgba(255,255,255,0.7)", backdropFilter:"blur(3px)", color: active?"var(--primary)":"#222", border:"none",
+                borderBottom: active?"2.5px solid var(--primary)":"2.5px solid transparent" }}>
               {it.lbl}
             </button>
           );
@@ -1167,7 +1182,7 @@ function NewPostForm({ onPost, onCancel }) {
         {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:160, borderRadius:6 }} /> : <div style={{ color:"#bbb", fontSize:13 }}>写真を追加（任意）</div>}
         <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
       </label>
-      {error && <div style={{ color:"#e05c00", fontSize:13, marginBottom:8 }}>{error}</div>}
+      {error && <div style={{ color:"var(--primary)", fontSize:13, marginBottom:8 }}>{error}</div>}
       <div style={{ display:"flex", gap:10 }}>
         <button onClick={onCancel} style={{ flex:1, background:"#f5f5f5", color:"#666", border:"none", borderRadius:10, padding:"11px", fontSize:14, fontWeight:700, cursor:"pointer" }}>キャンセル</button>
         <button onClick={submit} disabled={loading} style={{ flex:2, background:"#2d6a4f", color:"white", border:"none", borderRadius:10, padding:"11px", fontSize:14, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
@@ -1412,7 +1427,7 @@ function PopToolTab({ seed, onSeedConsumed }) {
                 fontSize:13, fontWeight:700, cursor: scanning ? "default" : "pointer" }}>
               {scanning ? "AI読み取り中..." : "既存POPから自動入力（AI読み取り）"}
             </button>
-            {scanError && <div style={{ fontSize:12, color:"#e05c00", marginBottom:10 }}>{scanError}</div>}
+            {scanError && <div style={{ fontSize:12, color:"var(--primary)", marginBottom:10 }}>{scanError}</div>}
             <div style={{ fontSize:12, color:"#888", marginBottom:10 }}>入力</div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
               <div><div style={lbl}>商品</div><input value={fields.product} onChange={e=>setF("product",e.target.value)} placeholder="例：天然マダイ（1尾）" style={inp} /></div>
@@ -1579,7 +1594,7 @@ function FloorPhotoTab() {
             </button>
             <button onClick={()=>setShowUp(true)}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:900,
-                background:"#e05c00", color:"white" }}>
+                background:"var(--primary)", color:"white" }}>
               ＋ 投稿
             </button>
           </div>
@@ -1748,12 +1763,12 @@ function FloorPhotoTab() {
                   <div style={{ display:"flex", gap:8 }}>
                     <input type="password" value={pwInput} onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
                       onKeyDown={e=>e.key==="Enter"&&handleDelete()} placeholder="パスワード" autoFocus
-                      style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"#e05c00":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }} />
+                      style={{ flex:1, padding:"9px 12px", border:`2px solid ${pwError?"var(--primary)":"#ffd0d0"}`, borderRadius:8, fontSize:14, outline:"none" }} />
                     <button onClick={handleDelete} disabled={fDeleting} style={{ padding:"9px 14px", background: fDeleting ? "#dba0a0" : "#d05050", color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor: fDeleting ? "default" : "pointer" }}>{fDeleting ? "確認中…" : "削除"}</button>
                     <button onClick={()=>{ setDelTarget(null); setPwInput(""); setPwError(""); }}
                       style={{ padding:"9px 12px", background:"#eee", color:"#666", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>戻る</button>
                   </div>
-                  {pwError && <div style={{ fontSize:12, color:"#e05c00", marginTop:6 }}>{pwError}</div>}
+                  {pwError && <div style={{ fontSize:12, color:"var(--primary)", marginTop:6 }}>{pwError}</div>}
                 </div>
               ) : (
                 <button onClick={()=>setDelTarget(sel)}
@@ -1822,7 +1837,7 @@ function FloorUploadModal({ onClose, onSuccess }) {
             </div>
           </div>
           <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>お名前 <span style={{ color:"#e05c00" }}>*</span></div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>お名前 <span style={{ color:"var(--primary)" }}>*</span></div>
             <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎"
               style={{ width:"100%", padding:"9px 12px", border:"2px solid #eee", borderRadius:8, fontSize:14, outline:"none" }} />
           </div>
@@ -1832,13 +1847,13 @@ function FloorUploadModal({ onClose, onSuccess }) {
               style={{ width:"100%", padding:"9px 12px", border:"2px solid #eee", borderRadius:8, fontSize:13, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
           </div>
           <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>写真 <span style={{ color:"#e05c00" }}>*</span></div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#666", marginBottom:5 }}>写真 <span style={{ color:"var(--primary)" }}>*</span></div>
             <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
               {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"#aaa", fontSize:14 }}>タップして選択</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>
-          {error && <div style={{ color:"#e05c00", fontSize:13, fontWeight:600 }}>{error}</div>}
+          {error && <div style={{ color:"var(--primary)", fontSize:13, fontWeight:600 }}>{error}</div>}
           <button onClick={submit} disabled={loading}
             style={{ background:"#1a6b3a", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
             {loading ? "投稿中..." : "投稿する"}
@@ -2172,7 +2187,7 @@ function BarcodeTab() {
         </div>
         <input value={listName} onChange={e=>setListName(e.target.value)} placeholder="プリセット名（印刷の右下に表示されます）"
           style={{ width:"100%", boxSizing:"border-box", marginTop:11, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
-        {err && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginTop:10 }}>{err}</div>}
+        {err && <div style={{ fontSize:13, color:"var(--primary)", fontWeight:700, marginTop:10 }}>{err}</div>}
       </div>
 
       {/* 共有プリセット */}
@@ -2575,13 +2590,16 @@ function TodayInfoCard() {
   const [hol, setHol] = useState(null);
   useEffect(() => {
     // 気温：過去7日＋今日を取得して前日差・前週差を計算
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&past_days=7&forecast_days=1")
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&past_days=7&forecast_days=2")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d || !d.daily || !d.daily.temperature_2m_max) return;
-        const t = d.daily.temperature_2m_max, i = t.length - 1;
+        const t = d.daily.temperature_2m_max, i = t.length - 2;   // i=今日, i+1=明日
         if (t[i] == null || t[i-1] == null || t[i-7] == null) return;
-        setWx({ today: Math.round(t[i]), dy: Math.round(t[i] - t[i-1]), dw: Math.round(t[i] - t[i-7]), code: d.daily.weather_code[i] });
+        setWx({
+          today: Math.round(t[i]), dy: Math.round(t[i] - t[i-1]), dw: Math.round(t[i] - t[i-7]), code: d.daily.weather_code[i],
+          tmMax: t[i+1] == null ? null : Math.round(t[i+1]), tmCode: d.daily.weather_code[i+1], tmDiff: t[i+1] == null ? null : Math.round(t[i+1] - t[i])
+        });
       }).catch(() => {});
     // 祝日：holidays-jp（前年・今年・翌年分）
     fetch("https://holidays-jp.github.io/api/v1/date.json")
@@ -2633,8 +2651,22 @@ function TodayInfoCard() {
   })();
   const jd = d => `${d.getMonth()+1}/${d.getDate()}`;
   const wd = d => ["日","月","火","水","木","金","土"][d.getDay()];
+  const wmoIcon = (c) => {
+    if (c === 0) return { e:"☀️", t:"快晴" };
+    if (c === 1) return { e:"🌤", t:"晴れ" };
+    if (c === 2) return { e:"⛅", t:"時々曇り" };
+    if (c === 3) return { e:"☁️", t:"曇り" };
+    if (c === 45 || c === 48) return { e:"🌫", t:"霧" };
+    if (c >= 51 && c <= 57) return { e:"🌦", t:"霧雨" };
+    if (c >= 61 && c <= 67) return { e:"🌧", t:"雨" };
+    if (c >= 71 && c <= 77) return { e:"❄️", t:"雪" };
+    if (c >= 80 && c <= 82) return { e:"🌦", t:"にわか雨" };
+    if (c === 85 || c === 86) return { e:"🌨", t:"にわか雪" };
+    if (c >= 95) return { e:"⛈", t:"雷雨" };
+    return { e:"☁️", t:"曇り" };
+  };
   const sign = v => v > 0 ? `+${v}°` : v < 0 ? `${v}°` : "±0°";
-  const dcol = v => v > 0 ? "#e05c00" : v < 0 ? "#4a86c5" : "#888";
+  const dcol = v => v > 0 ? "var(--primary)" : v < 0 ? "#4a86c5" : "#888";
   const rainy = wx && ((wx.code >= 61 && wx.code <= 67) || (wx.code >= 80 && wx.code <= 82) || wx.code >= 95);
   let hint = null;
   if (wx) {
@@ -2651,13 +2683,16 @@ function TodayInfoCard() {
       </div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px", fontSize:12.5, fontWeight:700, color:"#444", lineHeight:1.7 }}>
         {wx && (
-          <span>🌡 出雲市の天気　最高{wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）</span>
+          <span>🌡 出雲市の天気　今日{wmoIcon(wx.code).e} 最高{wx.today}°（昨日<span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>・先週<span style={{ color:dcol(wx.dw) }}>{sign(wx.dw)}</span>）</span>
+        )}
+        {wx && wx.tmMax != null && (
+          <span>明日{wmoIcon(wx.tmCode).e} <b>{wmoIcon(wx.tmCode).t}</b>・最高{wx.tmMax}°<span style={{ color:dcol(wx.tmDiff) }}>（今日{sign(wx.tmDiff)}）</span></span>
         )}
         {hol && hol.date && (
-          <span>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"#e05c00" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></span>
+          <span>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ color:"var(--primary)" }}>{hol.days === 1 ? "（明日）" : `（あと${hol.days}日）`}</span></span>
         )}
         {events.next && (
-          <span>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ color:"#e05c00" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "（明日）" : `（あと${Math.round((events.next.date - now)/86400000)}日）`}</span>{events.next2 ? <span style={{ color:"#9a9aa0" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</span>
+          <span>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ color:"var(--primary)" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "（明日）" : `（あと${Math.round((events.next.date - now)/86400000)}日）`}</span>{events.next2 ? <span style={{ color:"#9a9aa0" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</span>
         )}
       </div>
       {hint && <div style={{ marginTop:5, fontSize:12, color:"#a8480a", fontWeight:700 }}>💡 {hint}</div>}
@@ -2700,7 +2735,7 @@ function WeatherWidget() {
         <span style={{ fontSize:10, color:"#aaa", fontWeight:700 }}>{label}</span>
         <span style={{ fontSize:13 }}>{w.e}</span>
         <span style={{ fontSize:11, fontWeight:700 }}>
-          <span style={{ color:"#e05c00" }}>{hi}°</span>
+          <span style={{ color:"var(--primary)" }}>{hi}°</span>
           <span style={{ color:"#ccc" }}>/</span>
           <span style={{ color:"#4a86c5" }}>{lo}°</span>
         </span>
@@ -2726,7 +2761,7 @@ function WeatherWidget() {
                 fill="#dce8f5" stroke="#9db8d4" strokeWidth="1.5" strokeLinejoin="round" />
               <path d="M104,60 L124,52 L146,44 L142,52 L122,60 L106,66 Z" fill="#dce8f5" stroke="#9db8d4" strokeWidth="1.5" strokeLinejoin="round" />
               <ellipse cx="128" cy="62" rx="10" ry="4" fill="#aecdea" />
-              <circle cx="106" cy="68" r="5" fill="#e05c00" stroke="#fff" strokeWidth="1.5" />
+              <circle cx="106" cy="68" r="5" fill="#C24E00" stroke="#fff" strokeWidth="1.5" />
               <text x="106" y="52" textAnchor="middle" fontSize="11" fontWeight="800" fill="#a8480a">出雲</text>
               <text x="196" y="16" textAnchor="middle" fontSize="9" fill="#8fa8c2">松江</text>
               <circle cx="188" cy="30" r="2.5" fill="#8fa8c2" />
@@ -3106,9 +3141,9 @@ function SoubaTab({ onCreatePop }) {
             <div style={{ marginTop:14, background: same ? "#f3f4f6" : cheaper ? "#eafaf0" : "#fff4ed", border:`1px solid ${same ? "#e5e7eb" : cheaper ? "#bde9cd" : "#ffd9bf"}`, borderRadius:12, padding:"14px 16px" }}>
               {!same && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginBottom:12 }}>
-                  {cell("差額", `${Math.round(Math.abs(diff))}円`, cheaper ? "#1a6b3a" : "#e05c00")}
-                  {cell(cheaper ? "値引率" : "値上率", `${Math.abs(pct).toFixed(1)}%`, cheaper ? "#1a6b3a" : "#e05c00")}
-                  {cell("割", wari || "—", cheaper ? "#1a6b3a" : "#e05c00")}
+                  {cell("差額", `${Math.round(Math.abs(diff))}円`, cheaper ? "#1a6b3a" : "var(--primary)")}
+                  {cell(cheaper ? "値引率" : "値上率", `${Math.abs(pct).toFixed(1)}%`, cheaper ? "#1a6b3a" : "var(--primary)")}
+                  {cell("割", wari || "—", cheaper ? "#1a6b3a" : "var(--primary)")}
                 </div>
               )}
               <div style={{ fontSize:16, fontWeight:900, color:"#222", textAlign:"center", lineHeight:1.5 }}>{phrase}</div>
@@ -3223,9 +3258,9 @@ function AdminTab({ onNoticeChange }) {
             onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
             placeholder="パスワード" disabled={gChecking}
             style={{ width:"100%", boxSizing:"border-box", border:"2px solid #eee", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
-          {gErr && <div style={{ fontSize:13, color:"#e05c00", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
+          {gErr && <div style={{ fontSize:13, color:"var(--primary)", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
           <button onClick={tryUnlock} disabled={gChecking}
-            style={{ width:"100%", border:"none", background: gChecking ? "#f0b48a" : "#e05c00", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor: gChecking ? "default" : "pointer" }}>{gChecking ? "確認中…" : "解錠する"}</button>
+            style={{ width:"100%", border:"none", background: gChecking ? "#f0b48a" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor: gChecking ? "default" : "pointer" }}>{gChecking ? "確認中…" : "解錠する"}</button>
         </div>
       </div>
     );
@@ -3249,7 +3284,7 @@ function AdminTab({ onNoticeChange }) {
   const seg = (v, label, n) => (
     <button onClick={() => switchView(v)}
       style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:800,
-        background: view===v ? "#e05c00" : "#fff", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
+        background: view===v ? "var(--primary)" : "#fff", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
       {label}（{n}）
     </button>
   );
@@ -3315,7 +3350,7 @@ function AdminTab({ onNoticeChange }) {
               const done = r.status === "対応済み";
               const urgent = r.priority === "急ぎ";
               return (
-                <div key={r.id} style={{ background:"#fff", borderRadius:14, boxShadow:"0 2px 10px rgba(0,0,0,0.06)", padding:14, borderLeft:`5px solid ${done?"#bbb":urgent?"#e01010":"#e05c00"}`, opacity:done?0.6:1 }}>
+                <div key={r.id} style={{ background:"#fff", borderRadius:14, boxShadow:"0 2px 10px rgba(0,0,0,0.06)", padding:14, borderLeft:`5px solid ${done?"#bbb":urgent?"#e01010":"var(--primary)"}`, opacity:done?0.6:1 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
                     {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
                     {done && <span style={{ background:"#bbb", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>対応済み</span>}
@@ -3414,10 +3449,10 @@ function AdminTab({ onNoticeChange }) {
                 const on = !!sel[p.id];
                 return (
                   <button key={p.id} onClick={() => toggle(p.id)}
-                    style={{ position:"relative", border: on ? "3px solid #e05c00" : "1px solid #eee", borderRadius:12, overflow:"hidden",
+                    style={{ position:"relative", border: on ? "3px solid var(--primary)" : "1px solid #eee", borderRadius:12, overflow:"hidden",
                       background:"#fff", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
                     <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"#f0f0f0", opacity: on ? 0.85 : 1 }} />
-                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"#e05c00", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
+                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--primary)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
                     <div style={{ padding:"6px 8px" }}>
                       <div style={{ fontSize:12, fontWeight:800, color:"#333", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
                       <div style={{ fontSize:11, color:"#999", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
@@ -3438,7 +3473,7 @@ function AdminTab({ onNoticeChange }) {
           <button onClick={() => setSel({})}
             style={{ marginLeft:"auto", border:"1px solid #ddd", background:"#fff", color:"#888", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
           <button onClick={apply} disabled={applying}
-            style={{ border:"none", background: toArchive ? "#e05c00" : "#1a6b3a", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
+            style={{ border:"none", background: toArchive ? "var(--primary)" : "#1a6b3a", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
             {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
           </button>
         </div>
@@ -3529,7 +3564,7 @@ function RequestTab() {
           
           <div style={{ fontSize:17, fontWeight:900, color:"#222", marginBottom:6 }}>依頼を送信しました</div>
           <div style={{ fontSize:13, color:"#888", marginBottom:20, lineHeight:1.6 }}>担当者に届きました。POPができるまでお待ちください。</div>
-          <button onClick={reset} style={{ border:"none", background:"#e05c00", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて依頼する</button>
+          <button onClick={reset} style={{ border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて依頼する</button>
         </div>
       </div>
     );
@@ -3541,7 +3576,7 @@ function RequestTab() {
       <div style={{ fontSize:13, color:"#888", marginBottom:16 }}>作ってほしいPOPをここから依頼できます。内容は担当者に届きます。</div>
       <div style={{ ...card, display:"flex", flexDirection:"column", gap:14 }}>
         <div>
-          <div style={lbl}>商品名 <span style={{ color:"#e05c00" }}>*</span></div>
+          <div style={lbl}>商品名 <span style={{ color:"var(--primary)" }}>*</span></div>
           <input value={product} onChange={e=>setProduct(e.target.value)} placeholder="例：生本まぐろ 中トロ" style={inp} />
         </div>
         <div>
@@ -3558,7 +3593,7 @@ function RequestTab() {
               const on = priority===pr; const urgent = pr==="急ぎ";
               return (
                 <button key={pr} onClick={()=>setPriority(pr)}
-                  style={{ flex:1, border:`2px solid ${on?(urgent?"#e01010":"#e05c00"):"#eee"}`, background:on?(urgent?"#fff0f0":"#fff3ea"):"#fff", color:on?(urgent?"#e01010":"#e05c00"):"#999", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
+                  style={{ flex:1, border:`2px solid ${on?(urgent?"#e01010":"var(--primary)"):"#eee"}`, background:on?(urgent?"#fff0f0":"#fff3ea"):"#fff", color:on?(urgent?"#e01010":"var(--primary)"):"#999", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
                   {urgent?"急ぎ":"普通"}
                 </button>
               );
@@ -3571,7 +3606,7 @@ function RequestTab() {
         </div>
         {error && <div style={{ fontSize:13, color:"#e01010", fontWeight:700 }}>{error}</div>}
         <button onClick={submit} disabled={busy}
-          style={{ border:"none", background:"#e05c00", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
+          style={{ border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
           {busy ? "送信中…" : "依頼を送信"}
         </button>
       </div>
@@ -3618,11 +3653,11 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ fontSize:15, fontWeight:900, color:"#222" }}>① 緊急お知らせバナーを表示する</div>
           <button onClick={() => setEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"#e05c00":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"var(--primary)":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: enabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
-        <div style={{ fontSize:12, color: enabled?"#e05c00":"#999", fontWeight:700, marginBottom:14 }}>{enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"}</div>
+        <div style={{ fontSize:12, color: enabled?"var(--primary)":"#999", fontWeight:700, marginBottom:14 }}>{enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"}</div>
 
         <div style={{ fontSize:13, fontWeight:800, color:"#444", marginBottom:6 }}>お知らせ文</div>
         <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4}
@@ -3660,7 +3695,7 @@ function NoticeAdmin({ onNoticeChange }) {
       </div>
 
       <button onClick={save} disabled={saving}
-        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"#e05c00"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
+        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"var(--primary)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
         {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "まとめて保存する"}
       </button>
     </div>
@@ -3743,6 +3778,15 @@ function App() {
 
   useEffect(() => { api.getNotice().then(setNotice).catch(()=>{}); }, []);
 
+  useEffect(() => {
+    const sp = document.getElementById("splash");
+    if (!sp) return;
+    const t0 = window.__splashT0 || 0;
+    const wait = Math.max(0, 900 - (Date.now() - t0));
+    const h = setTimeout(() => { sp.classList.add("hide"); setTimeout(() => sp.remove(), 500); }, wait);
+    return () => clearTimeout(h);
+  }, []);
+
   const handleCreateFromPop = (pop) => {
     setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
     setTab("tool");
@@ -3750,7 +3794,7 @@ function App() {
   const handleCreatePop = (seed) => { setToolSeed(seed); setTab("tool"); };
 
   const tabs = [
-    { key:"board",   icon:"📌", label:"一覧",       color:"#e05c00" },
+    { key:"board",   icon:"📌", label:"一覧",       color:"var(--primary)" },
     { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
@@ -3765,7 +3809,7 @@ function App() {
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
           transition: pullActive.current ? "none" : "margin-top .25s" }}>
-          <div style={{ width:34, height:34, borderRadius:"50%", background:"#fff", boxShadow:"0 3px 12px rgba(0,0,0,0.18)", display:"flex", alignItems:"center", justifyContent:"center", color:"#e05c00", fontSize:18, fontWeight:900,
+          <div style={{ width:34, height:34, borderRadius:"50%", background:"#fff", boxShadow:"0 3px 12px rgba(0,0,0,0.18)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--primary)", fontSize:18, fontWeight:900,
             transform: refreshing ? undefined : `rotate(${pullY*4}deg)`,
             animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
         </div>
@@ -3774,10 +3818,10 @@ function App() {
         {/* 白いバー：タイトルと一緒にスクロールで流れて消える（ガラス効果なし） */}
         <div style={{ position:"absolute", inset:0, background:"#fff", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", opacity:1-scrollP, pointerEvents:"none" }} />
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 12px 4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
-          <div style={{ display:"flex", alignItems:"baseline", gap:7, minWidth:0, flex:1, overflow:"hidden",
+          <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0, flex:1, overflow:"hidden",
             transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
-            <div style={{ fontSize:15, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>鮮魚ポップ共有</div>
-            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, alignSelf:"baseline", border:"none", background:"none", color:"#e05c00", fontWeight:800, fontSize:15, padding:"2px 4px", cursor:"pointer", whiteSpace:"nowrap" }}>＋投稿</button>
+            <div style={{ fontSize:16, fontWeight:900, color:"#111", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>鮮魚ポップ共有</div>
+            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"#f2f2f2", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5 }}>＋投稿</button>
           </div>
           {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
           <div style={{ flexShrink:0 }}><WeatherWidget /></div>
@@ -3824,16 +3868,16 @@ function App() {
                   <span style={{ position:"absolute", right:30, bottom:26, fontSize:11, animation:"gneFloat 1.9s ease-in-out infinite", animationDelay:".5s" }}>⭐</span>
                   <span style={{ position:"absolute", right:8, bottom:32, fontSize:10, animation:"gneFloat 1.7s ease-in-out infinite", animationDelay:".9s" }}>✨</span>
                   <span style={{ position:"absolute", right:46, bottom:10, fontSize:12, animation:"gneFloat 2.1s ease-in-out infinite", animationDelay:"1.2s" }}>⭐</span>
-                  <div style={{ background:"linear-gradient(135deg,#ff8a3d,#e05c00)", color:"#fff", fontWeight:900, fontSize:11.5, padding:"6px 12px", borderRadius:14, whiteSpace:"nowrap", animation:"gneBounce 1.1s ease-in-out infinite, gneGlow 1.4s ease-in-out infinite" }}>✨新機能！POP生成はこちら</div>
-                  <div style={{ width:0, height:0, borderLeft:"7px solid transparent", borderRight:"7px solid transparent", borderTop:"8px solid #e05c00", marginTop:-1, marginRight:24, animation:"gneBounce 1.1s ease-in-out infinite" }} />
+                  <div style={{ background:"linear-gradient(135deg,#ff8a3d,var(--primary))", color:"#fff", fontWeight:900, fontSize:11.5, padding:"6px 12px", borderRadius:14, whiteSpace:"nowrap", animation:"gneBounce 1.1s ease-in-out infinite, gneGlow 1.4s ease-in-out infinite" }}>✨新機能！POP生成はこちら</div>
+                  <div style={{ width:0, height:0, borderLeft:"7px solid transparent", borderRight:"7px solid transparent", borderTop:"8px solid var(--primary)", marginTop:-1, marginRight:24, animation:"gneBounce 1.1s ease-in-out infinite" }} />
                 </div>
               )}
               {active && !filter && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : filter
-                ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"#e05c00":"#fff", color: radialOpen?"#fff":"#e05c00", border:"2px solid #e05c00", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(224,92,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: (more&&showGneHint)?"#e05c00":(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
+                ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"var(--primary)":"#fff", color: radialOpen?"#fff":"var(--primary)", border:"2px solid var(--primary)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(194,78,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: (more&&showGneHint)?"var(--primary)":(active?color:"#9aa3ab"), whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
             </button>
           );
         })}
@@ -3846,8 +3890,8 @@ function App() {
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid #eee" }}>
             {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"#e05c00":"#333", cursor:"pointer", textAlign:"left" }}>
-                <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"#e05c00", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
+                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid #f0f0f0":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"var(--primary)":"#333", cursor:"pointer", textAlign:"left" }}>
+                <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"var(--primary)", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
               </button>
             ))}
           </div>
