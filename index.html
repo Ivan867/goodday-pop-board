@@ -91,6 +91,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-04", type:"新機能", title:"「相場計算」が「便利機能」に進化", body:"☰メニューの相場計算が「便利機能」になり、計算が6種類に増えました。①相場計算（今まで通り）②粗利：原価と売価から粗利率、目標粗利からの売価逆算 ③歩留まり：丸魚の実質原価と推奨売価 ④値引き：◯%引きの値段・◯円引きの%換算 ⑤グラム：100g単価とパック売価の相互計算 ⑥立て塩：塩水に必要な塩の量。すべて入力するだけでパッと答えが出ます。" },
   { date:"2026-07-04", type:"改善", title:"最新iPhoneへの最適化＆検索画面の微調整", body:"①Dynamic Island搭載のiPhoneで、ホーム画面から開いたときに上部が欠けないようセーフエリアに対応。②ヘッダー右端とカードの右端がぴったり揃うように調整。③検索の左の付箋タブの間隔を半分に。④ジャンル「丸魚提案」を「切身提案」に名前変更しました（登録済みのポップもそのまま引き継がれます）。" },
   { date:"2026-07-03", type:"新機能", title:"引っ張って更新＆読み込み表示の改善", body:"ホーム一覧を下に引っ張ると最新の状態に更新できるようになりました（他のSNSと同じ操作）。また、読み込み中は「読み込み中…」の文字ではなく、カードの形をしたプレースホルダーがちらちら光る表示になり、画像も読み込めた順にふわっと表示されます。" },
   { date:"2026-07-03", type:"改善", title:"アプリ全体のデザインを一新", body:"①背景をクラフト紙のような生成り色に、カードは影から細い線の区切りに変更。②文字色を4段階に整理して読みやすく。③タブごとにバラバラだった色をメインカラーに統一。④「あと◯日」はバッジ表示に。⑤ホームに「更新情報」ウィジェットを追加：最新の更新がひと目で分かり、タップでお知らせに移動できます。" },
@@ -1034,7 +1035,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
   const hasFilter = q || fStore || fCat || fGenre;
   const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
-  const fanStoreItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}))];
+  const fanStoreItems = STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}));
   const fanCatItems = ["",...CATEGORIES.filter(c=>c!=="その他")].map(c=>({lbl:c||"すべて", val:c}));
   const fanStorePos = arcPositions(fanStoreItems.length, 104, 150, 30);
   const fanCatPos = arcPositions(fanCatItems.length, 152, 158, 22);
@@ -1177,6 +1178,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           );
         })}
         {fanCatItems.map((it,i) => {
+          if (it.val === "") return null;   // 「すべて」は左の付箋と重なるため非表示
           const active = it.val === fCat;
           const delay = radialOpen ? (170+i*30) : 0;
           return (
@@ -2748,7 +2750,7 @@ function TodayInfoCard() {
     <div className="wcard">
       <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:6, flexWrap:"wrap" }}>
         <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)" }}>今日の情報</span>
-        <span style={{ fontSize:11.5, color:"var(--ink)", fontWeight:800 }}>{jd(now)}（{wd(now)}）{hol && hol.todayName ? `・今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `・今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</span>
+        <span style={{ fontSize:11.5, color:"var(--ink)", fontWeight:800 }}>{jd(now)}（{wd(now)}）<span style={{ color:"var(--sub)", fontWeight:800 }}>　出雲市</span>{hol && hol.todayName ? `・今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `・今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</span>
       </div>
       <div style={{ fontSize:12.5, fontWeight:700, color:"var(--text)", lineHeight:1.8, textAlign:"left" }}>
         {wx && (
@@ -2778,12 +2780,18 @@ function TodayInfoCard() {
         )}
         {wx && (hint || hol && hol.date || events.next) ? <div style={{ height:1, background:"var(--line)", margin:"7px 0" }} /> : null}
         {hint && <div style={{ fontSize:12, color:"#a8480a", fontWeight:700 }}>💡 {hint}</div>}
-        {hol && hol.date && (
-          <div>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}<span style={{ background:"var(--soft)", color:"var(--soft-text)", borderRadius:7, padding:"1px 7px", marginLeft:5, fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>{hol.days === 1 ? "明日" : `あと${hol.days}日`}</span></div>
-        )}
-        {events.next && (
-          <div>🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}<span style={{ background:"var(--soft)", color:"var(--soft-text)", borderRadius:7, padding:"1px 7px", marginLeft:5, fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>{Math.round((events.next.date - now)/86400000) === 1 ? "明日" : `あと${Math.round((events.next.date - now)/86400000)}日`}</span>{events.next2 ? <span style={{ color:"var(--sub)" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</div>
-        )}
+        {(() => {
+          const badge = (days) => <span style={{ background:"var(--soft)", color:"var(--soft-text)", borderRadius:7, padding:"1px 7px", marginLeft:5, fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>{days === 1 ? "明日" : `あと${days}日`}</span>;
+          const rows = [];
+          if (hol && hol.date) rows.push({ t: +hol.date, el: (
+            <div key="hol">🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}{badge(hol.days)}</div>
+          )});
+          if (events.next) rows.push({ t: +events.next.date, el: (
+            <div key="ev">🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}{badge(Math.round((events.next.date - now)/86400000))}{events.next2 ? <span style={{ color:"var(--sub)" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</div>
+          )});
+          rows.sort((a, b) => a.t - b.t);
+          return rows.map(r => r.el);
+        })()}
       </div>
     </div>
   );
@@ -3159,6 +3167,20 @@ function soubaWari(pct) {
 }
 
 function SoubaTab({ onCreatePop }) {
+  const [sub, setSub] = useState("souba");
+  // 粗利
+  const [aCost, setACost] = useState(""); const [aSell, setASell] = useState("");
+  const [gRate, setGRate] = useState("30"); const [gCost, setGCost] = useState("");
+  // 歩留まり
+  const [yUnit, setYUnit] = useState(""); const [yRate, setYRate] = useState("55"); const [yMargin, setYMargin] = useState("35");
+  // 値引き
+  const [nPrice, setNPrice] = useState(""); const [nPct, setNPct] = useState("20");
+  const [n2Price, setN2Price] = useState(""); const [n2Yen, setN2Yen] = useState("50");
+  // グラム
+  const [g100, setG100] = useState(""); const [gWt, setGWt] = useState("");
+  const [g2Sell, setG2Sell] = useState(""); const [g2Wt, setG2Wt] = useState("");
+  // 立て塩
+  const [sWater, setSWater] = useState("1000"); const [sPct, setSPct] = useState("3");
   // 先週比
   const [last, setLast] = useState("199");
   const [now, setNow] = useState("179");
@@ -3206,13 +3228,21 @@ function SoubaTab({ onCreatePop }) {
     <div className="min-vh" style={{ background:"var(--bg)", paddingBottom:100 }}>
       <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"16px" }}>
         <div style={{ maxWidth:560, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>相場計算</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>先週比の「相場安」と、おおよその売価をサッと計算（プロトタイプ）</div>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>便利機能</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場の計算をぜんぶここで。入力するだけでパッと答え</div>
+          <div style={{ display:"flex", gap:6, marginTop:12, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:2 }}>
+            {[["souba","相場計算"],["arari","粗利"],["budomari","歩留まり"],["nebiki","値引き"],["gram","グラム"],["shio","立て塩"]].map(([k,l]) => (
+              <button key={k} onClick={() => setSub(k)}
+                style={{ flexShrink:0, border:"none", borderRadius:16, padding:"7px 14px", fontSize:13, fontWeight:800, cursor:"pointer",
+                  background: sub===k ? "#fff" : "rgba(255,255,255,0.22)", color: sub===k ? "#1a6b3a" : "#fff" }}>{l}</button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div style={{ maxWidth:560, margin:"0 auto", padding:"16px" }}>
 
+        {sub === "souba" && (<>
         {/* 先週比 */}
         <div style={card}>
           <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>先週とくらべて何割 相場安？</div>
@@ -3283,6 +3313,173 @@ function SoubaTab({ onCreatePop }) {
             </>
           )}
         </div>
+        </>)}
+
+        {sub === "arari" && (() => {
+          const c = parseFloat(aCost), v = parseFloat(aSell);
+          const ok = !isNaN(c) && !isNaN(v) && c > 0 && v > 0;
+          const rate = ok ? (v - c) / v * 100 : null;
+          const gc = parseFloat(gCost), gr = parseFloat(gRate);
+          const gok = !isNaN(gc) && gc > 0 && !isNaN(gr) && gr >= 0 && gr < 100;
+          const gsell = gok ? Math.ceil(gc / (1 - gr / 100)) : null;
+          return (<>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>粗利率をチェック</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>原価（円）</div><input value={aCost} onChange={e=>setACost(e.target.value)} inputMode="decimal" style={inp} placeholder="120" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>売価（円）</div><input value={aSell} onChange={e=>setASell(e.target.value)} inputMode="decimal" style={inp} placeholder="198" /></div>
+              </div>
+              {ok && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("粗利率", `${rate.toFixed(1)}%`, rate >= 30 ? "#1a6b3a" : "var(--primary)")}
+                  {cell("値入額", `${Math.round(v - c)}円`, "var(--ink)")}
+                  {cell("原価率", `${(c / v * 100).toFixed(1)}%`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>目標の粗利率から売価を逆算</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>原価（円）</div><input value={gCost} onChange={e=>setGCost(e.target.value)} inputMode="decimal" style={inp} placeholder="120" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>目標粗利率（%）</div><input value={gRate} onChange={e=>setGRate(e.target.value)} inputMode="decimal" style={inp} /></div>
+              </div>
+              {gok && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("売価（税抜）", `${gsell}円`, "#1a6b3a")}
+                  {cell("税込（8%）", `${Math.ceil(gsell * 1.08)}円`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+          </>);
+        })()}
+
+        {sub === "budomari" && (() => {
+          const u = parseFloat(yUnit), r = parseFloat(yRate), m = parseFloat(yMargin);
+          const ok = !isNaN(u) && u > 0 && !isNaN(r) && r > 0 && r <= 100;
+          const real = ok ? u / (r / 100) : null;
+          const mok = ok && !isNaN(m) && m >= 0 && m < 100;
+          const rec = mok ? real / (1 - m / 100) : null;
+          return (
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:4 }}>歩留まりから実質原価を計算</div>
+              <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:14 }}>丸魚を捌いたあとの「使える部分」あたりの原価が出ます（目安：ブリのフィレ 約55%、三枚おろし 約45〜50%）</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>仕入単価（円/kg）</div><input value={yUnit} onChange={e=>setYUnit(e.target.value)} inputMode="decimal" style={inp} placeholder="800" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>歩留まり（%）</div><input value={yRate} onChange={e=>setYRate(e.target.value)} inputMode="decimal" style={inp} /></div>
+              </div>
+              {ok && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("実質原価", `${Math.round(real)}円/kg`, "var(--ink)")}
+                  {cell("100gあたり", `${Math.round(real / 10)}円`, "var(--sub)")}
+                </div>
+              )}
+              <div style={{ height:1, background:"var(--line)", margin:"16px 0" }} />
+              <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>
+                <div style={{ flex:1 }}><div style={lbl}>目標粗利率（%）</div><input value={yMargin} onChange={e=>setYMargin(e.target.value)} inputMode="decimal" style={inp} /></div>
+                <div style={{ flex:2 }}>
+                  {rec != null && (
+                    <div style={{ display:"flex", justifyContent:"space-around" }}>
+                      {cell("推奨売価", `${Math.ceil(rec / 10)}円/100g`, "#1a6b3a")}
+                      {cell("kgあたり", `${Math.ceil(rec)}円`, "var(--sub)")}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {sub === "nebiki" && (() => {
+          const p1 = parseFloat(nPrice), r1 = parseFloat(nPct);
+          const ok1 = !isNaN(p1) && p1 > 0 && !isNaN(r1) && r1 >= 0 && r1 <= 100;
+          const after1 = ok1 ? Math.round(p1 * (1 - r1 / 100)) : null;
+          const p2 = parseFloat(n2Price), y2 = parseFloat(n2Yen);
+          const ok2 = !isNaN(p2) && p2 > 0 && !isNaN(y2) && y2 >= 0;
+          return (<>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>◯%引きの値段は？</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>元の売価（円）</div><input value={nPrice} onChange={e=>setNPrice(e.target.value)} inputMode="decimal" style={inp} placeholder="298" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>割引率（%）</div><input value={nPct} onChange={e=>setNPct(e.target.value)} inputMode="decimal" style={inp} /></div>
+              </div>
+              {ok1 && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("値引き後", `${after1}円`, "var(--primary)")}
+                  {cell("値引き額", `${Math.round(p1 - after1)}円`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>◯円引きは何%相当？</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>元の売価（円）</div><input value={n2Price} onChange={e=>setN2Price(e.target.value)} inputMode="decimal" style={inp} placeholder="398" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>値引き額（円）</div><input value={n2Yen} onChange={e=>setN2Yen(e.target.value)} inputMode="decimal" style={inp} /></div>
+              </div>
+              {ok2 && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("割引率相当", `${(y2 / p2 * 100).toFixed(0)}%引き`, "var(--primary)")}
+                  {cell("値引き後", `${Math.round(p2 - y2)}円`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+          </>);
+        })()}
+
+        {sub === "gram" && (() => {
+          const a = parseFloat(g100), b = parseFloat(gWt);
+          const ok1 = !isNaN(a) && a > 0 && !isNaN(b) && b > 0;
+          const c2 = parseFloat(g2Sell), d2 = parseFloat(g2Wt);
+          const ok2 = !isNaN(c2) && c2 > 0 && !isNaN(d2) && d2 > 0;
+          return (<>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>100g単価 → パック売価</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>100g単価（円）</div><input value={g100} onChange={e=>setG100(e.target.value)} inputMode="decimal" style={inp} placeholder="298" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>内容量（g）</div><input value={gWt} onChange={e=>setGWt(e.target.value)} inputMode="decimal" style={inp} placeholder="240" /></div>
+              </div>
+              {ok1 && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("売価", `${Math.ceil(a * b / 100)}円`, "#1a6b3a")}
+                  {cell("税込（8%）", `${Math.ceil(a * b / 100 * 1.08)}円`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>パック売価 → 100g単価</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>売価（円）</div><input value={g2Sell} onChange={e=>setG2Sell(e.target.value)} inputMode="decimal" style={inp} placeholder="698" /></div>
+                <div style={{ flex:1 }}><div style={lbl}>内容量（g）</div><input value={g2Wt} onChange={e=>setG2Wt(e.target.value)} inputMode="decimal" style={inp} placeholder="240" /></div>
+              </div>
+              {ok2 && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("100gあたり", `${Math.round(c2 / d2 * 100)}円`, "#1a6b3a")}
+                </div>
+              )}
+            </div>
+          </>);
+        })()}
+
+        {sub === "shio" && (() => {
+          const w = parseFloat(sWater), pc = parseFloat(sPct);
+          const ok = !isNaN(w) && w > 0 && !isNaN(pc) && pc > 0 && pc <= 30;
+          const salt = ok ? w * pc / 100 : null;
+          return (
+            <div style={card}>
+              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:4 }}>立て塩（塩水）の塩の量</div>
+              <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:14 }}>目安：立て塩は3%前後（海水と同じくらい）。魚の下処理・臭み抜きに</div>
+              <div style={{ display:"flex", gap:10 }}>
+                <div style={{ flex:1 }}><div style={lbl}>水の量（ml）</div><input value={sWater} onChange={e=>setSWater(e.target.value)} inputMode="decimal" style={inp} /></div>
+                <div style={{ flex:1 }}><div style={lbl}>濃度（%）</div><input value={sPct} onChange={e=>setSPct(e.target.value)} inputMode="decimal" style={inp} /></div>
+              </div>
+              {ok && (
+                <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
+                  {cell("塩の量", `${salt.toFixed(salt < 10 ? 1 : 0)}g`, "#1a6b3a")}
+                  {cell("大さじ換算", `約${(salt / 18).toFixed(1)}杯`, "var(--sub)")}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:4 }}>※ プロトタイプです。計算方法・表示・項目はご要望に合わせて調整できます。</div>
       </div>
@@ -4048,7 +4245,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid var(--line)" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"📈", label:"相場計算", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"🧮", label:"便利機能", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid var(--line)":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"var(--primary)":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"var(--primary)", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
