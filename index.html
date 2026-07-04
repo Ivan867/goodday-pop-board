@@ -91,6 +91,8 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-04", type:"新機能", title:"業界情報が「最新記事の自動表示」に進化", body:"「業界情報」タブが、2つのサイト（ダイヤモンド・チェーンストア／食未来研究室）の最新記事を自動で取得して一覧表示するようになりました。日付・見出し・要約が並び、タップで記事本文が別タブで開きます。売場の行事提案や小売トレンドのチェックがこのアプリの中で完結します。" },
+  { date:"2026-07-04", type:"新機能", title:"「業界情報」タブを追加", body:"☰メニューに「業界情報」を追加しました。売場づくりや業界の動きに役立つ外部サイト（ダイヤモンド・チェーンストア オンライン／食未来研究室）にワンタップで飛べます。行事の売場提案や小売のトレンドチェックにどうぞ。" },
   { date:"2026-07-04", type:"新機能", title:"「相場計算」が「便利機能」に進化", body:"☰メニューの相場計算が「便利機能」になり、計算が6種類に増えました。①相場計算（今まで通り）②粗利：原価と売価から粗利率、目標粗利からの売価逆算 ③歩留まり：丸魚の実質原価と推奨売価 ④値引き：◯%引きの値段・◯円引きの%換算 ⑤グラム：100g単価とパック売価の相互計算 ⑥立て塩：塩水に必要な塩の量。すべて入力するだけでパッと答えが出ます。" },
   { date:"2026-07-04", type:"改善", title:"最新iPhoneへの最適化＆検索画面の微調整", body:"①Dynamic Island搭載のiPhoneで、ホーム画面から開いたときに上部が欠けないようセーフエリアに対応。②ヘッダー右端とカードの右端がぴったり揃うように調整。③検索の左の付箋タブの間隔を半分に。④ジャンル「丸魚提案」を「切身提案」に名前変更しました（登録済みのポップもそのまま引き継がれます）。" },
   { date:"2026-07-03", type:"新機能", title:"引っ張って更新＆読み込み表示の改善", body:"ホーム一覧を下に引っ張ると最新の状態に更新できるようになりました（他のSNSと同じ操作）。また、読み込み中は「読み込み中…」の文字ではなく、カードの形をしたプレースホルダーがちらちら光る表示になり、画像も読み込めた順にふわっと表示されます。" },
@@ -3179,6 +3181,95 @@ function soubaWari(pct) {
   return `約${s}割`;
 }
 
+function IndustryTab() {
+  const SITES = [
+    { name:"ダイヤモンド・チェーンストア オンライン", home:"https://diamond-rm.net/", feed:"https://diamond-rm.net/feed/", tag:"業界ニュース", emoji:"📰", color:"#2f6fb0" },
+    { name:"食未来研究室", home:"https://nsk-shokumirai.com/", feed:"https://nsk-shokumirai.com/feed/", tag:"売場・行事提案", emoji:"🍳", color:"#1a6b3a" },
+  ];
+  const [data, setData] = useState(SITES.map(() => ({ status:"loading", items:[] })));
+
+  useEffect(() => {
+    let alive = true;
+    SITES.forEach((site, idx) => {
+      const url = "https://api.rss2json.com/v1/api.json?count=6&rss_url=" + encodeURIComponent(site.feed);
+      fetch(url)
+        .then(r => r.ok ? r.json() : null)
+        .then(j => {
+          if (!alive) return;
+          if (j && j.status === "ok" && Array.isArray(j.items) && j.items.length) {
+            setData(prev => { const n = [...prev]; n[idx] = { status:"ok", items: j.items.slice(0, 6) }; return n; });
+          } else {
+            setData(prev => { const n = [...prev]; n[idx] = { status:"error", items: [] }; return n; });
+          }
+        })
+        .catch(() => { if (alive) setData(prev => { const n = [...prev]; n[idx] = { status:"error", items: [] }; return n; }); });
+    });
+    return () => { alive = false; };
+  }, []);
+
+  const fmtDate = (s) => { const d = new Date((s || "").replace(" ", "T")); if (isNaN(+d)) return ""; return `${d.getMonth()+1}/${d.getDate()}`; };
+  const strip = (html) => { const t = (html || "").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim(); return t.length > 70 ? t.slice(0, 70) + "…" : t; };
+
+  return (
+    <div className="min-vh" style={{ background:"var(--bg)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+        <div style={{ maxWidth:600, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>業界情報</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場づくりや業界の動きに役立つ最新記事</div>
+        </div>
+      </div>
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+        {SITES.map((site, idx) => {
+          const st = data[idx];
+          return (
+            <div key={site.feed} style={{ marginBottom:20 }}>
+              <a href={site.home} target="_blank" rel="noopener noreferrer"
+                style={{ display:"flex", alignItems:"center", gap:9, textDecoration:"none", marginBottom:9 }}>
+                <span style={{ fontSize:20, flexShrink:0 }}>{site.emoji}</span>
+                <div style={{ minWidth:0, flex:1 }}>
+                  <span style={{ display:"inline-block", fontSize:10, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px" }}>{site.tag}</span>
+                  <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3 }}>{site.name}</div>
+                </div>
+                <span style={{ color:"var(--faint)", fontSize:18, flexShrink:0 }}>↗</span>
+              </a>
+
+              {st.status === "loading" && (
+                <div>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                      <div className="sk" style={{ width:"85%", height:12, borderRadius:6 }} />
+                      <div className="sk" style={{ width:"55%", height:10, borderRadius:6, marginTop:8 }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {st.status === "error" && (
+                <a href={site.home} target="_blank" rel="noopener noreferrer"
+                  style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"14px 14px", color:"var(--text)", fontSize:12.5, lineHeight:1.7 }}>
+                  最新記事を読み込めませんでした。<span style={{ color:site.color, fontWeight:800 }}>サイトを開く →</span>
+                </a>
+              )}
+
+              {st.status === "ok" && st.items.map((it, i) => (
+                <a key={i} href={it.link} target="_blank" rel="noopener noreferrer"
+                  style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                  <div style={{ display:"flex", gap:8, alignItems:"baseline" }}>
+                    {fmtDate(it.pubDate) && <span style={{ fontSize:10.5, fontWeight:800, color:site.color, flexShrink:0 }}>{fmtDate(it.pubDate)}</span>}
+                    <span style={{ fontSize:13, fontWeight:800, color:"var(--ink)", lineHeight:1.45 }}>{it.title}</span>
+                  </div>
+                  {strip(it.description) && <div style={{ fontSize:11, color:"var(--sub)", lineHeight:1.6, marginTop:5 }}>{strip(it.description)}</div>}
+                </a>
+              ))}
+            </div>
+          );
+        })}
+        <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:4, lineHeight:1.7 }}>記事はタップすると別タブで開きます。<br/>最新情報は各サイトから自動で取得しています。</div>
+      </div>
+    </div>
+  );
+}
+
 function SoubaTab({ onCreatePop }) {
   const [sub, setSub] = useState("souba");
   // 粗利
@@ -4224,6 +4315,7 @@ function App() {
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
+      {tab==="industry" && <IndustryTab />}
       {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -4233,7 +4325,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="prompts") : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="prompts"||tab==="industry") : (!action && tab===key);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -4258,7 +4350,7 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
           <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid var(--line)" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"🧮", label:"便利機能", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
+            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"🧮", label:"便利機能", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"industry", icon:"📰", label:"業界情報", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
               <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                 style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid var(--line)":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"var(--primary)":"#333", cursor:"pointer", textAlign:"left" }}>
                 <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"var(--primary)", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
