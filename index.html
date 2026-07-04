@@ -91,6 +91,9 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-04", type:"新機能", title:"行事カレンダー追加・メニュー整理・閉じるボタン改善", body:"①☰メニューに「行事カレンダー」を追加。月ごとに行事（ハレの日）と相性の良い商材が見られます。②「プロンプト集」は「作成」タブの中に統合しました（作成タブ上部で切り替え）。③メニューを開いている時は下の☰マークが✕に変わり、そのままタップで閉じられるようになりました。" },
+  { date:"2026-07-04", type:"新機能", title:"「競合情報」タブを追加", body:"鮮魚が強い全国15店舗を「専門店型・大手スーパー型・地域密着型・高級型」の4タイプに整理した競合情報タブを追加しました。各社の特徴・POPで参考にできるポイント・注目度に加え、店名をタップすると公式サイトが開きます。地域密着型（万代・オカムラ・オオゼキなど）は特にうちの売場の参考になります。" },
+  { date:"2026-07-04", type:"改善", title:"☰メニューがグリッド型に一新", body:"☰メニューが、下からシートが開いてアイコンが3列に並ぶグリッド型になりました。機能が増えても一覧しやすく、よく使う「作成・売場・ポップ依頼」を上段に配置しています。使いたい機能をタップするだけ、閉じるときは外側をタップしてください。" },
   { date:"2026-07-04", type:"新機能", title:"業界情報が「最新記事の自動表示」に進化", body:"「業界情報」タブが、2つのサイト（ダイヤモンド・チェーンストア／食未来研究室）の最新記事を自動で取得して一覧表示するようになりました。日付・見出し・要約が並び、タップで記事本文が別タブで開きます。売場の行事提案や小売トレンドのチェックがこのアプリの中で完結します。" },
   { date:"2026-07-04", type:"新機能", title:"「業界情報」タブを追加", body:"☰メニューに「業界情報」を追加しました。売場づくりや業界の動きに役立つ外部サイト（ダイヤモンド・チェーンストア オンライン／食未来研究室）にワンタップで飛べます。行事の売場提案や小売のトレンドチェックにどうぞ。" },
   { date:"2026-07-04", type:"新機能", title:"「相場計算」が「便利機能」に進化", body:"☰メニューの相場計算が「便利機能」になり、計算が6種類に増えました。①相場計算（今まで通り）②粗利：原価と売価から粗利率、目標粗利からの売価逆算 ③歩留まり：丸魚の実質原価と推奨売価 ④値引き：◯%引きの値段・◯円引きの%換算 ⑤グラム：100g単価とパック売価の相互計算 ⑥立て塩：塩水に必要な塩の量。すべて入力するだけでパッと答えが出ます。" },
@@ -1346,6 +1349,22 @@ function BlogTab() {
 
 // ── POP作成ツール Tab（統合版）──
 function PopToolTab({ seed, onSeedConsumed }) {
+  const [toolSub, setToolSub] = useState("create");
+  return (
+    <div>
+      <div style={{ maxWidth:680, margin:"0 auto", padding:"14px 16px 0", display:"flex", gap:8 }}>
+        {[["create","✏️ 作成"],["prompts","💡 プロンプト集"]].map(([k,l]) => (
+          <button key={k} onClick={()=>setToolSub(k)}
+            style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 6px", fontSize:13.5, fontWeight:800, cursor:"pointer",
+              background: toolSub===k ? "var(--primary)" : "#fff", color: toolSub===k ? "#fff" : "var(--text)" }}>{l}</button>
+        ))}
+      </div>
+      {toolSub === "create" ? <PopCreateInner seed={seed} onSeedConsumed={onSeedConsumed} /> : <PromptTab embedded />}
+    </div>
+  );
+}
+
+function PopCreateInner({ seed, onSeedConsumed }) {
   const isRefSeed = !!(seed && seed.image_url);
   const [mode, setMode] = useState(isRefSeed ? "ref" : "new");
   const [size, setSize] = useState("縦");
@@ -2598,7 +2617,7 @@ function PromptGuide({ accent }) {
   );
 }
 
-function PromptTab() {
+function PromptTab({ embedded }) {
   const ACCENT = "var(--primary)";
   const [seg, setSeg] = useState("list");
   const [items, setItems] = useState([]);
@@ -2623,7 +2642,7 @@ function PromptTab() {
   );
 
   return (
-    <div style={{ maxWidth:760, margin:"0 auto", padding:"16px 16px 84px" }}>
+    <div style={{ maxWidth:760, margin:"0 auto", padding: embedded ? "10px 16px 84px" : "16px 16px 84px" }}>
       <div style={{ display:"flex", marginBottom:16, borderBottom:"1px solid var(--line)" }}>
         {segBtn("list","プロンプト記録集")}
         {segBtn("guide","手引き")}
@@ -3179,6 +3198,180 @@ function soubaWari(pct) {
   if (w <= 0) return "";
   const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
   return `約${s}割`;
+}
+
+function CalendarTab() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const [ym, setYm] = useState({ y: today.getFullYear(), m: today.getMonth() }); // m:0-11
+
+  // 行事データ生成（BoardのTodayInfoCardと同じロジック）
+  const eventsFor = (year) => {
+    const mk = (y, m, d, name, food) => ({ date: new Date(y, m-1, d), name, food });
+    const nthSunday = (y, m, n) => { const first = new Date(y, m-1, 1); const off = (7 - first.getDay()) % 7; return new Date(y, m-1, 1 + off + (n-1)*7); };
+    const USHI = { 2026:[[7,26,"土用の丑"]], 2027:[[7,21,"土用の丑"],[8,2,"土用の二の丑"]], 2028:[[7,27,"土用の丑"]] };
+    const HIGAN = { 2026:[[3,17],[9,20]], 2027:[[3,18],[9,20]], 2028:[[3,17],[9,19]] };
+    const list = [
+      mk(year,1,1,"お正月","刺身・おせち"), mk(year,2,3,"節分","恵方巻"), mk(year,3,3,"ひな祭り","ちらし寿司・はまぐり"),
+      mk(year,5,5,"こどもの日","お祝い・ちらし"), mk(year,7,2,"半夏生","タコ"), mk(year,7,7,"七夕","ちらし・そうめん"),
+      mk(year,8,13,"お盆入り","刺身・お供え"), mk(year,10,31,"ハロウィン",null), mk(year,12,22,"冬至",null),
+      mk(year,12,24,"クリスマス","オードブル・寿司"), mk(year,12,31,"大晦日","刺身・寿司"),
+    ];
+    list.push({ date:nthSunday(year,5,2), name:"母の日", food:"ごちそう・お祝い" });
+    list.push({ date:nthSunday(year,6,3), name:"父の日", food:"ごちそう・晩酌のあて" });
+    (USHI[year]||[]).forEach(([m,d,nm]) => list.push(mk(year,m,d,nm,"うなぎ・スタミナ")));
+    (HIGAN[year]||[]).forEach(([m,d]) => list.push(mk(year,m,d,(m<6?"春":"秋")+"彼岸入り","お供え・お寿司")));
+    list.forEach(e => e.date.setHours(0,0,0,0));
+    return list;
+  };
+
+  const allEv = [...eventsFor(ym.y)];
+  const evOn = (y,m,d) => allEv.find(e => e.date.getFullYear()===y && e.date.getMonth()===m && e.date.getDate()===d);
+
+  const firstDay = new Date(ym.y, ym.m, 1);
+  const startWd = firstDay.getDay();
+  const daysInMonth = new Date(ym.y, ym.m+1, 0).getDate();
+  const cells = [];
+  for (let i=0;i<startWd;i++) cells.push(null);
+  for (let d=1;d<=daysInMonth;d++) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const monthEvents = allEv.filter(e => e.date.getFullYear()===ym.y && e.date.getMonth()===ym.m).sort((a,b)=>a.date-b.date);
+
+  const prevM = () => setYm(v => v.m===0 ? {y:v.y-1,m:11} : {y:v.y,m:v.m-1});
+  const nextM = () => setYm(v => v.m===11 ? {y:v.y+1,m:0} : {y:v.y,m:v.m+1});
+  const jp = ["日","月","火","水","木","金","土"];
+
+  return (
+    <div className="min-vh" style={{ background:"var(--bg)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+        <div style={{ maxWidth:600, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
+        </div>
+      </div>
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+          <button onClick={prevM} style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>‹</button>
+          <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)" }}>{ym.y}年 {ym.m+1}月</div>
+          <button onClick={nextM} style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>›</button>
+        </div>
+
+        <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:14, padding:"10px 8px 8px", marginBottom:16 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", marginBottom:4 }}>
+            {jp.map((w,i) => (
+              <div key={w} style={{ textAlign:"center", fontSize:11, fontWeight:800, padding:"4px 0", color: i===0?"#c0392b":i===6?"#2f6fb0":"var(--sub)" }}>{w}</div>
+            ))}
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:2 }}>
+            {cells.map((d,i) => {
+              if (d===null) return <div key={i} />;
+              const isToday = ym.y===today.getFullYear() && ym.m===today.getMonth() && d===today.getDate();
+              const ev = evOn(ym.y, ym.m, d);
+              const wd = (startWd + d - 1) % 7;
+              return (
+                <div key={i} style={{ minHeight:52, borderRadius:8, padding:"3px 2px", background: isToday ? "var(--soft)" : "transparent", border: isToday ? "1.5px solid var(--primary)" : "1px solid transparent", display:"flex", flexDirection:"column", alignItems:"center" }}>
+                  <span style={{ fontSize:12.5, fontWeight: isToday?900:700, color: ev ? "var(--primary)" : wd===0?"#c0392b":wd===6?"#2f6fb0":"var(--text)" }}>{d}</span>
+                  {ev && <span style={{ fontSize:8.5, fontWeight:800, color:"var(--soft-text)", lineHeight:1.15, textAlign:"center", marginTop:1 }}>{ev.name.length>4?ev.name.slice(0,4):ev.name}</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>{ym.m+1}月の行事</div>
+        {monthEvents.length === 0 ? (
+          <div style={{ fontSize:12.5, color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"16px", textAlign:"center" }}>この月の登録行事はありません</div>
+        ) : monthEvents.map((e,i) => (
+          <div key={i} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"11px 13px", marginBottom:8 }}>
+            <div style={{ flexShrink:0, width:44, textAlign:"center" }}>
+              <div style={{ fontSize:16, fontWeight:900, color:"var(--primary)", lineHeight:1 }}>{e.date.getDate()}</div>
+              <div style={{ fontSize:10, color:"var(--sub)", fontWeight:700 }}>{jp[e.date.getDay()]}</div>
+            </div>
+            <div style={{ minWidth:0, flex:1 }}>
+              <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{e.name}</div>
+              {e.food && <div style={{ fontSize:11.5, color:"var(--soft-text)", marginTop:2 }}>💡 {e.food}</div>}
+            </div>
+          </div>
+        ))}
+        <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:8, lineHeight:1.7 }}>行事の追加・編集機能は今後対応予定です。<br/>まずは季節の売場づくりの目安にどうぞ。</div>
+      </div>
+    </div>
+  );
+}
+
+function CompetitorTab() {
+  const GROUPS = [
+    {
+      cat:"専門店型", emoji:"🐟", note:"鮮魚売場というより「魚屋」の強さ。職人感・対面・丸魚・珍魚・活気。POPは「本日入荷」「店内加工」「鮮魚担当おすすめ」「刺身できます」系が合う。",
+      rows:[
+        { name:"角上魚類", url:"https://www.kakujoe.co.jp/", desc:"新潟・寺泊発。漁港直結の仕入れ、珍魚、対面販売、職人加工、寿司・惣菜まで強い。", hint:"対面販売・丸魚陳列・珍魚の見せ方・寿司惣菜展開", pri:1 },
+        { name:"魚耕", url:"https://www.uoko.co.jp/", desc:"関東の駅ナカ・駅ビル中心。刺身盛り・下処理・惣菜・テイクアウト寿司など小回りが強い。", hint:"駅ビル型の小スペース売場、刺身惣菜、通勤客向け商品", pri:12 },
+        { name:"魚力", url:"https://www.uoriki.co.jp/", desc:"百貨店・駅ビルに強い老舗。鮮魚と寿司・焼魚など調理品のダブル主力。", hint:"百貨店型の高級感、刺身寿司の盛り付け、清潔感ある陳列", pri:11 },
+      ]
+    },
+    {
+      cat:"大手スーパー型", emoji:"🛒", note:"尖らせるより日常の買いやすさと提案力。店内加工・調理サービス・惣菜連携。POPは「焼くだけ」「煮付けにおすすめ」「下処理済み」「夕飯の一品に」系。",
+      rows:[
+        { name:"ライフ", url:"https://www.lifecorp.jp/", desc:"店内加工に積極的。刺身・対面販売・鮮度管理、寿司焼魚惣菜との連携。", hint:"大型店の店内加工、日常価格と品質のバランス", pri:9 },
+        { name:"ヤオコー", url:"https://www.yaoko-net.com/", desc:"産地直送・市場直仕入れ、売場演出、食べ方提案、惣菜が強い。", hint:"調理提案POP、鮮魚惣菜、売場の見せ方、旬魚の打ち出し", pri:2 },
+        { name:"イトーヨーカドー", url:"https://www.itoyokado.co.jp/", desc:"お魚調理サービス、クッキングサポート、魚離れ対策、買いやすさ重視。", hint:"調理サービスの案内方法、魚調理のハードルを下げるPOP", pri:13 },
+        { name:"サミット", url:"https://www.summitstore.co.jp/", desc:"店内加工、丸魚・刺身・焼魚用まで幅広い商品展開。惣菜連携も強い。", hint:"日常使いの鮮魚売場、焼くだけ・煮るだけ系の提案", pri:8 },
+      ]
+    },
+    {
+      cat:"地域密着型", emoji:"🏘", note:"グッディーの売場に一番近い参考軸。地元の食文化・地魚・日替わり感・活気・鮮魚惣菜。山陰沖産・島根県産を打ち出すなら「地元で親しまれる魚」「山陰の旬」「今日はこの魚」と相性◎。",
+      rows:[
+        { name:"万代", url:"https://www.mandai-net.co.jp/", desc:"関西で人気。安くて新鮮、季節の地魚、珍しい魚、寿司・煮魚・焼魚惣菜が豊富。", hint:"安さと鮮度の見せ方、日替わり感、地魚惣菜展開", pri:3 },
+        { name:"スーパーオカムラ", url:"https://www.google.com/maps/search/%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AA%E3%82%AB%E3%83%A0%E3%83%A9+%E5%AF%8C%E5%A3%AB%E5%B8%82", desc:"静岡・富士エリア。駿河湾近海魚、深海魚、珍しい魚、地元食文化が強い。", hint:"地魚・珍魚の売り方、ローカル感、地域食文化POP", pri:4 },
+        { name:"オオゼキ", url:"https://www.ozeki-net.co.jp/", desc:"東京・神奈川。市場のような活気、マグロ解体、対面販売、調理提案。", hint:"イベント型売場、マグロ解体、都市型の臨場感", pri:5 },
+        { name:"バロー", url:"https://www.valor.co.jp/", desc:"中部中心。本部仕入れと現場目利きの両立。旬と価格・品質バランス。", hint:"地域スーパーでの魚の強さ、寿司惣菜との連動", pri:15 },
+        { name:"関西スーパー", url:"https://www.kansaisuper.co.jp/", desc:"鮮魚と惣菜の融合が強み。寿司・煮付け・焼物を手頃価格で展開。", hint:"鮮魚惣菜の作り方、夕食需要向けの商品構成", pri:10 },
+        { name:"平和堂", url:"https://www.heiwado.jp/", desc:"滋賀・関西圏。地元ニーズ、刺身・切身・味付け魚、惣菜寿司連携。", hint:"地域密着の安定感、日常の魚おかず提案", pri:14 },
+      ]
+    },
+    {
+      cat:"高級・高品質型", emoji:"✨", note:"価格勝負でなく上質感・少量・見た目・特別感。刺身・寿司・海鮮丼・うなぎ・お盆・年末年始・父の日POPの参考に。「ちょっと贅沢」「食卓を華やかに」「上質な味わい」「特別な日の一品」系。",
+      rows:[
+        { name:"成城石井", url:"https://www.seijoishii.com/", desc:"高品質・少量パック・単身者向け・惣菜や加工品が豊富。ちょっと贅沢路線。", hint:"少量高品質パック、パッケージ、上質感あるPOP", pri:7 },
+        { name:"紀ノ国屋", url:"https://www.e-kinokuniya.com/", desc:"老舗高級スーパー。美しい盛り付け、上質なパッケージ、希少魚、特別感。", hint:"高級感、盛り付け、色使い、特別日向けの鮮魚演出", pri:6 },
+      ]
+    },
+  ];
+
+  return (
+    <div className="min-vh" style={{ background:"var(--bg)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+        <div style={{ maxWidth:600, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>競合情報</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>鮮魚が強い15店舗を4タイプで整理。売り方のヒントに</div>
+        </div>
+      </div>
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+        {GROUPS.map(g => (
+          <div key={g.cat} style={{ marginBottom:22 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+              <span style={{ fontSize:19 }}>{g.emoji}</span>
+              <span style={{ fontSize:15.5, fontWeight:900, color:"var(--ink)" }}>{g.cat}</span>
+            </div>
+            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.7, marginBottom:11, background:"var(--soft)", borderRadius:10, padding:"9px 11px" }}>{g.note}</div>
+            {g.rows.map(r => (
+              <a key={r.name} href={r.url} target="_blank" rel="noopener noreferrer"
+                style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
+                  <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)" }}>{r.name}</span>
+                  <span style={{ fontSize:10, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
+                  <span style={{ marginLeft:"auto", color:"var(--faint)", fontSize:17 }}>↗</span>
+                </div>
+                <div style={{ fontSize:12, color:"var(--text)", lineHeight:1.65 }}>{r.desc}</div>
+                <div style={{ fontSize:11, color:"var(--soft-text)", lineHeight:1.6, marginTop:5 }}>💡 {r.hint}</div>
+              </a>
+            ))}
+          </div>
+        ))}
+        <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:4, lineHeight:1.7 }}>店名をタップすると公式サイトが別タブで開きます。<br/>各社の売場づくりを参考に、うちの強みを磨きましょう。</div>
+      </div>
+    </div>
+  );
 }
 
 function IndustryTab() {
@@ -4181,6 +4374,7 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [showGneHint, setShowGneHint] = useState(true);
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
   const [pullY, setPullY] = useState(0);
@@ -4311,11 +4505,12 @@ function App() {
       {tab==="barcode" && <BarcodeTab />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
-      {tab==="prompts" && <PromptTab />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <GeneratorTab />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
       {tab==="industry" && <IndustryTab />}
+      {tab==="competitor" && <CompetitorTab />}
+      {tab==="calendar" && <CalendarTab />}
       {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -4323,23 +4518,30 @@ function App() {
 
       {/* 下部固定ナビ */}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:200, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="prompts"||tab==="industry") : (!action && tab===key);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
             : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           return (
-            <button key={key} onClick={onClick}
+            <button key={key} onClick={() => { if (showGneHint) setShowGneHint(false); onClick(); }}
               style={{ position:"relative", flex:1, border:"none", background:"transparent", cursor:"pointer", padding:"10px 1px 11px", display:"flex", flexDirection:"column", alignItems:"center" }}>
               {active && !filter && <span style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:30, height:3, borderRadius:"0 0 3px 3px", background:color }} />}
+              {more && showGneHint && (
+                <div onClick={(e) => { e.stopPropagation(); setShowGneHint(false); }}
+                  style={{ position:"absolute", bottom:"calc(100% + 10px)", right:-6, background:"var(--primary)", color:"#fff", borderRadius:12, padding:"8px 12px", fontSize:11.5, fontWeight:800, whiteSpace:"nowrap", boxShadow:"0 4px 16px rgba(194,78,0,0.35)", animation:"fadeUp .3s ease" }}>
+                  ✨ 新機能はこちら
+                  <span style={{ position:"absolute", top:"100%", left:"44%", width:0, height:0, borderLeft:"6px solid transparent", borderRight:"6px solid transparent", borderTop:"6px solid var(--primary)" }} />
+                </div>
+              )}
               {action
                 ? <span style={{ width:30, height:30, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:900, lineHeight:1 }}>＋</span>
                 : filter
                 ? <span style={{ width:34, height:34, borderRadius:"50%", background: radialOpen?"var(--primary)":"#fff", color: radialOpen?"#fff":"var(--primary)", border:"2px solid var(--primary)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:19, fontWeight:900, lineHeight:1, boxShadow:"0 2px 9px rgba(194,78,0,0.3)", transition:"background .25s, color .25s, transform .2s", transform: radialOpen?"scale(1.05)":"scale(1)" }}>✧</span>
-                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: active?color:"#9aa3ab", whiteSpace:"nowrap" }}>{more ? "☰" : label}</span>}
+                : <span style={{ height:30, display:"flex", alignItems:"center", justifyContent:"center", fontSize: more?25:18, fontWeight:800, color: (more && moreOpen) ? "var(--primary)" : (active?color:"#9aa3ab"), whiteSpace:"nowrap", transition:"color .2s" }}>{more ? (moreOpen ? "✕" : "☰") : label}</span>}
             </button>
           );
         })}
@@ -4348,14 +4550,22 @@ function App() {
       {moreOpen && (
         <>
           <div onClick={()=>setMoreOpen(false)}
-            style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.15)" }} />
-          <div style={{ position:"fixed", right:10, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:202, background:"white", borderRadius:14, boxShadow:"0 8px 28px rgba(0,0,0,0.22)", overflow:"hidden", minWidth:190, border:"1px solid var(--line)" }}>
-            {[{key:"archive", icon:"🗄", label:"アーカイブ", badge:"NEW"}, {key:"gne", icon:"🅖", label:"GNE", badge:"NEW"}, {key:"souba", icon:"🧮", label:"便利機能", badge:"NEW"}, {key:"prompts", icon:"💡", label:"プロンプト集", badge:"NEW"}, {key:"industry", icon:"📰", label:"業界情報", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"発注バーコード生成", badge:"NEW"}, {key:"request", icon:"📝", label:"ポップ依頼", badge:"NEW"}, {key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map((o,i,arr)=>(
-              <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                style={{ display:"flex", alignItems:"center", gap:13, width:"100%", border:"none", borderBottom: i<arr.length-1?"1px solid var(--line)":"none", background: tab===o.key?"#fff7f0":"white", padding:"15px 18px", fontSize:15, fontWeight:800, color: tab===o.key?"var(--primary)":"#333", cursor:"pointer", textAlign:"left" }}>
-                <span style={{ fontSize:20 }}>{o.icon}</span>{o.label}{o.badge && <span style={{ marginLeft:7, background:"var(--primary)", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 6px", borderRadius:8, letterSpacing:0.5 }}>{o.badge}</span>}
-              </button>
-            ))}
+            style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
+          <div style={{ position:"fixed", left:0, right:0, bottom:"calc(52px + env(safe-area-inset-bottom))", zIndex:202, background:"#fff", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.18)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 16px 18px" }}>
+            <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
+            <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
+              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"GNE"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
+                <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
+                  style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+                  <span style={{ position:"relative", width:56, height:56, borderRadius:17, background: tab===o.key ? "var(--soft)" : "var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1.5px solid transparent" }}>
+                    {o.icon}
+                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:8.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
+                  </span>
+                  <span style={{ fontSize:11.5, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--text)", lineHeight:1.25, textAlign:"center" }}>{o.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}
