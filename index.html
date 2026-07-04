@@ -2800,15 +2800,28 @@ function TodayInfoCard() {
 function WeatherWidget() {
   const [daily, setDaily] = useState(null);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
+  const [wxFailed, setWxFailed] = useState(false);
+  const loadWx = React.useCallback(() => {
+    setWxFailed(false);
     const URL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=2";
     const KEY = "wxHeadV1";
     const ok = (d) => { if (d && d.daily) { setDaily(d.daily); try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), d })); } catch(e) {} return true; } return false; };
-    const fallback = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || "null"); if (c && Date.now() - c.t < 86400000 && c.d && c.d.daily) setDaily(c.d.daily); } catch(e) {} };
-    const go = (retry) => fetch(URL).then(r => r.ok ? r.json() : null).then(d => { if (!ok(d)) throw 0; }).catch(() => { fallback(); if (retry > 0) setTimeout(() => go(retry - 1), 5000); });
+    const fallback = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || "null"); if (c && Date.now() - c.t < 86400000 && c.d && c.d.daily) { setDaily(c.d.daily); return true; } } catch(e) {} return false; };
+    const go = (retry) => fetch(URL).then(r => r.ok ? r.json() : null).then(d => { if (!ok(d)) throw 0; }).catch(() => {
+      if (retry > 0) { setTimeout(() => go(retry - 1), 5000); return; }
+      if (!fallback()) setWxFailed(true);
+    });
     go(2);
   }, []);
-  if (!daily) return null;
+  useEffect(() => { loadWx(); }, [loadWx]);
+  if (!daily) {
+    if (!wxFailed) return null;
+    return (
+      <div onClick={loadWx} style={{ fontSize:10.5, color:"var(--sub)", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", border:"1px solid var(--line)", borderRadius:9, padding:"5px 9px" }}>
+        天気を取得できません<br/><span style={{ textDecoration:"underline" }}>タップで再試行</span>
+      </div>
+    );
+  }
 
   const wmo = (c) => {
     if (c === 0) return { e:"☀️", t:"快晴" };
