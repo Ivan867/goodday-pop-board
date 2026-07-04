@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: dark)" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="鮮魚共有" />
 <title>GoodDay 鮮魚共有</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -33,6 +33,7 @@ img.fdin { opacity:0; transition:opacity .35s ease; }
 img.fdin.ld { opacity:1; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overscroll-behavior: none; }
+html { background: #8FA0B0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 #splash { position:fixed; inset:0; z-index:9999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .45s ease; }
@@ -91,6 +92,9 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-05", type:"改善", title:"魚図鑑が44魚種に大幅拡充", body:"魚図鑑に29魚種を追加しました。さわら・いさき・かます・スルメイカ・飛魚（あご）・白カレイ・赤カレイ・カラスガレイ・カツオ・ヒラメ・石鯛・メバル・キカナ（アオハタ）・連子鯛・チヌ・シイラ・アトランティックサーモン・トラウトサーモン・エイ・パンガシウス・ホタルイカ・ハマグリ・ホンビノス貝・真がき・鱈・クエ・ヒラマサ・しらす・ばとう鯛。山陰の呼び名（キカナ・バトウ・あご）も収録しています。" },
+  { date:"2026-07-05", type:"改善", title:"上部の黒帯を解消：天気で変わる空の背景に", body:"iPhoneのホーム画面から開いたとき、画面上部（Dynamic Island周辺）が黒く見えていたのを改善しました。ヘッダーの背景が画面のいちばん上まで伸び、天気に合わせて表情が変わります：晴れ=青空、曇り=グレーの空、雨=雨模様、雪=雪の粒、夜（19時以降）=星空。時計や電池表示に文字が被らないよう、ボタン類の位置は変わっていません。" },
+  { date:"2026-07-05", type:"新機能", title:"気象警報の表示＆「魚図鑑」を追加", body:"①「今日の情報」に気象庁の警報・注意報（出雲市）が表示されるようになりました。大雨・波浪・強風などが出ると色つきで表示され、時化のときは「入荷・地物に影響が出るかも」の一言も。猛暑日予想（35°以上）も自動でお知らせします。②☰メニューに「魚図鑑」を追加。真あじ・白いか・ノドグロ・宍道湖しじみ・松葉ガニなど14魚種の旬・売りポイント・調理法・POPフレーズ例をまとめました。今が旬の魚が上に表示され、検索もできます。" },
   { date:"2026-07-04", type:"新機能", title:"行事カレンダー追加・メニュー整理・閉じるボタン改善", body:"①☰メニューに「行事カレンダー」を追加。月ごとに行事（ハレの日）と相性の良い商材が見られます。②「プロンプト集」は「作成」タブの中に統合しました（作成タブ上部で切り替え）。③メニューを開いている時は下の☰マークが✕に変わり、そのままタップで閉じられるようになりました。" },
   { date:"2026-07-04", type:"新機能", title:"「競合情報」タブを追加", body:"鮮魚が強い全国15店舗を「専門店型・大手スーパー型・地域密着型・高級型」の4タイプに整理した競合情報タブを追加しました。各社の特徴・POPで参考にできるポイント・注目度に加え、店名をタップすると公式サイトが開きます。地域密着型（万代・オカムラ・オオゼキなど）は特にうちの売場の参考になります。" },
   { date:"2026-07-04", type:"改善", title:"☰メニューがグリッド型に一新", body:"☰メニューが、下からシートが開いてアイコンが3列に並ぶグリッド型になりました。機能が増えても一覧しやすく、よく使う「作成・売場・ポップ依頼」を上段に配置しています。使いたい機能をタップするだけ、閉じるときは外側をタップしてください。" },
@@ -2670,6 +2674,45 @@ function PromptTab({ embedded }) {
 
 function TodayInfoCard() {
   const [wx, setWx] = useState(null);
+  const [warns, setWarns] = useState([]);
+
+  // 気象庁 警報・注意報（島根県→出雲市）
+  useEffect(() => {
+    const WMAP = {
+      "33":{n:"大雨特別警報",lv:3},"32":{n:"暴風雪特別警報",lv:3},"35":{n:"暴風特別警報",lv:3},"36":{n:"大雪特別警報",lv:3},"37":{n:"波浪特別警報",lv:3},"38":{n:"高潮特別警報",lv:3},
+      "03":{n:"大雨警報",lv:2},"02":{n:"暴風雪警報",lv:2},"04":{n:"洪水警報",lv:2},"05":{n:"暴風警報",lv:2},"06":{n:"大雪警報",lv:2},"07":{n:"波浪警報",lv:2},"08":{n:"高潮警報",lv:2},
+      "10":{n:"大雨注意報",lv:1},"12":{n:"大雪注意報",lv:1},"13":{n:"風雪注意報",lv:1},"14":{n:"雷注意報",lv:1},"15":{n:"強風注意報",lv:1},"16":{n:"波浪注意報",lv:1},"17":{n:"融雪注意報",lv:1},"18":{n:"洪水注意報",lv:1},"19":{n:"高潮注意報",lv:1},"20":{n:"濃霧注意報",lv:1},"21":{n:"乾燥注意報",lv:1},"22":{n:"なだれ注意報",lv:1},"23":{n:"低温注意報",lv:1},"24":{n:"霜注意報",lv:1},"25":{n:"着氷注意報",lv:1},"26":{n:"着雪注意報",lv:1}
+    };
+    const KEY = "jmaWarnV1";
+    const parse = (j) => {
+      const out = [];
+      try {
+        (j.areaTypes || []).forEach(t => (t.areas || []).forEach(a => {
+          if (!String(a.code).startsWith("32203")) return; // 出雲市
+          (a.warnings || []).forEach(w => {
+            if (w.status === "解除") return;
+            const m = WMAP[w.code];
+            if (m && !out.some(x => x.n === m.n)) out.push(m);
+          });
+        }));
+      } catch(e) {}
+      out.sort((a,b) => b.lv - a.lv);
+      return out;
+    };
+    const go = (retry) => fetch("https://www.jma.go.jp/bosai/warning/data/warning/320000.json")
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        if (!j) throw 0;
+        const w = parse(j);
+        setWarns(w);
+        try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), w })); } catch(e) {}
+      })
+      .catch(() => {
+        try { const c = JSON.parse(localStorage.getItem(KEY) || "null"); if (c && Date.now() - c.t < 3600000) setWarns(c.w || []); } catch(e) {}
+        if (retry > 0) setTimeout(() => go(retry - 1), 6000);
+      });
+    go(1);
+  }, []);
   const [hol, setHol] = useState(null);
   useEffect(() => {
     // 気温：過去7日＋今日を取得して前日差・前週差を計算
@@ -2773,6 +2816,27 @@ function TodayInfoCard() {
         <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)" }}>今日の情報</span>
         <span style={{ fontSize:11.5, color:"var(--ink)", fontWeight:800 }}>{jd(now)}（{wd(now)}）<span style={{ color:"var(--sub)", fontWeight:800 }}>　出雲市</span>{hol && hol.todayName ? `・今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `・今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</span>
       </div>
+      {(() => {
+        const chips = [];
+        warns.forEach(w => chips.push({ t:(w.lv >= 2 ? "⚠️ " : "") + w.n, lv:w.lv }));
+        if (wx && wx.today >= 35) chips.push({ t:"🥵 猛暑日予想", lv:2 });
+        else if (wx && wx.today >= 33) chips.push({ t:"☀️ 厳しい暑さ", lv:1 });
+        if (!chips.length) return null;
+        const shike = warns.some(w => ["波浪警報","波浪注意報","強風注意報","暴風警報","波浪特別警報","暴風特別警報"].includes(w.n));
+        return (
+          <div style={{ marginBottom:7 }}>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+              {chips.map((c,i) => (
+                <span key={i} style={{ fontSize:11, fontWeight:800, borderRadius:8, padding:"3px 9px",
+                  background: c.lv >= 3 ? "#3b0d3f" : c.lv === 2 ? "#fdeaea" : "#fff6de",
+                  color: c.lv >= 3 ? "#fff" : c.lv === 2 ? "#b3261e" : "#8a6d00",
+                  border: c.lv >= 3 ? "none" : c.lv === 2 ? "1px solid #f3c1bd" : "1px solid #eeddad" }}>{c.t}</span>
+              ))}
+            </div>
+            {shike && <div style={{ fontSize:11.5, color:"#b3261e", fontWeight:800, marginTop:5 }}>🌊 時化のおそれ：入荷・地物に影響が出るかも</div>}
+          </div>
+        );
+      })()}
       <div style={{ fontSize:12.5, fontWeight:700, color:"var(--text)", lineHeight:1.8, textAlign:"left" }}>
         {wx && (
           <>
@@ -2818,16 +2882,17 @@ function TodayInfoCard() {
   );
 }
 
-function WeatherWidget() {
+function WeatherWidget({ onTheme }) {
   const [daily, setDaily] = useState(null);
   const [open, setOpen] = useState(false);
   const [wxFailed, setWxFailed] = useState(false);
+  const emit = React.useCallback((dd) => { try { if (onTheme && dd && dd.weather_code) onTheme(dd.weather_code[0]); } catch(e) {} }, [onTheme]);
   const loadWx = React.useCallback(() => {
     setWxFailed(false);
     const URL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=2";
     const KEY = "wxHeadV1";
-    const ok = (d) => { if (d && d.daily) { setDaily(d.daily); try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), d })); } catch(e) {} return true; } return false; };
-    const fallback = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || "null"); if (c && Date.now() - c.t < 86400000 && c.d && c.d.daily) { setDaily(c.d.daily); return true; } } catch(e) {} return false; };
+    const ok = (d) => { if (d && d.daily) { setDaily(d.daily); emit(d.daily); try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), d })); } catch(e) {} return true; } return false; };
+    const fallback = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || "null"); if (c && Date.now() - c.t < 86400000 && c.d && c.d.daily) { setDaily(c.d.daily); emit(c.d.daily); return true; } } catch(e) {} return false; };
     const go = (retry) => fetch(URL).then(r => r.ok ? r.json() : null).then(d => { if (!ok(d)) throw 0; }).catch(() => {
       if (retry > 0) { setTimeout(() => go(retry - 1), 5000); return; }
       if (!fallback()) setWxFailed(true);
@@ -2879,7 +2944,7 @@ function WeatherWidget() {
   return (
     <div style={{ position:"relative" }}>
       <div onClick={() => setOpen(v => !v)}
-        style={{ display:"flex", alignItems:"center", gap:8, background:"var(--bg)", border:"1px solid var(--line)", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer" }}>
+        style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.9)", border:"1px solid rgba(255,255,255,0.5)", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", backdropFilter:"blur(4px)" }}>
         <Day label="今日" i={0} />
         <div style={{ width:1, height:14, background:"var(--line)" }} />
         <Day label="明日" i={1} />
@@ -3198,6 +3263,109 @@ function soubaWari(pct) {
   if (w <= 0) return "";
   const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
   return `約${s}割`;
+}
+
+const FISH_DB = [
+  { name:"真あじ", kana:"まあじ", months:[5,6,7,8], point:"初夏〜夏が旬の定番魚。脂と旨みのバランスが良く、山陰沖の地物は鮮度が売り。刺身・たたき・なめろうと生食提案がしやすい。", cook:"刺身／たたき／塩焼き／フライ／南蛮漬け", pop:"「山陰沖どれ 朝どれあじ」「今日はたたきで一杯」", local:"島根の定番地魚。浜田のどんちっちあじは脂の乗りで有名。" },
+  { name:"鯖", kana:"さば", months:[10,11,12,1,2], point:"秋〜冬に脂が乗る。ノルウェー産は年間安定、国産秋さばは季節の目玉。しめ鯖・塩焼き・味噌煮と用途が広い。", cook:"塩焼き／味噌煮／しめ鯖／竜田揚げ", pop:"「脂のり抜群 秋さば入荷」「ごはんがすすむ味噌煮に」", local:"アニサキス対策の下処理説明があると生食系の安心感UP。" },
+  { name:"ブリ", kana:"ぶり", months:[12,1,2], point:"冬の主役。寒ブリは脂の甘みが最大の訴求。切身・刺身・ぶりしゃぶ・照り焼きまで展開幅が広く、年末年始の柱。", cook:"刺身／ぶりしゃぶ／照り焼き／ぶり大根", pop:"「寒ブリ入荷！」「今夜はぶりしゃぶで温まる」", local:"山陰の冬の看板。境港の天然寒ブリは全国区の知名度。" },
+  { name:"真鯛", kana:"まだい", months:[3,4,5,11,12], point:"春の桜鯛・秋の紅葉鯛。祝い事・ハレの日の魚として強く、姿売り・刺身・切身と全対応。養殖は年間安定。", cook:"刺身／塩焼き／鯛めし／カルパッチョ／あら炊き", pop:"「お祝いに姿鯛」「春の桜鯛、入荷しました」", local:"入学・卒業・節句シーズンは姿売り予約の案内が効く。" },
+  { name:"マグロ", kana:"まぐろ", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"刺身売場の主役で年間需要。赤身の低脂質・高たんぱく訴求は健康志向にも合う。中トロ・ネギトロで単価と間口の両取り。", cook:"刺身／漬け丼／ネギトロ／山かけ", pop:"「本マグロ中トロ 今日だけ」「赤身は高たんぱくでヘルシー」", local:"境港は生本マグロの水揚げで有名（夏）。地元産訴求のチャンス。" },
+  { name:"サーモン", kana:"さーもん", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"子どもから大人まで人気No.1級。年間安定供給で計画が立てやすい。刺身・寿司・ムニエルと洋風提案も可能。", cook:"刺身／カルパッチョ／ムニエル／ホイル焼き", pop:"「お子さまに大人気」「サーモン好き集合！」", local:"生食用アトランティックと焼き用秋鮭・銀鮭の使い分け表示が親切。" },
+  { name:"白いか", kana:"しろいか", months:[6,7,8,9], point:"夏の山陰の看板イカ（ケンサキイカ）。上品な甘みとねっとり食感で、刺身の単価が取れる地物。", cook:"刺身／いかそうめん／天ぷら／一夜干し", pop:"「山陰の夏の味 白いか入荷」「甘み抜群、まずは刺身で」", local:"山陰では夏の最重要地物のひとつ。漁火漁の話題性も◎。" },
+  { name:"タコ", kana:"たこ", months:[6,7,8], point:"半夏生（7/2頃）とセットで売れる夏商材。酢の物・たこ焼き・カルパッチョと用途提案がしやすい。", cook:"刺身／酢の物／たこ焼き／唐揚げ", pop:"「半夏生にはタコ」「夏バテ予防にタウリン」", local:"半夏生の由来POP（豊作祈願）を添えると売場に物語が出る。" },
+  { name:"甘えび", kana:"あまえび", months:[9,10,11,12,1,2,3], point:"とろける甘さで刺身盛りの華。子どもにも人気で、寿司・海鮮丼の具としても強い。", cook:"刺身／寿司／唐揚げ（頭）／味噌汁", pop:"「とろける甘さ 甘えび」「頭は唐揚げ・味噌汁でどうぞ」", local:"日本海の秋冬の定番。頭の出汁活用まで案内するとロス削減にも。" },
+  { name:"ノドグロ", kana:"のどぐろ", months:[9,10,11,12,1], point:"山陰の高級魚（アカムツ）。「白身のトロ」の一言で価値が伝わる。贈答・ハレの日・ちょっと贅沢需要に。", cook:"塩焼き／煮付け／炙り刺身／一夜干し", pop:"「白身のトロ ノドグロ」「特別な日の一尾に」", local:"山陰の看板高級魚。観光客・帰省客への訴求も強い。" },
+  { name:"カレイ", kana:"かれい", months:[10,11,12,1,2,3], point:"煮付けの王道で年配客の支持が厚い。エテガレイ（笹がれい）の一夜干しは山陰土産の定番。", cook:"煮付け／唐揚げ／一夜干し／ムニエル", pop:"「今夜は煮付けでほっこり」「山陰名物 えてがれい干物」", local:"子持ちガレイの季節（冬〜春）は煮付け需要のピーク。" },
+  { name:"宍道湖しじみ", kana:"しじみ", months:[1,2,6,7], point:"島根が誇る全国ブランド。土用しじみ（夏）と寒しじみ（冬）の年2回の旬。肝臓に優しいオルニチン訴求が定番。", cook:"味噌汁／酒蒸し／しぐれ煮", pop:"「宍道湖産 寒しじみ」「飲んだ翌朝に、しじみ汁」", local:"地元最強の名産。砂抜き方法・冷凍で旨み増の豆知識POPが効く。" },
+  { name:"松葉ガニ", kana:"まつばがに", months:[11,12,1,2,3], point:"山陰の冬の王様（ズワイガニ雄）。解禁日（11月上旬）は年間最大級の売場イベント。雌のセコガニは地元通向け。", cook:"茹で／焼きガニ／カニ鍋／カニ刺し", pop:"「松葉ガニ解禁！」「冬の王様、入荷しました」", local:"解禁日カウントダウンPOPで期待感づくり。タグ付きは産地証明。" },
+  { name:"岩がき", kana:"いわがき", months:[6,7,8], point:"夏が旬の「夏がき」。冬の真がきとの違い（大ぶり・クリーミー・生食）を伝えると価値が上がる。", cook:"生食／蒸しがき／フライ", pop:"「海のミルク 夏の岩がき」「隠岐の岩がき、入荷」", local:"隠岐・島根沿岸は岩がきの好産地。海洋深層水浄化などの安心訴求も。" },
+  { name:"うなぎ", kana:"うなぎ", months:[7,8], point:"土用の丑が年間最大の山。予約・当日・翌日以降の3段構えで売り切る。国産・産地表示が単価の決め手。", cook:"蒲焼き／うな丼／ひつまぶし／う巻き", pop:"「土用の丑はうなぎで精をつける」「国産うなぎ 予約承り中」", local:"丑の日前後は保冷・温めなおし方法のPOPが親切。" },
+  { name:"さわら", kana:"さわら", months:[12,1,2,3,4,5], point:"字は「春の魚」だが、山陰・関西で本当に旨いのは脂ののった冬の寒鰆。柔らかい身は焼き物向きで、西京焼き・炙り刺身は単価が取れる。", cook:"西京焼き／塩焼き／炙り刺身／竜田揚げ", pop:"「脂のり最高 寒鰆入荷」「今夜は西京焼きでごちそうに」", local:"日本海の寒鰆は冬のごちそう枠。切身の厚さで価値が伝わる。" },
+  { name:"いさき", kana:"いさき", months:[5,6,7], point:"初夏〜梅雨が旬の「梅雨いさき」。産卵前の脂がのり、白身なのにコクがある。刺身・塩焼きどちらも強い初夏の主役。", cook:"刺身／塩焼き／なめろう／カルパッチョ", pop:"「梅雨いさき、今だけの脂」「初夏の白身の王様」", local:"初夏の山陰の定番。皮目を炙ると香りが立つと一言添えて。" },
+  { name:"かます", kana:"かます", months:[9,10,11], point:"秋が旬。「カマスの焼き食い一升飯」と言われる焼き物の名手。水分が多い魚なので一夜干しにすると旨みが凝縮。", cook:"塩焼き／一夜干し／フライ／炙り刺身", pop:"「焼き食い一升飯 秋かます」「干物でうまみ凝縮」", local:"秋の焼き魚提案の柱。干物加工で日持ちとロス対策も。" },
+  { name:"スルメイカ", kana:"するめいか", months:[6,7,8,9], point:"夏〜秋の大衆イカの代表。丸ごと1杯の値頃感が武器で、刺身から煮付け・イカ飯まで捨てるところなし。", cook:"刺身／煮付け／イカ飯／沖漬け／塩辛", pop:"「まるごと1杯お値打ち」「ワタまで美味しいスルメイカ」", local:"白いか（高級）との使い分けで売場に幅が出る。" },
+  { name:"飛魚（あご）", kana:"とびうお あご", months:[6,7,8], point:"島根県の「県の魚」。夏が旬で、刺身・すり身・焼きと万能。あご野焼き・あごだしは島根の食文化そのもの。", cook:"刺身／たたき／すり身汁／塩焼き", pop:"「島根県の魚 あご入荷」「あごだしの旨さは飛魚から」", local:"あご野焼きは島根名物。県の魚であることをPOPで誇っていい。" },
+  { name:"白カレイ", kana:"しろがれい", months:[11,12,1,2], point:"山陰の冬の食卓を支える上品な白身ガレイ。煮付け・干物の定番で、年配のお客様の指名買いが多い。", cook:"煮付け／一夜干し／唐揚げ／塩焼き", pop:"「山陰の冬の味 白がれい」「ふっくら煮付けで」", local:"山陰では干物・煮付け文化の中心。地物表記が効く。" },
+  { name:"赤カレイ", kana:"あかがれい", months:[11,12,1,2,3], point:"冬の子持ち赤がれいの煮付けは日本海側の冬のごちそう。卵の食べ応えで満足感が高く、単価も取りやすい。", cook:"煮付け（子持ち）／唐揚げ／塩焼き", pop:"「子持ち赤がれい入荷」「冬の煮付けはこれで決まり」", local:"子持ちシーズンは売場の顔。卵の入り具合が価値。" },
+  { name:"カラスガレイ", kana:"からすがれい", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"輸入の脂がのった切身カレイで通年安定。骨離れが良く柔らかいので、煮付け・西京漬けの加工向き。価格も安定。", cook:"煮付け／西京漬け／ムニエル／照り焼き", pop:"「とろける脂 カラスガレイ」「骨離れ良く食べやすい」", local:"地物ガレイと輸入切身の2本立てで価格帯をカバー。" },
+  { name:"カツオ", kana:"かつお", months:[4,5,9,10], point:"春の初鰹はさっぱり、秋の戻り鰹は脂しっかりの2度旬。たたき＋にんにく・薬味のセット販売が鉄板。", cook:"たたき／刺身／漬け丼／竜田揚げ", pop:"「目には青葉 初鰹」「脂のり抜群 戻り鰹」", local:"薬味（にんにく・生姜・ねぎ）の関連陳列で客単価UP。" },
+  { name:"ヒラメ", kana:"ひらめ", months:[11,12,1,2], point:"冬の寒平目は白身の最高峰クラス。刺身・昆布締めの上品な旨みと、えんがわの希少価値で特別感を演出できる。", cook:"刺身／昆布締め／えんがわ／ムニエル", pop:"「寒平目、旨みの頂点」「えんがわ入り刺身盛り」", local:"年末年始の刺身盛りの格上げ役。天然表記は強い。" },
+  { name:"石鯛", kana:"いしだい", months:[6,7,8], point:"磯の王者と呼ばれる夏の高級魚。歯ごたえある甘い白身で、刺身の食べ比べ提案に向く。入荷したら目玉に。", cook:"刺身／薄造り／塩焼き／あら汁", pop:"「磯の王者 石鯛入荷」「コリコリ甘い夏の白身」", local:"数が出る魚ではないので「本日限り」の希少訴求で。" },
+  { name:"メバル", kana:"めばる", months:[3,4,5], point:"春告魚（はるつげうお）。煮付けにして旨い魚の代表格で、春の売場の空気を作る。ふっくらした身離れの良さが持ち味。", cook:"煮付け／塩焼き／唐揚げ／アクアパッツァ", pop:"「春告魚 めばる入荷」「今夜はふっくら煮付けで」", local:"「春を告げる魚」の一言で季節感が一気に出る。" },
+  { name:"キカナ（アオハタ）", kana:"きかな あおはた", months:[6,7,8,9], point:"島根県東部・鳥取県西部での呼び名。ハタ類らしい上品で甘い白身は鍋・煮付け・刺身と万能。地物の顔になる魚。", cook:"煮付け／鍋／刺身／塩焼き", pop:"「地物キカナ（アオハタ）入荷」「ハタの旨みをお値打ちに」", local:"「キカナ」の呼び名自体が地元の言葉。呼び名POPで会話が生まれる。" },
+  { name:"連子鯛", kana:"れんこだい", months:[9,10,11,12], point:"標準和名キダイ。小ぶりで手頃な「もうひとつの鯛」。塩焼き・姿焼きで祝い需要にも応えられるコスパの良さが武器。", cook:"塩焼き／姿焼き／煮付け／鯛めし", pop:"「お手頃サイズの祝い鯛」「連子鯛の塩焼きで晩酌」", local:"日本海側で水揚げが多い。真鯛より気軽な鯛として提案。" },
+  { name:"チヌ（クロダイ）", kana:"ちぬ くろだい", months:[4,5,6], point:"春の乗っ込みシーズンが食べどき。真鯛に劣らぬ白身で価格は手頃。下処理（血抜き・皮目）をきちんと伝えると評価が上がる。", cook:"刺身／洗い／塩焼き／煮付け", pop:"「春のちぬ、お値打ち白身」「洗いでさっぱりと」", local:"釣り人に馴染み深い魚。地物・天然表記との相性が良い。" },
+  { name:"シイラ", kana:"しいら", months:[7,8,9], point:"夏の魚。ハワイでは高級魚「マヒマヒ」。クセのない身はムニエル・フライで化ける。鮮度落ちが早いので回転勝負。", cook:"ムニエル／フライ／竜田揚げ／照り焼き", pop:"「ハワイの高級魚マヒマヒ」「フライでふわふわ」", local:"洋風提案が刺さる若い層向け。切身加工で買いやすく。" },
+  { name:"アトランティックサーモン", kana:"あとらんてぃっくさーもん", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"ノルウェー等の海面養殖で、生食用サーモンの主力。脂のりと品質が年間ブレないので刺身・寿司の計画が立てやすい。", cook:"刺身／寿司／カルパッチョ／ポキ丼", pop:"「とろけるノルウェーサーモン」「サーモン祭り開催」", local:"「生食用・養殖・ノルウェー産」の3点表示で安心感。" },
+  { name:"トラウトサーモン", kana:"とらうとさーもん", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"チリ等で海面養殖されるニジマス。鮮やかな色と手頃な価格が武器で、アトランティックとの価格2段構えが組める。", cook:"刺身／寿司／漬け丼／ホイル焼き", pop:"「色鮮やか トラウトサーモン」「お値打ちサーモンはこちら」", local:"名前の違いを聞かれたら「養殖ニジマス」と答えられるように。" },
+  { name:"エイ", kana:"えい", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"煮付け・煮こごりで愛される通好みの魚。コリコリした軟骨ごと食べられ、冷めると煮こごりになるのが持ち味。", cook:"煮付け／煮こごり／唐揚げ／味噌煮", pop:"「昔ながらのエイの煮付け」「煮こごりまで美味しい」", local:"年配のお客様の指名買いが根強い。切身で買いやすく。" },
+  { name:"パンガシウス", kana:"ぱんがしうす", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"東南アジア養殖の白身魚。骨なし・皮なしでクセがなく、フライ・ムニエルで子どもに食べさせやすい。低価格で通年安定。", cook:"フライ／ムニエル／ソテー／天ぷら", pop:"「骨なし白身でお子さまも安心」「フライにぴったり」", local:"「魚は骨が…」という声への答え。時短・簡便needsに。" },
+  { name:"ホタルイカ", kana:"ほたるいか", months:[3,4,5], point:"春の風物詩。ボイルの酢味噌和えが定番で、沖漬け・炊き込みご飯など提案の幅も広い。春の売場の彩り役。", cook:"ボイル酢味噌／沖漬け／炊き込みご飯／パスタ", pop:"「春の便り ホタルイカ」「酢味噌でキュッと一杯」", local:"季節の入れ替わりを告げる商材。菜の花と関連陳列も春らしい。" },
+  { name:"ハマグリ", kana:"はまぐり", months:[2,3,4], point:"ひな祭りの必需品。「貝殻がぴったり合うのは一対だけ＝良縁」の縁起で、お吸い物需要が集中する。焼きはまぐりも強い。", cook:"お吸い物／酒蒸し／焼きはまぐり／パスタ", pop:"「ひな祭りにははまぐりのお吸い物」「良縁を願う縁起物」", local:"3月3日前の1週間が勝負。縁起の由来POPが効く。" },
+  { name:"ホンビノス貝", kana:"ほんびのすがい", months:[1,2,3,4,5,6,7,8,9,10,11,12], point:"出汁の濃さとお値打ち感で急成長中の貝。ハマグリより安く、酒蒸し・クラムチャウダー・BBQと洋和どちらもいける。", cook:"酒蒸し／クラムチャウダー／焼き貝／パスタ", pop:"「濃厚だしのホンビノス貝」「BBQの主役にどうぞ」", local:"「白ハマグリ」とも。ハマグリとの価格比較で値頃感が際立つ。" },
+  { name:"牡蠣（真がき）", kana:"かき まがき", months:[11,12,1,2,3], point:"冬の主役。鍋・カキフライ・生食と用途が広く、加熱用と生食用の表示区分をはっきり見せるのが信頼の基本。", cook:"カキフライ／土手鍋／生食／蒸し牡蠣", pop:"「海のミルク 真がき入荷」「今夜はカキフライで決まり」", local:"夏の岩がきと冬の真がきで年間の牡蠣売場が完成する。" },
+  { name:"鱈", kana:"たら", months:[12,1,2], point:"冬の鍋の王道白身。切身は鍋・ムニエル・ホイル焼きと万能で、白子は冬だけの宝物として別格の単価が取れる。", cook:"鍋／ムニエル／ホイル焼き／白子ポン酢", pop:"「鍋の王様 真だら」「冬だけのごちそう 白子入荷」", local:"白子は入荷したら必ず目立たせる。鍋つゆの関連陳列も。" },
+  { name:"クエ", kana:"くえ", months:[11,12,1,2], point:"「幻の高級魚」。上品な脂とゼラチン質の旨みで鍋の最高峰。入荷自体がニュースなので、予約や特別な日需要と組み合わせる。", cook:"クエ鍋／刺身／湯引き／あら炊き", pop:"「幻の高級魚クエ、入荷しました」「一年に一度の贅沢鍋」", local:"「本日入荷」の速報性が最大の武器。SNS映えする売場に。" },
+  { name:"ヒラマサ", kana:"ひらまさ", months:[5,6,7,8], point:"ブリ御三家（ブリ・カンパチ・ヒラマサ）の夏担当。ブリより上品な脂と強い歯ごたえで、夏に刺身が売れる青物。", cook:"刺身／カルパッチョ／照り焼き／漬け丼", pop:"「夏のブリ格 ヒラマサ」「歯ごたえ自慢の夏刺身」", local:"「夏はブリじゃなくヒラマサ」の一言で違いが伝わる。" },
+  { name:"しらす", kana:"しらす", months:[4,5,9,10], point:"春と秋の2度旬。釜揚げのふんわり感と手軽さで、丼・冷奴・パスタと毎日の食卓に入り込める。カルシウム訴求も鉄板。", cook:"しらす丼／冷奴／卵とじ／ペペロンチーノ", pop:"「ふんわり釜揚げしらす」「カルシウムたっぷり」", local:"ごはん・豆腐売場との関連販売で買い忘れを防ぐ。" },
+  { name:"ばとう鯛（マトウダイ）", kana:"ばとうだい まとうだい", months:[11,12,1,2], point:"島根で「バトウ」と呼ばれる冬の白身。フランスでは高級魚（サンピエール）でムニエルの定番。肝も美味しい通の魚。", cook:"刺身／ムニエル／煮付け／肝ポン酢", pop:"「山陰の冬の白身 バトウ」「フランスでは高級魚サンピエール」", local:"的のような模様が名の由来。島根の冬の隠れた名物。" },
+];
+
+function FishTab() {
+  const [q, setQ] = useState("");
+  const [openIdx, setOpenIdx] = useState(null);
+  const nowM = new Date().getMonth() + 1;
+  const inSeason = f => f.months.includes(nowM);
+  const seasonAll = f => f.months.length >= 12;
+  const nq = normJa(q);
+  const list = FISH_DB
+    .filter(f => !nq || normJa(f.name).includes(nq) || normJa(f.kana).includes(nq) || normJa(f.point).includes(nq))
+    .sort((a,b) => (inSeason(b) && !seasonAll(b) ? 1 : 0) - (inSeason(a) && !seasonAll(a) ? 1 : 0));
+  const mLabel = f => seasonAll(f) ? "通年" : f.months.join("・") + "月";
+
+  return (
+    <div className="min-vh" style={{ background:"var(--bg)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+        <div style={{ maxWidth:600, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>魚図鑑</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース</div>
+        </div>
+      </div>
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"14px 16px 120px" }}>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="魚の名前やキーワードで検索…"
+          style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:12, padding:"11px 14px", fontSize:14, marginBottom:12, background:"#fff" }} />
+        {list.map((f) => {
+          const idx = FISH_DB.indexOf(f);
+          const open = openIdx === idx;
+          const now = inSeason(f) && !seasonAll(f);
+          return (
+            <div key={f.name} onClick={() => setOpenIdx(open ? null : idx)}
+              style={{ background:"#fff", border: now ? "1.5px solid var(--primary)" : "1px solid var(--line)", borderRadius:13, padding:"12px 14px", marginBottom:9, cursor:"pointer" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ fontSize:15.5, fontWeight:900, color:"var(--ink)" }}>{f.name}</span>
+                {now && <span style={{ fontSize:10, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:7, padding:"2px 7px" }}>今が旬</span>}
+                <span style={{ fontSize:10.5, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 7px" }}>{mLabel(f)}</span>
+                <span style={{ marginLeft:"auto", color:"var(--faint)", fontSize:13, transform: open ? "rotate(90deg)" : "none", transition:"transform .2s" }}>›</span>
+              </div>
+              {!open && <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.point}</div>}
+              {open && (
+                <div style={{ marginTop:9, fontSize:12.5, color:"var(--text)", lineHeight:1.8 }}>
+                  <div>{f.point}</div>
+                  <div style={{ height:1, background:"var(--line)", margin:"9px 0" }} />
+                  <div><b style={{ color:"var(--ink)" }}>🍳 調理・食べ方：</b>{f.cook}</div>
+                  <div style={{ marginTop:4 }}><b style={{ color:"var(--ink)" }}>📝 POPフレーズ例：</b><span style={{ color:"var(--soft-text)" }}>{f.pop}</span></div>
+                  <div style={{ marginTop:4 }}><b style={{ color:"var(--ink)" }}>📍 山陰メモ：</b>{f.local}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {list.length === 0 && <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0", fontSize:13 }}>見つかりませんでした</div>}
+        <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:8, lineHeight:1.7 }}>内容はAIが知識から書き下ろした参考情報です。<br/>追加したい魚や直したい内容があれば管理者へ。</div>
+      </div>
+    </div>
+  );
 }
 
 function CalendarTab() {
@@ -4375,6 +4543,21 @@ function App() {
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [showGneHint, setShowGneHint] = useState(true);
+  const [wxCode, setWxCode] = useState(null);
+
+  // 天気テーマ（ヘッダー背景をDynamic Island裏まで描画）
+  const skyTheme = (() => {
+    const hour = new Date().getHours();
+    const night = hour >= 19 || hour < 5;
+    const base = { bg:"linear-gradient(180deg,#8FA0B0 0%,#E8ECEF 70%,#ffffff 100%)", txtDark:true };  // フォールバック（通常）
+    if (wxCode == null) return base;
+    if (night) return { bg:"linear-gradient(180deg,#1E2A4A 0%,#2F3E63 55%,#4A5B85 100%)", pat:"radial-gradient(circle, rgba(255,255,255,0.85) 0.7px, transparent 1px)", patSize:"110px 80px", txtDark:false };
+    const c = wxCode;
+    if (c <= 1) return { bg:"linear-gradient(180deg,#5B9BD5 0%,#93C4EC 55%,#CFE7F9 100%)", txtDark:true };
+    if (c <= 3 || c === 45 || c === 48) return { bg:"linear-gradient(180deg,#8A9BAC 0%,#BECAD5 55%,#E9EDF1 100%)", txtDark:true };
+    if ((c >= 71 && c <= 77) || c === 85 || c === 86) return { bg:"linear-gradient(180deg,#93AEC4 0%,#C9DCEA 60%,#EFF6FB 100%)", pat:"radial-gradient(circle, #ffffff 1.2px, transparent 1.5px)", patSize:"48px 40px", txtDark:true };
+    return { bg:"linear-gradient(180deg,#3F4F66 0%,#5A6C86 60%,#7C90A7 100%)", pat:"repeating-linear-gradient(75deg, rgba(255,255,255,0.10) 0px, rgba(255,255,255,0.10) 1px, transparent 1px, transparent 15px)", txtDark:false };  // 雨・雷
+  })();
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
   const [pullY, setPullY] = useState(0);
@@ -4480,16 +4663,18 @@ function App() {
         </div>
       )}
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)" }}>
-        {/* 白いバー：タイトルと一緒にスクロールで流れて消える（ガラス効果なし） */}
-        <div style={{ position:"absolute", inset:0, background:"#fff", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", opacity:1-scrollP, pointerEvents:"none" }} />
+        {/* 天気テーマ背景：Dynamic Island裏（画面最上端）まで描画。操作UIはセーフエリア内 */}
+        <div style={{ position:"absolute", inset:0, background: skyTheme.bg, boxShadow:"0 2px 12px rgba(0,0,0,0.10)", pointerEvents:"none", overflow:"hidden" }}>
+          {skyTheme.pat && <div style={{ position:"absolute", inset:0, backgroundImage: skyTheme.pat, backgroundSize: skyTheme.patSize || "auto" }} />}
+        </div>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0, flex:1, overflow:"hidden",
             transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
-            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>鮮魚ポップ共有</div>
-            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--chip)", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5 }}>＋投稿</button>
+            <div style={{ fontSize:16, fontWeight:900, color: skyTheme.txtDark ? "var(--ink)" : "#fff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)" }}>鮮魚ポップ共有</div>
+            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.88)", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5, backdropFilter:"blur(4px)" }}>＋投稿</button>
           </div>
           {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
-          <div style={{ flexShrink:0 }}><WeatherWidget /></div>
+          <div style={{ flexShrink:0 }}><WeatherWidget onTheme={setWxCode} /></div>
         </div>
       </div>
 
@@ -4511,6 +4696,7 @@ function App() {
       {tab==="industry" && <IndustryTab />}
       {tab==="competitor" && <CompetitorTab />}
       {tab==="calendar" && <CalendarTab />}
+      {tab==="fish" && <FishTab />}
       {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -4520,7 +4706,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="fish"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -4555,7 +4741,7 @@ function App() {
             <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
             <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
-              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"GNE"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
+              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"fish", icon:"🐠", label:"魚図鑑", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"GNE"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
                   <span style={{ position:"relative", width:56, height:56, borderRadius:17, background: tab===o.key ? "var(--soft)" : "var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1.5px solid transparent" }}>
