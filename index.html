@@ -92,6 +92,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-05", type:"新機能", title:"投稿時にA4比率をチェック", body:"ポップをアップロードする時、選んだ画像がA4サイズの比率（縦横 1:1.41）から大きくずれている場合に「A4の比率からずれています」とお知らせするようにしました。縦向き・横向きも自動で判別します。そのままでも投稿できますが、印刷時の余白や見切れを事前に気づけます。" },
   { date:"2026-07-05", type:"改善", title:"下のナビをフローティング型に一新", body:"画面下のナビゲーション（一覧・検索・メニュー）を、画面から少し浮いた丸いカプセル型のデザインに変更しました。アイコンと文字が付いて、今どこを開いているかが分かりやすくなっています。すりガラス風の半透明で、下のコンテンツが透けて見えます。" },
   { date:"2026-07-05", type:"改善", title:"ポップの並び順を「左上から横読み」に変更", body:"一覧・検索・売場写真の並び順を、これまでの縦に流れる配置から、新しい順に「左上から右へ 1・2・3…、次の行へ」と横方向に読める配置に変更しました。どれが新しい投稿かひと目で分かりやすくなっています。" },
   { date:"2026-07-05", type:"改善", title:"POP詳細を全画面ビューアに刷新", body:"ポップをタップすると、画像が画面いっぱいに大きく表示されるようになりました（YouTubeショートのようなイメージ）。右側にいいね・コメント・保存・作成・削除のボタンが縦に並び、コメントは下から出るシートで一覧・投稿できます。商品名・店舗・投稿者は画像の上に重ねて表示。ポップを最大限大きく見られます。" },
@@ -548,12 +549,29 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [ratioWarn, setRatioWarn] = useState("");
 
   const onFile = e => {
     const f = e.target.files[0];
     if (!f) return;
     setFile(f);
-    setPreview(URL.createObjectURL(f));
+    const url = URL.createObjectURL(f);
+    setPreview(url);
+    setRatioWarn("");
+    const im = new Image();
+    im.onload = () => {
+      const A4 = 1.41421, TOL = 0.06;
+      const w = im.naturalWidth, h = im.naturalHeight;
+      if (!w || !h) return;
+      const isPortrait = h >= w;
+      const ratio = isPortrait ? h / w : w / h;
+      const diff = Math.abs(ratio - A4) / A4;
+      if (diff > TOL) {
+        const near = ratio > A4 ? "細長め" : "詰まり気味";
+        setRatioWarn(`この画像は${isPortrait ? "縦" : "横"}向きですが、A4の比率（1:1.41）から${near}にずれています（今およそ 1:${ratio.toFixed(2)}）。このままでも投稿できますが、印刷時に余白や見切れが出る場合があります。`);
+      }
+    };
+    im.src = url;
   };
 
   const submit = async () => {
@@ -611,6 +629,12 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
               {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>タップして選択</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
+            {ratioWarn && (
+              <div style={{ marginTop:8, background:"#fff6de", border:"1px solid #eeddad", color:"#8a6d00", borderRadius:10, padding:"10px 12px", fontSize:12, fontWeight:700, lineHeight:1.6, display:"flex", gap:8, alignItems:"flex-start" }}>
+                <span style={{ fontSize:15, lineHeight:1.3 }}>📐</span>
+                <span>{ratioWarn}</span>
+              </div>
+            )}
           </div>
           {error && <div style={{ color:"var(--primary)", fontSize:13, fontWeight:600 }}>{error}</div>}
           <button onClick={submit} disabled={loading} style={{ background:"var(--primary)", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
@@ -5092,7 +5116,7 @@ function App() {
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"calc(env(safe-area-inset-bottom) + 10px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", gap:4, background:"rgba(255,255,255,0.92)", backdropFilter:"blur(12px)", border:"1px solid var(--line)", borderRadius:30, boxShadow:"0 6px 24px rgba(0,0,0,0.14)", padding:"6px 8px", pointerEvents:"auto" }}>
+       <div style={{ display:"flex", alignItems:"center", gap:4, background: moreOpen ? "transparent" : "rgba(255,255,255,0.92)", backdropFilter: moreOpen ? "none" : "blur(12px)", border: moreOpen ? "1px solid transparent" : "1px solid var(--line)", borderRadius:30, boxShadow: moreOpen ? "none" : "0 6px 24px rgba(0,0,0,0.14)", padding:"6px 8px", pointerEvents:"auto", transition:"background .2s, box-shadow .2s" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="fish"||tab==="popcheck"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
@@ -5124,7 +5148,7 @@ function App() {
         <>
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
-          <div style={{ position:"fixed", left:0, right:0, bottom:"calc(74px + env(safe-area-inset-bottom))", zIndex:202, background:"var(--bg)", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.18)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 16px 18px" }}>
+          <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:202, background:"var(--bg)", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.18)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 16px calc(92px + env(safe-area-inset-bottom))" }}>
             <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
             <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
