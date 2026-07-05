@@ -92,6 +92,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-05", type:"新機能", title:"「POP診断」機能を追加", body:"☰メニューに「POP診断」を追加しました。POP画像をアップロード（または最近のPOPから選択）すると、色数・明るさ・彩度・コントラスト・情報量・余白を自動で解析し、A〜Dの総合評価・良い点・改善案を日本語コメントで表示します。「色を使いすぎていないか」「ごちゃついていないか」を印刷前にチェックできます。解析はスマホの中だけで行われ、画像が外部に送信されることはありません。" },
   { date:"2026-07-05", type:"改善", title:"魚図鑑が44魚種に大幅拡充", body:"魚図鑑に29魚種を追加しました。さわら・いさき・かます・スルメイカ・飛魚（あご）・白カレイ・赤カレイ・カラスガレイ・カツオ・ヒラメ・石鯛・メバル・キカナ（アオハタ）・連子鯛・チヌ・シイラ・アトランティックサーモン・トラウトサーモン・エイ・パンガシウス・ホタルイカ・ハマグリ・ホンビノス貝・真がき・鱈・クエ・ヒラマサ・しらす・ばとう鯛。山陰の呼び名（キカナ・バトウ・あご）も収録しています。" },
   { date:"2026-07-05", type:"改善", title:"上部の黒帯を解消：天気で変わる空の背景に", body:"iPhoneのホーム画面から開いたとき、画面上部（Dynamic Island周辺）が黒く見えていたのを改善しました。ヘッダーの背景が画面のいちばん上まで伸び、天気に合わせて表情が変わります：晴れ=青空、曇り=グレーの空、雨=雨模様、雪=雪の粒、夜（19時以降）=星空。時計や電池表示に文字が被らないよう、ボタン類の位置は変わっていません。" },
   { date:"2026-07-05", type:"新機能", title:"気象警報の表示＆「魚図鑑」を追加", body:"①「今日の情報」に気象庁の警報・注意報（出雲市）が表示されるようになりました。大雨・波浪・強風などが出ると色つきで表示され、時化のときは「入荷・地物に影響が出るかも」の一言も。猛暑日予想（35°以上）も自動でお知らせします。②☰メニューに「魚図鑑」を追加。真あじ・白いか・ノドグロ・宍道湖しじみ・松葉ガニなど14魚種の旬・売りポイント・調理法・POPフレーズ例をまとめました。今が旬の魚が上に表示され、検索もできます。" },
@@ -3265,6 +3266,317 @@ function soubaWari(pct) {
   return `約${s}割`;
 }
 
+// ===== POP診断：画像をブラウザ内で解析（外部送信なし） =====
+const POPCHECK_TH = {  // 閾値（あとで調整しやすいよう定数化）
+  RESIZE: 480,          // 解析用の最大辺
+  SAMPLE_STEP: 4,       // KMeansのサンプリング間隔（px）
+  KMEANS_K: 8, KMEANS_ITER: 10, COLOR_MIN_SHARE: 0.05,
+  EDGE_MAG: 60,         // エッジ判定のしきい値
+  MARGIN_BAND: 0.08,    // 余白判定：端から8%
+  BRIGHT_IDEAL: 62, CONTRAST_LO: 40, CONTRAST_HI: 78, SAT_HI: 60, CLUTTER_HI: 45,
+};
+
+function popcheckAnalyze(img) {
+  const T = POPCHECK_TH;
+  const scale = Math.min(1, T.RESIZE / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h);
+  const d = ctx.getImageData(0, 0, w, h).data;
+  const N = w * h;
+
+  // --- 輝度・彩度 ---
+  const luma = new Float32Array(N);
+  let sumL = 0, sumS = 0;
+  for (let i = 0; i < N; i++) {
+    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
+    const l = 0.299*r + 0.587*g + 0.114*b;
+    luma[i] = l; sumL += l;
+    const mx = Math.max(r,g,b), mn = Math.min(r,g,b);
+    sumS += mx === 0 ? 0 : (mx - mn) / mx;
+  }
+  const meanL = sumL / N;
+  let varL = 0; for (let i = 0; i < N; i++) varL += (luma[i]-meanL)*(luma[i]-meanL);
+  const stdL = Math.sqrt(varL / N);
+  const brightness = Math.round(meanL / 255 * 100);
+  const saturation = Math.round(sumS / N * 100);
+  const contrast = Math.round(Math.min(100, stdL / 80 * 100));
+
+  // --- エッジ（Sobel） ---
+  const edge = new Uint8Array(N);
+  let edgeCount = 0;
+  for (let y = 1; y < h-1; y++) for (let x = 1; x < w-1; x++) {
+    const i = y*w+x;
+    const gx = -luma[i-w-1] - 2*luma[i-1] - luma[i+w-1] + luma[i-w+1] + 2*luma[i+1] + luma[i+w+1];
+    const gy = -luma[i-w-1] - 2*luma[i-w] - luma[i-w+1] + luma[i+w-1] + 2*luma[i+w] + luma[i+w+1];
+    if (Math.sqrt(gx*gx + gy*gy) > T.EDGE_MAG) { edge[i] = 1; edgeCount++; }
+  }
+  const clutter = Math.round(Math.min(100, edgeCount / N * 100 * 2.4));
+
+  // --- 余白（端バンドのエッジ密度） ---
+  const band = Math.max(2, Math.round(Math.min(w, h) * T.MARGIN_BAND));
+  const bandDensity = (x0, y0, x1, y1) => {
+    let c = 0, n = 0;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { n++; if (edge[y*w+x]) c++; }
+    return n ? c / n : 0;
+  };
+  const eTop = bandDensity(0, 0, w, band);
+  const eBottom = bandDensity(0, h-band, w, h);
+  const eLeft = bandDensity(0, 0, band, h);
+  const eRight = bandDensity(w-band, 0, w, h);
+  const worst = Math.max(eTop, eBottom, eLeft, eRight);
+  const marginScore = Math.round(Math.max(0, 100 - worst * 100 * 2.2));
+
+  // --- KMeans 主要色 ---
+  const samples = [];
+  for (let y = 0; y < h; y += T.SAMPLE_STEP) for (let x = 0; x < w; x += T.SAMPLE_STEP) {
+    const i = (y*w+x)*4; samples.push([d[i], d[i+1], d[i+2]]);
+  }
+  let cents = [];
+  for (let k = 0; k < T.KMEANS_K; k++) cents.push(samples[Math.floor(samples.length * (k + 0.5) / T.KMEANS_K)].slice());
+  let asn = new Array(samples.length).fill(0);
+  for (let it = 0; it < T.KMEANS_ITER; it++) {
+    for (let si = 0; si < samples.length; si++) {
+      let bd = 1e12, bi = 0;
+      for (let k = 0; k < cents.length; k++) {
+        const dx = samples[si][0]-cents[k][0], dy = samples[si][1]-cents[k][1], dz = samples[si][2]-cents[k][2];
+        const dist = dx*dx + dy*dy + dz*dz;
+        if (dist < bd) { bd = dist; bi = k; }
+      }
+      asn[si] = bi;
+    }
+    const acc = cents.map(() => [0,0,0,0]);
+    for (let si = 0; si < samples.length; si++) { const a = acc[asn[si]]; a[0]+=samples[si][0]; a[1]+=samples[si][1]; a[2]+=samples[si][2]; a[3]++; }
+    cents = acc.map((a,k) => a[3] ? [a[0]/a[3], a[1]/a[3], a[2]/a[3]] : cents[k]);
+  }
+  const shares = cents.map((c,k) => ({ c, n: asn.filter(a => a === k).length / samples.length })).sort((a,b) => b.n - a.n);
+  const colorCount = shares.filter(x => x.n >= T.COLOR_MIN_SHARE).length;
+  const hex = v => "#" + [0,1,2].map(j => Math.round(v[j]).toString(16).padStart(2,"0")).join("");
+  const dominant = shares.slice(0, 5).map(x => hex(x.c));
+
+  return { brightness, saturation, contrast, clutter, marginScore, colorCount, dominant,
+           edges: { top: eTop, bottom: eBottom, left: eLeft, right: eRight } };
+}
+
+function popcheckJudge(m) {
+  const T = POPCHECK_TH;
+  const lv = {}, cm = {};
+  // 色数
+  lv.color = m.colorCount <= 4 ? "少なめ" : m.colorCount <= 6 ? "適度" : "やや多い";
+  cm.color = m.colorCount <= 4 ? "色数が絞られていて、まとまりのある印象です。"
+    : m.colorCount <= 6 ? "色数は適度で、まとまりがあります。"
+    : "主要色が多く、少しにぎやかに見える可能性があります。使う色を2〜3色に絞ると締まります。";
+  // 明るさ
+  lv.brightness = m.brightness >= 78 ? "かなり明るい" : m.brightness >= 55 ? "明るい" : m.brightness >= 35 ? "適度" : "暗め";
+  cm.brightness = m.brightness >= 78 ? "かなり明るいため、白背景や黄色部分が眩しく見える可能性があります。"
+    : m.brightness >= 55 ? "全体的に明るく、売場で目立ちやすいです。"
+    : m.brightness >= 35 ? "明るさは落ち着いていて、上品な印象です。"
+    : "やや暗めなので、商品名やメインコピーの視認性に注意してください。";
+  // 彩度
+  lv.saturation = m.saturation >= T.SAT_HI ? "高め" : m.saturation >= 30 ? "適度" : "落ち着き";
+  cm.saturation = m.saturation >= 75 ? "彩度が高すぎるため、派手さや眩しさが出る可能性があります。"
+    : m.saturation >= T.SAT_HI ? "彩度が高く、かなり目を引くPOPです。"
+    : m.saturation >= 30 ? "彩度のバランスが良く、自然に目に入ります。"
+    : "彩度は落ち着いており、和モダンな印象に向いています。";
+  // コントラスト
+  lv.contrast = m.contrast >= T.CONTRAST_HI ? "強め" : m.contrast >= T.CONTRAST_LO ? "適度" : "弱め";
+  cm.contrast = m.contrast >= T.CONTRAST_HI ? "コントラストが強すぎるため、全体が少し騒がしく見える可能性があります。"
+    : m.contrast >= T.CONTRAST_LO ? "コントラストがしっかりあり、見出しが目立ちやすい構成です。"
+    : "コントラストが弱めなので、文字と背景の差を強くすると見やすくなります。";
+  // 情報量
+  lv.clutter = m.clutter >= 65 ? "多い" : m.clutter >= T.CLUTTER_HI ? "やや多い" : "適度";
+  cm.clutter = m.clutter >= 65 ? "背景・イラスト・文字要素が多く、売場では少し読みにくい可能性があります。"
+    : m.clutter >= T.CLUTTER_HI ? "細かい要素が多く、やや情報量が多いPOPです。"
+    : "情報量は適度で、見やすい構成です。";
+  // 余白
+  lv.margin = m.marginScore >= 65 ? "十分" : m.marginScore >= 45 ? "やや狭い" : "狭い";
+  const worstSide = Object.entries(m.edges).sort((a,b) => b[1]-a[1])[0][0];
+  const sideJa = { top:"上", bottom:"下", left:"左", right:"右" }[worstSide];
+  cm.margin = m.marginScore >= 65 ? "余白は比較的安定しており、印刷時にも安心です。"
+    : m.marginScore >= 45 ? `${sideJa}端に要素が近く、印刷時に少し窮屈に見える可能性があります。`
+    : `${sideJa}端をはじめ要素が端に詰まっていて、窮屈に見える可能性があります。`;
+
+  // 個別の良さスコア（0-100）
+  const gBright = Math.max(0, 100 - Math.abs(m.brightness - T.BRIGHT_IDEAL) * 1.6);
+  const gSat = m.saturation <= T.SAT_HI ? 100 : Math.max(0, 100 - (m.saturation - T.SAT_HI) * 2.0);
+  const gCon = (m.contrast >= T.CONTRAST_LO && m.contrast <= T.CONTRAST_HI) ? 100 : Math.max(0, 100 - Math.min(Math.abs(m.contrast - T.CONTRAST_LO), Math.abs(m.contrast - T.CONTRAST_HI)) * 1.8);
+  const gClut = m.clutter <= T.CLUTTER_HI ? 100 : Math.max(0, 100 - (m.clutter - T.CLUTTER_HI) * 1.8);
+  const gCol = m.colorCount <= 6 ? 100 : Math.max(0, 100 - (m.colorCount - 6) * 12);
+  const total = Math.round(gBright*0.15 + gSat*0.2 + gCon*0.15 + gClut*0.25 + m.marginScore*0.1 + gCol*0.15);
+  const grade = total >= 85 ? "A" : total >= 70 ? "B" : total >= 55 ? "C" : "D";
+
+  const good = [];
+  if (m.brightness >= 55 && m.brightness < 78) good.push("明るく目を引きやすい");
+  if (m.contrast >= T.CONTRAST_LO && m.contrast <= T.CONTRAST_HI) good.push("見出しが目立ちやすいコントラスト");
+  if (m.colorCount <= 6) good.push("色数がまとまっている");
+  if (m.clutter < T.CLUTTER_HI) good.push("情報量が適度で読みやすい");
+  if (m.marginScore >= 65) good.push("余白が安定していて印刷に安心");
+  if (m.saturation >= 30 && m.saturation < T.SAT_HI) good.push("彩度のバランスが自然");
+  if (!good.length) good.push("売場で注目されやすい存在感がある");
+
+  const imp = [];
+  if (m.saturation >= T.SAT_HI) imp.push("背景の彩度を少し下げる");
+  if (m.clutter >= T.CLUTTER_HI) imp.push("説明文や装飾を少し減らす");
+  if (m.marginScore < 65) imp.push("上下左右の余白を少し増やす");
+  if (m.colorCount > 6) imp.push("使う色を2〜3色に絞る");
+  if (m.brightness >= 78) imp.push("白・黄色の面積を少し抑える");
+  if (m.brightness < 35) imp.push("背景を明るくして文字を読みやすく");
+  if (m.contrast < T.CONTRAST_LO) imp.push("文字と背景の明暗差を強くする");
+  if (!imp.length) imp.push("このままでOK。現状のバランスを保って");
+
+  const summary = total >= 85 ? "色数・明るさ・余白のバランスが良く、売場で使いやすいPOPです。"
+    : total >= 70 ? "全体的に目を引くPOPですが、" + (m.saturation >= T.SAT_HI ? "彩度" : "一部の要素") + (m.clutter >= T.CLUTTER_HI ? "と情報量がやや高めです。" : "がやや強めです。") + "少し整えるとさらに見やすくなります。"
+    : total >= 55 ? "見出しは目立ちますが、要素が多めでややごちゃついて見える可能性があります。装飾を減らし余白を作ると改善します。"
+    : "売場で読みにくくなる要素が重なっています。色数・情報量・余白を見直すことをおすすめします。";
+
+  return { total, grade, summary, lv, cm, good, imp };
+}
+
+function PopCheckTab() {
+  const [src, setSrc] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState(null);
+  const [err, setErr] = useState("");
+  const [picker, setPicker] = useState(false);
+  const [recent, setRecent] = useState([]);
+  const imgRef = React.useRef(null);
+
+  const runAnalyze = () => {
+    const img = imgRef.current;
+    if (!img || !img.complete || !img.naturalWidth) { setErr("画像の読み込みが終わっていません。少し待ってから再度お試しください。"); return; }
+    setBusy(true); setErr("");
+    setTimeout(() => {
+      try {
+        const m = popcheckAnalyze(img);
+        const j = popcheckJudge(m);
+        setRes({ m, j });
+      } catch(e) {
+        console.error(e);
+        setErr("解析に失敗しました。画像形式が未対応（HEICなど）の可能性があります。JPEG/PNGでお試しください。");
+      } finally { setBusy(false); }
+    }, 60);
+  };
+
+  const onFile = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setRes(null); setErr("");
+    setSrc(URL.createObjectURL(f));
+  };
+
+  const openPicker = async () => {
+    setPicker(true);
+    if (!recent.length) {
+      try { const d = await api.listActive(); setRecent(d.slice(0, 12)); } catch(e) {}
+    }
+  };
+
+  const barColor = (v) => v >= 70 ? "#1a6b3a" : v >= 45 ? "#C7892B" : "#b3261e";
+  const Row = ({ label, level, score, comment }) => (
+    <div style={{ marginBottom:11 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+        <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", width:78, flexShrink:0 }}>{label}</span>
+        <span style={{ fontSize:11, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px", flexShrink:0 }}>{level}</span>
+        <div style={{ flex:1, height:6, background:"var(--chip)", borderRadius:3, overflow:"hidden" }}>
+          <div style={{ width:`${score}%`, height:"100%", background:barColor(score), borderRadius:3, transition:"width .5s ease" }} />
+        </div>
+        <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", width:26, textAlign:"right", flexShrink:0 }}>{score}</span>
+      </div>
+      <div style={{ fontSize:11.5, color:"var(--text)", lineHeight:1.6, marginTop:3, paddingLeft:2 }}>{comment}</div>
+    </div>
+  );
+
+  return (
+    <div className="min-vh" style={{ background:"var(--bg)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+        <div style={{ maxWidth:600, margin:"0 auto" }}>
+          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>POP診断</div>
+          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません</div>
+        </div>
+      </div>
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+
+        <div className="wcard">
+          <div style={{ display:"flex", gap:8 }}>
+            <label style={{ flex:1, display:"block", textAlign:"center", border:"1.5px dashed var(--line)", borderRadius:11, padding:"14px 8px", fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer", background:"var(--bg)" }}>
+              📷 画像を選ぶ
+              <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
+            </label>
+            <button onClick={openPicker} style={{ flex:1, border:"1.5px solid var(--line)", background:"#fff", borderRadius:11, fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>🗂 最近のPOPから</button>
+          </div>
+          {picker && (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6, marginTop:10 }}>
+              {recent.length === 0 ? <div style={{ gridColumn:"1/-1", fontSize:12, color:"var(--faint)", textAlign:"center", padding:"10px 0" }}>読み込み中…</div>
+                : recent.map(pp => (
+                  <img key={pp.id} src={pp.image_url} onClick={() => { setRes(null); setErr(""); setSrc(pp.image_url); setPicker(false); }}
+                    style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", border:"1px solid var(--line)" }} />
+                ))}
+            </div>
+          )}
+        </div>
+
+        {src && (
+          <div className="wcard" style={{ textAlign:"center" }}>
+            <img ref={imgRef} src={src} crossOrigin="anonymous"
+              onError={() => setErr("画像を読み込めませんでした。形式が未対応（HEICなど）の可能性があります。")}
+              style={{ maxWidth:"100%", maxHeight:260, borderRadius:10, border:"1px solid var(--line)" }} />
+            <button onClick={runAnalyze} disabled={busy}
+              style={{ display:"block", width:"100%", marginTop:11, border:"none", background: busy ? "#f0b48a" : "var(--primary)", color:"#fff", borderRadius:11, padding:"12px", fontSize:14.5, fontWeight:900, cursor: busy ? "default" : "pointer" }}>
+              {busy ? "解析中…" : "🩺 このPOPを診断する"}
+            </button>
+          </div>
+        )}
+
+        {err && <div style={{ background:"#fdeaea", border:"1px solid #f3c1bd", color:"#b3261e", borderRadius:11, padding:"11px 13px", fontSize:12.5, fontWeight:700, marginBottom:12 }}>{err}</div>}
+
+        {res && (
+          <>
+            <div className="wcard" style={{ textAlign:"center" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14 }}>
+                <div style={{ width:74, height:74, borderRadius:"50%", background: res.j.total >= 70 ? "#1a6b3a" : res.j.total >= 55 ? "#C7892B" : "#b3261e", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <div style={{ fontSize:27, fontWeight:900, lineHeight:1 }}>{res.j.grade}</div>
+                  <div style={{ fontSize:11, fontWeight:800 }}>{res.j.total}点</div>
+                </div>
+                <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.75, textAlign:"left", fontWeight:700 }}>{res.j.summary}</div>
+              </div>
+              <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:12 }}>
+                {res.m.dominant.map(c => (
+                  <div key={c} style={{ textAlign:"center" }}>
+                    <div style={{ width:34, height:34, borderRadius:9, background:c, border:"1px solid var(--line)" }} />
+                    <div style={{ fontSize:8.5, color:"var(--faint)", marginTop:2 }}>{c}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize:10.5, color:"var(--sub)", marginTop:6 }}>主要カラー　／　推定色数：{res.m.colorCount}色</div>
+            </div>
+
+            <div className="wcard">
+              <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>診断項目</div>
+              <Row label="色数" level={res.j.lv.color} score={res.m.colorCount <= 6 ? 100 - (res.m.colorCount-3)*8 : Math.max(20, 100-(res.m.colorCount-6)*15)} comment={res.j.cm.color} />
+              <Row label="明るさ" level={res.j.lv.brightness} score={res.m.brightness} comment={res.j.cm.brightness} />
+              <Row label="彩度" level={res.j.lv.saturation} score={res.m.saturation} comment={res.j.cm.saturation} />
+              <Row label="コントラスト" level={res.j.lv.contrast} score={res.m.contrast} comment={res.j.cm.contrast} />
+              <Row label="情報量" level={res.j.lv.clutter} score={res.m.clutter} comment={res.j.cm.clutter} />
+              <Row label="余白" level={res.j.lv.margin} score={res.m.marginScore} comment={res.j.cm.margin} />
+            </div>
+
+            <div className="wcard">
+              <div style={{ fontSize:13, fontWeight:900, color:"#1a6b3a", marginBottom:7 }}>👍 良い点</div>
+              {res.j.good.map((g,i) => <div key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.9 }}>・{g}</div>)}
+              <div style={{ height:1, background:"var(--line)", margin:"10px 0" }} />
+              <div style={{ fontSize:13, fontWeight:900, color:"var(--primary)", marginBottom:7 }}>🔧 改善案</div>
+              {res.j.imp.map((g,i) => <div key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.9 }}>・{g}</div>)}
+            </div>
+            <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", lineHeight:1.7 }}>診断は機械的な目安です。最後は売場での見え方を優先してください。</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 const FISH_DB = [
   { name:"真あじ", kana:"まあじ", months:[5,6,7,8], point:"初夏〜夏が旬の定番魚。脂と旨みのバランスが良く、山陰沖の地物は鮮度が売り。刺身・たたき・なめろうと生食提案がしやすい。", cook:"刺身／たたき／塩焼き／フライ／南蛮漬け", pop:"「山陰沖どれ 朝どれあじ」「今日はたたきで一杯」", local:"島根の定番地魚。浜田のどんちっちあじは脂の乗りで有名。" },
   { name:"鯖", kana:"さば", months:[10,11,12,1,2], point:"秋〜冬に脂が乗る。ノルウェー産は年間安定、国産秋さばは季節の目玉。しめ鯖・塩焼き・味噌煮と用途が広い。", cook:"塩焼き／味噌煮／しめ鯖／竜田揚げ", pop:"「脂のり抜群 秋さば入荷」「ごはんがすすむ味噌煮に」", local:"アニサキス対策の下処理説明があると生食系の安心感UP。" },
@@ -4697,6 +5009,7 @@ function App() {
       {tab==="competitor" && <CompetitorTab />}
       {tab==="calendar" && <CalendarTab />}
       {tab==="fish" && <FishTab />}
+      {tab==="popcheck" && <PopCheckTab />}
       {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
@@ -4706,7 +5019,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, background:"white", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.07)", display:"flex", paddingBottom:"env(safe-area-inset-bottom)" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="fish"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
+          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="fish"||tab==="popcheck"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -4741,7 +5054,7 @@ function App() {
             <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
             <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
-              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"fish", icon:"🐠", label:"魚図鑑", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"GNE"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
+              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"fish", icon:"🐠", label:"魚図鑑", badge:"NEW"}, {key:"popcheck", icon:"🩺", label:"POP診断", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"GNE"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
                   <span style={{ position:"relative", width:56, height:56, borderRadius:17, background: tab===o.key ? "var(--soft)" : "var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1.5px solid transparent" }}>
