@@ -74,6 +74,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 const { useState, useEffect, useCallback, useRef } = React;
 
 const STORES = ["北部店","木次店","大田店","斐川店","医大通り店","平田店","バイヤー"];
+
+// ═══════════ TAB_REGISTRY：☰メニューの全タブ定義（追加はここ1箇所） ═══════════
+// section は将来のメニュー見出し用（Phase 4）。現時点では並び順のみ使用。
+const TAB_REGISTRY = [
+  { key:"tool",       icon:"✏️", label:"作成",               section:"毎日つかう" },
+  { key:"floor",      icon:"📸", label:"売場",               section:"毎日つかう" },
+  { key:"request",    icon:"📝", label:"ポップ依頼",         section:"毎日つかう" },
+  { key:"souba",      icon:"🧮", label:"便利機能",           section:"ツール" },
+  { key:"industry",   icon:"📰", label:"業界情報",           section:"しらべる" },
+  { key:"competitor", icon:"🔍", label:"競合情報",           section:"しらべる", badge:"NEW" },
+  { key:"calendar",   icon:"📅", label:"行事カレンダー",     section:"しらべる", badge:"NEW" },
+  { key:"fish",       icon:"🐠", label:"魚図鑑",             section:"しらべる", badge:"NEW" },
+  { key:"popcheck",   icon:"🩺", label:"POP診断",            section:"ツール",   badge:"NEW" },
+  { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
+  { key:"gne",        icon:"🅖", label:"入力ジェネレーター", section:"ツール" },
+  { key:"archive",    icon:"🗄", label:"アーカイブ",         section:"管理" },
+  { key:"dev",        icon:"ℹ️", label:"お知らせ",           section:"管理" },
+  { key:"admin",      icon:"🔒", label:"管理画面",           section:"管理" },
+];
 const CATEGORIES = ["鮮魚","刺身・寿司","惣菜","塩干","その他"];
 // 検索の縦タブ用ジャンル（管理画面で勝部だけが選別する）。色は売場でひと目で見分ける用。
 const GENRES = ["その他","塩干","寿司・刺身","切身","丸魚","行事","切身提案"];
@@ -92,6 +111,8 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-05", type:"新機能", title:"ポップを上下スワイプで次々見られるように", body:"ポップを開いたまま、画像を上下にスワイプ（または画面上下の▲▼ボタン）で、一覧の次・前のポップに切り替えられるようになりました。YouTubeショートのように、いちいち閉じずにどんどん見ていけます。右上に「3 / 24」のように今の位置も表示されます。" },
+  { date:"2026-07-05", type:"新機能", title:"「このポップ使った」ボタンを追加", body:"ポップの詳細画面に「使った」ボタンを追加しました。売場で使ったポップにタップして記録でき、何回使われたかがみんなに共有されます。人気のポップがひと目で分かるようになります。" },
   { date:"2026-07-05", type:"新機能", title:"投稿時にA4比率をチェック", body:"ポップをアップロードする時、選んだ画像がA4サイズの比率（縦横 1:1.41）から大きくずれている場合に「A4の比率からずれています」とお知らせするようにしました。縦向き・横向きも自動で判別します。そのままでも投稿できますが、印刷時の余白や見切れを事前に気づけます。" },
   { date:"2026-07-05", type:"改善", title:"下のナビをフローティング型に一新", body:"画面下のナビゲーション（一覧・検索・メニュー）を、画面から少し浮いた丸いカプセル型のデザインに変更しました。アイコンと文字が付いて、今どこを開いているかが分かりやすくなっています。すりガラス風の半透明で、下のコンテンツが透けて見えます。" },
   { date:"2026-07-05", type:"改善", title:"ポップの並び順を「左上から横読み」に変更", body:"一覧・検索・売場写真の並び順を、これまでの縦に流れる配置から、新しい順に「左上から右へ 1・2・3…、次の行へ」と横方向に読める配置に変更しました。どれが新しい投稿かひと目で分かりやすくなっています。" },
@@ -187,108 +208,67 @@ function loadScriptOnce(src) {
   });
 }
 
+// ═══════════ API：Supabase読み書き層（全DB操作はここ経由） ═══════════
 const SB_URL = "https://pxstuticccflzqoqvfvx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4c3R1dGljY2NmbHpxb3F2ZnZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODM0MzEsImV4cCI6MjA5MzQ1OTQzMX0.NQjAkqpa04d6Kx0DTYfaAgahtiHJ2iXbjVyspFc9cS0";
 
 const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
+// 共通fetch：REST/RPCの定型（headers・エラー処理）を1箇所に集約。
+// body があれば JSON 化、prefer は Prefer ヘッダー（"return=representation" 等）。
+async function sbFetch(path, { method = "GET", body, prefer, headers = {} } = {}) {
+  const extra = { ...(body !== undefined ? { "Content-Type": "application/json" } : {}), ...(prefer ? { "Prefer": prefer } : {}), ...headers };
+  const r = await fetch(`${SB_URL}${path}`, { method, headers: h(extra), body: body !== undefined ? JSON.stringify(body) : undefined });
+  if (!r.ok) throw new Error(await r.text());
+  return r;
+}
+const sbJson = async (path, opts) => (await sbFetch(path, opts)).json();   // 配列/JSONを返す
+const sbOne  = async (path, opts) => (await sbJson(path, opts))[0];        // 先頭1件を返す
+
 const api = {
+  // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
-    let url = `${SB_URL}/rest/v1/pops?select=*&order=created_at.desc`;
-    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
-    if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
-    const r = await fetch(url, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
+    let q = `/rest/v1/pops?select=*&order=created_at.desc`;
+    if (store) q += `&store_name=eq.${encodeURIComponent(store)}`;
+    if (cat)   q += `&category=eq.${encodeURIComponent(cat)}`;
+    return sbJson(q);
   },
-  async listAll() {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?select=${POP_COLS}&order=created_at.desc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
+  async listAll() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&order=created_at.desc`); },
   // 公開中のみ（掲示板・検索用）。アーカイブ済みはサーバー側で除外し、件数も上限つき。
-  async listActive() {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?select=${POP_COLS}&archived=eq.false&order=created_at.desc&limit=${POP_LIMIT}`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
+  async listActive() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.false&order=created_at.desc&limit=${POP_LIMIT}`); },
   // アーカイブ済みのみ（アーカイブタブ用）。
-  async listArchived() {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?select=${POP_COLS}&archived=eq.true&order=created_at.desc&limit=${POP_LIMIT}`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insert(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/pops`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async listRequests() {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?select=*&order=created_at.desc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertRequest(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async updateRequest(id, patch) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
-      body: JSON.stringify(patch)
-    });
-    if (!r.ok) throw new Error(await r.text());
-  },
+  async listArchived() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.true&order=created_at.desc&limit=${POP_LIMIT}`); },
+  async insert(data) { return sbOne(`/rest/v1/pops`, { method:"POST", body:data, prefer:"return=representation" }); },
   // POPのジャンルを設定（管理画面の選別用）。genre は文字列 or null（未分類）。
-  async setGenre(id, genre) {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
-      body: JSON.stringify({ genre })
-    });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  async delRequest(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_requests?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
+  async setGenre(id, genre) { await sbFetch(`/rest/v1/pops?id=eq.${id}`, { method:"PATCH", body:{ genre }, prefer:"return=minimal" }); },
   async setArchivedMany(ids, archived) {
     if (!ids.length) return;
-    const r = await fetch(`${SB_URL}/rest/v1/pops?id=in.(${ids.join(",")})`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
-      body: JSON.stringify({ archived })
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await sbFetch(`/rest/v1/pops?id=in.(${ids.join(",")})`, { method:"PATCH", body:{ archived }, prefer:"return=minimal" });
   },
-  async del(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
+  async del(id) { await sbFetch(`/rest/v1/pops?id=eq.${id}`, { method:"DELETE" }); },
+  async like(id, current) { return sbOne(`/rest/v1/pops?id=eq.${id}`, { method:"PATCH", body:{ likes:(current||0)+1 }, prefer:"return=representation" }); },
+  async markUsed(id, current) { return sbOne(`/rest/v1/pops?id=eq.${id}`, { method:"PATCH", body:{ used_count:(current||0)+1 }, prefer:"return=representation" }); },
+  async setPinned(popId) {
+    // 全POPのis_pinnedをfalseに、指定のIDのみtrueに
+    const allPops = await this.listAll();
+    for (const p of allPops) {
+      await sbFetch(`/rest/v1/pops?id=eq.${p.id}`, { method:"PATCH", body:{ is_pinned: p.id === popId } });
+    }
+    return { pinned_id: popId };
   },
-  async like(id, current) {
-    const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ likes: (current||0)+1 })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
+
+  // ── pop_requests：ポップ依頼 ──
+  async listRequests() { return sbJson(`/rest/v1/pop_requests?select=*&order=created_at.desc`); },
+  async insertRequest(data) { return sbOne(`/rest/v1/pop_requests`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async updateRequest(id, patch) { await sbFetch(`/rest/v1/pop_requests?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=minimal" }); },
+  async delRequest(id) { await sbFetch(`/rest/v1/pop_requests?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── storage：画像アップロード（JSONでないため個別実装） ──
   async upload(file) {
     const blob = await new Promise(res => {
       const img = new Image();
@@ -323,196 +303,94 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
   },
-  async listPosts() {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?select=*&order=created_at.desc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertPost(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async incrementViews(id, currentViews) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ views: (currentViews||0)+1 })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delPost(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  async listComments(popId) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_comments?pop_id=eq.${popId}&order=created_at.asc&select=*`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async addComment(popId, storeName, comment) {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_comments`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ pop_id: popId, store_name: storeName, comment })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
+
+  // ── blog_posts ──
+  async listPosts() { return sbJson(`/rest/v1/blog_posts?select=*&order=created_at.desc`); },
+  async insertPost(data) { return sbOne(`/rest/v1/blog_posts`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async incrementViews(id, currentViews) { return sbOne(`/rest/v1/blog_posts?id=eq.${id}`, { method:"PATCH", body:{ views:(currentViews||0)+1 }, prefer:"return=representation" }); },
+  async delPost(id) { await sbFetch(`/rest/v1/blog_posts?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── pop_comments ──
+  async listComments(popId) { return sbJson(`/rest/v1/pop_comments?pop_id=eq.${popId}&order=created_at.asc&select=*`); },
+  async addComment(popId, storeName, comment) { return sbOne(`/rest/v1/pop_comments`, { method:"POST", body:{ pop_id: popId, store_name: storeName, comment }, prefer:"return=representation" }); },
   async listCommentedPopIds() {
-    const r = await fetch(`${SB_URL}/rest/v1/pop_comments?select=pop_id`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
+    const data = await sbJson(`/rest/v1/pop_comments?select=pop_id`);
     return new Set(data.map(c => c.pop_id));
   },
+
+  // ── floor_photos：売場写真 ──
   async listFloorPhotos(store, cat) {
-    let url = `${SB_URL}/rest/v1/floor_photos?select=*&order=created_at.desc`;
-    if (store) url += `&store_name=eq.${encodeURIComponent(store)}`;
-    if (cat)   url += `&category=eq.${encodeURIComponent(cat)}`;
-    const r = await fetch(url, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
+    let q = `/rest/v1/floor_photos?select=*&order=created_at.desc`;
+    if (store) q += `&store_name=eq.${encodeURIComponent(store)}`;
+    if (cat)   q += `&category=eq.${encodeURIComponent(cat)}`;
+    return sbJson(q);
   },
-  async insertFloorPhoto(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/floor_photos`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delFloorPhoto(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/floor_photos?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  // パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない）
+  async insertFloorPhoto(data) { return sbOne(`/rest/v1/floor_photos`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async delFloorPhoto(id) { await sbFetch(`/rest/v1/floor_photos?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── rpc：パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない） ──
   async verifyPassword(purpose, password) {
-    const r = await fetch(`${SB_URL}/rest/v1/rpc/verify_password`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_purpose: purpose, p_password: password })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()) === true;
+    const v = await sbJson(`/rest/v1/rpc/verify_password`, { method:"POST", body:{ p_purpose: purpose, p_password: password } });
+    return v === true;
   },
-  // 包材・トレーのカテゴリ（プリセット）
-  async listTrayPresets() {
-    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?select=*&order=sort_order.asc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async createTrayPreset(name, sort_order) {
-    const r = await fetch(`${SB_URL}/rest/v1/tray_presets`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ name, sort_order, items: [] })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async updateTrayPreset(id, patch) {
-    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?id=eq.${id}`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
-      body: JSON.stringify(patch)
-    });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  async deleteTrayPreset(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  // プロンプト記録集
-  async listPrompts() {
-    const r = await fetch(`${SB_URL}/rest/v1/prompt_library?select=*&order=created_at.desc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertPrompt(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/prompt_library`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delPrompt(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/prompt_library?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  // 発注バーコードの共有プリセット
-  async listSharedPresets() {
-    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets?select=*&order=sort_order.asc,created_at.asc`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    return r.json();
-  },
-  async insertSharedPreset(data) {
-    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets`, {
-      method: "POST",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async delSharedPreset(id) {
-    const r = await fetch(`${SB_URL}/rest/v1/shared_tray_presets?id=eq.${id}`, { method: "DELETE", headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-  },
-  // 一時お知らせ／機能停止バナー（全店共有）
+
+  // ── tray_presets：包材・トレーのカテゴリ（プリセット） ──
+  async listTrayPresets() { return sbJson(`/rest/v1/tray_presets?select=*&order=sort_order.asc`); },
+  async createTrayPreset(name, sort_order) { return sbOne(`/rest/v1/tray_presets`, { method:"POST", body:{ name, sort_order, items: [] }, prefer:"return=representation" }); },
+  async updateTrayPreset(id, patch) { await sbFetch(`/rest/v1/tray_presets?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=minimal" }); },
+  async deleteTrayPreset(id) { await sbFetch(`/rest/v1/tray_presets?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── prompt_library：プロンプト記録集 ──
+  async listPrompts() { return sbJson(`/rest/v1/prompt_library?select=*&order=created_at.desc`); },
+  async insertPrompt(data) { return sbOne(`/rest/v1/prompt_library`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async delPrompt(id) { await sbFetch(`/rest/v1/prompt_library?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── shared_tray_presets：発注バーコードの共有プリセット ──
+  async listSharedPresets() { return sbJson(`/rest/v1/shared_tray_presets?select=*&order=sort_order.asc,created_at.asc`); },
+  async insertSharedPreset(data) { return sbOne(`/rest/v1/shared_tray_presets`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async delSharedPreset(id) { await sbFetch(`/rest/v1/shared_tray_presets?id=eq.${id}`, { method:"DELETE" }); },
+
+  // ── site_notice：一時お知らせ／機能停止バナー（全店共有） ──
   async getNotice() {
-    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1&select=enabled,message,tip_enabled,tip_message,feat_enabled,feat_message,feat_tab,feat_ver,updated_at`, { headers: h() });
-    if (!r.ok) throw new Error(await r.text());
-    const rows = await r.json();
+    const rows = await sbJson(`/rest/v1/site_notice?id=eq.1&select=enabled,message,tip_enabled,tip_message,feat_enabled,feat_message,feat_tab,feat_ver,updated_at`);
     return rows[0] || { enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"" };
   },
-  async updateNotice(patch) {
-    const r = await fetch(`${SB_URL}/rest/v1/site_notice?id=eq.1`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ ...patch, updated_at: new Date().toISOString() })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json())[0];
-  },
-  async setPinned(popId) {
-    // 全POPのis_pinnedをfalseに、指定のIDのみtrueに
-    const allPops = await this.listAll();
-    const ops = allPops.map(p => ({ ...p, is_pinned: p.id === popId }));
-    for (const op of ops) {
-      const r = await fetch(`${SB_URL}/rest/v1/pops?id=eq.${op.id}`, {
-        method: "PATCH",
-        headers: h({ "Content-Type": "application/json" }),
-        body: JSON.stringify({ is_pinned: op.is_pinned })
-      });
-      if (!r.ok) throw new Error(await r.text());
-    }
-    return { pinned_id: popId };
-  },
+  async updateNotice(patch) { return sbOne(`/rest/v1/site_notice?id=eq.1`, { method:"PATCH", body:{ ...patch, updated_at: new Date().toISOString() }, prefer:"return=representation" }); },
+
+  // ── production_notes：生産メモ ──
   async getMemo() {
-    const r = await fetch(`${SB_URL}/rest/v1/production_notes?id=eq.1&select=*`, { headers: h() });
-    if (!r.ok) return { id: 1, text: "" };
-    const d = await r.json();
-    return d.length > 0 ? d[0] : { id: 1, text: "" };
+    try {
+      const d = await sbJson(`/rest/v1/production_notes?id=eq.1&select=*`);
+      return d.length > 0 ? d[0] : { id: 1, text: "" };
+    } catch(e) { return { id: 1, text: "" }; }   // 取得失敗時は空メモ（従来挙動を踏襲）
   },
   async saveMemo(text) {
-    const r = await fetch(`${SB_URL}/rest/v1/production_notes?id=eq.1`, {
-      method: "PATCH",
-      headers: h({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ text, updated_at: new Date().toISOString() })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const result = await r.json();
+    const result = await sbJson(`/rest/v1/production_notes?id=eq.1`, { method:"PATCH", body:{ text, updated_at: new Date().toISOString() }, prefer:"return=representation" });
     return result.length > 0 ? result[0] : { id: 1, text };
   }
 };
+
+// ═══════════ UTILS：共有ユーティリティ（日付・行事・文字列） ═══════════
+
+// 行事（ハレの日）データ：TodayInfoCard と 行事カレンダー の共通ソース
+function seasonalEventsFor(year) {
+  const mk = (y, m, d, name, food) => ({ date: new Date(y, m-1, d), name, food });
+  const nthSunday = (y, m, n) => { const first = new Date(y, m-1, 1); const off = (7 - first.getDay()) % 7; return new Date(y, m-1, 1 + off + (n-1)*7); };
+  const USHI = { 2026:[[7,26,"土用の丑"]], 2027:[[7,21,"土用の丑"],[8,2,"土用の二の丑"]], 2028:[[7,27,"土用の丑"]] };
+  const HIGAN = { 2026:[[3,17],[9,20]], 2027:[[3,18],[9,20]], 2028:[[3,17],[9,19]] };
+  const list = [
+    mk(year,1,1,"お正月","刺身・おせち"), mk(year,2,3,"節分","恵方巻"), mk(year,3,3,"ひな祭り","ちらし寿司・はまぐり"),
+    mk(year,5,5,"こどもの日","お祝い・ちらし"), mk(year,7,2,"半夏生","タコ"), mk(year,7,7,"七夕","ちらし・そうめん"),
+    mk(year,8,13,"お盆入り","刺身・お供え"), mk(year,10,31,"ハロウィン",null), mk(year,12,22,"冬至",null),
+    mk(year,12,24,"クリスマス","オードブル・寿司"), mk(year,12,31,"大晦日","刺身・寿司"),
+  ];
+  list.push({ date:nthSunday(year,5,2), name:"母の日", food:"ごちそう・お祝い" });
+  list.push({ date:nthSunday(year,6,3), name:"父の日", food:"ごちそう・晩酌のあて" });
+  (USHI[year]||[]).forEach(([m,d,nm]) => list.push(mk(year,m,d,nm,"うなぎ・スタミナ")));
+  (HIGAN[year]||[]).forEach(([m,d]) => list.push(mk(year,m,d,(m<6?"春":"秋")+"彼岸入り","お供え・お寿司")));
+  list.forEach(e => e.date.setHours(0,0,0,0));
+  return list;
+}
 
 function timeAgo(d) {
   const s = (Date.now() - new Date(d)) / 1000;
@@ -539,6 +417,7 @@ function formatDate(d) {
 }
 
 // ── Upload Modal ──
+// ═══════════ SHARED UI：投稿・詳細・カードなど共有部品 ═══════════
 function UploadModal({ currentStore, onClose, onSuccess }) {
   const [store, setStore] = useState("木次店");
   const [author, setAuthor] = useState("");
@@ -647,9 +526,25 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 }
 
 // ── Pop Detail Modal ──
-function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromPop }) {
+function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromPop, navList, onNav }) {
+  const navIdx = navList ? navList.findIndex(x => x.id === pop.id) : -1;
+  const hasPrev = navList && navIdx > 0;
+  const hasNext = navList && navIdx >= 0 && navIdx < navList.length - 1;
+  const goPrev = () => { if (hasPrev && onNav) onNav(navList[navIdx - 1]); };
+  const goNext = () => { if (hasNext && onNav) onNav(navList[navIdx + 1]); };
+  const touchY = useRef(null);
+  const onImgTouchStart = (e) => { touchY.current = e.touches[0].clientY; };
+  const onImgTouchEnd = (e) => {
+    if (touchY.current == null) return;
+    const dy = e.changedTouches[0].clientY - touchY.current;
+    touchY.current = null;
+    if (Math.abs(dy) < 55) return;
+    if (dy < 0) goNext(); else goPrev();
+  };
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes||0);
+  const [used, setUsed] = useState(false);
+  const [usedCount, setUsedCount] = useState(pop.used_count||0);
   const [deleting, setDeleting] = useState(false);
   const [showDelConfirm, setShowDelConfirm] = useState(false);
   const [pwInput, setPwInput] = useState("");
@@ -662,6 +557,10 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
   useEffect(() => {
     api.listComments(pop.id).then(setComments).catch(()=>{});
+    setLiked(false); setLikes(pop.likes||0);
+    setUsed(false); setUsedCount(pop.used_count||0);
+    setShowDelConfirm(false); setPwInput(""); setPwError("");
+    const sheet = document.getElementById("pd-sheet"); if (sheet) sheet.scrollTo({ top:0 });
   }, [pop.id]);
 
   const handleLike = async () => {
@@ -672,6 +571,15 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       setLiked(true);
       onLiked && onLiked(pop.id, updated.likes);
     } catch(e) {}
+  };
+
+  const handleUsed = async () => {
+    if (used) return;
+    setUsed(true); setUsedCount(c => c + 1);
+    try {
+      const updated = await api.markUsed(pop.id, usedCount);
+      if (updated && typeof updated.used_count === "number") setUsedCount(updated.used_count);
+    } catch(e) { setUsed(false); setUsedCount(c => Math.max(0, c - 1)); }
   };
 
   const handleDownload = () => {
@@ -743,14 +651,25 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <div id="pd-sheet" style={{ background:"#fff", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)", WebkitOverflowScrolling:"touch" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
-        <div style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh" }}>
+        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh" }}>
           <img src={pop.image_url} style={{ maxWidth:"100%", maxHeight:"64vh", objectFit:"contain", display:"block" }} />
+
+          {hasPrev && (
+            <button onClick={goPrev} aria-label="前のポップ" style={{ position:"absolute", top:12, left:"50%", transform:"translateX(-50%)", background:"rgba(0,0,0,0.4)", border:"none", color:"#fff", fontSize:16, width:38, height:30, borderRadius:15, cursor:"pointer", backdropFilter:"blur(4px)", zIndex:6, display:"flex", alignItems:"center", justifyContent:"center" }}>▲</button>
+          )}
+          {hasNext && (
+            <button onClick={goNext} aria-label="次のポップ" style={{ position:"absolute", bottom:66, left:"50%", transform:"translateX(-50%)", background:"rgba(0,0,0,0.4)", border:"none", color:"#fff", fontSize:16, width:38, height:30, borderRadius:15, cursor:"pointer", backdropFilter:"blur(4px)", zIndex:6, display:"flex", alignItems:"center", justifyContent:"center" }}>▼</button>
+          )}
+          {navList && navIdx >= 0 && (
+            <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:11, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
+          )}
 
           <button onClick={onClose} style={{ position:"absolute", bottom:14, left:14, background:"rgba(0,0,0,0.55)", border:"none", color:"#fff", fontSize:18, width:44, height:44, borderRadius:12, cursor:"pointer", backdropFilter:"blur(4px)", zIndex:6, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
 
           {/* 右側 縦積みアクション */}
           <div style={{ position:"absolute", right:11, bottom:16, display:"flex", flexDirection:"column", gap:13, zIndex:5 }}>
             <ActionBtn onClick={handleLike} active={liked} activeColor="#e0245e" emoji={liked ? "❤️" : "🤍"} label={String(likes)} />
+            <ActionBtn onClick={handleUsed} active={used} activeColor="#1a6b3a" emoji={used ? "✅" : "🖐"} label={used ? `使った ${usedCount}` : "使った"} />
             <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} emoji="💬" label={String(comments.length)} />
             <ActionBtn onClick={handleDownload} emoji="⬇️" label="保存" />
             {onCreateFromPop && <ActionBtn onClick={() => { onCreateFromPop(pop); onClose(); }} emoji="✏️" label="作成" />}
@@ -787,9 +706,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         {/* コメント欄（画像の下・シート内） */}
         <div id="pd-comments" style={{ padding:"14px 16px calc(18px + env(safe-area-inset-bottom))" }}>
           <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>コメント {comments.length > 0 && <span style={{ color:"var(--faint)", fontWeight:600 }}>{comments.length}件</span>}</div>
-          {comments.length === 0 ? (
-            <div style={{ fontSize:13, color:"var(--faint)", textAlign:"center", padding:"10px 0 16px" }}>まだコメントはありません</div>
-          ) : (
+          {comments.length > 0 && (
             <div style={{ display:"flex", flexDirection:"column", gap:15, marginBottom:16 }}>
               {comments.map(c => (
                 <div key={c.id} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
@@ -849,6 +766,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
 }
 
 // ── Board Tab ──
+// ═══════════ TABS：機能タブ（Board / Search / 各ツール…） ═══════════
 function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen, tipEnabled, tipMessage, feat, onFeatGo }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1013,6 +931,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
       </div>
 
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
+        navList={filtered} onNav={setSel}
         onDelete={id=>setPops(p=>p.filter(x=>x.id!==id))}
         onLiked={(id,likes)=>setPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
         onCommented={id=>setCommentedIds(s=>new Set([...s, id]))}
@@ -1230,6 +1149,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
       </div>
 
       {sel && <PopDetail pop={sel} onClose={()=>setSel(null)}
+        navList={results} onNav={setSel}
         onDelete={id=>{ setAllPops(p=>p.filter(x=>x.id!==id)); setSel(null); }}
         onLiked={(id,likes)=>setAllPops(p=>p.map(x=>x.id===id?{...x,likes}:x))}
         onCreateFromPop={onCreateFromPop}
@@ -2780,27 +2700,10 @@ function TodayInfoCard() {
         setHol({ todayName, date: nd, name: hs[next], blockStart: bs, blockEnd: be, len, days });
       }).catch(() => {});
   }, []);
-  // ハレの日（行事）：固定日＋年ごとの可変日（土用の丑・彼岸・母の日・父の日）
+  // ハレの日（行事）：共通データ seasonalEventsFor から算出
   const events = (() => {
     const now = new Date(); now.setHours(0,0,0,0);
-    const mk = (y, m, d, name, food) => ({ date: new Date(y, m-1, d), name, food });
-    const nthSunday = (y, m, n) => { const first = new Date(y, m-1, 1); const off = (7 - first.getDay()) % 7; return new Date(y, m-1, 1 + off + (n-1)*7); };
-    const USHI = { 2026:[[7,26,"土用の丑"]], 2027:[[7,21,"土用の丑"],[8,2,"土用の二の丑"]], 2028:[[7,27,"土用の丑"]] };
-    const HIGAN = { 2026:[[3,17],[9,20]], 2027:[[3,18],[9,20]], 2028:[[3,17],[9,19]] };
-    const list = [];
-    for (const y of [now.getFullYear(), now.getFullYear()+1]) {
-      list.push(
-        mk(y,1,1,"お正月","刺身・おせち"), mk(y,2,3,"節分","恵方巻"), mk(y,3,3,"ひな祭り","ちらし寿司・はまぐり"),
-        mk(y,5,5,"こどもの日","お祝い・ちらし"), mk(y,7,2,"半夏生","タコ"), mk(y,7,7,"七夕","ちらし・そうめん"),
-        mk(y,8,13,"お盆入り","刺身・お供え"), mk(y,10,31,"ハロウィン",null), mk(y,12,22,"冬至",null),
-        mk(y,12,24,"クリスマス","オードブル・寿司"), mk(y,12,31,"大晦日","刺身・寿司")
-      );
-      const ms = nthSunday(y,5,2); list.push({ date:ms, name:"母の日", food:"ごちそう・お祝い" });
-      const fs = nthSunday(y,6,3); list.push({ date:fs, name:"父の日", food:"ごちそう・晩酌のあて" });
-      (USHI[y]||[]).forEach(([m,d,nm]) => list.push(mk(y,m,d,nm,"うなぎ・スタミナ")));
-      (HIGAN[y]||[]).forEach(([m,d]) => list.push(mk(y,m,d,(m<6?"春":"秋")+"彼岸入り","お供え・お寿司")));
-    }
-    list.forEach(e => e.date.setHours(0,0,0,0));
+    const list = [...seasonalEventsFor(now.getFullYear()), ...seasonalEventsFor(now.getFullYear()+1)];
     const todayEv = list.find(e => e.date.getTime() === now.getTime()) || null;
     const up = list.filter(e => e.date > now && (e.date - now)/86400000 <= 60).sort((a,b)=>a.date-b.date);
     return { todayEv, next: up[0] || null, next2: up[1] || null };
@@ -3719,27 +3622,8 @@ function CalendarTab() {
   const today = new Date(); today.setHours(0,0,0,0);
   const [ym, setYm] = useState({ y: today.getFullYear(), m: today.getMonth() }); // m:0-11
 
-  // 行事データ生成（BoardのTodayInfoCardと同じロジック）
-  const eventsFor = (year) => {
-    const mk = (y, m, d, name, food) => ({ date: new Date(y, m-1, d), name, food });
-    const nthSunday = (y, m, n) => { const first = new Date(y, m-1, 1); const off = (7 - first.getDay()) % 7; return new Date(y, m-1, 1 + off + (n-1)*7); };
-    const USHI = { 2026:[[7,26,"土用の丑"]], 2027:[[7,21,"土用の丑"],[8,2,"土用の二の丑"]], 2028:[[7,27,"土用の丑"]] };
-    const HIGAN = { 2026:[[3,17],[9,20]], 2027:[[3,18],[9,20]], 2028:[[3,17],[9,19]] };
-    const list = [
-      mk(year,1,1,"お正月","刺身・おせち"), mk(year,2,3,"節分","恵方巻"), mk(year,3,3,"ひな祭り","ちらし寿司・はまぐり"),
-      mk(year,5,5,"こどもの日","お祝い・ちらし"), mk(year,7,2,"半夏生","タコ"), mk(year,7,7,"七夕","ちらし・そうめん"),
-      mk(year,8,13,"お盆入り","刺身・お供え"), mk(year,10,31,"ハロウィン",null), mk(year,12,22,"冬至",null),
-      mk(year,12,24,"クリスマス","オードブル・寿司"), mk(year,12,31,"大晦日","刺身・寿司"),
-    ];
-    list.push({ date:nthSunday(year,5,2), name:"母の日", food:"ごちそう・お祝い" });
-    list.push({ date:nthSunday(year,6,3), name:"父の日", food:"ごちそう・晩酌のあて" });
-    (USHI[year]||[]).forEach(([m,d,nm]) => list.push(mk(year,m,d,nm,"うなぎ・スタミナ")));
-    (HIGAN[year]||[]).forEach(([m,d]) => list.push(mk(year,m,d,(m<6?"春":"秋")+"彼岸入り","お供え・お寿司")));
-    list.forEach(e => e.date.setHours(0,0,0,0));
-    return list;
-  };
-
-  const allEv = [...eventsFor(ym.y)];
+  // 行事データ：共通データ seasonalEventsFor を利用
+  const allEv = seasonalEventsFor(ym.y);
   const evOn = (y,m,d) => allEv.find(e => e.date.getFullYear()===y && e.date.getMonth()===m && e.date.getDate()===d);
 
   const firstDay = new Date(ym.y, ym.m, 1);
@@ -4703,6 +4587,7 @@ function ArchiveTab({ onCreateFromPop }) {
       )}
 
       {sel && <PopDetail pop={sel} onClose={() => setSel(null)}
+        navList={pops} onNav={setSel}
         onDelete={id => { setPops(p => p.filter(x => x.id !== id)); setSel(null); }}
         onLiked={(id, likes) => setPops(p => p.map(x => x.id === id ? { ...x, likes } : x))}
         onCreateFromPop={onCreateFromPop}
@@ -4900,16 +4785,7 @@ function NoticeAdmin({ onNoticeChange }) {
         <select value={featTab} onChange={e => setFeatTab(e.target.value)}
           style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, background:"#fff", fontFamily:"inherit" }}>
           <option value="">（移動しない）</option>
-          <option value="fish">魚図鑑</option>
-          <option value="popcheck">POP診断</option>
-          <option value="calendar">行事カレンダー</option>
-          <option value="souba">便利機能</option>
-          <option value="industry">業界情報</option>
-          <option value="competitor">競合情報</option>
-          <option value="tool">作成</option>
-          <option value="floor">売場</option>
-          <option value="request">ポップ依頼</option>
-          <option value="dev">お知らせ（更新履歴）</option>
+          {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
         </select>
 
         <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
@@ -4931,6 +4807,7 @@ function NoticeAdmin({ onNoticeChange }) {
   );
 }
 
+// ═══════════ APP：シェル（ルーティング・ナビ・メニュー・テーマ） ═══════════
 function App() {
   const [tab, setTab] = useState("board");
 
@@ -5118,7 +4995,7 @@ function App() {
       <div style={{ position:"fixed", left:0, right:0, bottom:"calc(env(safe-area-inset-bottom) + 10px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", gap:4, background: moreOpen ? "transparent" : "rgba(255,255,255,0.92)", backdropFilter: moreOpen ? "none" : "blur(12px)", border: moreOpen ? "1px solid transparent" : "1px solid var(--line)", borderRadius:30, boxShadow: moreOpen ? "none" : "0 6px 24px rgba(0,0,0,0.14)", padding:"6px 8px", pointerEvents:"auto", transition:"background .2s, box-shadow .2s" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? (tab==="barcode"||tab==="dev"||tab==="floor"||tab==="tool"||tab==="admin"||tab==="archive"||tab==="gne"||tab==="request"||tab==="souba"||tab==="calendar"||tab==="fish"||tab==="popcheck"||tab==="industry"||tab==="competitor") : (!action && tab===key && !moreOpen);
+          const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -5152,7 +5029,7 @@ function App() {
             <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
             <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
-              {[{key:"tool", icon:"✏️", label:"作成"}, {key:"floor", icon:"📸", label:"売場"}, {key:"request", icon:"📝", label:"ポップ依頼"}, {key:"souba", icon:"🧮", label:"便利機能"}, {key:"industry", icon:"📰", label:"業界情報"}, {key:"competitor", icon:"🔍", label:"競合情報", badge:"NEW"}, {key:"calendar", icon:"📅", label:"行事カレンダー", badge:"NEW"}, {key:"fish", icon:"🐠", label:"魚図鑑", badge:"NEW"}, {key:"popcheck", icon:"🩺", label:"POP診断", badge:"NEW"}, {key:"barcode", icon:"🏷", label:"バーコード"}, {key:"gne", icon:"🅖", label:"入力ジェネレーター"}, {key:"archive", icon:"🗄", label:"アーカイブ"}, {key:"dev", icon:"ℹ️", label:"お知らせ"}, {key:"admin", icon:"🔒", label:"管理画面"}].map(o=>(
+              {TAB_REGISTRY.map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
                   <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(120,100,70,0.06)" }}>
