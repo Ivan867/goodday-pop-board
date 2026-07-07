@@ -109,7 +109,6 @@ const TAB_REGISTRY = [
   { key:"competitor", icon:"🔍", label:"競合情報",           section:"しらべる", badge:"NEW" },
   { key:"calendar",   icon:"📅", label:"行事カレンダー",     section:"しらべる", badge:"NEW" },
   { key:"fish",       icon:"🐠", label:"魚図鑑",             section:"しらべる", badge:"NEW" },
-  { key:"ranking",    icon:"🏆", label:"ランキング",         section:"しらべる", badge:"NEW" },
   { key:"popcheck",   icon:"🩺", label:"POP診断",            section:"ツール",   badge:"NEW" },
   { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
   { key:"gne",        icon:"🅖", label:"入力ジェネレーター", section:"ツール" },
@@ -135,6 +134,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-06", type:"改善", title:"ランキングは管理画面へ移動", body:"「ランキング」タブはいったん☰メニューから外し、管理画面（ログイン後）の中で見られるようにしました。閲覧数・使った・いいねの順位表は管理画面→ランキングからどうぞ。一覧上部の「📈急上昇」の表示は引き続き動いています。" },
   { date:"2026-07-06", type:"新機能", title:"「ランキング」タブを追加", body:"☰メニューに「ランキング」を追加しました。閲覧数・使った回数・いいねの3種類で、ポップが1位から順にずらっと並びます（1〜3位は金・銀・銅の色付き）。タップすればそのままポップが開き、スワイプで順位順に見ていけます。あわせて、閲覧数の目のアイコンは「閲覧◯」「◯回」の文字表記に変更しました。" },
   { date:"2026-07-06", type:"新機能", title:"「📈 急上昇」ランキングを一覧に表示", body:"よく見られているポップの上位3件が、一覧画面の上部に数秒ごとに入れ替わりで流れるようになりました（ニュース速報のようなイメージ）。「1位 ○○（△△店）👁 回数」の表示をタップすると、そのポップがすぐ開きます。閲覧数が貯まってくると自動で表示されます。" },
   { date:"2026-07-06", type:"新機能", title:"ポップの閲覧数がわかるように", body:"ポップが何回見られたかをカウントするようになりました。詳細画面の店舗名の横に「👁 回数」が表示されます。閲覧が10回を超えたポップには、一覧のカードに「🔥注目」バッジが付き、みんなが見ているポップがひと目で分かります。カウントは同じ端末からは1日1回だけなので、連打で増えることはありません。" },
@@ -3700,7 +3700,7 @@ const FISH_DB = [
   { name:"ばとう鯛（マトウダイ）", kana:"ばとうだい まとうだい", months:[11,12,1,2], point:"島根で「バトウ」と呼ばれる冬の白身。フランスでは高級魚（サンピエール）でムニエルの定番。肝も美味しい通の魚。", cook:"刺身／ムニエル／煮付け／肝ポン酢", pop:"「山陰の冬の白身 バトウ」「フランスでは高級魚サンピエール」", local:"的のような模様が名の由来。島根の冬の隠れた名物。" },
 ];
 
-function RankingTab({ onCreateFromPop }) {
+function RankingTab({ onCreateFromPop, embedded }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [metric, setMetric] = useState("view");
@@ -3727,21 +3727,23 @@ function RankingTab({ onCreateFromPop }) {
   const rankStyle = (i) => i === 0 ? { bg:"#f7b733", fg:"#fff" } : i === 1 ? { bg:"#b9c2cc", fg:"#fff" } : i === 2 ? { bg:"#c98a5a", fg:"#fff" } : { bg:"var(--chip)", fg:"var(--sub)" };
 
   return (
-    <div className="min-vh" style={{ background:"var(--bg)" }}>
+    <div className={embedded ? undefined : "min-vh"} style={embedded ? {} : { background:"var(--bg)" }}>
+      {!embedded && (
       <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
           <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>ランキング</div>
           <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>みんなが見ている・使っているポップの順位</div>
-          <div style={{ display:"flex", gap:6, marginTop:12 }}>
-            {METRICS.map(x => (
-              <button key={x.key} onClick={() => setMetric(x.key)}
-                style={{ flex:1, border:"none", borderRadius:16, padding:"8px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                  background: metric === x.key ? "#fff" : "rgba(255,255,255,0.22)", color: metric === x.key ? "#1a6b3a" : "#fff" }}>{x.label}</button>
-            ))}
-          </div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"14px 16px 130px" }}>
+      )}
+      <div style={{ maxWidth:600, margin:"0 auto", padding: embedded ? "4px 0 40px" : "14px 16px 130px" }}>
+        <div style={{ display:"flex", gap:7, marginBottom:13 }}>
+          {METRICS.map(x => (
+            <button key={x.key} onClick={() => setMetric(x.key)}
+              style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:11, padding:"9px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+                background: metric === x.key ? "var(--soft)" : "#fff", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>{x.label}</button>
+          ))}
+        </div>
         {loading ? (
           <div>{[0,1,2,3,4].map(i => (
             <div key={i} style={{ display:"flex", gap:11, alignItems:"center", background:"#fff", border:"1px solid var(--line)", borderRadius:13, padding:"10px 12px", marginBottom:9 }}>
@@ -4582,9 +4584,12 @@ function AdminTab({ onNoticeChange }) {
         {mainSeg("notice", "お知らせ")}
         {mainSeg("pinned", "ピン留め")}
         {mainSeg("memo", "制作メモ")}
+        {mainSeg("ranking", "ランキング")}
       </div>
 
       {section === "notice" && <NoticeAdmin onNoticeChange={onNoticeChange} />}
+
+      {section === "ranking" && <RankingTab embedded />}
 
       {section === "req" && (
         reqLoading ? (
@@ -5240,7 +5245,6 @@ function App() {
       {tab==="competitor" && <CompetitorTab />}
       {tab==="calendar" && <CalendarTab />}
       {tab==="fish" && <FishTab />}
-      {tab==="ranking" && <RankingTab onCreateFromPop={handleCreateFromPop} />}
       {tab==="popcheck" && <PopCheckTab />}
       {tab==="admin"  && <AdminTab onNoticeChange={setNotice} />}
       {tab==="request" && <RequestTab />}
