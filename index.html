@@ -62,8 +62,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 #barcode-print-portal { display: none; }
 @media print {
   @page { size: A4 landscape; margin: 8mm; }
+  /* 固定シェル（画面ずれ対策）を印刷時だけ解除：しないと1ページ分で切れて2枚目以降が消える */
+  html, body { position: static !important; overflow: visible !important; width: auto !important; height: auto !important; }
+  #root { position: static !important; overflow: visible !important; height: auto !important; }
+  #app-scroll { position: static !important; overflow: visible !important; height: auto !important; }
   body > #root { display: none !important; }
-  #barcode-print-portal { display: block !important; }
+  #barcode-print-portal { display: block !important; position: static !important; overflow: visible !important; }
   #barcode-print-portal .bc-page { break-after: page; page-break-after: always; }
   #barcode-print-portal .bc-page:last-child { break-after: auto; page-break-after: auto; }
   #barcode-print-portal .bc-label { page-break-inside: avoid; break-inside: avoid; }
@@ -134,6 +138,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-07", type:"修正", title:"バーコード印刷：2ページ目以降が印刷されない問題を修正", body:"リストが17枚以上あるとき、印刷プレビューに2ページ目以降が表示されない問題を修正しました。画面ずれ対策の影響で印刷が1ページ分に切れていたもので、印刷のときだけ画面の固定を解除するようにしています。" },
   { date:"2026-07-07", type:"修正", title:"バーコード：冷食などメーカーJANをJAN規格で印字するように", body:"メーカーのJANコード（4始まりなど）を持つ商品は、レジや発注端末が読み慣れたJAN（EAN-13）規格のバーコードで印字するようにしました。トレー・包材などの店内コード（0始まり）は今まで通りの規格です。冷食のバーコードが読めなかった問題の対策で、まず1枚試し読みしてから本印刷してください。" },
   { date:"2026-07-07", type:"改善", title:"配色を淡いブルー基調に一新", body:"各ページ上部のヘッダーを、やわらかいパステルブルー×紺文字の上品なデザインに変更しました。あわせて、アプリ全体の緑色（ボタン・バッジ・計算結果の見出しなど）をブルー系に統一。新機能バナーも青になりました。全体が涼しげで洗練された、鮮魚らしい配色になっています。" },
   { date:"2026-07-07", type:"改善", title:"各ページのヘッダーを洗練されたデザインに", body:"便利機能・魚図鑑・POP診断・行事カレンダー・業界情報・競合情報・売場写真などの上部にあった緑色のヘッダーを、落ち着いたチャコールブラックの上品なデザインに一新しました。白い文字が引き締まって見え、全体がぐっと洗練された印象になります。" },
