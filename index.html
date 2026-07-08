@@ -136,7 +136,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 const ANNOUNCEMENTS = [
   { date:"2026-07-07", type:"改善", title:"配色を淡いブルー基調に一新", body:"各ページ上部のヘッダーを、やわらかいパステルブルー×紺文字の上品なデザインに変更しました。あわせて、アプリ全体の緑色（ボタン・バッジ・計算結果の見出しなど）をブルー系に統一。新機能バナーも青になりました。全体が涼しげで洗練された、鮮魚らしい配色になっています。" },
   { date:"2026-07-07", type:"改善", title:"各ページのヘッダーを洗練されたデザインに", body:"便利機能・魚図鑑・POP診断・行事カレンダー・業界情報・競合情報・売場写真などの上部にあった緑色のヘッダーを、落ち着いたチャコールブラックの上品なデザインに一新しました。白い文字が引き締まって見え、全体がぐっと洗練された印象になります。" },
-  { date:"2026-07-07", type:"修正", title:"バーコード：冷食が発注端末で読めない問題を修正", body:"冷食などメーカーJANしか登録されていない商品で、印刷したバーコードが発注端末の呼び出しで読めない問題を修正しました。商品コードから店内の呼び出しコード（02始まり）を自動生成して印字します。変換された商品には番号の横に「＊」が付きます。印刷し直してからご利用ください。" },
+  { date:"2026-07-07", type:"修正", title:"バーコード：冷食の印字を元の仕様に戻しました", body:"冷食の呼び出しコード自動変換を試験しましたが、発注端末で読み取れなかったため、以前の仕様（マスタのバーコードをそのまま印字）に戻しました。冷食の発注は当面、従来どおり手入力等でお願いします。原因は引き続き調査します。" },
   { date:"2026-07-06", type:"改善", title:"ランキングは管理画面へ移動", body:"「ランキング」タブはいったん☰メニューから外し、管理画面（ログイン後）の中で見られるようにしました。閲覧数・使った・いいねの順位表は管理画面→ランキングからどうぞ。一覧上部の「📈急上昇」の表示は引き続き動いています。" },
   { date:"2026-07-06", type:"新機能", title:"「ランキング」タブを追加", body:"☰メニューに「ランキング」を追加しました。閲覧数・使った回数・いいねの3種類で、ポップが1位から順にずらっと並びます（1〜3位は金・銀・銅の色付き）。タップすればそのままポップが開き、スワイプで順位順に見ていけます。あわせて、閲覧数の目のアイコンは「閲覧◯」「◯回」の文字表記に変更しました。" },
   { date:"2026-07-06", type:"新機能", title:"「📈 急上昇」ランキングを一覧に表示", body:"よく見られているポップの上位3件が、一覧画面の上部に数秒ごとに入れ替わりで流れるようになりました（ニュース速報のようなイメージ）。「1位 ○○（△△店）👁 回数」の表示をタップすると、そのポップがすぐ開きます。閲覧数が貯まってくると自動で表示されます。" },
@@ -2259,18 +2259,6 @@ function BarcodeTab() {
   const srcFiltered = q ? base.filter(it => normJa(it.name).includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
   const srcShown = srcFiltered;
 
-  // 発注端末の「呼び出しコード」へ変換して印字する。
-  // マスタの規則（検証：2,616件中99.8%一致）: 呼び出しコード = "02" + 商品コードの2〜6桁目 + "000000"
-  // ・bcodeが既に0始まり13桁（インストアコード）ならそのまま
-  // ・メーカーJAN（4始まり等）しか無い商品（冷食のNB品など）は商品コードから生成
-  const toCallCode = (it) => {
-    const b = String(it.bcode || "");
-    if (/^0\d{12}$/.test(b)) return b;
-    const pc = String(it.pcode || "");
-    if (/^8\d{6}$/.test(pc)) return "02" + pc.slice(1, 6) + "000000";
-    return b;
-  };
-
   const ROWS = 4;
   const perPage = cols * ROWS;                 // 4列×4行＝16枚/ページ
   const pages = [];
@@ -2294,9 +2282,9 @@ function BarcodeTab() {
             style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
             {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
-              <svg data-code={toCallCode(it)} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
+              <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
             </div>
-            <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"var(--ink)", lineHeight:1 }}>{toCallCode(it)}{toCallCode(it) !== String(it.bcode) ? "＊" : ""}</div>
+            <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"var(--ink)", lineHeight:1 }}>{it.bcode}</div>
           </div>
         ))}
       </div>
