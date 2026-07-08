@@ -134,6 +134,9 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-07-07", type:"改善", title:"配色を淡いブルー基調に一新", body:"各ページ上部のヘッダーを、やわらかいパステルブルー×紺文字の上品なデザインに変更しました。あわせて、アプリ全体の緑色（ボタン・バッジ・計算結果の見出しなど）をブルー系に統一。新機能バナーも青になりました。全体が涼しげで洗練された、鮮魚らしい配色になっています。" },
+  { date:"2026-07-07", type:"改善", title:"各ページのヘッダーを洗練されたデザインに", body:"便利機能・魚図鑑・POP診断・行事カレンダー・業界情報・競合情報・売場写真などの上部にあった緑色のヘッダーを、落ち着いたチャコールブラックの上品なデザインに一新しました。白い文字が引き締まって見え、全体がぐっと洗練された印象になります。" },
+  { date:"2026-07-07", type:"修正", title:"バーコード：冷食が発注端末で読めない問題を修正", body:"冷食などメーカーJANしか登録されていない商品で、印刷したバーコードが発注端末の呼び出しで読めない問題を修正しました。商品コードから店内の呼び出しコード（02始まり）を自動生成して印字します。変換された商品には番号の横に「＊」が付きます。印刷し直してからご利用ください。" },
   { date:"2026-07-06", type:"改善", title:"ランキングは管理画面へ移動", body:"「ランキング」タブはいったん☰メニューから外し、管理画面（ログイン後）の中で見られるようにしました。閲覧数・使った・いいねの順位表は管理画面→ランキングからどうぞ。一覧上部の「📈急上昇」の表示は引き続き動いています。" },
   { date:"2026-07-06", type:"新機能", title:"「ランキング」タブを追加", body:"☰メニューに「ランキング」を追加しました。閲覧数・使った回数・いいねの3種類で、ポップが1位から順にずらっと並びます（1〜3位は金・銀・銅の色付き）。タップすればそのままポップが開き、スワイプで順位順に見ていけます。あわせて、閲覧数の目のアイコンは「閲覧◯」「◯回」の文字表記に変更しました。" },
   { date:"2026-07-06", type:"新機能", title:"「📈 急上昇」ランキングを一覧に表示", body:"よく見られているポップの上位3件が、一覧画面の上部に数秒ごとに入れ替わりで流れるようになりました（ニュース速報のようなイメージ）。「1位 ○○（△△店）👁 回数」の表示をタップすると、そのポップがすぐ開きます。閲覧数が貯まってくると自動で表示されます。" },
@@ -200,7 +203,7 @@ const ANNOUNCEMENTS = [
   { date:"2026-06-09", type:"新機能", title:"「このPOPを元に作る」を追加", body:"POP詳細画面から、そのPOPのレイアウト・配色を下敷きにして別商品のPOPを作れるようになりました。作成タブが自動で「参考画像あり」モードで開きます。" },
 ];
 const ANN_TYPES = {
-  "新機能":   { bg:"#eafaf0", color:"#1a6b3a", border:"#bfe6cd" },
+  "新機能":   { bg:"#eaf2fb", color:"#2f6fb0", border:"#c6dcf2" },
   "改善":     { bg:"#fff4e6", color:"#b86a00", border:"#ffe0b3" },
   "修正":     { bg:"#eef3f8", color:"var(--primary)", border:"#cfe0ef" },
   "お知らせ": { bg:"#f3f3f5", color:"#6b7280", border:"#e0e0e5" },
@@ -729,7 +732,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           {/* 右側 縦積みアクション */}
           <div style={{ position:"absolute", right:11, bottom:16, display:"flex", flexDirection:"column", gap:13, zIndex:5 }}>
             <ActionBtn onClick={handleLike} active={liked} activeColor="#e0245e" emoji={liked ? "❤️" : "🤍"} label={String(likes)} />
-            <ActionBtn onClick={handleUsed} active={used} activeColor="#1a6b3a" emoji={used ? "✅" : "🖐"} label={used ? `使った ${usedCount}` : "使った"} />
+            <ActionBtn onClick={handleUsed} active={used} activeColor="#2f6fb0" emoji={used ? "✅" : "🖐"} label={used ? `使った ${usedCount}` : "使った"} />
             <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} emoji="💬" label={String(comments.length)} />
             <ActionBtn onClick={handleDownload} emoji="⬇️" label="保存" />
             {onCreateFromPop && <ActionBtn onClick={() => { onCreateFromPop(pop); onClose(); }} emoji="✏️" label="作成" />}
@@ -914,13 +917,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         <TodayInfoCard />
         {feat && feat.enabled && feat.message && featShow && (
           <div onClick={() => { if (feat.tab && onFeatGo) onFeatGo(feat.tab); }}
-            style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", borderRadius:14, padding:"12px 14px", marginBottom:12, cursor: feat.tab ? "pointer" : "default", boxShadow:"0 4px 16px rgba(26,107,58,0.22)", animation:"fadeUp .35s ease" }}>
+            style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px", marginBottom:12, cursor: feat.tab ? "pointer" : "default", boxShadow:"0 4px 16px rgba(47,111,176,0.22)", animation:"fadeUp .35s ease" }}>
             <span style={{ fontSize:20, flexShrink:0 }}>🎉</span>
             <div style={{ minWidth:0, flex:1 }}>
               <div style={{ fontSize:10.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
               <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{feat.message}</div>
             </div>
-            {feat.tab && <span style={{ fontSize:11, fontWeight:800, color:"#1a6b3a", background:"#fff", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
+            {feat.tab && <span style={{ fontSize:11, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
             <button onClick={(e) => { e.stopPropagation(); try { localStorage.setItem("featSeen", feat.ver || feat.message); } catch(x){} setFeatShow(false); }}
               style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", width:26, height:26, borderRadius:"50%", fontSize:14, fontWeight:800, cursor:"pointer", flexShrink:0, lineHeight:1 }}>✕</button>
           </div>
@@ -1695,20 +1698,20 @@ function FloorPhotoTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
 
       {/* ヘッダーバー */}
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"14px 16px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"14px 16px" }}>
         <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
-          <div style={{ color:"white", fontSize:14, fontWeight:700, opacity:0.9 }}>各店の売場写真を共有・比較</div>
+          <div style={{ color:"#17324e", fontSize:14, fontWeight:700, opacity:0.9 }}>各店の売場写真を共有・比較</div>
           <div style={{ display:"flex", gap:8 }}>
             <button onClick={()=>setMode("gallery")}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
-                background: mode==="gallery" ? "white" : "rgba(255,255,255,0.2)",
-                color: mode==="gallery" ? "#1a6b3a" : "white" }}>
+                background: mode==="gallery" ? "white" : "rgba(29,58,87,0.12)",
+                color: mode==="gallery" ? "#111" : "#17324e" }}>
               ギャラリー
             </button>
             <button onClick={()=>setMode("compare")}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
-                background: mode==="compare" ? "white" : "rgba(255,255,255,0.2)",
-                color: mode==="compare" ? "#1a6b3a" : "white" }}>
+                background: mode==="compare" ? "white" : "rgba(29,58,87,0.12)",
+                color: mode==="compare" ? "#111" : "#17324e" }}>
               店舗比較
             </button>
             <button onClick={()=>setShowUp(true)}
@@ -1728,7 +1731,7 @@ function FloorPhotoTab() {
             {[{lbl:"全店舗",val:""},...FLOOR_STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
               <button key={lbl} onClick={()=>setFStore(val)}
                 style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer",
-                  borderColor:fStore===val?"#1a6b3a":"#ddd", background:fStore===val?"#1a6b3a":"white", color:fStore===val?"white":"#666" }}>
+                  borderColor:fStore===val?"#17181a":"#ddd", background:fStore===val?"#17181a":"white", color:fStore===val?"white":"#666" }}>
                 {lbl}
               </button>
             ))}
@@ -1765,7 +1768,7 @@ function FloorPhotoTab() {
                   onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
                   <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
                     <img src={photo.image_url} style={{ width:"100%", display:"block" }} />
-                    <div style={{ position:"absolute", top:6, left:6, background:"rgba(26,107,58,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 8px", borderRadius:20 }}>{photo.category}</div>
+                    <div style={{ position:"absolute", top:6, left:6, background:"rgba(47,111,176,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 8px", borderRadius:20 }}>{photo.category}</div>
                   </div>
                   <div style={{ padding:"10px 12px" }}>
                     <div style={{ fontWeight:800, fontSize:13, marginBottom:3 }}>{photo.store_name}</div>
@@ -1789,8 +1792,8 @@ function FloorPhotoTab() {
               {FLOOR_CATS.map(c=>(
                 <button key={c} onClick={()=>setCompareCat(c)}
                   style={{ padding:"8px 18px", borderRadius:20, fontSize:13, fontWeight:700, border:"2px solid", cursor:"pointer",
-                    borderColor:compareCat===c?"#1a6b3a":"#ddd",
-                    background:compareCat===c?"#1a6b3a":"white",
+                    borderColor:compareCat===c?"#17181a":"#ddd",
+                    background:compareCat===c?"#17181a":"white",
                     color:compareCat===c?"white":"#666" }}>
                   {c}
                 </button>
@@ -1805,8 +1808,8 @@ function FloorPhotoTab() {
               {compareData.map(({store, photos:storePhotos})=>(
                 <div key={store} style={{ background:"white", borderRadius:14, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.07)" }}>
                   {/* 店舗名ヘッダー */}
-                  <div style={{ background:"#1a6b3a", padding:"10px 14px" }}>
-                    <div style={{ fontSize:13, fontWeight:900, color:"white" }}>{store}</div>
+                  <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"10px 14px" }}>
+                    <div style={{ fontSize:13, fontWeight:900, color:"#17324e" }}>{store}</div>
                     <div style={{ fontSize:11, color:"rgba(255,255,255,0.7)", marginTop:2 }}>{storePhotos.length}枚</div>
                   </div>
 
@@ -1858,7 +1861,7 @@ function FloorPhotoTab() {
               <img src={sel.image_url} style={{ width:"100%", display:"block", borderRadius:"20px 20px 0 0" }} />
               <button onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}
                 style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.5)", border:"none", color:"white", fontSize:18, width:36, height:36, borderRadius:"50%", cursor:"pointer" }}>✕</button>
-              <div style={{ position:"absolute", top:12, left:12, background:"rgba(26,107,58,0.9)", color:"white", fontSize:12, fontWeight:800, padding:"3px 10px", borderRadius:20 }}>{sel.category}</div>
+              <div style={{ position:"absolute", top:12, left:12, background:"rgba(47,111,176,0.9)", color:"white", fontSize:12, fontWeight:800, padding:"3px 10px", borderRadius:20 }}>{sel.category}</div>
             </div>
             <div style={{ padding:"16px 20px" }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
@@ -1974,7 +1977,7 @@ function FloorUploadModal({ onClose, onSuccess }) {
           </div>
           {error && <div style={{ color:"var(--primary)", fontSize:13, fontWeight:600 }}>{error}</div>}
           <button onClick={submit} disabled={loading}
-            style={{ background:"#1a6b3a", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
+            style={{ background:"#2f6fb0", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
             {loading ? "投稿中..." : "投稿する"}
           </button>
         </div>
@@ -2256,6 +2259,18 @@ function BarcodeTab() {
   const srcFiltered = q ? base.filter(it => normJa(it.name).includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
   const srcShown = srcFiltered;
 
+  // 発注端末の「呼び出しコード」へ変換して印字する。
+  // マスタの規則（検証：2,616件中99.8%一致）: 呼び出しコード = "02" + 商品コードの2〜6桁目 + "000000"
+  // ・bcodeが既に0始まり13桁（インストアコード）ならそのまま
+  // ・メーカーJAN（4始まり等）しか無い商品（冷食のNB品など）は商品コードから生成
+  const toCallCode = (it) => {
+    const b = String(it.bcode || "");
+    if (/^0\d{12}$/.test(b)) return b;
+    const pc = String(it.pcode || "");
+    if (/^8\d{6}$/.test(pc)) return "02" + pc.slice(1, 6) + "000000";
+    return b;
+  };
+
   const ROWS = 4;
   const perPage = cols * ROWS;                 // 4列×4行＝16枚/ページ
   const pages = [];
@@ -2279,9 +2294,9 @@ function BarcodeTab() {
             style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
             {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
-              <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
+              <svg data-code={toCallCode(it)} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
             </div>
-            <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"var(--ink)", lineHeight:1 }}>{it.bcode}</div>
+            <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"var(--ink)", lineHeight:1 }}>{toCallCode(it)}{toCallCode(it) !== String(it.bcode) ? "＊" : ""}</div>
           </div>
         ))}
       </div>
@@ -2568,7 +2583,7 @@ function PromptCard({ it, accent, onDelete }) {
         </div>
         {longText && <button onClick={()=>setOpen(o=>!o)} style={{ border:"none", background:"none", color:"var(--sub)", fontSize:12, fontWeight:700, cursor:"pointer", marginTop:6, padding:0 }}>{open?"閉じる":"全文を見る"}</button>}
         <div style={{ display:"flex", alignItems:"center", gap:12, marginTop:11 }}>
-          <button onClick={copy} style={{ flex:1, border:"none", background: copied?"#1a6b3a":accent, color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>{copied?"✓ コピーしました":"プロンプトをコピー"}</button>
+          <button onClick={copy} style={{ flex:1, border:"none", background: copied?"#2f6fb0":accent, color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>{copied?"✓ コピーしました":"プロンプトをコピー"}</button>
           <button onClick={onDelete} style={{ border:"none", background:"none", color:"var(--faint)", fontSize:13, fontWeight:700, cursor:"pointer" }}>削除</button>
         </div>
         <div style={{ fontSize:11, color:"var(--sub)", marginTop:8 }}>{it.author || "匿名"}</div>
@@ -3213,7 +3228,7 @@ function GeneratorTab() {
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>テンプレ画像（文字なし・1200×1697推奨）</div>
           <button onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer" }}>画像を選択</button>
-          {tpl && <span style={{ marginLeft:10, fontSize:12, color:"#1a6b3a", fontWeight:700 }}>読込済み</span>}
+          {tpl && <span style={{ marginLeft:10, fontSize:12, color:"#2f6fb0", fontWeight:700 }}>読込済み</span>}
           <input ref={tplInput} type="file" accept="image/*" onChange={(e) => onTpl(e.target.files[0])} style={{ display:"none" }} />
         </div>
 
@@ -3323,7 +3338,7 @@ function GeneratorTab() {
           <button onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", width:"fit-content" }}>.xlsx を選択</button>
           <input ref={xlsxInput} type="file" accept=".xlsx,.xls" onChange={(e) => onExcel(e.target.files[0])} style={{ display:"none" }} />
           <button onClick={generateZip} disabled={!rows.length || busy}
-            style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "#cbb8ef" : "#1a6b3a", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>
+            style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "#cbb8ef" : "#2f6fb0", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>
             {busy ? "生成中…" : (rows.length ? `${rows.length} 件を ZIP 出力` : "ファイル未読込")}
           </button>
           {status && <div style={{ fontSize:12, color:"var(--sub)" }}>{status}</div>}
@@ -3549,7 +3564,7 @@ function PopCheckTab() {
     }
   };
 
-  const barColor = (v) => v >= 70 ? "#1a6b3a" : v >= 45 ? "#C7892B" : "#b3261e";
+  const barColor = (v) => v >= 70 ? "#2f6fb0" : v >= 45 ? "#C7892B" : "#b3261e";
   const Row = ({ label, level, score, comment }) => (
     <div style={{ marginBottom:11 }}>
       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -3566,10 +3581,10 @@ function PopCheckTab() {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>POP診断</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>POP診断</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません</div>
         </div>
       </div>
       <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
@@ -3611,7 +3626,7 @@ function PopCheckTab() {
           <>
             <div className="wcard" style={{ textAlign:"center" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14 }}>
-                <div style={{ width:74, height:74, borderRadius:"50%", background: res.j.total >= 70 ? "#1a6b3a" : res.j.total >= 55 ? "#C7892B" : "#b3261e", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <div style={{ width:74, height:74, borderRadius:"50%", background: res.j.total >= 70 ? "#2f6fb0" : res.j.total >= 55 ? "#C7892B" : "#b3261e", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   <div style={{ fontSize:27, fontWeight:900, lineHeight:1 }}>{res.j.grade}</div>
                   <div style={{ fontSize:11, fontWeight:800 }}>{res.j.total}点</div>
                 </div>
@@ -3639,7 +3654,7 @@ function PopCheckTab() {
             </div>
 
             <div className="wcard">
-              <div style={{ fontSize:13, fontWeight:900, color:"#1a6b3a", marginBottom:7 }}>👍 良い点</div>
+              <div style={{ fontSize:13, fontWeight:900, color:"#2f6fb0", marginBottom:7 }}>👍 良い点</div>
               {res.j.good.map((g,i) => <div key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.9 }}>・{g}</div>)}
               <div style={{ height:1, background:"var(--line)", margin:"10px 0" }} />
               <div style={{ fontSize:13, fontWeight:900, color:"var(--primary)", marginBottom:7 }}>🔧 改善案</div>
@@ -3729,10 +3744,10 @@ function RankingTab({ onCreateFromPop, embedded }) {
   return (
     <div className={embedded ? undefined : "min-vh"} style={embedded ? {} : { background:"var(--bg)" }}>
       {!embedded && (
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>ランキング</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>みんなが見ている・使っているポップの順位</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>ランキング</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>みんなが見ている・使っているポップの順位</div>
         </div>
       </div>
       )}
@@ -3797,10 +3812,10 @@ function FishTab() {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>魚図鑑</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>魚図鑑</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース</div>
         </div>
       </div>
       <div style={{ maxWidth:600, margin:"0 auto", padding:"14px 16px 120px" }}>
@@ -3878,10 +3893,10 @@ function CalendarTab() {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
         </div>
       </div>
       <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
@@ -3975,10 +3990,10 @@ function CompetitorTab() {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>競合情報</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>鮮魚が強い15店舗を4タイプで整理。売り方のヒントに</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>競合情報</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>鮮魚が強い15店舗を4タイプで整理。売り方のヒントに</div>
         </div>
       </div>
       <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
@@ -4012,7 +4027,7 @@ function CompetitorTab() {
 function IndustryTab() {
   const SITES = [
     { name:"ダイヤモンド・チェーンストア オンライン", home:"https://diamond-rm.net/", feed:"https://diamond-rm.net/feed/", tag:"業界ニュース", emoji:"📰", color:"#2f6fb0" },
-    { name:"食未来研究室", home:"https://nsk-shokumirai.com/", feed:"https://nsk-shokumirai.com/feed/", tag:"売場・行事提案", emoji:"🍳", color:"#1a6b3a" },
+    { name:"食未来研究室", home:"https://nsk-shokumirai.com/", feed:"https://nsk-shokumirai.com/feed/", tag:"売場・行事提案", emoji:"🍳", color:"#2f6fb0" },
   ];
   const [data, setData] = useState(SITES.map(() => ({ status:"loading", items:[] })));
 
@@ -4040,10 +4055,10 @@ function IndustryTab() {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>業界情報</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場づくりや業界の動きに役立つ最新記事</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>業界情報</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場づくりや業界の動きに役立つ最新記事</div>
         </div>
       </div>
       <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
@@ -4158,15 +4173,15 @@ function SoubaTab({ onCreatePop }) {
 
   return (
     <div className="min-vh" style={{ background:"var(--bg)", paddingBottom:100 }}>
-      <div style={{ background:"linear-gradient(135deg,#1a6b3a 0%,#2d9e5f 100%)", padding:"16px" }}>
+      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"16px" }}>
         <div style={{ maxWidth:560, margin:"0 auto" }}>
-          <div style={{ color:"#fff", fontSize:18, fontWeight:900 }}>便利機能</div>
-          <div style={{ color:"rgba(255,255,255,0.85)", fontSize:12, marginTop:2 }}>売場の計算をぜんぶここで。入力するだけでパッと答え</div>
+          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>便利機能</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場の計算をぜんぶここで。入力するだけでパッと答え</div>
           <div style={{ display:"flex", gap:6, marginTop:12, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:2 }}>
             {[["souba","相場計算"],["arari","粗利"],["budomari","歩留まり"],["nebiki","値引き"],["gram","グラム"],["shio","立て塩"]].map(([k,l]) => (
               <button key={k} onClick={() => setSub(k)}
                 style={{ flexShrink:0, border:"none", borderRadius:16, padding:"7px 14px", fontSize:13, fontWeight:800, cursor:"pointer",
-                  background: sub===k ? "#fff" : "rgba(255,255,255,0.22)", color: sub===k ? "#1a6b3a" : "#fff" }}>{l}</button>
+                  background: sub===k ? "#fff" : "rgba(29,58,87,0.14)", color: sub===k ? "#2f6fb0" : "#17324e" }}>{l}</button>
             ))}
           </div>
         </div>
@@ -4177,7 +4192,7 @@ function SoubaTab({ onCreatePop }) {
         {sub === "souba" && (<>
         {/* 先週比 */}
         <div style={card}>
-          <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>先週とくらべて何割 相場安？</div>
+          <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>先週とくらべて何割 相場安？</div>
           <div style={{ display:"flex", gap:10 }}>
             <div style={{ flex:1 }}>
               <div style={lbl}>先週の売価（100g 円）</div>
@@ -4194,19 +4209,19 @@ function SoubaTab({ onCreatePop }) {
             <div style={{ marginTop:14, background: same ? "#f3f4f6" : cheaper ? "#eafaf0" : "#fff4ed", border:`1px solid ${same ? "#e5e7eb" : cheaper ? "#bde9cd" : "#ffd9bf"}`, borderRadius:12, padding:"14px 16px" }}>
               {!same && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginBottom:12 }}>
-                  {cell("差額", `${Math.round(Math.abs(diff))}円`, cheaper ? "#1a6b3a" : "var(--primary)")}
-                  {cell(cheaper ? "値引率" : "値上率", `${Math.abs(pct).toFixed(1)}%`, cheaper ? "#1a6b3a" : "var(--primary)")}
-                  {cell("割", wari || "—", cheaper ? "#1a6b3a" : "var(--primary)")}
+                  {cell("差額", `${Math.round(Math.abs(diff))}円`, cheaper ? "#2f6fb0" : "var(--primary)")}
+                  {cell(cheaper ? "値引率" : "値上率", `${Math.abs(pct).toFixed(1)}%`, cheaper ? "#2f6fb0" : "var(--primary)")}
+                  {cell("割", wari || "—", cheaper ? "#2f6fb0" : "var(--primary)")}
                 </div>
               )}
               <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", textAlign:"center", lineHeight:1.5 }}>{phrase}</div>
               {!same && (
                 <>
-                <button onClick={copyPhrase} style={{ marginTop:12, width:"100%", border:"none", background: copied ? "#1a6b3a" : "#2d9e5f", color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                <button onClick={copyPhrase} style={{ marginTop:12, width:"100%", border:"none", background: copied ? "#2f6fb0" : "#3f83c4", color:"#fff", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
                   {copied ? "✓ コピーしました" : "POP用の文言をコピー"}
                 </button>
                 {cheaper && onCreatePop && (
-                  <button onClick={()=>onCreatePop({ appeal: phrase })} style={{ marginTop:8, width:"100%", border:"1px solid #2d9e5f", background:"#fff", color:"#1a6b3a", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                  <button onClick={()=>onCreatePop({ appeal: phrase })} style={{ marginTop:8, width:"100%", border:"1px solid #3f83c4", background:"#fff", color:"#2f6fb0", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
                     このおトク文でPOPを作成 →
                   </button>
                 )}
@@ -4235,7 +4250,7 @@ function SoubaTab({ onCreatePop }) {
             <div style={{ marginTop:14, background:"#fffaf0", border:"1px solid #f0e0c0", borderRadius:12, padding:"14px 16px", display:"flex", justifyContent:"space-around" }}>
               {cell("売価（税抜）", `${sell}円`, "#8B6914")}
               {cell("税込（8%）", `${sellTax}円`, "#b8860b")}
-              {cell("利益額", `${profit}円`, "#1a6b3a")}
+              {cell("利益額", `${profit}円`, "#2f6fb0")}
             </div>
             {onCreatePop && (
               <button onClick={()=>onCreatePop({ price: `${sell}円（税込${sellTax}円）` })} style={{ marginTop:10, width:"100%", border:"1px solid #b8860b", background:"#fff", color:"#8B6914", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
@@ -4256,28 +4271,28 @@ function SoubaTab({ onCreatePop }) {
           const gsell = gok ? Math.ceil(gc / (1 - gr / 100)) : null;
           return (<>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>粗利率をチェック</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>粗利率をチェック</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>原価（円）</div><input value={aCost} onChange={e=>setACost(e.target.value)} inputMode="decimal" style={inp} placeholder="120" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>売価（円）</div><input value={aSell} onChange={e=>setASell(e.target.value)} inputMode="decimal" style={inp} placeholder="198" /></div>
               </div>
               {ok && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
-                  {cell("粗利率", `${rate.toFixed(1)}%`, rate >= 30 ? "#1a6b3a" : "var(--primary)")}
+                  {cell("粗利率", `${rate.toFixed(1)}%`, rate >= 30 ? "#2f6fb0" : "var(--primary)")}
                   {cell("値入額", `${Math.round(v - c)}円`, "var(--ink)")}
                   {cell("原価率", `${(c / v * 100).toFixed(1)}%`, "var(--sub)")}
                 </div>
               )}
             </div>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>目標の粗利率から売価を逆算</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>目標の粗利率から売価を逆算</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>原価（円）</div><input value={gCost} onChange={e=>setGCost(e.target.value)} inputMode="decimal" style={inp} placeholder="120" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>目標粗利率（%）</div><input value={gRate} onChange={e=>setGRate(e.target.value)} inputMode="decimal" style={inp} /></div>
               </div>
               {gok && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
-                  {cell("売価（税抜）", `${gsell}円`, "#1a6b3a")}
+                  {cell("売価（税抜）", `${gsell}円`, "#2f6fb0")}
                   {cell("税込（8%）", `${Math.ceil(gsell * 1.08)}円`, "var(--sub)")}
                 </div>
               )}
@@ -4293,7 +4308,7 @@ function SoubaTab({ onCreatePop }) {
           const rec = mok ? real / (1 - m / 100) : null;
           return (
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:4 }}>歩留まりから実質原価を計算</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:4 }}>歩留まりから実質原価を計算</div>
               <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:14 }}>丸魚を捌いたあとの「使える部分」あたりの原価が出ます（目安：ブリのフィレ 約55%、三枚おろし 約45〜50%）</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>仕入単価（円/kg）</div><input value={yUnit} onChange={e=>setYUnit(e.target.value)} inputMode="decimal" style={inp} placeholder="800" /></div>
@@ -4311,7 +4326,7 @@ function SoubaTab({ onCreatePop }) {
                 <div style={{ flex:2 }}>
                   {rec != null && (
                     <div style={{ display:"flex", justifyContent:"space-around" }}>
-                      {cell("推奨売価", `${Math.ceil(rec / 10)}円/100g`, "#1a6b3a")}
+                      {cell("推奨売価", `${Math.ceil(rec / 10)}円/100g`, "#2f6fb0")}
                       {cell("kgあたり", `${Math.ceil(rec)}円`, "var(--sub)")}
                     </div>
                   )}
@@ -4329,7 +4344,7 @@ function SoubaTab({ onCreatePop }) {
           const ok2 = !isNaN(p2) && p2 > 0 && !isNaN(y2) && y2 >= 0;
           return (<>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>◯%引きの値段は？</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>◯%引きの値段は？</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>元の売価（円）</div><input value={nPrice} onChange={e=>setNPrice(e.target.value)} inputMode="decimal" style={inp} placeholder="298" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>割引率（%）</div><input value={nPct} onChange={e=>setNPct(e.target.value)} inputMode="decimal" style={inp} /></div>
@@ -4342,7 +4357,7 @@ function SoubaTab({ onCreatePop }) {
               )}
             </div>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>◯円引きは何%相当？</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>◯円引きは何%相当？</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>元の売価（円）</div><input value={n2Price} onChange={e=>setN2Price(e.target.value)} inputMode="decimal" style={inp} placeholder="398" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>値引き額（円）</div><input value={n2Yen} onChange={e=>setN2Yen(e.target.value)} inputMode="decimal" style={inp} /></div>
@@ -4364,27 +4379,27 @@ function SoubaTab({ onCreatePop }) {
           const ok2 = !isNaN(c2) && c2 > 0 && !isNaN(d2) && d2 > 0;
           return (<>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>100g単価 → パック売価</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>100g単価 → パック売価</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>100g単価（円）</div><input value={g100} onChange={e=>setG100(e.target.value)} inputMode="decimal" style={inp} placeholder="298" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>内容量（g）</div><input value={gWt} onChange={e=>setGWt(e.target.value)} inputMode="decimal" style={inp} placeholder="240" /></div>
               </div>
               {ok1 && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
-                  {cell("売価", `${Math.ceil(a * b / 100)}円`, "#1a6b3a")}
+                  {cell("売価", `${Math.ceil(a * b / 100)}円`, "#2f6fb0")}
                   {cell("税込（8%）", `${Math.ceil(a * b / 100 * 1.08)}円`, "var(--sub)")}
                 </div>
               )}
             </div>
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:14 }}>パック売価 → 100g単価</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:14 }}>パック売価 → 100g単価</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>売価（円）</div><input value={g2Sell} onChange={e=>setG2Sell(e.target.value)} inputMode="decimal" style={inp} placeholder="698" /></div>
                 <div style={{ flex:1 }}><div style={lbl}>内容量（g）</div><input value={g2Wt} onChange={e=>setG2Wt(e.target.value)} inputMode="decimal" style={inp} placeholder="240" /></div>
               </div>
               {ok2 && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
-                  {cell("100gあたり", `${Math.round(c2 / d2 * 100)}円`, "#1a6b3a")}
+                  {cell("100gあたり", `${Math.round(c2 / d2 * 100)}円`, "#2f6fb0")}
                 </div>
               )}
             </div>
@@ -4397,7 +4412,7 @@ function SoubaTab({ onCreatePop }) {
           const salt = ok ? w * pc / 100 : null;
           return (
             <div style={card}>
-              <div style={{ fontSize:15, fontWeight:900, color:"#1a6b3a", marginBottom:4 }}>立て塩（塩水）の塩の量</div>
+              <div style={{ fontSize:15, fontWeight:900, color:"#2f6fb0", marginBottom:4 }}>立て塩（塩水）の塩の量</div>
               <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:14 }}>目安：立て塩は3%前後（海水と同じくらい）。魚の下処理・臭み抜きに</div>
               <div style={{ display:"flex", gap:10 }}>
                 <div style={{ flex:1 }}><div style={lbl}>水の量（ml）</div><input value={sWater} onChange={e=>setSWater(e.target.value)} inputMode="decimal" style={inp} /></div>
@@ -4405,7 +4420,7 @@ function SoubaTab({ onCreatePop }) {
               </div>
               {ok && (
                 <div style={{ display:"flex", justifyContent:"space-around", marginTop:16 }}>
-                  {cell("塩の量", `${salt.toFixed(salt < 10 ? 1 : 0)}g`, "#1a6b3a")}
+                  {cell("塩の量", `${salt.toFixed(salt < 10 ? 1 : 0)}g`, "#2f6fb0")}
                   {cell("大さじ換算", `約${(salt / 18).toFixed(1)}杯`, "var(--sub)")}
                 </div>
               )}
@@ -4618,7 +4633,7 @@ function AdminTab({ onNoticeChange }) {
                   {r.reason && <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.5, background:"var(--bg)", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
                   <div style={{ display:"flex", gap:8 }}>
                     <button onClick={()=>setReqStatus(r, done?"未対応":"対応済み")}
-                      style={{ flex:1, border:"none", background:done?"#eee":"#1a6b3a", color:done?"#888":"#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
+                      style={{ flex:1, border:"none", background:done?"#eee":"#2f6fb0", color:done?"#888":"#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
                       {done?"未対応に戻す":"対応済みにする"}
                     </button>
                     <button onClick={()=>delReq(r)}
@@ -4730,7 +4745,7 @@ function AdminTab({ onNoticeChange }) {
           <button onClick={() => setSel({})}
             style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
           <button onClick={apply} disabled={applying}
-            style={{ border:"none", background: toArchive ? "var(--primary)" : "#1a6b3a", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
+            style={{ border:"none", background: toArchive ? "var(--primary)" : "#2f6fb0", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
             {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
           </button>
         </div>
@@ -5021,11 +5036,11 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>③ 新機能のお知らせバナー</div>
           <button onClick={() => setFeatEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: featEnabled?"#1a6b3a":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: featEnabled?"#2f6fb0":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: featEnabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
-        <div style={{ fontSize:12, color: featEnabled?"#1a6b3a":"#999", fontWeight:700, marginBottom:6 }}>{featEnabled ? "● 表示中（ホーム上部に緑のバナー）" : "○ 非表示"}</div>
+        <div style={{ fontSize:12, color: featEnabled?"#2f6fb0":"#999", fontWeight:700, marginBottom:6 }}>{featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"}</div>
         <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。</div>
 
         <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
@@ -5041,18 +5056,18 @@ function NoticeAdmin({ onNoticeChange }) {
         </select>
 
         <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
-        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#1a6b3a,#2f8a52)", borderRadius:14, padding:"12px 14px" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px" }}>
           <span style={{ fontSize:20 }}>🎉</span>
           <div style={{ minWidth:0, flex:1 }}>
             <div style={{ fontSize:10.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
             <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{featMessage.trim() || "（ここにお知らせ文が表示されます）"}</div>
           </div>
-          {featTab && <span style={{ fontSize:11, fontWeight:800, color:"#1a6b3a", background:"#fff", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
+          {featTab && <span style={{ fontSize:11, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
         </div>
       </div>
 
       <button onClick={save} disabled={saving}
-        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#1a6b3a":"var(--primary)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
+        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#2f6fb0":"var(--primary)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
         {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "まとめて保存する"}
       </button>
     </div>
@@ -5191,7 +5206,7 @@ function App() {
 
   const tabs = [
     { key:"board",   icon:"📌", label:"一覧",       color:"var(--primary)" },
-    { key:"floor",   icon:"📸", label:"売場",       color:"#1a6b3a" },
+    { key:"floor",   icon:"📸", label:"売場",       color:"#2f6fb0" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
     { key:"barcode", icon:"🏷", label:"発注バーコード生成", color:"var(--primary)" },
