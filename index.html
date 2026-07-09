@@ -143,9 +143,6 @@ const ANNOUNCEMENTS = [
   { date:"2026-07-07", type:"改善", title:"配色を淡いブルー基調に一新", body:"各ページ上部のヘッダーを、やわらかいパステルブルー×紺文字の上品なデザインに変更しました。あわせて、アプリ全体の緑色（ボタン・バッジ・計算結果の見出しなど）をブルー系に統一。新機能バナーも青になりました。全体が涼しげで洗練された、鮮魚らしい配色になっています。" },
   { date:"2026-07-07", type:"改善", title:"各ページのヘッダーを洗練されたデザインに", body:"便利機能・魚図鑑・POP診断・行事カレンダー・業界情報・競合情報・売場写真などの上部にあった緑色のヘッダーを、落ち着いたチャコールブラックの上品なデザインに一新しました。白い文字が引き締まって見え、全体がぐっと洗練された印象になります。" },
   { date:"2026-07-07", type:"修正", title:"バーコード：冷食の印字を元の仕様に戻しました", body:"冷食の呼び出しコード自動変換を試験しましたが、発注端末で読み取れなかったため、以前の仕様（マスタのバーコードをそのまま印字）に戻しました。冷食の発注は当面、従来どおり手入力等でお願いします。原因は引き続き調査します。" },
-  { date:"2026-07-06", type:"改善", title:"ランキングは管理画面へ移動", body:"「ランキング」タブはいったん☰メニューから外し、管理画面（ログイン後）の中で見られるようにしました。閲覧数・使った・いいねの順位表は管理画面→ランキングからどうぞ。一覧上部の「📈急上昇」の表示は引き続き動いています。" },
-  { date:"2026-07-06", type:"新機能", title:"「ランキング」タブを追加", body:"☰メニューに「ランキング」を追加しました。閲覧数・使った回数・いいねの3種類で、ポップが1位から順にずらっと並びます（1〜3位は金・銀・銅の色付き）。タップすればそのままポップが開き、スワイプで順位順に見ていけます。あわせて、閲覧数の目のアイコンは「閲覧◯」「◯回」の文字表記に変更しました。" },
-  { date:"2026-07-06", type:"新機能", title:"「📈 急上昇」ランキングを一覧に表示", body:"よく見られているポップの上位3件が、一覧画面の上部に数秒ごとに入れ替わりで流れるようになりました（ニュース速報のようなイメージ）。「1位 ○○（△△店）👁 回数」の表示をタップすると、そのポップがすぐ開きます。閲覧数が貯まってくると自動で表示されます。" },
   { date:"2026-07-06", type:"新機能", title:"ポップの閲覧数がわかるように", body:"ポップが何回見られたかをカウントするようになりました。詳細画面の店舗名の横に「👁 回数」が表示されます。閲覧が10回を超えたポップには、一覧のカードに「🔥注目」バッジが付き、みんなが見ているポップがひと目で分かります。カウントは同じ端末からは1日1回だけなので、連打で増えることはありません。" },
   { date:"2026-07-06", type:"改善", title:"「ポップ依頼」が「お問い合わせ」に", body:"ポップ依頼のページが「お問い合わせ」に生まれ変わりました。上部のボタンで「POP作成依頼」「ご要望」「質問・お問い合わせ」を選べます。POPの依頼は今まで通り、それに加えてアプリや売場への要望・質問もここから送れるようになりました。内容は担当者に届きます。" },
   { date:"2026-07-06", type:"改善", title:"入力ジェネレーター：フィールド別の文字サイズ調整", body:"「文字の位置・サイズ」に、産地・商品名・個数・価格・税込表示それぞれの大きさを個別に変えられる−／＋ボタンを追加しました（60%〜160%、10%刻み）。「商品名だけ大きく」「税込表示は控えめに」といった調整ができます。全体サイズ・位置と組み合わせて使え、一括生成にも反映されます。" },
@@ -848,18 +845,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
   const [showNotice, setShowNotice] = useState(true);
-  const [rankIdx, setRankIdx] = useState(0);
-  // アクセス急上昇：閲覧数3以上の上位3件をローテーション表示
-  const rankTop = React.useMemo(() => {
-    return pops.filter(p => !p.archived && (p.view_count || 0) >= 3)
-      .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
-      .slice(0, 3);
-  }, [pops]);
-  useEffect(() => {
-    if (rankTop.length <= 1) return;
-    const t = setInterval(() => setRankIdx(i => (i + 1) % rankTop.length), 3500);
-    return () => clearInterval(t);
-  }, [rankTop.length]);
   const [featShow, setFeatShow] = useState(() => {
     try { const seen = localStorage.getItem("featSeen"); return !feat || (seen !== (feat.ver || feat.message)); } catch(e) { return true; }
   });
@@ -934,21 +919,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
               style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", width:26, height:26, borderRadius:"50%", fontSize:14, fontWeight:800, cursor:"pointer", flexShrink:0, lineHeight:1 }}>✕</button>
           </div>
         )}
-        {rankTop.length > 0 && (() => {
-          const r = rankTop[Math.min(rankIdx, rankTop.length - 1)];
-          return (
-            <div onClick={() => setSel(r)}
-              style={{ display:"flex", alignItems:"center", gap:9, background:"linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5))", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,0.7)", borderRadius:12, padding:"9px 13px", marginBottom:12, cursor:"pointer", boxShadow:"0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)", overflow:"hidden" }}>
-              <span style={{ fontSize:11, fontWeight:900, color:"#fff", background:"linear-gradient(135deg,#e0245e,#ff6b35)", borderRadius:7, padding:"3px 8px", flexShrink:0, letterSpacing:0.5 }}>📈 急上昇</span>
-              <div key={rankIdx} style={{ minWidth:0, flex:1, display:"flex", alignItems:"center", gap:7, animation:"fadeUp .4s ease" }}>
-                <span style={{ fontSize:12.5, fontWeight:900, color:"var(--primary)", flexShrink:0 }}>{Math.min(rankIdx, rankTop.length - 1) + 1}位</span>
-                <span style={{ fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.product_name}</span>
-                <span style={{ fontSize:11, color:"var(--sub)", flexShrink:0 }}>{r.store_name}</span>
-                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginLeft:"auto", flexShrink:0 }}>{r.view_count}回</span>
-              </div>
-            </div>
-          );
-        })()}
         {tipOn && showNotice && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
@@ -3715,89 +3685,6 @@ const FISH_DB = [
   { name:"ばとう鯛（マトウダイ）", kana:"ばとうだい まとうだい", months:[11,12,1,2], point:"島根で「バトウ」と呼ばれる冬の白身。フランスでは高級魚（サンピエール）でムニエルの定番。肝も美味しい通の魚。", cook:"刺身／ムニエル／煮付け／肝ポン酢", pop:"「山陰の冬の白身 バトウ」「フランスでは高級魚サンピエール」", local:"的のような模様が名の由来。島根の冬の隠れた名物。" },
 ];
 
-function RankingTab({ onCreateFromPop, embedded }) {
-  const [pops, setPops] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [metric, setMetric] = useState("view");
-  const [sel, setSel] = useState(null);
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try { const d = await api.listActive(); if (alive) setPops(d); }
-      catch(e) {}
-      finally { if (alive) setLoading(false); }
-    })();
-    return () => { alive = false; };
-  }, []);
-
-  const METRICS = [
-    { key:"view", label:"閲覧数", get: p => p.view_count || 0, unit:"回" },
-    { key:"used", label:"使った", get: p => p.used_count || 0, unit:"回" },
-    { key:"like", label:"いいね", get: p => p.likes || 0, unit:"" },
-  ];
-  const m = METRICS.find(x => x.key === metric);
-  const ranked = [...pops].filter(p => m.get(p) > 0).sort((a, b) => m.get(b) - m.get(a));
-
-  const rankStyle = (i) => i === 0 ? { bg:"#f7b733", fg:"#fff" } : i === 1 ? { bg:"#b9c2cc", fg:"#fff" } : i === 2 ? { bg:"#c98a5a", fg:"#fff" } : { bg:"var(--chip)", fg:"var(--sub)" };
-
-  return (
-    <div className={embedded ? undefined : "min-vh"} style={embedded ? {} : { background:"var(--bg)" }}>
-      {!embedded && (
-      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>ランキング</div>
-          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>みんなが見ている・使っているポップの順位</div>
-        </div>
-      </div>
-      )}
-      <div style={{ maxWidth:600, margin:"0 auto", padding: embedded ? "4px 0 40px" : "14px 16px 130px" }}>
-        <div style={{ display:"flex", gap:7, marginBottom:13 }}>
-          {METRICS.map(x => (
-            <button key={x.key} onClick={() => setMetric(x.key)}
-              style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:11, padding:"9px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                background: metric === x.key ? "var(--soft)" : "#fff", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>{x.label}</button>
-          ))}
-        </div>
-        {loading ? (
-          <div>{[0,1,2,3,4].map(i => (
-            <div key={i} style={{ display:"flex", gap:11, alignItems:"center", background:"#fff", border:"1px solid var(--line)", borderRadius:13, padding:"10px 12px", marginBottom:9 }}>
-              <div className="sk" style={{ width:34, height:34, borderRadius:9 }} />
-              <div className="sk" style={{ width:56, height:56, borderRadius:9 }} />
-              <div style={{ flex:1 }}><div className="sk" style={{ width:"70%", height:13, borderRadius:6 }} /><div className="sk" style={{ width:"40%", height:11, borderRadius:6, marginTop:7 }} /></div>
-            </div>
-          ))}</div>
-        ) : ranked.length === 0 ? (
-          <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13, lineHeight:1.8 }}>まだデータがありません。<br/>ポップが見られる・使われると、ここに順位が並びます。</div>
-        ) : ranked.map((p, i) => {
-          const rs = rankStyle(i);
-          return (
-            <div key={p.id} onClick={() => setSel(p)}
-              style={{ display:"flex", gap:11, alignItems:"center", background:"#fff", border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)", borderRadius:13, padding:"10px 12px", marginBottom:9, cursor:"pointer", animation:`fadeUp .3s ease ${Math.min(i,10)*0.03}s both` }}>
-              <div style={{ width:34, height:34, borderRadius:9, background:rs.bg, color:rs.fg, display:"flex", alignItems:"center", justifyContent:"center", fontSize: i < 3 ? 16 : 13, fontWeight:900, flexShrink:0 }}>{i + 1}</div>
-              <img src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:9, flexShrink:0, border:"1px solid var(--line)" }} />
-              <div style={{ minWidth:0, flex:1 }}>
-                <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
-                <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>
-              </div>
-              <div style={{ textAlign:"right", flexShrink:0 }}>
-                <div style={{ fontSize:17, fontWeight:900, color: i < 3 ? "var(--primary)" : "var(--ink)", lineHeight:1 }}>{m.get(p)}</div>
-                <div style={{ fontSize:10, color:"var(--faint)", fontWeight:700 }}>{m.label}{m.unit}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      {sel && <PopDetail pop={sel} onClose={() => setSel(null)}
-        navList={ranked} onNav={setSel}
-        onDelete={id => { setPops(ps => ps.filter(x => x.id !== id)); setSel(null); }}
-        onLiked={(id, likes) => setPops(ps => ps.map(x => x.id === id ? { ...x, likes } : x))}
-        onCreateFromPop={onCreateFromPop}
-      />}
-    </div>
-  );
-}
-
 function FishTab() {
   const [q, setQ] = useState("");
   const [openIdx, setOpenIdx] = useState(null);
@@ -4599,12 +4486,9 @@ function AdminTab({ onNoticeChange }) {
         {mainSeg("notice", "お知らせ")}
         {mainSeg("pinned", "ピン留め")}
         {mainSeg("memo", "制作メモ")}
-        {mainSeg("ranking", "ランキング")}
       </div>
 
       {section === "notice" && <NoticeAdmin onNoticeChange={onNoticeChange} />}
-
-      {section === "ranking" && <RankingTab embedded />}
 
       {section === "req" && (
         reqLoading ? (
