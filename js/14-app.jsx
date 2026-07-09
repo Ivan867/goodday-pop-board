@@ -1,0 +1,276 @@
+/* GoodDay 鮮魚共有 — 14-app （自動分割・window共有） */
+var { useState, useEffect, useCallback, useRef } = React;
+
+// ═══════════ APP：シェル（ルーティング・ナビ・メニュー・テーマ） ═══════════
+function App() {
+  const [tab, setTab] = useState("board");
+
+  const [currentStore, setCurrentStore] = useState(STORES[0]);
+  const boardActions = React.useRef({});
+  const [showUpload, setShowUpload] = useState(false);
+  const [toolSeed, setToolSeed] = useState(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [showToTop, setShowToTop] = useState(false);
+  const [popDetailOpen, setPopDetailOpen] = useState(false);
+  useEffect(() => {
+    const h = (e) => setPopDetailOpen(!!e.detail);
+    window.addEventListener("popdetail", h);
+    return () => window.removeEventListener("popdetail", h);
+  }, []);
+
+  // 一覧を開いたとき、横スライダーは「業界情報・競合情報」が中央に来る位置で表示
+  useEffect(() => {
+    if (tab !== "board") return;
+    requestAnimationFrame(() => {
+      const sc = document.getElementById("shelf-scroll");
+      const a = document.getElementById("shelf-industry");
+      const b = document.getElementById("shelf-competitor");
+      if (!sc || !a || !b) return;
+      const mid = (a.offsetLeft + (b.offsetLeft + b.offsetWidth)) / 2;
+      sc.scrollLeft = Math.max(0, mid - sc.clientWidth / 2);
+    });
+  }, [tab]);
+  const [wxCode, setWxCode] = useState(null);
+
+  // 天気テーマ（ヘッダー背景をDynamic Island裏まで描画）
+  const skyTheme = (() => {
+    const hour = new Date().getHours();
+    const night = hour >= 19 || hour < 5;
+    const base = { bg:"linear-gradient(180deg,#8FA0B0 0%,#E8ECEF 70%,#ffffff 100%)", txtDark:true };  // フォールバック（通常）
+    if (wxCode == null) return base;
+    if (night) return { bg:"linear-gradient(180deg,#1E2A4A 0%,#2F3E63 55%,#4A5B85 100%)", pat:"radial-gradient(circle, rgba(255,255,255,0.85) 0.7px, transparent 1px)", patSize:"110px 80px", txtDark:false };
+    const c = wxCode;
+    if (c <= 1) return { bg:"linear-gradient(180deg,#5B9BD5 0%,#93C4EC 55%,#CFE7F9 100%)", txtDark:true };
+    if (c <= 3 || c === 45 || c === 48) return { bg:"linear-gradient(180deg,#8A9BAC 0%,#BECAD5 55%,#E9EDF1 100%)", txtDark:true };
+    if ((c >= 71 && c <= 77) || c === 85 || c === 86) return { bg:"linear-gradient(180deg,#93AEC4 0%,#C9DCEA 60%,#EFF6FB 100%)", pat:"radial-gradient(circle, #ffffff 1.2px, transparent 1.5px)", patSize:"48px 40px", txtDark:true };
+    return { bg:"linear-gradient(180deg,#3F4F66 0%,#5A6C86 60%,#7C90A7 100%)", pat:"repeating-linear-gradient(75deg, rgba(255,255,255,0.10) 0px, rgba(255,255,255,0.10) 1px, transparent 1px, transparent 15px)", txtDark:false };  // 雨・雷
+  })();
+  const [radialOpen, setRadialOpen] = useState(false);
+  const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
+  const [pullY, setPullY] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [dataVer, setDataVer] = useState(0);
+  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"" });
+  const pullActive = React.useRef(false);
+  const pullStart = React.useRef(0);
+  const pullDist = React.useRef(0);
+
+  useEffect(() => {
+    const FADE_RANGE = 100;
+    const el = scroller(); if (!el) return;
+    const onScroll = () => {
+      const y = Math.min(el.scrollTop, FADE_RANGE);
+      setScrollP(y / FADE_RANGE);
+      setShowToTop(el.scrollTop > 400);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const doRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (tab === "board" && boardActions.current && boardActions.current.refresh) {
+        await boardActions.current.refresh();
+      } else if (tab === "search" || tab === "floor") {
+        setDataVer(v => v + 1);
+      }
+    } catch(e) { console.error(e); }
+    setTimeout(() => setRefreshing(false), 700);
+  }, [tab]);
+
+  useEffect(() => {
+    const TH = 70;
+    const el = scroller(); if (!el) return;
+    const onStart = (e) => {
+      if (el.scrollTop <= 0 && !refreshing && !moreOpen && !radialOpen) {
+        pullActive.current = true; pullStart.current = e.touches[0].clientY;
+      } else { pullActive.current = false; }
+    };
+    const onMove = (e) => {
+      if (!pullActive.current) return;
+      const dy = e.touches[0].clientY - pullStart.current;
+      if (dy > 0 && el.scrollTop <= 0) {
+        const d = Math.min(dy * 0.5, 90);
+        pullDist.current = d; setPullY(d);
+        if (dy > 6 && e.cancelable) e.preventDefault();
+      } else { pullActive.current = false; pullDist.current = 0; setPullY(0); }
+    };
+    const onEnd = () => {
+      if (!pullActive.current) return;
+      pullActive.current = false;
+      if (pullDist.current >= TH) doRefresh();
+      pullDist.current = 0; setPullY(0);
+    };
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    el.addEventListener("touchcancel", onEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", onEnd);
+    };
+  }, [refreshing, moreOpen, radialOpen, doRefresh]);
+
+  useEffect(() => { api.getNotice().then(setNotice).catch(()=>{}); }, []);
+
+  useEffect(() => {
+    const sp = document.getElementById("splash");
+    if (!sp) return;
+    const t0 = window.__splashT0 || 0;
+    const wait = Math.max(0, 900 - (Date.now() - t0));
+    const h = setTimeout(() => { sp.classList.add("hide"); setTimeout(() => sp.remove(), 500); }, wait);
+    return () => clearTimeout(h);
+  }, []);
+
+  const handleCreateFromPop = (pop) => {
+    setToolSeed({ product: pop.product_name || "", image_url: pop.image_url });
+    setTab("tool");
+  };
+  const handleCreatePop = (seed) => { setToolSeed(seed); setTab("tool"); };
+
+  const tabs = [
+    { key:"board",   icon:"📌", label:"一覧",       color:"var(--primary)" },
+    { key:"floor",   icon:"📸", label:"売場",       color:"#2f6fb0" },
+    { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
+    { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
+    { key:"barcode", icon:"🏷", label:"発注バーコード生成", color:"var(--primary)" },
+    { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
+    { key:"gne",     icon:"🅖", label:"入力ジェネレーター",      color:"#7c3aed" },
+  ];
+
+  return (
+    <div id="app-scroll" className="min-vh" style={{ background:"var(--bg)", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
+      {(pullY > 0 || refreshing) && (
+        <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
+          marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
+          transition: pullActive.current ? "none" : "margin-top .25s" }}>
+          <div style={{ width:34, height:34, borderRadius:"50%", background:"#fff", boxShadow:"0 3px 12px rgba(0,0,0,0.18)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--primary)", fontSize:18, fontWeight:900,
+            transform: refreshing ? undefined : `rotate(${pullY*4}deg)`,
+            animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
+        </div>
+      )}
+      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)" }}>
+        {/* 天気テーマ背景：Dynamic Island裏（画面最上端）まで描画。操作UIはセーフエリア内 */}
+        <div style={{ position:"absolute", inset:0, background: skyTheme.bg, boxShadow:"0 2px 12px rgba(0,0,0,0.10)", pointerEvents:"none", overflow:"hidden" }}>
+          {skyTheme.pat && <div style={{ position:"absolute", inset:0, backgroundImage: skyTheme.pat, backgroundSize: skyTheme.patSize || "auto" }} />}
+        </div>
+        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0, flex:1, overflow:"hidden",
+            transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
+            <div style={{ fontSize:16, fontWeight:900, color: skyTheme.txtDark ? "var(--ink)" : "#fff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)" }}>鮮魚ポップ共有</div>
+            <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.88)", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5, backdropFilter:"blur(4px)" }}>＋投稿</button>
+          </div>
+          {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
+          <div style={{ flexShrink:0 }}><WeatherWidget onTheme={setWxCode} /></div>
+        </div>
+      </div>
+
+      {notice.enabled && notice.message && (
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 0" }}>
+          <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+            <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
+            <span style={{ whiteSpace:"pre-wrap" }}>{notice.message}</span>
+          </div>
+        </div>
+      )}
+      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} feat={{ enabled: notice.feat_enabled, message: notice.feat_message, tab: notice.feat_tab, ver: notice.feat_ver }} onFeatGo={(t)=>setTab(t)} />}
+      {tab==="barcode" && <BarcodeTab />}
+      {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
+      {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
+      {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
+      {tab==="gne"    && <GeneratorTab />}
+      {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
+      {tab==="industry" && <IndustryTab />}
+      {tab==="competitor" && <CompetitorTab />}
+      {tab==="calendar" && <CalendarTab />}
+      {tab==="fish" && <FishTab />}
+      {tab==="popcheck" && <PopCheckTab />}
+      {tab==="admin"  && <AdminTab onNoticeChange={setNotice} onCreateFromPop={handleCreateFromPop} />}
+      {tab==="request" && <RequestTab />}
+      {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
+      {tab==="dev"    && <DevTab />}
+
+      {/* 下部固定ナビ */}
+
+      {tab === "board" && !moreOpen && !radialOpen && !popDetailOpen && !showUpload && (
+        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(60px + env(safe-area-inset-bottom))", zIndex:195, pointerEvents:"none" }}>
+          {/* クリスタルガラスの帯：横一面の半透明バーの上に文字が浮かぶ */}
+          <div style={{ position:"relative", background:"linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.28))", backdropFilter:"blur(18px) saturate(1.6)", WebkitBackdropFilter:"blur(18px) saturate(1.6)", borderTop:"1px solid rgba(255,255,255,0.65)", borderBottom:"1px solid rgba(255,255,255,0.35)", boxShadow:"0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", pointerEvents:"auto" }}>
+            <div id="shelf-scroll" className="hscroll" style={{ display:"flex", alignItems:"center", gap:2, overflowX:"auto", WebkitOverflowScrolling:"touch", padding:"9px 14px" }}>
+              {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => (
+                <button key={t.key} id={`shelf-${t.key}`} onClick={() => { setMoreOpen(false); setRadialOpen(false); setTab(t.key); }}
+                  style={{ flexShrink:0, border:"none", background:"transparent", borderRadius:14, padding:"9px 15px", fontSize:15.5, fontWeight:900, color:"var(--ink)", cursor:"pointer", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)", letterSpacing:"0.01em" }}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {/* 右端のフェード：続きがあることを示す */}
+            <div style={{ position:"absolute", top:0, right:0, bottom:0, width:36, background:"linear-gradient(to left, rgba(255,255,255,0.55), transparent)", pointerEvents:"none" }} />
+          </div>
+        </div>
+      )}
+
+      {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
+        <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
+          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(128px + env(safe-area-inset-bottom))" : "calc(90px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
+      )}
+
+      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(env(safe-area-inset-bottom) + 10px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
+       <div style={{ display:"flex", alignItems:"center", gap:4, background: moreOpen ? "transparent" : "linear-gradient(180deg, rgba(255,255,255,0.46), rgba(255,255,255,0.28))", backdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", WebkitBackdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", border: moreOpen ? "1px solid transparent" : "1px solid rgba(255,255,255,0.65)", borderRadius:30, boxShadow: moreOpen ? "none" : "0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", padding:"6px 8px", pointerEvents:"auto", transition:"background .2s, box-shadow .2s" }}>
+        {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+          const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
+          const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
+            : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
+            : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
+            : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
+            : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
+          const navIcon = key==="board" ? "🏠" : key==="search" ? "🔍" : "≡";
+          const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
+          return (
+            <button key={key} onClick={onClick}
+              style={{ position:"relative", border:"none", cursor:"pointer", padding:"9px 15px", display:"flex", flexDirection:"row", alignItems:"center", gap:6, borderRadius:22, background: active ? "var(--soft)" : "transparent", transition:"background .2s" }}>
+              <span style={{ fontSize:18, lineHeight:1, filter: active ? "none" : "grayscale(0.4) opacity(0.75)" }}>{moreOpen && more ? "✕" : navIcon}</span>
+              <span style={{ fontSize:12, fontWeight:800, color: active ? "var(--primary)" : "var(--text)", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)" }}>{navLabel}</span>
+            </button>
+          );
+        })}
+       </div>
+      </div>
+
+      {moreOpen && (
+        <>
+          <div onClick={()=>setMoreOpen(false)}
+            style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
+          <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:202, background:"var(--bg)", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.18)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 16px calc(92px + env(safe-area-inset-bottom))" }}>
+            <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
+            <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
+              {TAB_REGISTRY.map(o=>(
+                <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
+                  style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+                  <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(120,100,70,0.06)" }}>
+                    {o.icon}
+                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:8.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
+                  </span>
+                  <span style={{ fontSize:11.5, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--text)", lineHeight:1.25, textAlign:"center" }}>{o.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {showUpload && <UploadModal currentStore={currentStore}
+        onClose={()=>setShowUpload(false)}
+        onSuccess={()=>{ setShowUpload(false); if (boardActions.current && boardActions.current.refresh) boardActions.current.refresh(); }} />}
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+
+
+;Object.assign(window, { App });
