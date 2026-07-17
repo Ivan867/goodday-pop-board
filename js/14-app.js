@@ -24,7 +24,16 @@ var LAZY_TABS = {
   admin: {
     file: "13-tab-admin",
     comp: "AdminTab"
-  }
+  },
+  request: {
+    file: "13-tab-admin",
+    comp: "RequestTab"
+  },
+  // お問い合わせ（管理ファイル内のため遅延経由で）
+  archive: {
+    file: "13-tab-admin",
+    comp: "ArchiveTab"
+  } // アーカイブ（同上）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -553,8 +562,13 @@ function App() {
       onNoticeChange: setNotice,
       onCreateFromPop: handleCreateFromPop
     }
-  }), tab === "request" && /*#__PURE__*/React.createElement(RequestTab, null), tab === "archive" && /*#__PURE__*/React.createElement(ArchiveTab, {
-    onCreateFromPop: handleCreateFromPop
+  }), tab === "request" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "request"
+  }), tab === "archive" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "archive",
+    compProps: {
+      onCreateFromPop: handleCreateFromPop
+    }
   }), tab === "dev" && /*#__PURE__*/React.createElement(DevTab, null), tab === "board" && !moreOpen && !radialOpen && !popDetailOpen && !showUpload && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
@@ -647,7 +661,7 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "calc(env(safe-area-inset-bottom) + 10px)",
+      bottom: "max(calc(env(safe-area-inset-bottom) - 6px), 10px)",
       zIndex: 205,
       display: "flex",
       justifyContent: "center",

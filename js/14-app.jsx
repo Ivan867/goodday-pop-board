@@ -8,6 +8,8 @@ var LAZY_TABS = {
   gne:     { file:"10-tab-gne",     comp:"GeneratorTab" },
   fish:    { file:"15-tab-fish",    comp:"FishTab" },
   admin:   { file:"13-tab-admin",   comp:"AdminTab" },
+  request: { file:"13-tab-admin",   comp:"RequestTab" },   // お問い合わせ（管理ファイル内のため遅延経由で）
+  archive: { file:"13-tab-admin",   comp:"ArchiveTab" },   // アーカイブ（同上）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -236,8 +238,8 @@ function App() {
       {tab==="fish" && <LazyTab tabKey="fish" />}
       {tab==="popcheck" && <PopCheckTab />}
       {tab==="admin"  && <LazyTab tabKey="admin" compProps={{ onNoticeChange:setNotice, onCreateFromPop:handleCreateFromPop }} />}
-      {tab==="request" && <RequestTab />}
-      {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
+      {tab==="request" && <LazyTab tabKey="request" />}
+      {tab==="archive" && <LazyTab tabKey="archive" compProps={{ onCreateFromPop:handleCreateFromPop }} />}
       {tab==="dev"    && <DevTab />}
 
       {/* 下部固定ナビ */}
@@ -265,7 +267,7 @@ function App() {
           style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(128px + env(safe-area-inset-bottom))" : "calc(90px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(env(safe-area-inset-bottom) + 10px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 6px), 10px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", gap:4, background: moreOpen ? "transparent" : "linear-gradient(180deg, rgba(255,255,255,0.46), rgba(255,255,255,0.28))", backdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", WebkitBackdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", border: moreOpen ? "1px solid transparent" : "1px solid rgba(255,255,255,0.65)", borderRadius:30, boxShadow: moreOpen ? "none" : "0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", padding:"6px 8px", pointerEvents:"auto", transition:"background .2s, box-shadow .2s" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);

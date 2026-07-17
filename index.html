@@ -50,9 +50,9 @@ html { background: #8FA0B0; }
 /* 固定シェル：ページ(window)は一切スクロールさせない。スクロールは #app-scroll の内側だけ。
    これによりiOSのラバーバンドで画面全体がずれる問題を構造的に根絶する。
    高さは 100dvh（動的ビューポート）でアドレスバーの出入りに追従させ、下部のすき間を防ぐ。 */
-html, body { position:fixed; top:0; left:0; right:0; bottom:auto; width:100%; height:100vh; height:100dvh; height:var(--vhpx, 100dvh); overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
-#root { position:fixed; top:0; left:0; right:0; bottom:auto; height:100vh; height:100dvh; height:var(--vhpx, 100dvh); }
-#app-scroll { position:fixed; top:0; left:0; right:0; bottom:auto; height:100vh; height:100dvh; height:var(--vhpx, 100dvh); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
+html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
+#root { position:fixed; inset:0; }
+#app-scroll { position:fixed; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
