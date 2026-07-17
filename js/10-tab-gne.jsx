@@ -315,14 +315,8 @@ function GeneratorTab() {
 
 
 // ===== 相場タブ：先週比の「相場安」計算＋売価計算（プロトタイプ） =====
-function soubaWari(pct) {
-  const w = Math.round(Math.abs(pct) / 10 * 2) / 2; // 0.5割きざみ
-  if (w <= 0) return "";
-  const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
-  return `約${s}割`;
-}
 
 // ===== POP診断：画像をブラウザ内で解析（外部送信なし） =====
 
 
-;Object.assign(window, { GNE_FIXED, GNE_FONT_STACK, GNE_LAYOUT, GNE_W, GeneratorTab, gneCalcTax, gneDrawField, gneRender, gneSanitize, soubaWari });
+;Object.assign(window, { GNE_FIXED, GNE_FONT_STACK, GNE_LAYOUT, GNE_W, GeneratorTab, gneCalcTax, gneDrawField, gneRender, gneSanitize });

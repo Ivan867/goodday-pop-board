@@ -67,4 +67,12 @@ function formatDate(d) {
 // ── Upload Modal ──
 
 
-;Object.assign(window, { JP_HOLIDAYS, holidayName, arcPositions, formatDate, scroller, scrollerTop, scrollerY, seasonalEventsFor, timeAgo });
+// 売価計算（便利機能・入力ジェネレーター共用）
+function soubaWari(pct) {
+  const w = Math.round(Math.abs(pct) / 10 * 2) / 2; // 0.5割きざみ
+  if (w <= 0) return "";
+  const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
+  return `約${s}割`;
+}
+
+;Object.assign(window, { soubaWari, JP_HOLIDAYS, holidayName, arcPositions, formatDate, scroller, scrollerTop, scrollerY, seasonalEventsFor, timeAgo });

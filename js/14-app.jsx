@@ -15,8 +15,8 @@ var LAZY_TABS = {
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
 function LazyTab(props) {
   var info = LAZY_TABS[props.tabKey];
-  var ready = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]))[0];
-  var setReady = useState(ready)[1];
+  var readyState = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]));
+  var ready = readyState[0], setReady = readyState[1];
   var errState = useState(null);
   var err = errState[0], setErr = errState[1];
 
