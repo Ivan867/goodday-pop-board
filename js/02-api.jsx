@@ -26,7 +26,47 @@ async function sbFetch(path, { method = "GET", body, prefer, headers = {} } = {}
 const sbJson = async (path, opts) => (await sbFetch(path, opts)).json();   // 配列/JSONを返す
 const sbOne  = async (path, opts) => (await sbJson(path, opts))[0];        // 先頭1件を返す
 
+// ── 端末判定：User-Agentから機種・ブラウザを大まかに分類（個人特定はしない）──
+function parseDeviceUA(ua) {
+  ua = ua || "";
+  let platform = "その他";
+  if (/iPad/.test(ua)) platform = "iPad";
+  else if (/iPhone/.test(ua)) platform = "iPhone";
+  else if (/Android/.test(ua)) platform = "Android";
+  else if (/Windows|Macintosh|Linux/.test(ua)) platform = "PC";
+  let browser = "その他";
+  if (/CriOS/.test(ua)) browser = "Chrome";
+  else if (/FxiOS/.test(ua)) browser = "Firefox";
+  else if (/EdgiOS|Edg\//.test(ua)) browser = "Edge";
+  else if (/Chrome/.test(ua) && !/Edg\//.test(ua)) browser = "Chrome";
+  else if (/Firefox/.test(ua)) browser = "Firefox";
+  else if (/Safari/.test(ua)) browser = "Safari";
+  return { platform, browser };
+}
+
 const api = {
+  // ── 端末記録：同じ端末からは1日1回だけ記録（localStorageで判定）。個人は特定しない。
+  async logDeviceVisit(storeName) {
+    try {
+      const day = new Date().toISOString().slice(0,10);
+      const key = `deviceLogged:${day}`;
+      if (localStorage.getItem(key)) return false;
+      const { platform, browser } = parseDeviceUA(navigator.userAgent);
+      await sbFetch(`/rest/v1/device_visits`, { method:"POST", body:{ platform, browser, store_name: storeName || null } });
+      localStorage.setItem(key, "1");
+      // 古い日の記録キーは掃除
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith("deviceLogged:") && k !== key) localStorage.removeItem(k);
+        }
+      } catch(e) {}
+      return true;
+    } catch(e) { return false; }
+  },
+  async listDeviceVisits(limit=500) {
+    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,created_at&order=created_at.desc&limit=${limit}`);
+  },
   // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
     let q = `/rest/v1/pops?select=*&order=created_at.desc`;

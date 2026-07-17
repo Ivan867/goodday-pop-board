@@ -345,7 +345,14 @@ function TodayInfoCard() {
             <div key="ev">🗓 {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}{badge(Math.round((events.next.date - now)/86400000))}{events.next2 ? <span style={{ color:"var(--sub)" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</div>
           )});
           rows.sort((a, b) => a.t - b.t);
-          return rows.map(r => r.el);
+          if (!rows.length) return null;
+          return (
+            <div onClick={() => window.dispatchEvent(new CustomEvent("gotoTab", { detail: "calendar" }))}
+              style={{ cursor:"pointer" }} title="行事カレンダーを開く">
+              {rows.map(r => r.el)}
+              <div style={{ fontSize:10.5, color:"var(--faint)", fontWeight:700, marginTop:3 }}>タップで行事カレンダーへ →</div>
+            </div>
+          );
         })()}
       </div>
     </div>

@@ -123,7 +123,8 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     const dy = e.changedTouches[0].clientY - touchY.current;
     touchY.current = null;
     if (Math.abs(dy) < 55) return;
-    if (dy < 0) goNext(); else goPrev();
+    if (dy < 0) { goNext(); }
+    else { onClose && onClose(); }   // 下フリック＝閉じて一覧に戻る（前のポップへは▲ボタン）
   };
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes||0);

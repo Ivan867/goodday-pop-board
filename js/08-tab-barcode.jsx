@@ -222,11 +222,76 @@ function BarcodeTab() {
   // カテゴリ別カウント
   const catCount = (c) => c.codes===null ? master.length : master.filter(m => c.codes.includes(m.haccyu)).length;
 
+  // ── 会社（発注先コード）ごとの色分け：同じコードは常に同じ色になるよう決定的に生成 ──
+  // ── 納品会社（5社・色＋模様）：使用者が各バーコードに手動で割り当てる ──
+  const COMPANIES = [
+    { key:"ueda",      name:"上田包装",  color:"#2f6fb0", pat:"yoko" },   // 青・横しま
+    { key:"hinode",    name:"日の出包装", color:"#2f8a52", pat:"dot"  },   // 緑・ドット
+    { key:"cgc",       name:"CGC",       color:"#7b5ea7", pat:"tate" },   // 紫・縦しま
+    { key:"kobayashi", name:"小林冷蔵",  color:"#c0392b", pat:"naname" }, // 赤・ななめ
+    { key:"sanrei",    name:"さんれい",  color:"#e08a1e", pat:"grid" },   // オレンジ・格子
+  ];
+  const companyPatStyle = (c) => {
+    if (!c) return { background:"#eef1f4" };
+    const col = c.color;
+    if (c.pat === "yoko")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
+    if (c.pat === "tate")   return { background:`repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
+    if (c.pat === "naname") return { background:`repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)` };
+    if (c.pat === "dot")    return { background:`radial-gradient(${col} 1.2px, transparent 1.35px)`, backgroundSize:"5.5px 5.5px", backgroundColor:"#fff" };
+    if (c.pat === "grid")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.3px, transparent 1.3px, transparent 5px), repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.3px, #fff 1.3px, #fff 5px)` };
+    return { background: col };
+  };
+  const [bcCompany, setBcCompany] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("bcCompanyMap") || "{}"); } catch(e) { return {}; }
+  });
+  const setCompanyFor = (bcode, key) => {
+    const next = { ...bcCompany };
+    if (key) next[bcode] = key; else delete next[bcode];
+    setBcCompany(next);
+    try { localStorage.setItem("bcCompanyMap", JSON.stringify(next)); } catch(e) {}
+  };
+  const companyOf = (it) => COMPANIES.find(c => c.key === bcCompany[it.bcode]) || null;
+
+  const COMPANY_PALETTE = ["#2f6fb0","#e0245e","#2f8a52","#e08a1e","#7b5ea7","#0e8f9e","#c0392b","#5a7d2a","#b0517f","#4a6fa5","#a9741f","#3f7d7d"];
+  const companyColor = (arg) => {
+    // オブジェクト（item）で渡された場合は会社割当を優先
+    if (arg && typeof arg === "object") {
+      const c = companyOf(arg);
+      if (c) return c.color;
+      arg = arg.haccyu;
+    }
+    const s = String(arg || "");
+    if (!s) return "#9aa4ae";
+    let h = 0; for (let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+    return COMPANY_PALETTE[h % COMPANY_PALETTE.length];
+  };
+
+  // ── 用途タグ：各バーコード（bcode）に手動で付ける。localStorageに保存 ──
+  const USE_TAGS = ["刺身","寿司","寿司惣菜","惣菜","定番","スライス"];
+  const [useTags, setUseTags] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("bcUseTags") || "{}"); } catch(e) { return {}; }
+  });
+  const [useFilter, setUseFilter] = useState("");   // 用途での絞り込み（空=すべて）
+  const [tagEditFor, setTagEditFor] = useState(null); // タグ編集中のbcode
+  const saveUseTags = (next) => {
+    setUseTags(next);
+    try { localStorage.setItem("bcUseTags", JSON.stringify(next)); } catch(e) {}
+  };
+  const toggleUseTag = (bcode, tag) => {
+    const cur = useTags[bcode] || [];
+    const has = cur.includes(tag);
+    const nextTags = has ? cur.filter(t => t !== tag) : [...cur, tag];
+    const next = { ...useTags };
+    if (nextTags.length) next[bcode] = nextTags; else delete next[bcode];
+    saveUseTags(next);
+  };
+
   // 一覧（カテゴリ＋検索で絞り込み）
   const activeCat = TRAY_CATS.find(c => c.key===cat) || TRAY_CATS[0];
   const q = normJa(search.trim());
   const base = activeCat.codes===null ? master : master.filter(m => activeCat.codes.includes(m.haccyu));
-  const srcFiltered = q ? base.filter(it => normJa(it.name).includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
+  const srcFilteredRaw = q ? base.filter(it => normJa(it.name).includes(q) || it.bcode.includes(q) || it.pcode.includes(q)) : base;
+  const srcFiltered = useFilter ? srcFilteredRaw.filter(it => (useTags[it.bcode] || []).includes(useFilter)) : srcFilteredRaw;
   const srcShown = srcFiltered;
 
   const ROWS = 4;
@@ -247,16 +312,26 @@ function BarcodeTab() {
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"var(--bg)", padding:"0 8px", fontSize:11, fontWeight:800, color:"var(--sub)" }}>{pi+1}ページ目（{pg.length}枚）</div>}
       <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},minmax(0,1fr))`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, minmax(0,1fr))`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
-        {pg.map(it => (
+        {pg.map(it => {
+          const comp = companyOf(it);
+          const cc = companyColor(it);
+          const tags = useTags[it.bcode] || [];
+          return (
           <div key={it.bcode} className="bc-label"
-            style={{ border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
+            style={{ position:"relative", border:"1px solid #cfd8de", borderLeft:`${forPrint?"1.5mm":"4px"} solid ${cc}`, borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", paddingTop: comp ? (forPrint?"4.5mm":"11px") : undefined, breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
+            {comp && (
+              <div style={{ position:"absolute", top:0, left:0, right:0, height: forPrint?"3.6mm":"9px", ...companyPatStyle(comp), borderBottom:`1px solid ${comp.color}`, display:"flex", alignItems:"center" }}>
+                <span style={{ marginLeft: forPrint?"1.5mm":"3px", background:"#fff", border:`1px solid ${comp.color}`, color:comp.color, fontWeight:900, fontSize: forPrint?"6.5pt":"6px", borderRadius:3, padding: forPrint?"0 1.2mm":"0 3px", lineHeight:1.5, whiteSpace:"nowrap" }}>{comp.name}</span>
+              </div>
+            )}
+            {tags.length>0 && <div style={{ position:"absolute", top: comp ? (forPrint?"0.4mm":"1px") : (forPrint?"1mm":"2px"), right: forPrint?"1.5mm":"3px", fontSize: forPrint?"8pt":"7px", fontWeight:800, color:cc, background: comp?"#fff":"transparent", borderRadius:3, padding: comp?"0 3px":0, lineHeight:1.5 }}>{tags[0]}</div>}
             {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
               <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
             </div>
             <div style={{ fontSize: forPrint?"15pt":"9px", fontWeight:700, letterSpacing: forPrint?"0.4mm":"0.2px", color:"var(--ink)", lineHeight:1 }}>{it.bcode}</div>
           </div>
-        ))}
+        );})}
       </div>
       {listName && <div style={{ position:"absolute", right: forPrint?"4mm":"8px", bottom: forPrint?"2mm":"7px", fontSize: forPrint?"20pt":"18px", fontWeight:800, color:"var(--text)", letterSpacing:".02em" }}>{listName}</div>}
     </div>
@@ -413,7 +488,13 @@ function BarcodeTab() {
                 <span style={{ width:18, textAlign:"center", fontSize:12, fontWeight:800, color:"#bfbfc4" }}>{i+1}</span>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:13.5, fontWeight:700, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
-                  <div style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</div>
+                  <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:2, flexWrap:"wrap" }}>
+                    <span style={{ width:9, height:9, borderRadius:"50%", background:companyColor(it), flexShrink:0 }} title={(companyOf(it)||{}).name || ("発注先 "+(it.haccyu||"不明"))} />
+                    <span style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
+                    {(useTags[it.bcode]||[]).map(t => (
+                      <span key={t} style={{ fontSize:9, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:4, padding:"1px 5px" }}>{t}</span>
+                    ))}
+                  </div>
                 </div>
                 <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
                   <button onClick={()=>moveItem(i,-1)} disabled={i===0} style={{ border:"none", background:"#eef1f5", color:i===0?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:10, cursor:i===0?"default":"pointer", lineHeight:1 }}>▲</button>
@@ -463,23 +544,78 @@ function BarcodeTab() {
                     style={{ flex:1, padding:"9px 12px", border:"1px solid #e2e2e4", borderRadius:9, fontSize:14, outline:"none" }} />
                   <button onClick={()=>{ setMaster([]); setFileName(""); setSearch(""); }} style={{ border:"none", background:"none", color:"var(--faint)", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>読み直し</button>
                 </div>
+                <div style={{ display:"flex", gap:7, alignItems:"center", marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
+                  <span style={{ fontSize:11, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>用途:</span>
+                  <button onClick={()=>setUseFilter("")}
+                    style={{ flexShrink:0, border: useFilter===""?"2px solid var(--primary)":"1px solid var(--line)", background: useFilter===""?"var(--soft)":"#fff", color: useFilter===""?"var(--primary)":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
+                  {USE_TAGS.map(t => {
+                    const on = useFilter===t;
+                    const cnt = srcFilteredRaw.filter(it => (useTags[it.bcode]||[]).includes(t)).length;
+                    return (
+                      <button key={t} onClick={()=>setUseFilter(on?"":t)}
+                        style={{ flexShrink:0, border: on?"2px solid var(--primary)":"1px solid var(--line)", background: on?"var(--primary)":"#fff", color: on?"#fff":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{t}<span style={{ fontSize:10, marginLeft:4, opacity:0.8 }}>{cnt}</span></button>
+                    );
+                  })}
+                </div>
                 <div style={{ border:"1px solid var(--line)", borderRadius:10, maxHeight:720, overflowY:"auto" }}>
                   {srcShown.length===0 ? (
                     <div style={{ padding:36, textAlign:"center", color:"var(--faint)" }}>該当する商品がありません</div>
                   ) : srcShown.map(it => {
                     const on = inList(it.bcode);
+                    const tags = useTags[it.bcode] || [];
+                    const cc = companyColor(it);
+                    const comp = companyOf(it);
                     return (
-                      <div key={it.bcode} onClick={()=>addItem(it)}
-                        style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 13px", borderBottom:"1px solid #f3f3f3", cursor: on?"default":"pointer", background: on?"#f3f8ff":"transparent" }}>
-                        <span style={{ width:20, textAlign:"center", color: on?ACCENT:"#cfcfd3", fontWeight:800, fontSize:15 }}>{on?"✓":"＋"}</span>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
-                          <div style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</div>
+                      <div key={it.bcode}
+                        style={{ display:"flex", alignItems:"stretch", gap:0, borderBottom:"1px solid #f3f3f3", background: on?"#f3f8ff":"transparent" }}>
+                        <div style={{ width:5, flexShrink:0, background:cc, borderRadius:0 }} title={"発注先 "+(it.haccyu||"不明")} />
+                        <div onClick={()=>addItem(it)} style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:10, padding:"9px 13px", cursor: on?"default":"pointer" }}>
+                          <span style={{ width:20, textAlign:"center", color: on?ACCENT:"#cfcfd3", fontWeight:800, fontSize:15 }}>{on?"✓":"＋"}</span>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
+                            <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:2, flexWrap:"wrap" }}>
+                              <span style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
+                              <span style={{ fontSize:9.5, color:cc, fontWeight:800, border:"1px solid "+cc, borderRadius:5, padding:"0 5px" }}>{comp ? comp.name : (it.haccyu||"—")}</span>
+                              {tags.map(t => (
+                                <span key={t} style={{ fontSize:9.5, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:5, padding:"1px 6px" }}>{t}</span>
+                              ))}
+                            </div>
+                          </div>
+                          {on && <span style={{ fontSize:11, color:ACCENT, fontWeight:700, whiteSpace:"nowrap" }}>追加済</span>}
                         </div>
-                        {on && <span style={{ fontSize:11, color:ACCENT, fontWeight:700, whiteSpace:"nowrap" }}>追加済</span>}
+                        <button onClick={(e)=>{ e.stopPropagation(); setTagEditFor(tagEditFor===it.bcode?null:it.bcode); }}
+                          style={{ flexShrink:0, border:"none", background: tagEditFor===it.bcode?"var(--soft)":"transparent", color:"var(--sub)", padding:"0 12px", cursor:"pointer", fontSize:16 }} title="用途を設定">🏷</button>
                       </div>
                     );
                   })}
+                  {tagEditFor && srcShown.some(it => it.bcode === tagEditFor) && (
+                    <div style={{ padding:"12px 14px", background:"var(--soft)", borderBottom:"1px solid #f3f3f3" }}>
+                      <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>納品会社を選ぶ（色と模様がラベルに付きます）</div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:7, marginBottom:14 }}>
+                        {COMPANIES.map(c => {
+                          const active = bcCompany[tagEditFor] === c.key;
+                          return (
+                            <button key={c.key} onClick={()=>setCompanyFor(tagEditFor, active ? null : c.key)}
+                              style={{ display:"flex", alignItems:"center", gap:6, border: active?`2px solid ${c.color}`:"1px solid var(--line)", background: active?"#fff":"#fff", color: active?c.color:"var(--text)", borderRadius:9, padding:"6px 11px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>
+                              <span style={{ width:22, height:12, borderRadius:3, border:`1px solid ${c.color}`, ...companyPatStyle(c) }} />
+                              {c.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>用途を選ぶ（複数可）</div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
+                        {USE_TAGS.map(t => {
+                          const active = (useTags[tagEditFor] || []).includes(t);
+                          return (
+                            <button key={t} onClick={()=>toggleUseTag(tagEditFor, t)}
+                              style={{ border: active?"2px solid var(--primary)":"1px solid var(--line)", background: active?"var(--primary)":"#fff", color: active?"#fff":"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{t}</button>
+                          );
+                        })}
+                      </div>
+                      <button onClick={()=>setTagEditFor(null)} style={{ marginTop:10, border:"none", background:"transparent", color:"var(--sub)", fontSize:12, fontWeight:700, cursor:"pointer" }}>閉じる</button>
+                    </div>
+                  )}
                 </div>
               </>
             )}

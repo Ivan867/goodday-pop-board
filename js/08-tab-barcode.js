@@ -373,9 +373,95 @@ function BarcodeTab() {
   const catCount = c => c.codes === null ? master.length : master.filter(m => c.codes.includes(m.haccyu)).length;
 
   // ── 会社（発注先コード）ごとの色分け：同じコードは常に同じ色になるよう決定的に生成 ──
+  // ── 納品会社（5社・色＋模様）：使用者が各バーコードに手動で割り当てる ──
+  const COMPANIES = [{
+    key: "ueda",
+    name: "上田包装",
+    color: "#2f6fb0",
+    pat: "yoko"
+  },
+  // 青・横しま
+  {
+    key: "hinode",
+    name: "日の出包装",
+    color: "#2f8a52",
+    pat: "dot"
+  },
+  // 緑・ドット
+  {
+    key: "cgc",
+    name: "CGC",
+    color: "#7b5ea7",
+    pat: "tate"
+  },
+  // 紫・縦しま
+  {
+    key: "kobayashi",
+    name: "小林冷蔵",
+    color: "#c0392b",
+    pat: "naname"
+  },
+  // 赤・ななめ
+  {
+    key: "sanrei",
+    name: "さんれい",
+    color: "#e08a1e",
+    pat: "grid"
+  } // オレンジ・格子
+  ];
+  const companyPatStyle = c => {
+    if (!c) return {
+      background: "#eef1f4"
+    };
+    const col = c.color;
+    if (c.pat === "yoko") return {
+      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)`
+    };
+    if (c.pat === "tate") return {
+      background: `repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)`
+    };
+    if (c.pat === "naname") return {
+      background: `repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)`
+    };
+    if (c.pat === "dot") return {
+      background: `radial-gradient(${col} 1.2px, transparent 1.35px)`,
+      backgroundSize: "5.5px 5.5px",
+      backgroundColor: "#fff"
+    };
+    if (c.pat === "grid") return {
+      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.3px, transparent 1.3px, transparent 5px), repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.3px, #fff 1.3px, #fff 5px)`
+    };
+    return {
+      background: col
+    };
+  };
+  const [bcCompany, setBcCompany] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("bcCompanyMap") || "{}");
+    } catch (e) {
+      return {};
+    }
+  });
+  const setCompanyFor = (bcode, key) => {
+    const next = {
+      ...bcCompany
+    };
+    if (key) next[bcode] = key;else delete next[bcode];
+    setBcCompany(next);
+    try {
+      localStorage.setItem("bcCompanyMap", JSON.stringify(next));
+    } catch (e) {}
+  };
+  const companyOf = it => COMPANIES.find(c => c.key === bcCompany[it.bcode]) || null;
   const COMPANY_PALETTE = ["#2f6fb0", "#e0245e", "#2f8a52", "#e08a1e", "#7b5ea7", "#0e8f9e", "#c0392b", "#5a7d2a", "#b0517f", "#4a6fa5", "#a9741f", "#3f7d7d"];
-  const companyColor = haccyu => {
-    const s = String(haccyu || "");
+  const companyColor = arg => {
+    // オブジェクト（item）で渡された場合は会社割当を優先
+    if (arg && typeof arg === "object") {
+      const c = companyOf(arg);
+      if (c) return c.color;
+      arg = arg.haccyu;
+    }
+    const s = String(arg || "");
     if (!s) return "#9aa4ae";
     let h = 0;
     for (let i = 0; i < s.length; i++) h = h * 31 + s.charCodeAt(i) >>> 0;
@@ -472,7 +558,8 @@ function BarcodeTab() {
       height: forPrint ? "auto" : "100%"
     }
   }, pg.map(it => {
-    const cc = companyColor(it.haccyu);
+    const comp = companyOf(it);
+    const cc = companyColor(it);
     const tags = useTags[it.bcode] || [];
     return /*#__PURE__*/React.createElement("div", {
       key: it.bcode,
@@ -483,6 +570,7 @@ function BarcodeTab() {
         borderLeft: `${forPrint ? "1.5mm" : "4px"} solid ${cc}`,
         borderRadius: 4,
         padding: forPrint ? "2mm 1.5mm" : "3px",
+        paddingTop: comp ? forPrint ? "4.5mm" : "11px" : undefined,
         breakInside: "avoid",
         display: "grid",
         minWidth: 0,
@@ -495,14 +583,43 @@ function BarcodeTab() {
         overflow: "hidden",
         textAlign: "center"
       }
-    }, tags.length > 0 && /*#__PURE__*/React.createElement("div", {
+    }, comp && /*#__PURE__*/React.createElement("div", {
       style: {
         position: "absolute",
-        top: forPrint ? "1mm" : "2px",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: forPrint ? "3.6mm" : "9px",
+        ...companyPatStyle(comp),
+        borderBottom: `1px solid ${comp.color}`,
+        display: "flex",
+        alignItems: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        marginLeft: forPrint ? "1.5mm" : "3px",
+        background: "#fff",
+        border: `1px solid ${comp.color}`,
+        color: comp.color,
+        fontWeight: 900,
+        fontSize: forPrint ? "6.5pt" : "6px",
+        borderRadius: 3,
+        padding: forPrint ? "0 1.2mm" : "0 3px",
+        lineHeight: 1.5,
+        whiteSpace: "nowrap"
+      }
+    }, comp.name)), tags.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: comp ? forPrint ? "0.4mm" : "1px" : forPrint ? "1mm" : "2px",
         right: forPrint ? "1.5mm" : "3px",
         fontSize: forPrint ? "8pt" : "7px",
         fontWeight: 800,
-        color: cc
+        color: cc,
+        background: comp ? "#fff" : "transparent",
+        borderRadius: 3,
+        padding: comp ? "0 3px" : 0,
+        lineHeight: 1.5
       }
     }, tags[0]), showName && /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1175,10 +1292,10 @@ function BarcodeTab() {
       width: 9,
       height: 9,
       borderRadius: "50%",
-      background: companyColor(it.haccyu),
+      background: companyColor(it),
       flexShrink: 0
     },
-    title: "発注先 " + (it.haccyu || "不明")
+    title: (companyOf(it) || {}).name || "発注先 " + (it.haccyu || "不明")
   }), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 11,
@@ -1443,7 +1560,8 @@ function BarcodeTab() {
   }, "該当する商品がありません") : srcShown.map(it => {
     const on = inList(it.bcode);
     const tags = useTags[it.bcode] || [];
-    const cc = companyColor(it.haccyu);
+    const cc = companyColor(it);
+    const comp = companyOf(it);
     return /*#__PURE__*/React.createElement("div", {
       key: it.bcode,
       style: {
@@ -1517,7 +1635,7 @@ function BarcodeTab() {
         borderRadius: 5,
         padding: "0 5px"
       }
-    }, it.haccyu || "—"), tags.map(t => /*#__PURE__*/React.createElement("span", {
+    }, comp ? comp.name : it.haccyu || "—"), tags.map(t => /*#__PURE__*/React.createElement("span", {
       key: t,
       style: {
         fontSize: 9.5,
@@ -1557,6 +1675,47 @@ function BarcodeTab() {
       borderBottom: "1px solid #f3f3f3"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--ink)",
+      marginBottom: 8
+    }
+  }, "納品会社を選ぶ（色と模様がラベルに付きます）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 7,
+      marginBottom: 14
+    }
+  }, COMPANIES.map(c => {
+    const active = bcCompany[tagEditFor] === c.key;
+    return /*#__PURE__*/React.createElement("button", {
+      key: c.key,
+      onClick: () => setCompanyFor(tagEditFor, active ? null : c.key),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        border: active ? `2px solid ${c.color}` : "1px solid var(--line)",
+        background: active ? "#fff" : "#fff",
+        color: active ? c.color : "var(--text)",
+        borderRadius: 9,
+        padding: "6px 11px",
+        fontSize: 12.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 22,
+        height: 12,
+        borderRadius: 3,
+        border: `1px solid ${c.color}`,
+        ...companyPatStyle(c)
+      }
+    }), c.name);
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       fontWeight: 800,

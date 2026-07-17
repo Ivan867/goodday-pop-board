@@ -421,6 +421,113 @@ function PopCreateInner({
   seed,
   onSeedConsumed
 }) {
+  // ── 見本スタイルかんたん作成（投稿されたプロンプト見本3種の型を内蔵） ──
+  const [qsStyle, setQsStyle] = useState("wamodern");
+  const [qs, setQs] = useState({
+    fish: "",
+    origin: "",
+    catchcopy: "",
+    appeal: "",
+    price: "",
+    recipes: "",
+    size: "縦A4"
+  });
+  const [qsPrompt, setQsPrompt] = useState("");
+  const [qsCopied, setQsCopied] = useState(false);
+  const qsSet = (k, v) => setQs(o => ({
+    ...o,
+    [k]: v
+  }));
+  // タップで入力できる候補タグ（見本3枚の言葉から抽出）
+  const QS_TAGS = {
+    fish: ["真あじ", "ブリ", "さば", "さわら", "真鯛", "のどぐろ", "白いか", "ヒラマサ", "イサキ", "サーモン"],
+    origin: ["山陰沖", "島根県産", "境港", "地元", "日本海", "浜田港"],
+    catchcopy: ["旬の味", "朝どれ", "鮮度に自信", "今が食べごろ", "脂のり抜群", "日本海から直送", "地元で育った"],
+    appeal: ["脂のり抜群！", "ふっくらジューシー！", "とろける旨み！", "上品な甘み！", "焼いてふっくら！", "鮮度抜群！"],
+    recipes: ["刺身", "塩焼き", "煮付け", "フライ", "ムニエル", "炙り", "漬け丼", "鍋"]
+  };
+  // recipes は複数選択（カンマ区切りで追加/削除）、それ以外はタップで入力（同じタグ再タップで消す）
+  const qsTagTap = (k, tag) => {
+    if (k === "recipes") {
+      const cur = qs.recipes ? qs.recipes.split("、").filter(Boolean) : [];
+      const next = cur.includes(tag) ? cur.filter(t => t !== tag) : [...cur, tag];
+      qsSet("recipes", next.join("、"));
+    } else {
+      qsSet(k, qs[k] === tag ? "" : tag);
+    }
+  };
+  const qsTagOn = (k, tag) => k === "recipes" ? (qs.recipes || "").split("、").includes(tag) : qs[k] === tag;
+  const qsGen = () => {
+    const f = qs.fish.trim() || "旬の魚";
+    const org = qs.origin.trim();
+    const cc = qs.catchcopy.trim();
+    const ap = qs.appeal.trim();
+    const rc = qs.recipes.trim();
+    const pn = parseInt(qs.price, 10);
+    const hasP = !isNaN(pn) && pn > 0;
+    const taxP = hasP ? Math.round(pn * 1.08) : 0;
+    const sz = qs.size === "横A4" ? "横A4（1.414:1）" : "縦A4（1:1.414）";
+    let t = "";
+    if (qsStyle === "wamodern") {
+      t = `高級感のある和モダンな魚売り場ポップ。${sz}、4K高解像度。テーマは${org ? org + "の" : ""}「${f}」。
+
+背景は白〜生成り色の和紙テクスチャ。余白を贅沢に使い、洗練された静けさを表現。上部に「${cc || "旬の味 " + f}」と上質な明朝体（金箔調の文字色）で大きく配置。
+
+中央に、墨絵・水彩風で繊細に描かれた${f}を一尾。鱗の質感と銀色の輝きを上品に表現し、写実とアートの中間の美しさ。背景にさりげなく波の線描や青海波（せいがいは）文様をあしらう。
+
+下部に縦書きの説明文をすっきりと配置：「${ap || "今が旬。脂がのり、食卓の主役に。"}」${rc ? `
+
+下部に料理レシピを小さく添える：${rc}` : ""}${hasP ? `
+
+下部に価格表示：本体${pn}円（税込${taxP}円）。価格は読みやすく、装飾は控えめに。` : ""}
+
+全体の配色は生成り・墨色・藍・差し色に金。料亭や百貨店の鮮魚コーナーを思わせる、静かで品のある高級感。装飾は控えめで、余白と質感で魅せる構図。文字は正確な日本語で描く。`;
+    } else if (qsStyle === "navygold") {
+      t = `スーパーマーケット鮮魚売場の高級販促ポップ。${sz}、4K高解像度。テーマは${org ? org + "産" : ""}「${f}」。
+
+【配色】ベースは深みのある紺色（ネイビー）のグラデーション。アソートカラーはゴールド、アクセントに桜のピンク。文字色は白とゴールドの2色。
+
+【レイアウト・上から順に】
+・最上部：ゴールドの刷毛目のあしらい＋小さめのリード文「${cc || "特別な日の、ごちそうに。"}」を中央揃え。
+・上部：メインタイトル「${f}」を紙面で最も目立つ太い文字で中央に大きく。すぐ下に＼ ／で挟んだ帯文字「${ap || "旨さ、堂々。"}」。
+・中央：黒い丸皿に盛った${f}の料理写真を大きく傾けて配置。右側の紺色スペースに短い解説テキスト。
+・下部：ゴールドの青海波（せいがいは）模様を敷き、その上に金の二重丸フレームを3つ横並びに。各フレームに太字タイトル＋細字の説明${rc ? `（例：${rc}）` : ""}。空きスペースに桜の花びらを数枚。${hasP ? `
+・価格：本体${pn}円（税込${taxP}円）を白フチ付きの大きな数字で。` : ""}
+
+高級寿司店・百貨店催事のような格式ある仕上がり。文字は正確な日本語で、遠くからでも読めるサイズ。`;
+    } else {
+      t = `スーパーマーケット鮮魚売場で使用する${sz}の販促ポスター。高級感と売場でのインパクトを両立し、百貨店の食品売場のような上質な仕上がり。
+
+■メイン商品：中央に${org ? org + "産" : ""}${f}の切身を3切れ、大きく配置。実際の${f}らしい身色・皮目・血合い・脂の質感を正確に、みずみずしく透明感のあるフォトリアル表現。氷の上に並べ、砕いた氷や大葉で鮮度感を演出。3切れは角度・厚み・断面を少しずつ変える。
+
+■背景：${org || "産地"}を象徴する漁港・海の風景。商品が最も目立つよう背景は適度にぼかす。
+
+■上部コピー：小さめの力強い文字で「${cc || "鮮度に自信"}」。
+
+■商品名：中央上部に大きな筆文字で「${org ? org + " " : ""}${f}」。白フチ＋黒い影で背景に埋もれないように。売場の遠くからでも読める大きさ。
+
+■右上エンブレム：紺色の円形和風エンブレム（金の細い縁取り＋波の装飾）。中に金文字で「${ap || "鮮度抜群！"}」。
+
+■左下スタンプ：赤い判子風スタンプに「${ap || "脂のり抜群！"}」。${rc ? `
+
+■食べ方：下部に小さく「おすすめ：${rc}」。` : ""}${hasP ? `
+
+■価格表示：下部に大きく確保。大きな赤文字で「${pn}円」、近くに小さく「税込${taxP}円」。白フチ＋薄い影付きで、数字と税込表記は正確に描く。` : ""}
+
+■配色：赤・紺・白・金。金は装飾と縁取りに限定。
+
+■仕上がり：超高解像度、フォトリアル、広告写真品質。チラシ風・漫画風・不自然な魚の形は避ける。重要な文字や価格が端で切れないよう余白を確保。文字は正確な日本語で描く。`;
+    }
+    setQsPrompt(t);
+    setQsCopied(false);
+  };
+  const qsCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(qsPrompt);
+      setQsCopied(true);
+      setTimeout(() => setQsCopied(false), 1800);
+    } catch (e) {}
+  };
   const isRefSeed = !!(seed && seed.image_url);
   const [mode, setMode] = useState(isRefSeed ? "ref" : "new");
   const [size, setSize] = useState("縦");
@@ -869,22 +976,7 @@ function PopCreateInner({
       opacity: !prompt ? 0.4 : 1,
       transition: "all 0.2s"
     }
-  }, copied ? "コピー済" : "コピー")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setShowTips(t => !t),
-    style: {
-      width: "100%",
-      background: "#1a1a1a",
-      border: "1px solid #2a2a2a",
-      borderRadius: 8,
-      padding: "10px 14px",
-      color: "var(--text)",
-      fontSize: 12,
-      fontWeight: 700,
-      cursor: "pointer",
-      textAlign: "left",
-      transition: "all 0.15s"
-    }
-  }, showTips ? "▲ 使い方・ヒントを閉じる" : "▼ 使い方・ヒントを見る"), showTips && /*#__PURE__*/React.createElement("div", {
+  }, copied ? "コピー済" : "コピー")), true && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 12,
       display: "flex",
@@ -948,7 +1040,193 @@ function PopCreateInner({
     style: {
       color: "#52c87e"
     }
-  }, "価格を入れたくない場合"), "は価格欄を空欄にすると「表記なし」が自動で入ります。"))));
+  }, "価格を入れたくない場合"), "は価格欄を空欄にすると「表記なし」が自動で入ります。")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      background: "#141414",
+      border: "1px solid #2e2a1a",
+      borderRadius: 12,
+      padding: "15px 15px 17px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      fontWeight: 900,
+      color: "#c8a840",
+      marginBottom: 3
+    }
+  }, "🎨 見本スタイルでかんたん作成"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginBottom: 12,
+      lineHeight: 1.6
+    }
+  }, "投稿されたプロンプト見本3種の型を内蔵。スタイルを選んで空欄を埋めるだけで、完成プロンプトができます。"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 13
+    }
+  }, [["wamodern", "和モダン", "墨絵・和紙・上品"], ["navygold", "紺×金 高級", "寿司・ハレの日"], ["kirimi", "切身リアル", "写真風・産地推し"]].map(([k, l, d]) => {
+    const on = qsStyle === k;
+    return /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setQsStyle(k),
+      style: {
+        flex: 1,
+        border: on ? "2px solid #c8a840" : "1px solid #2a2a2a",
+        background: on ? "#231f0f" : "#1a1a1a",
+        color: on ? "#e6c860" : "var(--text)",
+        borderRadius: 10,
+        padding: "9px 4px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 900
+      }
+    }, l), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9.5,
+        opacity: 0.7,
+        marginTop: 2
+      }
+    }, d));
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 11,
+      marginBottom: 11
+    }
+  }, [["fish", "魚種・商品名 *", "例：イサキ"], ["origin", "産地名", "例：山陰沖"], ["catchcopy", "キャッチコピー", "例：旬の味"], ["appeal", "ひとこと訴求", "例：脂のり抜群！"], ["recipes", "食べ方・レシピ（複数タップ可）", "例：刺身、塩焼き"], ["price", "本体価格（円）", "例：498"]].map(([k, l, ph]) => /*#__PURE__*/React.createElement("div", {
+    key: k
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 4
+    }
+  }, l), /*#__PURE__*/React.createElement("input", {
+    value: qs[k],
+    onChange: e => qsSet(k, e.target.value),
+    placeholder: ph,
+    inputMode: k === "price" ? "numeric" : undefined,
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "9px 10px",
+      background: "#1a1a1a",
+      border: "1px solid #2a2a2a",
+      borderRadius: 8,
+      color: "var(--text)",
+      fontSize: 13,
+      outline: "none"
+    }
+  }), QS_TAGS[k] && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginTop: 6
+    }
+  }, QS_TAGS[k].map(tag => {
+    const on = qsTagOn(k, tag);
+    return /*#__PURE__*/React.createElement("button", {
+      key: tag,
+      onClick: () => qsTagTap(k, tag),
+      style: {
+        border: on ? "1.5px solid #c8a840" : "1px solid #2e2e2e",
+        background: on ? "#231f0f" : "#1c1c1c",
+        color: on ? "#e6c860" : "#9a9a9a",
+        borderRadius: 14,
+        padding: "4px 11px",
+        fontSize: 11.5,
+        fontWeight: 700,
+        cursor: "pointer",
+        lineHeight: 1.4
+      }
+    }, tag);
+  }))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 12
+    }
+  }, ["縦A4", "横A4"].map(v => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    onClick: () => qsSet("size", v),
+    style: {
+      flex: 1,
+      border: qs.size === v ? "2px solid #c8a840" : "1px solid #2a2a2a",
+      background: qs.size === v ? "#231f0f" : "#1a1a1a",
+      color: qs.size === v ? "#e6c860" : "var(--text)",
+      borderRadius: 8,
+      padding: "8px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, v))), qsPrompt && /*#__PURE__*/React.createElement("textarea", {
+    value: qsPrompt,
+    readOnly: true,
+    rows: 6,
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "11px 12px",
+      background: "#0f0f0f",
+      border: "1px solid #2a2a2a",
+      borderRadius: 8,
+      color: "var(--text)",
+      fontSize: 12,
+      lineHeight: 1.6,
+      resize: "vertical",
+      marginBottom: 10
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: qsGen,
+    style: {
+      flex: 1.4,
+      padding: "13px",
+      borderRadius: 8,
+      border: "none",
+      background: qs.fish.trim() ? "#c8a840" : "#333",
+      color: qs.fish.trim() ? "#141414" : "#888",
+      fontSize: 14,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "プロンプト生成"), /*#__PURE__*/React.createElement("button", {
+    onClick: qsCopy,
+    disabled: !qsPrompt,
+    style: {
+      flex: 1,
+      padding: "13px",
+      borderRadius: 8,
+      border: "none",
+      background: qsCopied ? "#16a34a" : qsPrompt ? "#8B6914" : "#333",
+      color: "white",
+      fontSize: 14,
+      fontWeight: 700,
+      cursor: qsPrompt ? "pointer" : "default",
+      opacity: !qsPrompt ? 0.4 : 1
+    }
+  }, qsCopied ? "コピー済" : "コピー")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--faint)",
+      marginTop: 9
+    }
+  }, "※ 価格を空欄にすると価格表記なしで生成されます。税込は8%で自動計算。"))));
 }
 
 // ── Floor Photo Tab ──

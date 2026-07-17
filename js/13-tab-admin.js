@@ -309,11 +309,11 @@ function AdminTab({
       marginBottom: 16,
       flexWrap: "wrap"
     }
-  }, mainSeg("req", `依頼${openReqs ? `（${openReqs}）` : ""}`), mainSeg("genre", `ジャンル選別${genreCount("未分類") ? `（${genreCount("未分類")}）` : ""}`), mainSeg("archive", "アーカイブ"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  }, mainSeg("req", `依頼${openReqs ? `（${openReqs}）` : ""}`), mainSeg("genre", `ジャンル選別${genreCount("未分類") ? `（${genreCount("未分類")}）` : ""}`), mainSeg("archive", "アーカイブ"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
-  }), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -1682,6 +1682,134 @@ function NoticeAdmin({
 
 // ═══════════ RankingPanel：管理画面内の記録（閲覧数・使った・いいね）═══════════
 // 一般メニューには出さない。管理画面にログインした管理者だけが見られる。
+// ═══════════ DeviceStatsPanel：管理画面内の端末アクセス集計 ═══════════
+// 一般メニューには出さない。個人は特定せず、機種・ブラウザの傾向だけを見る。
+function DeviceStatsPanel() {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ver, setVer] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const d = await api.listDeviceVisits(500);
+        if (alive) setRows(d);
+      } catch (e) {} finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [ver]);
+  const count = (arr, key) => {
+    const m = {};
+    arr.forEach(r => {
+      m[r[key]] = (m[r[key]] || 0) + 1;
+    });
+    return Object.entries(m).sort((a, b) => b[1] - a[1]);
+  };
+  const platforms = count(rows, "platform");
+  const browsers = count(rows, "browser");
+  const total = rows.length;
+  const Bar = ({
+    label,
+    n
+  }) => /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 9
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--ink)",
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", null, label), /*#__PURE__*/React.createElement("span", null, n, "件（", total ? Math.round(n / total * 100) : 0, "%）")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 8,
+      background: "var(--chip)",
+      borderRadius: 5,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: "100%",
+      width: total ? `${n / total * 100}%` : "0%",
+      background: "var(--primary)",
+      borderRadius: 5
+    }
+  })));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.6
+    }
+  }, "直近", total, "件のアクセスの内訳です（同じ端末は1日1回まで集計）。", /*#__PURE__*/React.createElement("br", null), "個人は特定していません。"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setVer(v => v + 1),
+    disabled: loading,
+    style: {
+      flexShrink: 0,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--text)",
+      borderRadius: 9,
+      padding: "7px 13px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: loading ? "default" : "pointer"
+    }
+  }, loading ? "更新中…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "30px 0",
+      fontSize: 13
+    }
+  }, "読み込み中…") : total === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, "まだ記録がありません。") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 10
+    }
+  }, "機種"), platforms.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
+    key: k,
+    label: k,
+    n: n
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 900,
+      color: "var(--ink)",
+      margin: "18px 0 10px"
+    }
+  }, "ブラウザ"), browsers.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
+    key: k,
+    label: k,
+    n: n
+  }))));
+}
 function RankingPanel({
   onCreateFromPop
 }) {
@@ -1948,6 +2076,7 @@ function RankingPanel({
 }
 ;
 Object.assign(window, {
+  DeviceStatsPanel,
   RankingPanel,
   AdminTab,
   ArchiveTab,

@@ -108,6 +108,9 @@ function LazyTab(props) {
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
+  useEffect(() => {
+    api.logDeviceVisit(currentStore);
+  }, []); // 端末記録：起動時に1回（1日1回まで）
   const boardActions = React.useRef({});
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
@@ -117,7 +120,17 @@ function App() {
   useEffect(() => {
     const h = e => setPopDetailOpen(!!e.detail);
     window.addEventListener("popdetail", h);
-    return () => window.removeEventListener("popdetail", h);
+    const g = e => {
+      if (e.detail) {
+        setRadialOpen(false);
+        setTab(e.detail);
+      }
+    };
+    window.addEventListener("gotoTab", g);
+    return () => {
+      window.removeEventListener("popdetail", h);
+      window.removeEventListener("gotoTab", g);
+    };
   }, []);
 
   // 一覧を開いたとき、横スライダーは「業界情報・競合情報」が中央に来る位置で表示
@@ -330,7 +343,6 @@ function App() {
   }];
   return /*#__PURE__*/React.createElement("div", {
     id: "app-scroll",
-    className: "min-vh",
     style: {
       background: "var(--bg)",
       paddingBottom: "calc(62px + env(safe-area-inset-bottom))"
@@ -410,6 +422,7 @@ function App() {
       pointerEvents: scrollP > 0.9 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "app-title",
     style: {
       fontSize: 16,
       fontWeight: 900,
@@ -440,7 +453,26 @@ function App() {
       lineHeight: 1.5,
       backdropFilter: "blur(4px)"
     }
-  }, "＋投稿")), /*#__PURE__*/React.createElement("div", {
+  }, "＋投稿"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setRadialOpen(false);
+      setTab("tool");
+    },
+    style: {
+      flexShrink: 0,
+      border: "none",
+      background: "rgba(255,255,255,0.88)",
+      color: "#0f0f0f",
+      fontWeight: 800,
+      fontSize: 13.5,
+      padding: "4px 13px",
+      borderRadius: 16,
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      lineHeight: 1.5,
+      backdropFilter: "blur(4px)"
+    }
+  }, "✏️作成")), /*#__PURE__*/React.createElement("div", {
     style: {
       flexShrink: 0
     }

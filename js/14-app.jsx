@@ -2,10 +2,54 @@
 var { useState, useEffect, useCallback, useRef } = React;
 
 // ═══════════ APP：シェル（ルーティング・ナビ・メニュー・テーマ） ═══════════
+// 遅延タブの対応表：タブkey → { ファイル名, window上のコンポーネント名 }
+var LAZY_TABS = {
+  barcode: { file:"08-tab-barcode", comp:"BarcodeTab" },
+  gne:     { file:"10-tab-gne",     comp:"GeneratorTab" },
+  fish:    { file:"15-tab-fish",    comp:"FishTab" },
+  admin:   { file:"13-tab-admin",   comp:"AdminTab" },
+};
+
+// 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
+function LazyTab(props) {
+  var info = LAZY_TABS[props.tabKey];
+  var ready = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]))[0];
+  var setReady = useState(ready)[1];
+  var errState = useState(null);
+  var err = errState[0], setErr = errState[1];
+
+  useEffect(function(){
+    var alive = true;
+    if (window[info.comp]) { setReady(true); return; }
+    setErr(null);
+    window.loadLazyTab(info.file).then(function(){
+      if (alive) setReady(true);
+    }).catch(function(e){
+      if (alive) setErr(e);
+    });
+    return function(){ alive = false; };
+  }, [props.tabKey]);
+
+  if (err) {
+    return React.createElement("div", { style:{ padding:"60px 20px", textAlign:"center" } },
+      React.createElement("div", { style:{ fontSize:14, color:"var(--sub)", marginBottom:14, lineHeight:1.7 } }, "読み込みに失敗しました。\n通信環境をご確認ください。"),
+      React.createElement("button", { onClick:function(){ setErr(null); window.loadLazyTab(info.file).then(function(){ setReady(true); }).catch(setErr); },
+        style:{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:9, padding:"9px 18px", fontSize:13, fontWeight:800, cursor:"pointer" } }, "もう一度読み込む"));
+  }
+  var Comp = window[info.comp];
+  if (!(window.__lazyLoaded && window.__lazyLoaded[info.file]) || !Comp) {
+    return React.createElement("div", { style:{ padding:"80px 20px", textAlign:"center" } },
+      React.createElement("div", { className:"spinner", style:{ margin:"0 auto 14px" } }),
+      React.createElement("div", { style:{ fontSize:13, color:"var(--faint)", fontWeight:700 } }, "読み込み中…"));
+  }
+  return React.createElement(Comp, props.compProps || {});
+}
+
 function App() {
   const [tab, setTab] = useState("board");
 
   const [currentStore, setCurrentStore] = useState(STORES[0]);
+  useEffect(() => { api.logDeviceVisit(currentStore); }, []); // 端末記録：起動時に1回（1日1回まで）
   const boardActions = React.useRef({});
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
@@ -15,7 +59,9 @@ function App() {
   useEffect(() => {
     const h = (e) => setPopDetailOpen(!!e.detail);
     window.addEventListener("popdetail", h);
-    return () => window.removeEventListener("popdetail", h);
+    const g = (e) => { if (e.detail) { setRadialOpen(false); setTab(e.detail); } };
+    window.addEventListener("gotoTab", g);
+    return () => { window.removeEventListener("popdetail", h); window.removeEventListener("gotoTab", g); };
   }, []);
 
   // 一覧を開いたとき、横スライダーは「業界情報・競合情報」が中央に来る位置で表示
@@ -142,7 +188,7 @@ function App() {
   ];
 
   return (
-    <div id="app-scroll" className="min-vh" style={{ background:"var(--bg)", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
+    <div id="app-scroll" style={{ background:"var(--bg)", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -160,8 +206,9 @@ function App() {
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0, flex:1, overflow:"hidden",
             transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
-            <div style={{ fontSize:16, fontWeight:900, color: skyTheme.txtDark ? "var(--ink)" : "#fff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)" }}>鮮魚ポップ共有</div>
+            <div className="app-title" style={{ fontSize:16, fontWeight:900, color: skyTheme.txtDark ? "var(--ink)" : "#fff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)" }}>鮮魚ポップ共有</div>
             <button onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.88)", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5, backdropFilter:"blur(4px)" }}>＋投稿</button>
+            <button onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.88)", color:"#0f0f0f", fontWeight:800, fontSize:13.5, padding:"4px 13px", borderRadius:16, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.5, backdropFilter:"blur(4px)" }}>✏️作成</button>
           </div>
           {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
           <div style={{ flexShrink:0 }}><WeatherWidget onTheme={setWxCode} /></div>
@@ -177,18 +224,18 @@ function App() {
         </div>
       )}
       {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} feat={{ enabled: notice.feat_enabled, message: notice.feat_message, tab: notice.feat_tab, ver: notice.feat_ver }} onFeatGo={(t)=>setTab(t)} />}
-      {tab==="barcode" && <BarcodeTab />}
+      {tab==="barcode" && <LazyTab tabKey="barcode" />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
-      {tab==="gne"    && <GeneratorTab />}
+      {tab==="gne"    && <LazyTab tabKey="gne" />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
       {tab==="industry" && <IndustryTab />}
       {tab==="competitor" && <CompetitorTab />}
       {tab==="calendar" && <CalendarTab />}
-      {tab==="fish" && <FishTab />}
+      {tab==="fish" && <LazyTab tabKey="fish" />}
       {tab==="popcheck" && <PopCheckTab />}
-      {tab==="admin"  && <AdminTab onNoticeChange={setNotice} onCreateFromPop={handleCreateFromPop} />}
+      {tab==="admin"  && <LazyTab tabKey="admin" compProps={{ onNoticeChange:setNotice, onCreateFromPop:handleCreateFromPop }} />}
       {tab==="request" && <RequestTab />}
       {tab==="archive" && <ArchiveTab onCreateFromPop={handleCreateFromPop} />}
       {tab==="dev"    && <DevTab />}

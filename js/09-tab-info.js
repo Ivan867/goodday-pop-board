@@ -1023,7 +1023,23 @@ function TodayInfoCard() {
       }, "\u3000次：", jd(events.next2.date), " ", events.next2.name) : null)
     });
     rows.sort((a, b) => a.t - b.t);
-    return rows.map(r => r.el);
+    if (!rows.length) return null;
+    return /*#__PURE__*/React.createElement("div", {
+      onClick: () => window.dispatchEvent(new CustomEvent("gotoTab", {
+        detail: "calendar"
+      })),
+      style: {
+        cursor: "pointer"
+      },
+      title: "行事カレンダーを開く"
+    }, rows.map(r => r.el), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10.5,
+        color: "var(--faint)",
+        fontWeight: 700,
+        marginTop: 3
+      }
+    }, "タップで行事カレンダーへ →"));
   })()));
 }
 function WeatherWidget({
