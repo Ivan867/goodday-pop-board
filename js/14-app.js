@@ -434,6 +434,7 @@ function App() {
       textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)"
     }
   }, "鮮魚ポップ共有"), /*#__PURE__*/React.createElement("button", {
+    className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
       setTab("board");
@@ -442,18 +443,21 @@ function App() {
     style: {
       flexShrink: 0,
       border: "none",
-      background: "rgba(255,255,255,0.88)",
+      background: "rgba(255,255,255,0.92)",
       color: "#0f0f0f",
-      fontWeight: 800,
-      fontSize: 13.5,
-      padding: "4px 13px",
-      borderRadius: 16,
+      fontWeight: 700,
+      fontSize: 13,
+      letterSpacing: "-0.2px",
+      padding: "6px 14px",
+      borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      lineHeight: 1.5,
-      backdropFilter: "blur(4px)"
+      lineHeight: 1.4,
+      backdropFilter: "blur(8px)",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
     }
-  }, "＋投稿"), /*#__PURE__*/React.createElement("button", {
+  }, "＋ 投稿"), /*#__PURE__*/React.createElement("button", {
+    className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
       setTab("tool");
@@ -461,18 +465,20 @@ function App() {
     style: {
       flexShrink: 0,
       border: "none",
-      background: "rgba(255,255,255,0.88)",
+      background: "rgba(255,255,255,0.92)",
       color: "#0f0f0f",
-      fontWeight: 800,
-      fontSize: 13.5,
-      padding: "4px 13px",
-      borderRadius: 16,
+      fontWeight: 700,
+      fontSize: 13,
+      letterSpacing: "-0.2px",
+      padding: "6px 14px",
+      borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      lineHeight: 1.5,
-      backdropFilter: "blur(4px)"
+      lineHeight: 1.4,
+      backdropFilter: "blur(8px)",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
     }
-  }, "✏️作成")), /*#__PURE__*/React.createElement("div", {
+  }, "作成")), /*#__PURE__*/React.createElement("div", {
     style: {
       flexShrink: 0
     }
