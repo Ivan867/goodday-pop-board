@@ -503,8 +503,8 @@ function SearchTab({
       },
       style: {
         writingMode: "vertical-rl",
-        height: on ? 84 : 72,
-        width: on ? 41 : 35,
+        height: on ? 96 : 84,
+        width: on ? 52 : 46,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
