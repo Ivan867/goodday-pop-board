@@ -238,7 +238,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             const on = fGenre === g;
             return (
               <button key={g} onClick={() => { setFGenre(on ? "" : g); ensureLoaded(); }}
-                style={{ writingMode:"vertical-rl", height: on ? 84 : 72, width: on ? 36 : 30,
+                style={{ writingMode:"vertical-rl", height: on ? 84 : 72, width: on ? 41 : 35,
                   display:"flex", alignItems:"center", justifyContent:"center",
                   border:"none", cursor:"pointer", letterSpacing:".04em",
                   background: on ? c.solid : c.soft, color: on ? "#fff" : c.text,

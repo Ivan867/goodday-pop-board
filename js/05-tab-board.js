@@ -504,7 +504,7 @@ function SearchTab({
       style: {
         writingMode: "vertical-rl",
         height: on ? 84 : 72,
-        width: on ? 36 : 30,
+        width: on ? 41 : 35,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
