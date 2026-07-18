@@ -377,7 +377,7 @@ function PopDetail({
       goNext();
     } else {
       onClose && onClose();
-    } // 下フリック＝閉じて一覧に戻る（前のポップへは▲ボタン）
+    } // 上スワイプ＝次のポップ / 下スワイプ＝閉じて一覧へ
   };
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes || 0);
@@ -499,13 +499,56 @@ function PopDetail({
       detail: false
     }));
   }, []);
+
+  // 線画アイコン（1.9px stroke・iOS SF Symbols風）
+  const Ico = ({
+    d,
+    fill
+  }) => /*#__PURE__*/React.createElement("svg", {
+    width: "23",
+    height: "23",
+    viewBox: "0 0 24 24",
+    fill: fill || "none",
+    stroke: "currentColor",
+    strokeWidth: "1.9",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, d);
+  const ICONS = {
+    heart: /*#__PURE__*/React.createElement("path", {
+      d: "M12 20.5C12 20.5 3.5 15 3.5 8.9 3.5 6.1 5.7 4 8.4 4c1.7 0 3.1.9 3.6 2 .5-1.1 1.9-2 3.6-2 2.7 0 4.9 2.1 4.9 4.9 0 6.1-8.5 11.6-8.5 11.6z"
+    }),
+    check: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 12.5l5 5L20 6.5"
+    })),
+    hand: /*#__PURE__*/React.createElement("path", {
+      d: "M9 11V5.5a1.5 1.5 0 013 0V11m0-1V4.5a1.5 1.5 0 013 0V11m0-.5V6.5a1.5 1.5 0 013 0V15a6 6 0 01-6 6h-1.5a5 5 0 01-3.6-1.5L4 15.8a1.6 1.6 0 012.3-2.2L8 15V6a1.5 1.5 0 013 0"
+    }),
+    chat: /*#__PURE__*/React.createElement("path", {
+      d: "M20 11.5a7.5 7.5 0 01-10.9 6.7L4 19.5l1.4-4.4A7.5 7.5 0 1120 11.5z"
+    }),
+    save: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M12 3.5v11m0 0l-4-4m4 4l4-4"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+    })),
+    edit: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M14 6.5l3.5 3.5"
+    })),
+    trash: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 7h16M9 7V5a1.5 1.5 0 013 0v0a1.5 1.5 0 013 0v2M6 7l1 12.5A1.5 1.5 0 008.5 21h7A1.5 1.5 0 0017 19.5L18 7"
+    }))
+  };
   const ActionBtn = ({
     onClick,
     disabled,
     active,
-    emoji,
+    icon,
     label,
-    activeColor
+    activeColor,
+    fillWhenActive
   }) => /*#__PURE__*/React.createElement("button", {
     onClick: onClick,
     disabled: disabled,
@@ -516,27 +559,34 @@ function PopDetail({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 2,
+      gap: 3,
       padding: 0
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      width: 44,
-      height: 44,
+      width: 46,
+      height: 46,
       borderRadius: "50%",
-      background: active ? activeColor : "rgba(255,255,255,0.22)",
-      backdropFilter: "blur(6px)",
+      background: active ? activeColor : "rgba(255,255,255,0.16)",
+      border: active ? "none" : "1px solid rgba(255,255,255,0.3)",
+      backdropFilter: "blur(8px)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 20
+      color: "#fff",
+      boxShadow: active ? "0 3px 10px rgba(0,0,0,0.25)" : "none",
+      transition: "all .18s ease"
     }
-  }, emoji), /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement(Ico, {
+    d: ICONS[icon],
+    fill: active && fillWhenActive ? "#fff" : "none"
+  })), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
       fontWeight: 800,
       color: "#fff",
-      textShadow: "0 1px 3px rgba(0,0,0,0.55)"
+      textShadow: "0 1px 3px rgba(0,0,0,0.55)",
+      letterSpacing: "-0.2px"
     }
   }, label));
   return /*#__PURE__*/React.createElement("div", {
@@ -586,51 +636,7 @@ function PopDetail({
       objectFit: "contain",
       display: "block"
     }
-  }), hasPrev && /*#__PURE__*/React.createElement("button", {
-    onClick: goPrev,
-    "aria-label": "前のポップ",
-    style: {
-      position: "absolute",
-      top: 12,
-      left: "50%",
-      transform: "translateX(-50%)",
-      background: "rgba(0,0,0,0.4)",
-      border: "none",
-      color: "#fff",
-      fontSize: 16,
-      width: 38,
-      height: 30,
-      borderRadius: 15,
-      cursor: "pointer",
-      backdropFilter: "blur(4px)",
-      zIndex: 6,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  }, "▲"), hasNext && /*#__PURE__*/React.createElement("button", {
-    onClick: goNext,
-    "aria-label": "次のポップ",
-    style: {
-      position: "absolute",
-      bottom: 66,
-      left: "50%",
-      transform: "translateX(-50%)",
-      background: "rgba(0,0,0,0.4)",
-      border: "none",
-      color: "#fff",
-      fontSize: 16,
-      width: 38,
-      height: 30,
-      borderRadius: 15,
-      cursor: "pointer",
-      backdropFilter: "blur(4px)",
-      zIndex: 6,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  }, "▼"), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
+  }), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: 14,
@@ -678,13 +684,14 @@ function PopDetail({
     onClick: handleLike,
     active: liked,
     activeColor: "#e0245e",
-    emoji: liked ? "❤️" : "🤍",
+    fillWhenActive: true,
+    icon: "heart",
     label: String(likes)
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: handleUsed,
     active: used,
     activeColor: "#2f6fb0",
-    emoji: used ? "✅" : "🖐",
+    icon: used ? "check" : "hand",
     label: used ? `使った ${usedCount}` : "使った"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
@@ -693,18 +700,18 @@ function PopDetail({
         behavior: "smooth"
       });
     },
-    emoji: "💬",
+    icon: "chat",
     label: String(comments.length)
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: handleDownload,
-    emoji: "⬇️",
+    icon: "save",
     label: "保存"
   }), onCreateFromPop && /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
       onCreateFromPop(pop);
       onClose();
     },
-    emoji: "✏️",
+    icon: "edit",
     label: "作成"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
@@ -712,7 +719,7 @@ function PopDetail({
       setPwInput("");
       setPwError("");
     },
-    emoji: "🗑",
+    icon: "trash",
     label: "削除"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
