@@ -248,10 +248,10 @@ function App() {
         <div style={{ position:"fixed", left:0, right:0, bottom:"calc(60px + env(safe-area-inset-bottom))", zIndex:195, pointerEvents:"none" }}>
           {/* クリスタルガラスの帯：横一面の半透明バーの上に文字が浮かぶ */}
           <div style={{ position:"relative", background:"linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.28))", backdropFilter:"blur(18px) saturate(1.6)", WebkitBackdropFilter:"blur(18px) saturate(1.6)", borderTop:"1px solid rgba(255,255,255,0.65)", borderBottom:"1px solid rgba(255,255,255,0.35)", boxShadow:"0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", pointerEvents:"auto" }}>
-            <div id="shelf-scroll" className="hscroll" style={{ display:"flex", alignItems:"center", gap:2, overflowX:"auto", WebkitOverflowScrolling:"touch", padding:"9px 14px" }}>
+            <div id="shelf-scroll" className="hscroll" style={{ display:"flex", alignItems:"center", gap:2, overflowX:"auto", WebkitOverflowScrolling:"touch", padding:"3px 14px" }}>
               {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => (
                 <button key={t.key} id={`shelf-${t.key}`} onClick={() => { setMoreOpen(false); setRadialOpen(false); setTab(t.key); }}
-                  style={{ flexShrink:0, border:"none", background:"transparent", borderRadius:14, padding:"9px 15px", fontSize:15.5, fontWeight:900, color:"var(--ink)", cursor:"pointer", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)", letterSpacing:"0.01em" }}>
+                  style={{ flexShrink:0, border:"none", background:"transparent", borderRadius:14, padding:"3px 15px", fontSize:15.5, fontWeight:900, color:"var(--ink)", cursor:"pointer", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)", letterSpacing:"0.01em" }}>
                   {t.label}
                 </button>
               ))}

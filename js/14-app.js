@@ -599,7 +599,7 @@ function App() {
       gap: 2,
       overflowX: "auto",
       WebkitOverflowScrolling: "touch",
-      padding: "9px 14px"
+      padding: "3px 14px"
     }
   }, TAB_REGISTRY.filter(t => t.key !== "admin").map(t => /*#__PURE__*/React.createElement("button", {
     key: t.key,
@@ -614,7 +614,7 @@ function App() {
       border: "none",
       background: "transparent",
       borderRadius: 14,
-      padding: "9px 15px",
+      padding: "3px 15px",
       fontSize: 15.5,
       fontWeight: 900,
       color: "var(--ink)",

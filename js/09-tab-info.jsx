@@ -350,7 +350,6 @@ function TodayInfoCard() {
             <div onClick={() => window.dispatchEvent(new CustomEvent("gotoTab", { detail: "calendar" }))}
               style={{ cursor:"pointer" }} title="行事カレンダーを開く">
               {rows.map(r => r.el)}
-              <div style={{ fontSize:10.5, color:"var(--faint)", fontWeight:700, marginTop:3 }}>タップで行事カレンダーへ →</div>
             </div>
           );
         })()}
@@ -420,7 +419,7 @@ function WeatherWidget({ onTheme }) {
 
   return (
     <div style={{ position:"relative" }}>
-      <div onClick={() => setOpen(v => !v)}
+      <div onClick={() => window.open("https://tenki.jp/forecast/7/35/6810/32203/10days.html", "_blank", "noopener")}
         style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.9)", border:"1px solid rgba(255,255,255,0.5)", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", backdropFilter:"blur(4px)" }}>
         <Day label="今日" i={0} />
         <div style={{ width:1, height:14, background:"var(--line)" }} />

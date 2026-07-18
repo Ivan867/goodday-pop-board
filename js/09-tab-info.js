@@ -1032,14 +1032,7 @@ function TodayInfoCard() {
         cursor: "pointer"
       },
       title: "行事カレンダーを開く"
-    }, rows.map(r => r.el), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10.5,
-        color: "var(--faint)",
-        fontWeight: 700,
-        marginTop: 3
-      }
-    }, "タップで行事カレンダーへ →"));
+    }, rows.map(r => r.el));
   })()));
 }
 function WeatherWidget({
@@ -1214,7 +1207,7 @@ function WeatherWidget({
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    onClick: () => setOpen(v => !v),
+    onClick: () => window.open("https://tenki.jp/forecast/7/35/6810/32203/10days.html", "_blank", "noopener"),
     style: {
       display: "flex",
       alignItems: "center",
