@@ -232,17 +232,17 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
     <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 84px" }}>
 
       {/* 左端のジャンル付箋タブ（扇フィルターと同時に表示。勝部が選別したジャンルで絞り込み） */}
-      <div style={{ position:"fixed", left:0, top:"46%", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:4 }}>
+      <div style={{ position:"fixed", left:0, top:"calc(50% + 16px)", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:3 }}>
           {GENRES.map(g => {
             const c = GENRE_COLORS[g];
             const on = fGenre === g;
             return (
               <button key={g} onClick={() => { setFGenre(on ? "" : g); ensureLoaded(); }}
-                style={{ writingMode:"vertical-rl", height: on ? 100 : 86, width: on ? 40 : 33,
+                style={{ writingMode:"vertical-rl", height: on ? 84 : 72, width: on ? 36 : 30,
                   display:"flex", alignItems:"center", justifyContent:"center",
-                  border:"none", cursor:"pointer", letterSpacing:".08em",
+                  border:"none", cursor:"pointer", letterSpacing:".04em",
                   background: on ? c.solid : c.soft, color: on ? "#fff" : c.text,
-                  fontSize: on ? 15 : 13, fontWeight:800, borderRadius:"0 12px 12px 0",
+                  fontSize: on ? 14 : 12, fontWeight:800, borderRadius:"0 11px 11px 0",
                   boxShadow: on ? "2px 2px 9px rgba(0,0,0,0.20)" : "1px 1px 4px rgba(0,0,0,0.10)",
                   transition:"all .18s ease" }}>
                 {g === "切身" ? "切身・生食" : g}

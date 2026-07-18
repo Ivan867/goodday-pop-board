@@ -485,12 +485,12 @@ function SearchTab({
     style: {
       position: "fixed",
       left: 0,
-      top: "46%",
+      top: "calc(50% + 16px)",
       transform: "translateY(-50%)",
       zIndex: 166,
       display: "flex",
       flexDirection: "column",
-      gap: 4
+      gap: 3
     }
   }, GENRES.map(g => {
     const c = GENRE_COLORS[g];
@@ -503,19 +503,19 @@ function SearchTab({
       },
       style: {
         writingMode: "vertical-rl",
-        height: on ? 100 : 86,
-        width: on ? 40 : 33,
+        height: on ? 84 : 72,
+        width: on ? 36 : 30,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         border: "none",
         cursor: "pointer",
-        letterSpacing: ".08em",
+        letterSpacing: ".04em",
         background: on ? c.solid : c.soft,
         color: on ? "#fff" : c.text,
-        fontSize: on ? 15 : 13,
+        fontSize: on ? 14 : 12,
         fontWeight: 800,
-        borderRadius: "0 12px 12px 0",
+        borderRadius: "0 11px 11px 0",
         boxShadow: on ? "2px 2px 9px rgba(0,0,0,0.20)" : "1px 1px 4px rgba(0,0,0,0.10)",
         transition: "all .18s ease"
       }
