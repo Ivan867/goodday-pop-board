@@ -245,7 +245,7 @@ function App() {
       {/* 下部固定ナビ */}
 
       {tab === "board" && !moreOpen && !radialOpen && !popDetailOpen && !showUpload && (
-        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(50px + env(safe-area-inset-bottom))", zIndex:195, pointerEvents:"none" }}>
+        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(42px + env(safe-area-inset-bottom))", zIndex:195, pointerEvents:"none" }}>
           {/* クリスタルガラスの帯：横一面の半透明バーの上に文字が浮かぶ */}
           <div style={{ position:"relative", background:"linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.28))", backdropFilter:"blur(18px) saturate(1.6)", WebkitBackdropFilter:"blur(18px) saturate(1.6)", borderTop:"1px solid rgba(255,255,255,0.65)", borderBottom:"1px solid rgba(255,255,255,0.35)", boxShadow:"0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", pointerEvents:"auto" }}>
             <div id="shelf-scroll" className="hscroll" style={{ display:"flex", alignItems:"center", gap:2, overflowX:"auto", WebkitOverflowScrolling:"touch", padding:"3px 14px" }}>
@@ -264,7 +264,7 @@ function App() {
 
       {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
         <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
-          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(104px + env(safe-area-inset-bottom))" : "calc(72px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
+          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(86px + env(safe-area-inset-bottom))" : "calc(60px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 10px), 6px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
