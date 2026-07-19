@@ -202,7 +202,7 @@ function App() {
       )}
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)" }}>
         {/* 天気テーマ背景：Dynamic Island裏（画面最上端）まで描画。操作UIはセーフエリア内 */}
-        <div style={{ position:"absolute", inset:0, background: skyTheme.bg, boxShadow:"0 2px 12px rgba(0,0,0,0.10)", pointerEvents:"none", overflow:"hidden" }}>
+        <div style={{ position:"absolute", inset:0, background: skyTheme.bg, boxShadow: scrollP>0.5?"none":"0 2px 12px rgba(0,0,0,0.10)", pointerEvents:"none", overflow:"hidden", opacity:1-scrollP }}>
           {skyTheme.pat && <div style={{ position:"absolute", inset:0, backgroundImage: skyTheme.pat, backgroundSize: skyTheme.patSize || "auto" }} />}
         </div>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
@@ -212,8 +212,8 @@ function App() {
             <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.92)", color:"#0f0f0f", fontWeight:700, fontSize:13, letterSpacing:"-0.2px", padding:"6px 14px", borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.4, backdropFilter:"blur(8px)", boxShadow:"0 1px 4px rgba(0,0,0,0.08)" }}>＋ 投稿</button>
             <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.92)", color:"#0f0f0f", fontWeight:700, fontSize:13, letterSpacing:"-0.2px", padding:"6px 14px", borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", lineHeight:1.4, backdropFilter:"blur(8px)", boxShadow:"0 1px 4px rgba(0,0,0,0.08)" }}>作成</button>
           </div>
-          {/* 天気：ガラス化・フェード・移動なし、常に同じ位置に残す */}
-          <div style={{ flexShrink:0 }}><WeatherWidget onTheme={setWxCode} /></div>
+          {/* 天気：投稿・作成と一緒にスクロールで流れて消える */}
+          <div style={{ flexShrink:0, transform:`translateX(${scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}><WeatherWidget onTheme={setWxCode} /></div>
         </div>
       </div>
 

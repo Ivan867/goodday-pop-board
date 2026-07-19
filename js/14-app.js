@@ -396,9 +396,10 @@ function App() {
       position: "absolute",
       inset: 0,
       background: skyTheme.bg,
-      boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
+      boxShadow: scrollP > 0.5 ? "none" : "0 2px 12px rgba(0,0,0,0.10)",
       pointerEvents: "none",
-      overflow: "hidden"
+      overflow: "hidden",
+      opacity: 1 - scrollP
     }
   }, skyTheme.pat && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -490,7 +491,10 @@ function App() {
     }
   }, "作成")), /*#__PURE__*/React.createElement("div", {
     style: {
-      flexShrink: 0
+      flexShrink: 0,
+      transform: `translateX(${scrollP * 34}px)`,
+      opacity: 1 - scrollP,
+      pointerEvents: scrollP > 0.9 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement(WeatherWidget, {
     onTheme: setWxCode
