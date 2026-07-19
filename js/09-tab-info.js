@@ -806,6 +806,7 @@ function TodayInfoCard() {
     if (wx.dy >= 3) hint = "昨日よりグッと暑い日。刺身・たたき・冷たい系が動きやすい。";else if (wx.dy <= -3) hint = "昨日より涼しい日。鍋・煮付け・フライなど温か系が動きやすい。";else if (rainy) hint = "雨予報。まとめ買い・簡便系の提案が効きやすい日。";
   }
   const now = new Date();
+  const METAL = "repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0.06) 1px, rgba(0,0,0,0.06) 3px), linear-gradient(120deg, #1c3350 0%, #2f4d72 42%, #587aa6 60%, #2f4d72 78%, #1c3350 100%)";
   return /*#__PURE__*/React.createElement("div", {
     className: "wcard"
   }, /*#__PURE__*/React.createElement("div", {
@@ -839,13 +840,6 @@ function TodayInfoCard() {
       t: (w.lv >= 2 ? "⚠️ " : "") + w.n,
       lv: w.lv
     }));
-    if (wx && wx.today >= 35) chips.push({
-      t: "🥵 猛暑日予想",
-      lv: 2
-    });else if (wx && wx.today >= 33) chips.push({
-      t: "☀️ 厳しい暑さ",
-      lv: 1
-    });
     if (!chips.length) return null;
     const shike = warns.some(w => ["波浪警報", "波浪注意報", "強風注意報", "暴風警報", "波浪特別警報", "暴風特別警報"].includes(w.n));
     return /*#__PURE__*/React.createElement("div", {
@@ -882,14 +876,21 @@ function TodayInfoCard() {
       fontSize: 12.5,
       fontWeight: 700,
       color: "var(--text)",
-      lineHeight: 1.8,
+      lineHeight: 1.7,
       textAlign: "left"
     }
-  }, wx && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, wx && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: METAL,
+      borderRadius: 12,
+      padding: "9px 12px",
+      marginBottom: 8,
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      alignItems: "center",
-      padding: "3px 0 2px"
+      alignItems: "center"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -898,8 +899,8 @@ function TodayInfoCard() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
-      color: "var(--ink)",
+      fontSize: 10,
+      color: "rgba(255,255,255,0.8)",
       fontWeight: 800,
       lineHeight: 1.3
     }
@@ -907,18 +908,18 @@ function TodayInfoCard() {
     style: {
       fontSize: 15,
       fontWeight: 800,
-      color: "var(--ink)",
-      lineHeight: 1.4
+      color: "#fff",
+      lineHeight: 1.35
     }
   }, wx.yest, "°")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 26,
+      fontSize: 24,
       fontWeight: 900,
-      color: dcol(wx.dy),
+      color: "#fff",
+      opacity: 0.9,
       flexShrink: 0,
       lineHeight: 1,
-      padding: "0 2px",
-      textShadow: "0.6px 0 currentColor, -0.6px 0 currentColor"
+      padding: "0 1px"
     }
   }, wx.dy > 0 ? "↗" : wx.dy < 0 ? "↘" : "→"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -927,27 +928,27 @@ function TodayInfoCard() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
-      color: "var(--ink)",
+      fontSize: 10,
+      color: "rgba(255,255,255,0.8)",
       fontWeight: 800,
       lineHeight: 1.3
     }
   }, "今日"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 18,
+      fontSize: 19,
       fontWeight: 900,
-      color: "var(--ink)",
-      lineHeight: 1.4
+      color: "#fff",
+      lineHeight: 1.35
     }
   }, wmoIcon(wx.code).e, wx.today, "°")), wx.tmMax != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 26,
+      fontSize: 24,
       fontWeight: 900,
-      color: dcol(wx.tmDiff),
+      color: "#fff",
+      opacity: 0.9,
       flexShrink: 0,
       lineHeight: 1,
-      padding: "0 2px",
-      textShadow: "0.6px 0 currentColor, -0.6px 0 currentColor"
+      padding: "0 1px"
     }
   }, wx.tmDiff > 0 ? "↗" : wx.tmDiff < 0 ? "↘" : "→"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -956,8 +957,8 @@ function TodayInfoCard() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
-      color: "var(--ink)",
+      fontSize: 10,
+      color: "rgba(255,255,255,0.8)",
       fontWeight: 800,
       lineHeight: 1.3
     }
@@ -965,42 +966,58 @@ function TodayInfoCard() {
     style: {
       fontSize: 15,
       fontWeight: 800,
-      color: "var(--ink)",
-      lineHeight: 1.4
+      color: "#fff",
+      lineHeight: 1.35
     }
   }, wmoIcon(wx.tmCode).e, wx.tmMax, "°")))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
-      color: "var(--ink)",
-      textAlign: "center",
-      fontWeight: 800,
-      marginBottom: 2
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginTop: 5,
+      flexWrap: "wrap"
     }
-  }, "先週より", /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("span", {
     style: {
-      color: dcol(wx.dw)
+      fontSize: 10.5,
+      color: "rgba(255,255,255,0.92)",
+      fontWeight: 800
     }
-  }, sign(wx.dw)), wx.dw > 0 ? "、暑い一日" : wx.dw < 0 ? "、涼しい一日" : "")), wx && (hint || hol && hol.date || events.next) ? /*#__PURE__*/React.createElement("div", {
+  }, "先週より", sign(wx.dw), wx.dw > 0 ? "、暑い一日" : wx.dw < 0 ? "、涼しい一日" : ""), wx.today >= 35 && /*#__PURE__*/React.createElement("span", {
     style: {
-      height: 1,
-      background: "var(--line)",
-      margin: "7px 0"
+      fontSize: 10,
+      fontWeight: 900,
+      color: "#fff",
+      background: "rgba(224,36,94,0.85)",
+      borderRadius: 7,
+      padding: "1px 8px"
     }
-  }) : null, hint && /*#__PURE__*/React.createElement("div", {
+  }, "🥵 猛暑日予想"), wx.today >= 33 && wx.today < 35 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      fontWeight: 900,
+      color: "#fff",
+      background: "rgba(255,255,255,0.22)",
+      borderRadius: 7,
+      padding: "1px 8px"
+    }
+  }, "☀️ 厳しい暑さ"))), hint && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "#a8480a",
-      fontWeight: 700
+      fontWeight: 700,
+      marginBottom: 5
     }
   }, "💡 ", hint), (() => {
     const badge = days => /*#__PURE__*/React.createElement("span", {
       style: {
-        background: "var(--soft)",
-        color: "var(--soft-text)",
+        background: "rgba(255,255,255,0.22)",
+        color: "#fff",
         borderRadius: 7,
         padding: "1px 7px",
         marginLeft: 5,
-        fontSize: 11,
+        fontSize: 10.5,
         fontWeight: 800,
         whiteSpace: "nowrap"
       }
@@ -1009,16 +1026,22 @@ function TodayInfoCard() {
     if (hol && hol.date) rows.push({
       t: +hol.date,
       el: /*#__PURE__*/React.createElement("div", {
-        key: "hol"
+        key: "hol",
+        style: {
+          padding: "1px 0"
+        }
       }, "🎌 ", jd(hol.date), "（", wd(hol.date), "）", hol.name, hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : "", badge(hol.days))
     });
     if (events.next) rows.push({
       t: +events.next.date,
       el: /*#__PURE__*/React.createElement("div", {
-        key: "ev"
+        key: "ev",
+        style: {
+          padding: "1px 0"
+        }
       }, "🗓 ", jd(events.next.date), "（", wd(events.next.date), "）", events.next.name, events.next.food ? `〈${events.next.food}〉` : "", badge(Math.round((events.next.date - now) / 86400000)), events.next2 ? /*#__PURE__*/React.createElement("span", {
         style: {
-          color: "var(--sub)"
+          color: "rgba(255,255,255,0.7)"
         }
       }, "\u3000次：", jd(events.next2.date), " ", events.next2.name) : null)
     });
@@ -1029,7 +1052,15 @@ function TodayInfoCard() {
         detail: "calendar"
       })),
       style: {
-        cursor: "pointer"
+        cursor: "pointer",
+        background: METAL,
+        borderRadius: 12,
+        padding: "9px 12px",
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: 800,
+        lineHeight: 1.7,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)"
       },
       title: "行事カレンダーを開く"
     }, rows.map(r => r.el));
