@@ -1840,7 +1840,168 @@ function BarcodeTab() {
       fontWeight: 900,
       cursor: list.length ? "pointer" : "not-allowed"
     }
-  }, "A4横で印刷（", list.length, "件・", pages.length, "ページ）")), /*#__PURE__*/React.createElement("div", {
+  }, "A4横で印刷（", list.length, "件・", pages.length, "ページ）")), list.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: "1px solid var(--line)",
+      paddingTop: 14,
+      marginTop: 2
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 3
+    }
+  }, "納品会社の割り当て"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginBottom: 12,
+      lineHeight: 1.6
+    }
+  }, "各商品にラベル上部の色・模様・会社名が付きます。一括で全部に設定するか、商品ごとに個別で選べます。"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      flexWrap: "wrap",
+      marginBottom: 14,
+      paddingBottom: 14,
+      borderBottom: "1px dashed var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--faint)"
+    }
+  }, "一括："), COMPANIES.map(c => /*#__PURE__*/React.createElement("button", {
+    key: c.key,
+    onClick: () => {
+      const next = {
+        ...bcCompany
+      };
+      list.forEach(it => {
+        next[it.bcode] = c.key;
+      });
+      setBcCompany(next);
+      try {
+        localStorage.setItem("bcCompanyMap", JSON.stringify(next));
+      } catch (e) {}
+    },
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      border: `1px solid ${c.color}`,
+      background: "#fff",
+      color: c.color,
+      borderRadius: 8,
+      padding: "6px 10px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 20,
+      height: 11,
+      borderRadius: 3,
+      border: `1px solid ${c.color}`,
+      ...companyPatStyle(c)
+    }
+  }), c.name)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      const next = {
+        ...bcCompany
+      };
+      list.forEach(it => {
+        delete next[it.bcode];
+      });
+      setBcCompany(next);
+      try {
+        localStorage.setItem("bcCompanyMap", JSON.stringify(next));
+      } catch (e) {}
+    },
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--sub)",
+      borderRadius: 8,
+      padding: "6px 10px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "クリア")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, list.map(it => {
+    const cur = bcCompany[it.bcode];
+    return /*#__PURE__*/React.createElement("div", {
+      key: it.bcode,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        flexWrap: "wrap"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 700,
+        color: "var(--ink)",
+        minWidth: 120,
+        flex: "0 0 auto",
+        maxWidth: 180,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, it.name || it.bcode), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap"
+      }
+    }, COMPANIES.map(c => {
+      const on = cur === c.key;
+      return /*#__PURE__*/React.createElement("button", {
+        key: c.key,
+        onClick: () => setCompanyFor(it.bcode, on ? null : c.key),
+        title: c.name,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 5,
+          border: on ? `2px solid ${c.color}` : "1px solid var(--line)",
+          background: "#fff",
+          color: on ? c.color : "var(--sub)",
+          borderRadius: 7,
+          padding: "4px 8px",
+          fontSize: 11,
+          fontWeight: 800,
+          cursor: "pointer"
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          width: 16,
+          height: 10,
+          borderRadius: 2,
+          border: `1px solid ${c.color}`,
+          ...companyPatStyle(c)
+        }
+      }), c.name);
+    })));
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",

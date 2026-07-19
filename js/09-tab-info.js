@@ -1205,14 +1205,34 @@ function WeatherWidget({
   };
 
   // 今日の天気コードから空のグラデーションを決める
+  // 参考画像のブラッシュメタル調（斜めヘアライン×濃紺青）。天気で明度だけ変える。
   const skyBg = (() => {
     const c = daily.weather_code[0];
-    if (c <= 1) return "linear-gradient(135deg,#3d9be0,#7cc4f4)"; // 快晴・晴れ：青空
-    if (c <= 3) return "linear-gradient(135deg,#6d92b3,#a3bdd4)"; // 曇り：うす曇りの空
-    if (c === 45 || c === 48) return "linear-gradient(135deg,#8d9aa8,#b9c3cd)"; // 霧
-    if (c >= 71 && c <= 86 && !(c >= 80 && c <= 82)) return "linear-gradient(135deg,#7f93b5,#b9c8e0)"; // 雪
-    if (c >= 95) return "linear-gradient(135deg,#3d4a63,#6a7a99)"; // 雷雨
-    return "linear-gradient(135deg,#4a6e96,#7d9cbe)"; // 雨系
+    let base = "#2f4d72",
+      lite = "#587aa6",
+      dark = "#1c3350";
+    if (c <= 1) {
+      base = "#356199";
+      lite = "#6f9fce";
+      dark = "#1f3f66";
+    } else if (c <= 3) {
+      base = "#3a5578";
+      lite = "#6683a6";
+      dark = "#22374f";
+    } else if (c >= 95) {
+      base = "#28324a";
+      lite = "#4a5a78";
+      dark = "#161d2e";
+    } else if (c >= 71 && c <= 86 && !(c >= 80 && c <= 82)) {
+      base = "#465f82";
+      lite = "#8aa3c4";
+      dark = "#2c3f5a";
+    } else {
+      base = "#2f4d72";
+      lite = "#587aa6";
+      dark = "#1c3350";
+    }
+    return `repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0.05) 1px, rgba(0,0,0,0.05) 3px), linear-gradient(120deg, ${dark} 0%, ${base} 42%, ${lite} 60%, ${base} 78%, ${dark} 100%)`;
   })();
   return /*#__PURE__*/React.createElement("div", {
     style: {
