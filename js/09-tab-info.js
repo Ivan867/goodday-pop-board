@@ -807,6 +807,61 @@ function TodayInfoCard() {
   }
   const now = new Date();
   const METAL = "repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0.06) 1px, rgba(0,0,0,0.06) 3px), linear-gradient(120deg, #1c3350 0%, #2f4d72 42%, #587aa6 60%, #2f4d72 78%, #1c3350 100%)";
+  // 時間帯で変わる空（朝＝日の出／昼＝晴天／夕＝夕焼け／夜＝夜空）。天気が悪い日はやや暗く。
+  const timeSky = (() => {
+    const hr = new Date().getHours();
+    const bad = wx && wx.code >= 61; // 雨・雪・雷など
+    let g, emo, sun;
+    if (hr >= 5 && hr < 8) {
+      g = "linear-gradient(135deg,#f6b17a 0%,#fcd9a8 40%,#a9c7e0 100%)";
+      emo = "🌅";
+      sun = true;
+    } // 朝焼け
+    else if (hr >= 8 && hr < 16) {
+      g = "linear-gradient(135deg,#4a9fe0 0%,#7fc0f2 55%,#bfe3f8 100%)";
+      emo = "☀️";
+      sun = true;
+    } // 日中
+    else if (hr >= 16 && hr < 19) {
+      g = "linear-gradient(135deg,#e97b52 0%,#f4a261 45%,#8a6a9e 100%)";
+      emo = "🌇";
+      sun = true;
+    } // 夕焼け
+    else {
+      g = "linear-gradient(160deg,#0f1e3a 0%,#1c3358 55%,#2a3f66 100%)";
+      emo = "🌙";
+      sun = false;
+    } // 夜
+    if (bad) g = "linear-gradient(135deg,#4a5a72 0%,#6a7a92 55%,#8a97ab 100%)";
+    return {
+      g,
+      emo,
+      sun
+    };
+  })();
+  // 行事名から関連イラスト（絵文字）を選ぶ
+  const eventArt = (name, food) => {
+    const s = (name || "") + (food || "");
+    if (/海の日|海開き/.test(s)) return "🌊";
+    if (/土用|丑|うなぎ|鰻/.test(s)) return "🍱";
+    if (/お盆|盆/.test(s)) return "🏮";
+    if (/正月|元日|元旦/.test(s)) return "🎍";
+    if (/節分/.test(s)) return "👹";
+    if (/ひな|雛|桃の節句/.test(s)) return "🎎";
+    if (/こどもの日|端午|子供の日/.test(s)) return "🎏";
+    if (/クリスマス/.test(s)) return "🎄";
+    if (/大晦日|年越し|年末/.test(s)) return "🎌";
+    if (/敬老/.test(s)) return "🎁";
+    if (/月見|十五夜/.test(s)) return "🌕";
+    if (/バレンタイン/.test(s)) return "🍫";
+    if (/花見|桜/.test(s)) return "🌸";
+    if (/夏祭|祭り|花火/.test(s)) return "🎆";
+    if (/母の日/.test(s)) return "🌷";
+    if (/父の日/.test(s)) return "👔";
+    if (/ハロウィン/.test(s)) return "🎃";
+    if (/恵方巻/.test(s)) return "🍙";
+    return "🗓";
+  };
   return /*#__PURE__*/React.createElement("div", {
     className: "wcard"
   }, hol && hol.todayName || events.todayEv ? /*#__PURE__*/React.createElement("div", {
@@ -863,14 +918,33 @@ function TodayInfoCard() {
     }
   }, wx && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: METAL,
+      position: "relative",
+      background: timeSky.g,
       borderRadius: 12,
       padding: "9px 12px",
       marginBottom: 8,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)"
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
+      overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
+      position: "absolute",
+      top: 7,
+      right: 10,
+      fontSize: 22,
+      filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.3))",
+      opacity: 0.9
+    }
+  }, timeSky.emo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      background: "linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.12))",
+      pointerEvents: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
       display: "flex",
       alignItems: "center"
     }
@@ -953,6 +1027,7 @@ function TodayInfoCard() {
     }
   }, wmoIcon(wx.tmCode).e, wx.tmMax, "°")))), /*#__PURE__*/React.createElement("div", {
     style: {
+      position: "relative",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -1005,28 +1080,35 @@ function TodayInfoCard() {
       }
     }, days === 1 ? "明日" : `あと${days}日`);
     const rows = [];
-    if (hol && hol.date) rows.push({
-      t: +hol.date,
-      el: /*#__PURE__*/React.createElement("div", {
-        key: "hol",
-        style: {
-          padding: "1px 0"
-        }
-      }, "🎌 ", jd(hol.date), "（", wd(hol.date), "）", hol.name, hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : "", badge(hol.days))
-    });
-    if (events.next) rows.push({
-      t: +events.next.date,
-      el: /*#__PURE__*/React.createElement("div", {
-        key: "ev",
-        style: {
-          padding: "1px 0"
-        }
-      }, "🗓 ", jd(events.next.date), "（", wd(events.next.date), "）", events.next.name, events.next.food ? `〈${events.next.food}〉` : "", badge(Math.round((events.next.date - now) / 86400000)), events.next2 ? /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: "rgba(255,255,255,0.7)"
-        }
-      }, "\u3000次：", jd(events.next2.date), " ", events.next2.name) : null)
-    });
+    let artEmoji = "🗓";
+    if (hol && hol.date) {
+      artEmoji = eventArt(hol.name);
+      rows.push({
+        t: +hol.date,
+        el: /*#__PURE__*/React.createElement("div", {
+          key: "hol",
+          style: {
+            padding: "1px 0"
+          }
+        }, "🎌 ", jd(hol.date), "（", wd(hol.date), "）", hol.name, hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : "", badge(hol.days))
+      });
+    }
+    if (events.next) {
+      if (!hol || !hol.date) artEmoji = eventArt(events.next.name, events.next.food);
+      rows.push({
+        t: +events.next.date,
+        el: /*#__PURE__*/React.createElement("div", {
+          key: "ev",
+          style: {
+            padding: "1px 0"
+          }
+        }, eventArt(events.next.name, events.next.food), " ", jd(events.next.date), "（", wd(events.next.date), "）", events.next.name, events.next.food ? `〈${events.next.food}〉` : "", badge(Math.round((events.next.date - now) / 86400000)), events.next2 ? /*#__PURE__*/React.createElement("span", {
+          style: {
+            color: "rgba(255,255,255,0.7)"
+          }
+        }, "\u3000次：", jd(events.next2.date), " ", events.next2.name) : null)
+      });
+    }
     rows.sort((a, b) => a.t - b.t);
     if (!rows.length) return null;
     return /*#__PURE__*/React.createElement("div", {
@@ -1034,18 +1116,31 @@ function TodayInfoCard() {
         detail: "calendar"
       })),
       style: {
+        position: "relative",
         cursor: "pointer",
         background: METAL,
         borderRadius: 12,
         padding: "9px 12px",
+        paddingRight: 52,
         color: "#fff",
         fontSize: 12,
         fontWeight: 800,
         lineHeight: 1.7,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)"
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)",
+        overflow: "hidden"
       },
       title: "行事カレンダーを開く"
-    }, rows.map(r => r.el));
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: "50%",
+        right: 12,
+        transform: "translateY(-50%)",
+        fontSize: 34,
+        opacity: 0.85,
+        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.35))"
+      }
+    }, artEmoji), rows.map(r => r.el));
   })()));
 }
 function WeatherWidget({
