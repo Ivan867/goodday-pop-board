@@ -276,7 +276,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           {/* 左下 情報オーバーレイ */}
           <div style={{ position:"absolute", left:0, right:64, bottom:0, padding:"36px 14px 14px 68px", background:"linear-gradient(to top, rgba(0,0,0,0.72), transparent)", zIndex:4 }}>
             <div style={{ fontSize:18, fontWeight:900, color:"#fff", textShadow:"0 1px 4px rgba(0,0,0,0.6)", lineHeight:1.3 }}>{pop.product_name}</div>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,0.9)", marginTop:3, textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>🏪 {pop.store_name}　·　{pop.category}{pop.author ? `　·　${pop.author}` : ""}{views > 0 ? `　·　閲覧${views}` : ""}</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.9)", marginTop:3, textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>🏪 {pop.store_name}　·　{pop.category}{pop.author ? `　·　${pop.author}` : ""}</div>
             {pop.comment && <div style={{ fontSize:12, color:"rgba(255,255,255,0.92)", marginTop:6, lineHeight:1.6, textShadow:"0 1px 3px rgba(0,0,0,0.6)", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{pop.comment}</div>}
           </div>
 
@@ -351,7 +351,6 @@ function PopCard({ pop, index, onClick, hasComment }) {
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
-          {(pop.view_count||0) >= 10 && <div style={{ background:"rgba(0,0,0,0.55)", color:"#ffd76a", fontSize:10.5, fontWeight:900, padding:"2px 7px", borderRadius:20, backdropFilter:"blur(3px)" }}>🔥 注目</div>}
         </div>
       </div>
       <div style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>

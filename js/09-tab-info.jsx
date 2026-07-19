@@ -405,24 +405,35 @@ function WeatherWidget({ onTheme }) {
     const hi = Math.round(daily.temperature_2m_max[i]);
     const lo = Math.round(daily.temperature_2m_min[i]);
     return (
-      <div style={{ display:"flex", alignItems:"center", gap:3, whiteSpace:"nowrap" }}>
-        <span style={{ fontSize:10, color:"var(--sub)", fontWeight:700 }}>{label}</span>
-        <span style={{ fontSize:13 }}>{w.e}</span>
-        <span style={{ fontSize:11, fontWeight:700 }}>
-          <span style={{ color:"var(--primary)" }}>{hi}°</span>
-          <span style={{ color:"var(--faint)" }}>/</span>
-          <span style={{ color:"#4a86c5" }}>{lo}°</span>
+      <div style={{ display:"flex", alignItems:"center", gap:4, whiteSpace:"nowrap" }}>
+        <span style={{ fontSize:9.5, color:"rgba(255,255,255,0.85)", fontWeight:800 }}>{label}</span>
+        <span style={{ fontSize:15, filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>{w.e}</span>
+        <span style={{ fontSize:11.5, fontWeight:800 }}>
+          <span style={{ color:"#fff" }}>{hi}°</span>
+          <span style={{ color:"rgba(255,255,255,0.55)" }}>/</span>
+          <span style={{ color:"rgba(255,255,255,0.8)" }}>{lo}°</span>
         </span>
       </div>
     );
   };
 
+  // 今日の天気コードから空のグラデーションを決める
+  const skyBg = (() => {
+    const c = daily.weather_code[0];
+    if (c <= 1)  return "linear-gradient(135deg,#3d9be0,#7cc4f4)";                 // 快晴・晴れ：青空
+    if (c <= 3)  return "linear-gradient(135deg,#6d92b3,#a3bdd4)";                 // 曇り：うす曇りの空
+    if (c === 45 || c === 48) return "linear-gradient(135deg,#8d9aa8,#b9c3cd)";    // 霧
+    if (c >= 71 && c <= 86 && !(c >= 80 && c <= 82)) return "linear-gradient(135deg,#7f93b5,#b9c8e0)"; // 雪
+    if (c >= 95) return "linear-gradient(135deg,#3d4a63,#6a7a99)";                 // 雷雨
+    return "linear-gradient(135deg,#4a6e96,#7d9cbe)";                              // 雨系
+  })();
+
   return (
     <div style={{ position:"relative" }}>
       <div onClick={() => window.open("https://tenki.jp/forecast/7/35/6810/32203/10days.html", "_blank", "noopener")}
-        style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.9)", border:"1px solid rgba(255,255,255,0.5)", borderRadius:9, padding:"5px 9px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", backdropFilter:"blur(4px)" }}>
+        style={{ display:"flex", alignItems:"center", gap:9, background:skyBg, border:"1px solid rgba(255,255,255,0.35)", borderRadius:11, padding:"6px 11px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
         <Day label="今日" i={0} />
-        <div style={{ width:1, height:14, background:"var(--line)" }} />
+        <div style={{ width:1, height:15, background:"rgba(255,255,255,0.35)" }} />
         <Day label="明日" i={1} />
       </div>
       {open && (

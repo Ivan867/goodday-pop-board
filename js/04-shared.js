@@ -746,7 +746,7 @@ function PopDetail({
       marginTop: 3,
       textShadow: "0 1px 3px rgba(0,0,0,0.6)"
     }
-  }, "🏪 ", pop.store_name, "\u3000·\u3000", pop.category, pop.author ? `　·　${pop.author}` : "", views > 0 ? `　·　閲覧${views}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
+  }, "🏪 ", pop.store_name, "\u3000·\u3000", pop.category, pop.author ? `　·　${pop.author}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "rgba(255,255,255,0.92)",
@@ -1074,17 +1074,7 @@ function PopCard({
       padding: "2px 7px",
       borderRadius: 20
     }
-  }, pop.likes), (pop.view_count || 0) >= 10 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(0,0,0,0.55)",
-      color: "#ffd76a",
-      fontSize: 10.5,
-      fontWeight: 900,
-      padding: "2px 7px",
-      borderRadius: 20,
-      backdropFilter: "blur(3px)"
-    }
-  }, "🔥 注目"))), /*#__PURE__*/React.createElement("div", {
+  }, pop.likes))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "9px 12px",
       display: "flex",

@@ -1170,38 +1170,50 @@ function WeatherWidget({
       style: {
         display: "flex",
         alignItems: "center",
-        gap: 3,
+        gap: 4,
         whiteSpace: "nowrap"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
-        color: "var(--sub)",
-        fontWeight: 700
+        fontSize: 9.5,
+        color: "rgba(255,255,255,0.85)",
+        fontWeight: 800
       }
     }, label), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13
+        fontSize: 15,
+        filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))"
       }
     }, w.e), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
-        fontWeight: 700
+        fontSize: 11.5,
+        fontWeight: 800
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        color: "var(--primary)"
+        color: "#fff"
       }
     }, hi, "°"), /*#__PURE__*/React.createElement("span", {
       style: {
-        color: "var(--faint)"
+        color: "rgba(255,255,255,0.55)"
       }
     }, "/"), /*#__PURE__*/React.createElement("span", {
       style: {
-        color: "#4a86c5"
+        color: "rgba(255,255,255,0.8)"
       }
     }, lo, "°")));
   };
+
+  // 今日の天気コードから空のグラデーションを決める
+  const skyBg = (() => {
+    const c = daily.weather_code[0];
+    if (c <= 1) return "linear-gradient(135deg,#3d9be0,#7cc4f4)"; // 快晴・晴れ：青空
+    if (c <= 3) return "linear-gradient(135deg,#6d92b3,#a3bdd4)"; // 曇り：うす曇りの空
+    if (c === 45 || c === 48) return "linear-gradient(135deg,#8d9aa8,#b9c3cd)"; // 霧
+    if (c >= 71 && c <= 86 && !(c >= 80 && c <= 82)) return "linear-gradient(135deg,#7f93b5,#b9c8e0)"; // 雪
+    if (c >= 95) return "linear-gradient(135deg,#3d4a63,#6a7a99)"; // 雷雨
+    return "linear-gradient(135deg,#4a6e96,#7d9cbe)"; // 雨系
+  })();
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
@@ -1211,15 +1223,15 @@ function WeatherWidget({
     style: {
       display: "flex",
       alignItems: "center",
-      gap: 8,
-      background: "rgba(255,255,255,0.9)",
-      border: "1px solid rgba(255,255,255,0.5)",
-      borderRadius: 9,
-      padding: "5px 9px",
+      gap: 9,
+      background: skyBg,
+      border: "1px solid rgba(255,255,255,0.35)",
+      borderRadius: 11,
+      padding: "6px 11px",
       whiteSpace: "nowrap",
       flexShrink: 0,
       cursor: "pointer",
-      backdropFilter: "blur(4px)"
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)"
     }
   }, /*#__PURE__*/React.createElement(Day, {
     label: "今日",
@@ -1227,8 +1239,8 @@ function WeatherWidget({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       width: 1,
-      height: 14,
-      background: "var(--line)"
+      height: 15,
+      background: "rgba(255,255,255,0.35)"
     }
   }), /*#__PURE__*/React.createElement(Day, {
     label: "明日",
