@@ -212,7 +212,7 @@ function App() {
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
   useEffect(() => {
-    const FADE_RANGE = 100;
+    const FADE_RANGE = 68;
     const el = scroller();
     if (!el) return;
     const onScroll = () => {
@@ -390,21 +390,24 @@ function App() {
       top: 0,
       zIndex: 100,
       paddingTop: "env(safe-area-inset-top)",
-      background: "var(--bg)"
+      background: "var(--bg)",
+      height: scrollP >= 1 ? 0 : "auto",
+      overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "8px 16px 10px",
+      padding: "4px 16px 6px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       flexWrap: "nowrap",
       gap: 10,
-      opacity: 1 - scrollP * 0.85,
-      transform: `translateY(${-scrollP * 4}px)`
+      opacity: Math.max(0, 1 - scrollP * 1.6),
+      transform: `translateX(${-scrollP * 60}px)`,
+      pointerEvents: scrollP > 0.6 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "app-title",
