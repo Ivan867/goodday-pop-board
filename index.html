@@ -30,16 +30,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
 :root {
-  --primary: #C24E00;
-  --chip: #EDE9E0;
-  --bg: #F5F2EC;
-  --line: #E7E2D8;
-  --ink: #1c1b18;
-  --text: #4A463E;
-  --sub: #8B8578;
-  --faint: #C9C4B8;
-  --soft: #F4EDE4;
-  --soft-text: #6E4F2F;
+  --primary: #1d3a57;
+  --chip: #eef1f4;
+  --bg: #f4f6f8;
+  --line: #e4e8ec;
+  --ink: #1a2b3c;
+  --text: #3a4653;
+  --sub: #7a8794;
+  --faint: #b8c0c8;
+  --soft: #e7f1fa;
+  --soft-text: #1d5a94;
 }
 .wcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:8px 11px; margin-bottom:9px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); }
 .sk { background:linear-gradient(90deg, #EDEAE2 25%, #F7F4EE 50%, #EDEAE2 75%); background-size:200% 100%; animation:skm 1.3s infinite; }
@@ -124,21 +124,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260719j"></script>
-<script src="js/02-api.js?v=20260719j"></script>
-<script src="js/03-utils.js?v=20260719j"></script>
-<script src="js/04-shared.js?v=20260719j"></script>
-<script src="js/05-tab-board.js?v=20260719j"></script>
-<script src="js/06-tab-create.js?v=20260719j"></script>
-<script src="js/07-tab-floor.js?v=20260719j"></script>
-<script src="js/09-tab-info.js?v=20260719j"></script>
-<script src="js/11-tab-check-fish.js?v=20260719j"></script>
-<script src="js/12-tab-learn.js?v=20260719j"></script>
-<script src="js/14-app.js?v=20260719j"></script>
+<script src="js/01-config.js?v=20260719k"></script>
+<script src="js/02-api.js?v=20260719k"></script>
+<script src="js/03-utils.js?v=20260719k"></script>
+<script src="js/04-shared.js?v=20260719k"></script>
+<script src="js/05-tab-board.js?v=20260719k"></script>
+<script src="js/06-tab-create.js?v=20260719k"></script>
+<script src="js/07-tab-floor.js?v=20260719k"></script>
+<script src="js/09-tab-info.js?v=20260719k"></script>
+<script src="js/11-tab-check-fish.js?v=20260719k"></script>
+<script src="js/12-tab-learn.js?v=20260719k"></script>
+<script src="js/14-app.js?v=20260719k"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260719j";
+window.APP_VER = "20260719k";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

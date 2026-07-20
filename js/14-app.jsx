@@ -239,31 +239,13 @@ function App() {
 
       {/* 下部固定ナビ */}
 
-      {tab === "board" && !moreOpen && !radialOpen && !popDetailOpen && !showUpload && (
-        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(42px + env(safe-area-inset-bottom))", zIndex:195, pointerEvents:"none" }}>
-          {/* クリスタルガラスの帯：横一面の半透明バーの上に文字が浮かぶ */}
-          <div style={{ position:"relative", background:"linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.28))", backdropFilter:"blur(18px) saturate(1.6)", WebkitBackdropFilter:"blur(18px) saturate(1.6)", borderTop:"1px solid rgba(255,255,255,0.65)", borderBottom:"1px solid rgba(255,255,255,0.35)", boxShadow:"0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", pointerEvents:"auto" }}>
-            <div id="shelf-scroll" className="hscroll" style={{ display:"flex", alignItems:"center", gap:2, overflowX:"auto", WebkitOverflowScrolling:"touch", padding:"3px 14px" }}>
-              {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => (
-                <button key={t.key} id={`shelf-${t.key}`} onClick={() => { setMoreOpen(false); setRadialOpen(false); setTab(t.key); }}
-                  style={{ flexShrink:0, border:"none", background:"transparent", borderRadius:14, padding:"3px 15px", fontSize:15.5, fontWeight:900, color:"var(--ink)", cursor:"pointer", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)", letterSpacing:"0.01em" }}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            {/* 右端のフェード：続きがあることを示す */}
-            <div style={{ position:"absolute", top:0, right:0, bottom:0, width:36, background:"linear-gradient(to left, rgba(255,255,255,0.55), transparent)", pointerEvents:"none" }} />
-          </div>
-        </div>
-      )}
-
       {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
         <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
           style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(86px + env(safe-area-inset-bottom))" : "calc(60px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 10px), 6px)", zIndex:205, display:"flex", justifyContent:"center", pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", gap:4, background: moreOpen ? "transparent" : "linear-gradient(180deg, rgba(255,255,255,0.46), rgba(255,255,255,0.28))", backdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", WebkitBackdropFilter: moreOpen ? "none" : "blur(18px) saturate(1.6)", border: moreOpen ? "1px solid transparent" : "1px solid rgba(255,255,255,0.65)", borderRadius:30, boxShadow: moreOpen ? "none" : "0 6px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7)", padding:"6px 8px", pointerEvents:"auto", transition:"background .2s, box-shadow .2s" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 4px), 8px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 16px", pointerEvents:"none" }}>
+       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background: moreOpen ? "rgba(255,255,255,0.6)" : "#fff", border:"1px solid var(--line)", borderRadius:16, boxShadow:"0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.08)", padding:"6px 10px", pointerEvents:"auto", transition:"background .2s" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
@@ -277,7 +259,7 @@ function App() {
             <button key={key} onClick={onClick}
               style={{ position:"relative", border:"none", cursor:"pointer", padding:"9px 15px", display:"flex", flexDirection:"row", alignItems:"center", gap:6, borderRadius:22, background: active ? "var(--soft)" : "transparent", transition:"background .2s" }}>
               <span style={{ fontSize:18, lineHeight:1, filter: active ? "none" : "grayscale(0.4) opacity(0.75)" }}>{moreOpen && more ? "✕" : navIcon}</span>
-              <span style={{ fontSize:12, fontWeight:800, color: active ? "var(--primary)" : "var(--text)", whiteSpace:"nowrap", textShadow:"0 1px 2px rgba(255,255,255,0.8)" }}>{navLabel}</span>
+              <span style={{ fontSize:12.5, fontWeight:800, color: active ? "var(--primary)" : "var(--text)", whiteSpace:"nowrap" }}>{navLabel}</span>
             </button>
           );
         })}
