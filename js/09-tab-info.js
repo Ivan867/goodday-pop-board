@@ -650,7 +650,7 @@ function TodayInfoCard() {
   const [hol, setHol] = useState(null);
   useEffect(() => {
     // 気温：過去7日＋今日を取得して前日差・前週差を計算
-    const WURL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&past_days=7&forecast_days=2";
+    const WURL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&past_days=7&forecast_days=2";
     const WKEY = "wxCardV1";
     const applyWx = d => {
       if (!d || !d.daily || !d.daily.temperature_2m_max) return false;
@@ -665,7 +665,8 @@ function TodayInfoCard() {
         code: d.daily.weather_code[i],
         tmMax: t[i + 1] == null ? null : Math.round(t[i + 1]),
         tmCode: d.daily.weather_code[i + 1],
-        tmDiff: t[i + 1] == null ? null : Math.round(t[i + 1] - t[i])
+        tmDiff: t[i + 1] == null ? null : Math.round(t[i + 1] - t[i]),
+        tmMin: d.daily.temperature_2m_min && d.daily.temperature_2m_min[i] != null ? Math.round(d.daily.temperature_2m_min[i]) : null
       });
       return true;
     };
@@ -862,9 +863,274 @@ function TodayInfoCard() {
     if (/恵方巻/.test(s)) return "🍙";
     return "🗓";
   };
+  // 当日の行事名（祝日 or 季節行事）
+  const todayLabel = hol && hol.todayName ? hol.todayName : events.todayEv ? events.todayEv.name : "";
+  const jumpCal = () => window.dispatchEvent(new CustomEvent("gotoTab", {
+    detail: "calendar"
+  }));
+  const daysLeft = d => Math.max(0, Math.round((d - now) / 86400000));
   return /*#__PURE__*/React.createElement("div", {
-    className: "wcard"
-  }, (() => {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 9,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ucard",
+    onClick: jumpCal,
+    style: {
+      background: "#fff",
+      borderRadius: 16,
+      padding: "13px 15px",
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flexShrink: 0,
+      color: "var(--primary)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "26",
+    height: "26",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.9",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "4.5",
+    width: "18",
+    height: "17",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 9h18M8 2.5v4M16 2.5v4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 900,
+      color: "var(--ink)",
+      lineHeight: 1.3,
+      whiteSpace: "nowrap"
+    }
+  }, jd(now), "（", wd(now), "）", todayLabel && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--primary)"
+    }
+  }, "\u3000", todayLabel)), wx && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      fontWeight: 700,
+      marginTop: 2
+    }
+  }, "先週より", sign(wx.dw), wx.today >= 35 ? "・猛暑日予想" : wx.today >= 33 ? "・厳しい暑さ" : wx.dw > 0 ? "・暑い一日" : wx.dw < 0 ? "・涼しい一日" : ""))), wx && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 1,
+      alignSelf: "stretch",
+      background: "var(--line)",
+      flexShrink: 0
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 30,
+      lineHeight: 1
+    }
+  }, wmoIcon(wx.code).e), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 22,
+      fontWeight: 900
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#e0555f"
+    }
+  }, wx.today, "°"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--faint)",
+      fontSize: 17
+    }
+  }, " / "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#4a86c5"
+    }
+  }, wx.tmMin != null ? wx.tmMin : wx.yest, "°")))))), (() => {
+    const up = [];
+    if (hol && hol.date) up.push({
+      d: hol.date,
+      name: hol.name,
+      food: null,
+      isHol: true
+    });
+    if (events.next) up.push({
+      d: events.next.date,
+      name: events.next.name,
+      food: events.next.food,
+      isHol: false
+    });
+    up.sort((a, b) => a.d - b.d);
+    if (!up.length) return null;
+    const main = up[0];
+    const nextItems = up.slice(1).concat(events.next2 ? [{
+      d: events.next2.date,
+      name: events.next2.name,
+      food: events.next2.food
+    }] : []);
+    const art = eventArt(main.name, main.food);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "ucard",
+      onClick: jumpCal,
+      style: {
+        background: "#fff",
+        borderRadius: 16,
+        overflow: "hidden",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "stretch"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        padding: "12px 14px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "inline-block",
+        fontSize: 10.5,
+        fontWeight: 900,
+        color: "var(--primary)",
+        border: "1.5px solid var(--primary)",
+        borderRadius: 7,
+        padding: "1px 8px",
+        marginBottom: 7
+      }
+    }, "次の販促"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 30,
+        flexShrink: 0
+      }
+    }, art), /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 900,
+        color: "var(--ink)",
+        lineHeight: 1.3
+      }
+    }, main.name, "\u3000", /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        color: "var(--sub)",
+        fontWeight: 800
+      }
+    }, jd(main.d), "（", wd(main.d), "）"), main.food ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: "var(--sub)"
+      }
+    }, "〈", main.food, "〉") : null), nextItems[0] && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--sub)",
+        fontWeight: 700,
+        marginTop: 3
+      }
+    }, "次：", jd(nextItems[0].d), " ", nextItems[0].name)))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flexShrink: 0,
+        width: 92,
+        background: "var(--primary)",
+        color: "#fff",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        lineHeight: 1.1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        fontWeight: 800,
+        opacity: 0.85
+      }
+    }, "あと"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 30,
+        fontWeight: 900
+      }
+    }, daysLeft(main.d), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14
+      }
+    }, "日")))), nextItems[0] && /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderTop: "1px solid var(--line)",
+        padding: "8px 14px",
+        display: "flex",
+        alignItems: "center",
+        gap: 9
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 17,
+        flexShrink: 0
+      }
+    }, eventArt(nextItems[0].name, nextItems[0].food)), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        flex: 1,
+        minWidth: 0
+      }
+    }, jd(nextItems[0].d), "（", wd(nextItems[0].d), "）\u3000", nextItems[0].name), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 800,
+        color: "var(--sub)"
+      }
+    }, "あと", daysLeft(nextItems[0].d), "日")));
+  })(), (() => {
     const chips = [];
     warns.forEach(w => chips.push({
       t: (w.lv >= 2 ? "⚠️ " : "") + w.n,
@@ -873,8 +1139,11 @@ function TodayInfoCard() {
     if (!chips.length) return null;
     const shike = warns.some(w => ["波浪警報", "波浪注意報", "強風注意報", "暴風警報", "波浪特別警報", "暴風特別警報"].includes(w.n));
     return /*#__PURE__*/React.createElement("div", {
+      className: "ucard",
       style: {
-        marginBottom: 7
+        background: "#fff",
+        borderRadius: 16,
+        padding: "11px 14px"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -901,240 +1170,7 @@ function TodayInfoCard() {
         marginTop: 5
       }
     }, "🌊 時化のおそれ：入荷・地物に影響が出るかも"));
-  })(), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 700,
-      color: "var(--text)",
-      lineHeight: 1.7,
-      textAlign: "left"
-    }
-  }, wx && /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "relative",
-      background: timeSky.g,
-      borderRadius: 12,
-      padding: "7px 10px",
-      marginBottom: 6,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      top: 7,
-      right: 10,
-      fontSize: 22,
-      filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.3))",
-      opacity: 0.9
-    }
-  }, timeSky.emo), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      inset: 0,
-      background: "linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.12))",
-      pointerEvents: "none"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "relative",
-      display: "flex",
-      alignItems: "center"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: "rgba(255,255,255,0.8)",
-      fontWeight: 800,
-      lineHeight: 1.3
-    }
-  }, "昨日"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      color: "#fff",
-      lineHeight: 1.35
-    }
-  }, wx.yest, "°")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 24,
-      fontWeight: 900,
-      color: "#fff",
-      opacity: 0.9,
-      flexShrink: 0,
-      lineHeight: 1,
-      padding: "0 1px"
-    }
-  }, wx.dy > 0 ? "↗" : wx.dy < 0 ? "↘" : "→"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      flex: 1.3
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: "rgba(255,255,255,0.8)",
-      fontWeight: 800,
-      lineHeight: 1.3
-    }
-  }, "今日"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 19,
-      fontWeight: 900,
-      color: "#fff",
-      lineHeight: 1.35
-    }
-  }, wmoIcon(wx.code).e, wx.today, "°")), wx.tmMax != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 24,
-      fontWeight: 900,
-      color: "#fff",
-      opacity: 0.9,
-      flexShrink: 0,
-      lineHeight: 1,
-      padding: "0 1px"
-    }
-  }, wx.tmDiff > 0 ? "↗" : wx.tmDiff < 0 ? "↘" : "→"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: "rgba(255,255,255,0.8)",
-      fontWeight: 800,
-      lineHeight: 1.3
-    }
-  }, "明日"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      color: "#fff",
-      lineHeight: 1.35
-    }
-  }, wmoIcon(wx.tmCode).e, wx.tmMax, "°")))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "relative",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      marginTop: 5,
-      flexWrap: "wrap"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 10.5,
-      color: "rgba(255,255,255,0.92)",
-      fontWeight: 800
-    }
-  }, "先週より", sign(wx.dw), wx.dw > 0 ? "、暑い一日" : wx.dw < 0 ? "、涼しい一日" : ""), wx.today >= 35 && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 10,
-      fontWeight: 900,
-      color: "#fff",
-      background: "rgba(224,36,94,0.85)",
-      borderRadius: 7,
-      padding: "1px 8px"
-    }
-  }, "🥵 猛暑日予想"), wx.today >= 33 && wx.today < 35 && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 10,
-      fontWeight: 900,
-      color: "#fff",
-      background: "rgba(255,255,255,0.22)",
-      borderRadius: 7,
-      padding: "1px 8px"
-    }
-  }, "☀️ 厳しい暑さ"))), hint && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "#a8480a",
-      fontWeight: 700,
-      marginBottom: 5
-    }
-  }, "💡 ", hint), (() => {
-    const badge = days => /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: "rgba(255,255,255,0.22)",
-        color: "#fff",
-        borderRadius: 7,
-        padding: "1px 7px",
-        marginLeft: 5,
-        fontSize: 10.5,
-        fontWeight: 800,
-        whiteSpace: "nowrap"
-      }
-    }, days === 1 ? "明日" : `あと${days}日`);
-    const rows = [];
-    let artEmoji = "🗓";
-    if (hol && hol.date) {
-      artEmoji = eventArt(hol.name);
-      rows.push({
-        t: +hol.date,
-        el: /*#__PURE__*/React.createElement("div", {
-          key: "hol",
-          style: {
-            padding: "1px 0"
-          }
-        }, "🎌 ", jd(hol.date), "（", wd(hol.date), "）", hol.name, hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : "", badge(hol.days))
-      });
-    }
-    if (events.next) {
-      if (!hol || !hol.date) artEmoji = eventArt(events.next.name, events.next.food);
-      rows.push({
-        t: +events.next.date,
-        el: /*#__PURE__*/React.createElement("div", {
-          key: "ev",
-          style: {
-            padding: "1px 0"
-          }
-        }, eventArt(events.next.name, events.next.food), " ", jd(events.next.date), "（", wd(events.next.date), "）", events.next.name, events.next.food ? `〈${events.next.food}〉` : "", badge(Math.round((events.next.date - now) / 86400000)), events.next2 ? /*#__PURE__*/React.createElement("span", {
-          style: {
-            color: "rgba(255,255,255,0.7)"
-          }
-        }, "\u3000次：", jd(events.next2.date), " ", events.next2.name) : null)
-      });
-    }
-    rows.sort((a, b) => a.t - b.t);
-    if (!rows.length) return null;
-    return /*#__PURE__*/React.createElement("div", {
-      onClick: () => window.dispatchEvent(new CustomEvent("gotoTab", {
-        detail: "calendar"
-      })),
-      style: {
-        position: "relative",
-        cursor: "pointer",
-        background: METAL,
-        borderRadius: 12,
-        padding: "7px 10px",
-        paddingRight: 48,
-        color: "#fff",
-        fontSize: 12,
-        fontWeight: 800,
-        lineHeight: 1.7,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)",
-        overflow: "hidden"
-      },
-      title: "行事カレンダーを開く"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: "50%",
-        right: 12,
-        transform: "translateY(-50%)",
-        fontSize: 34,
-        opacity: 0.85,
-        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.35))"
-      }
-    }, artEmoji), rows.map(r => r.el));
-  })()));
+  })());
 }
 function WeatherWidget({
   onTheme
@@ -1347,7 +1383,7 @@ function WeatherWidget({
       gap: 8,
       background: skyBg,
       border: "1px solid rgba(255,255,255,0.35)",
-      borderRadius: 999,
+      borderRadius: 11,
       height: 28,
       boxSizing: "border-box",
       padding: "0 12px",
@@ -1615,19 +1651,19 @@ function TodayEventChip() {
       overflow: "hidden",
       textOverflow: "ellipsis",
       whiteSpace: "nowrap",
-      fontSize: 10.5,
-      fontWeight: 800,
-      color: "#fff",
-      background: "rgba(255,255,255,0.18)",
-      border: "1px solid rgba(255,255,255,0.3)",
-      borderRadius: 999,
+      fontSize: 11,
+      fontWeight: 700,
+      letterSpacing: "-0.2px",
+      color: "#0f0f0f",
+      background: "rgba(255,255,255,0.92)",
+      borderRadius: 11,
       height: 28,
       boxSizing: "border-box",
       display: "flex",
       alignItems: "center",
-      padding: "0 11px",
-      backdropFilter: "blur(4px)",
-      textShadow: "0 1px 2px rgba(0,0,0,0.25)"
+      padding: "0 12px",
+      backdropFilter: "blur(8px)",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
     }
   }, label);
 }

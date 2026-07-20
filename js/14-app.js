@@ -389,62 +389,74 @@ function App() {
       position: "sticky",
       top: 0,
       zIndex: 100,
-      paddingTop: "env(safe-area-inset-top)"
+      paddingTop: "env(safe-area-inset-top)",
+      background: "var(--bg)"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      inset: 0,
-      background: skyTheme.bg,
-      boxShadow: scrollP > 0.5 ? "none" : "0 2px 12px rgba(0,0,0,0.10)",
-      pointerEvents: "none",
-      overflow: "hidden",
-      opacity: 1 - scrollP
-    }
-  }, skyTheme.pat && /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      inset: 0,
-      backgroundImage: skyTheme.pat,
-      backgroundSize: skyTheme.patSize || "auto"
-    }
-  })), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "4px 16px",
+      padding: "8px 16px 10px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       flexWrap: "nowrap",
-      gap: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      minWidth: 0,
-      flex: 1,
-      overflow: "hidden",
-      transform: `translateX(${-scrollP * 34}px)`,
-      opacity: 1 - scrollP,
-      pointerEvents: scrollP > 0.9 ? "none" : "auto"
+      gap: 10,
+      opacity: 1 - scrollP * 0.85,
+      transform: `translateY(${-scrollP * 4}px)`
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "app-title",
     style: {
-      fontSize: 16,
+      fontSize: 19,
       fontWeight: 900,
-      color: skyTheme.txtDark ? "var(--ink)" : "#fff",
+      color: "var(--primary)",
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
       minWidth: 0,
-      textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)"
+      flex: 1,
+      letterSpacing: "-0.5px"
     }
   }, "鮮魚ポップ共有"), /*#__PURE__*/React.createElement("button", {
+    className: "hig-pill",
+    onClick: () => {
+      setRadialOpen(false);
+      setTab("tool");
+    },
+    style: {
+      flexShrink: 0,
+      border: "none",
+      background: "var(--primary)",
+      color: "#fff",
+      fontWeight: 800,
+      fontSize: 14,
+      letterSpacing: "-0.2px",
+      height: 38,
+      padding: "0 18px",
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      borderRadius: 999,
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      boxShadow: "0 2px 8px rgba(29,58,87,0.28)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 6.5l3.5 3.5"
+  })), "作成"), /*#__PURE__*/React.createElement("button", {
     className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
@@ -454,42 +466,33 @@ function App() {
     style: {
       flexShrink: 0,
       border: "none",
-      background: "rgba(255,255,255,0.92)",
-      color: "#0f0f0f",
-      fontWeight: 700,
-      fontSize: 12,
+      background: "var(--primary)",
+      color: "#fff",
+      fontWeight: 800,
+      fontSize: 14,
       letterSpacing: "-0.2px",
-      height: 28,
-      padding: "0 12px",
+      height: 38,
+      padding: "0 18px",
       display: "flex",
       alignItems: "center",
+      gap: 5,
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      backdropFilter: "blur(8px)",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
+      boxShadow: "0 2px 8px rgba(29,58,87,0.28)"
     }
-  }, "＋ 投稿")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flexShrink: 1,
-      minWidth: 0,
-      display: "flex",
-      justifyContent: "flex-end",
-      flex: 1,
-      transform: `translateX(${scrollP * 20}px)`,
-      opacity: 1 - scrollP,
-      pointerEvents: "none"
-    }
-  }, /*#__PURE__*/React.createElement(TodayEventChip, null)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flexShrink: 0,
-      transform: `translateX(${scrollP * 34}px)`,
-      opacity: 1 - scrollP,
-      pointerEvents: scrollP > 0.9 ? "none" : "auto"
-    }
-  }, /*#__PURE__*/React.createElement(WeatherWidget, {
-    onTheme: setWxCode
-  })))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 5v14M5 12h14"
+  })), "投稿"))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1080,
       margin: "0 auto",

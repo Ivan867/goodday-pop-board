@@ -203,7 +203,7 @@ function TodayInfoCard() {
   const [hol, setHol] = useState(null);
   useEffect(() => {
     // 気温：過去7日＋今日を取得して前日差・前週差を計算
-    const WURL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&past_days=7&forecast_days=2";
+    const WURL = "https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&past_days=7&forecast_days=2";
     const WKEY = "wxCardV1";
     const applyWx = (d) => {
       if (!d || !d.daily || !d.daily.temperature_2m_max) return false;
@@ -211,7 +211,8 @@ function TodayInfoCard() {
       if (t[i] == null || t[i-1] == null || t[i-7] == null) return false;
       setWx({
         today: Math.round(t[i]), yest: Math.round(t[i-1]), dy: Math.round(t[i] - t[i-1]), dw: Math.round(t[i] - t[i-7]), code: d.daily.weather_code[i],
-        tmMax: t[i+1] == null ? null : Math.round(t[i+1]), tmCode: d.daily.weather_code[i+1], tmDiff: t[i+1] == null ? null : Math.round(t[i+1] - t[i])
+        tmMax: t[i+1] == null ? null : Math.round(t[i+1]), tmCode: d.daily.weather_code[i+1], tmDiff: t[i+1] == null ? null : Math.round(t[i+1] - t[i]),
+        tmMin: (d.daily.temperature_2m_min && d.daily.temperature_2m_min[i] != null) ? Math.round(d.daily.temperature_2m_min[i]) : null
       });
       return true;
     };
@@ -316,16 +317,85 @@ function TodayInfoCard() {
     if (/恵方巻/.test(s)) return "🍙";
     return "🗓";
   };
-  return (
-    <div className="wcard">
+  // 当日の行事名（祝日 or 季節行事）
+  const todayLabel = (hol && hol.todayName) ? hol.todayName : (events.todayEv ? events.todayEv.name : "");
+  const jumpCal = () => window.dispatchEvent(new CustomEvent("gotoTab", { detail: "calendar" }));
+  const daysLeft = (d) => Math.max(0, Math.round((d - now)/86400000));
 
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
+
+      {/* カード1：日付・行事・天気 */}
+      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, padding:"13px 15px", cursor:"pointer" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, flex:1, minWidth:0 }}>
+            <div style={{ flexShrink:0, color:"var(--primary)" }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+            </div>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
+              {wx && <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:2 }}>先週より{sign(wx.dw)}{wx.today >= 35 ? "・猛暑日予想" : wx.today >= 33 ? "・厳しい暑さ" : wx.dw > 0 ? "・暑い一日" : wx.dw < 0 ? "・涼しい一日" : ""}</div>}
+            </div>
+          </div>
+          {wx && (
+            <>
+              <div style={{ width:1, alignSelf:"stretch", background:"var(--line)", flexShrink:0 }} />
+              <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+                <span style={{ fontSize:30, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
+                <span style={{ fontSize:22, fontWeight:900 }}><span style={{ color:"#e0555f" }}>{wx.today}°</span><span style={{ color:"var(--faint)", fontSize:17 }}> / </span><span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span></span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* カード2：次の販促（行事） */}
+      {(() => {
+        const up = [];
+        if (hol && hol.date) up.push({ d: hol.date, name: hol.name, food: null, isHol:true });
+        if (events.next) up.push({ d: events.next.date, name: events.next.name, food: events.next.food, isHol:false });
+        up.sort((a,b)=>a.d-b.d);
+        if (!up.length) return null;
+        const main = up[0];
+        const nextItems = up.slice(1).concat(events.next2 ? [{ d: events.next2.date, name: events.next2.name, food: events.next2.food }] : []);
+        const art = eventArt(main.name, main.food);
+        return (
+          <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
+            <div style={{ display:"flex", alignItems:"stretch" }}>
+              <div style={{ flex:1, minWidth:0, padding:"12px 14px" }}>
+                <div style={{ display:"inline-block", fontSize:10.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 8px", marginBottom:7 }}>次の販促</div>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <span style={{ fontSize:30, flexShrink:0 }}>{art}</span>
+                  <div style={{ minWidth:0 }}>
+                    <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3 }}>{main.name}　<span style={{ fontSize:13, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span>{main.food ? <span style={{ fontSize:12, color:"var(--sub)" }}>〈{main.food}〉</span> : null}</div>
+                    {nextItems[0] && <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:3 }}>次：{jd(nextItems[0].d)} {nextItems[0].name}</div>}
+                  </div>
+                </div>
+              </div>
+              <div style={{ flexShrink:0, width:92, background:"var(--primary)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
+                <span style={{ fontSize:11, fontWeight:800, opacity:0.85 }}>あと</span>
+                <span style={{ fontSize:30, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:14 }}>日</span></span>
+              </div>
+            </div>
+            {nextItems[0] && (
+              <div style={{ borderTop:"1px solid var(--line)", padding:"8px 14px", display:"flex", alignItems:"center", gap:9 }}>
+                <span style={{ fontSize:17, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
+                <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
+                <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* 警報・時化（あれば） */}
       {(() => {
         const chips = [];
         warns.forEach(w => chips.push({ t:(w.lv >= 2 ? "⚠️ " : "") + w.n, lv:w.lv }));
         if (!chips.length) return null;
         const shike = warns.some(w => ["波浪警報","波浪注意報","強風注意報","暴風警報","波浪特別警報","暴風特別警報"].includes(w.n));
         return (
-          <div style={{ marginBottom:7 }}>
+          <div className="ucard" style={{ background:"#fff", borderRadius:16, padding:"11px 14px" }}>
             <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
               {chips.map((c,i) => (
                 <span key={i} style={{ fontSize:11, fontWeight:800, borderRadius:8, padding:"3px 9px",
@@ -338,60 +408,6 @@ function TodayInfoCard() {
           </div>
         );
       })()}
-      <div style={{ fontSize:12.5, fontWeight:700, color:"var(--text)", lineHeight:1.7, textAlign:"left" }}>
-        {wx && (
-          <div style={{ position:"relative", background:timeSky.g, borderRadius:12, padding:"7px 10px", marginBottom:6, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)", overflow:"hidden" }}>
-            <div style={{ position:"absolute", top:7, right:10, fontSize:22, filter:"drop-shadow(0 1px 3px rgba(0,0,0,0.3))", opacity:0.9 }}>{timeSky.emo}</div>
-            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.12))", pointerEvents:"none" }} />
-            <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
-              <div style={{ textAlign:"center", flex:1 }}>
-                <div style={{ fontSize:10, color:"rgba(255,255,255,0.8)", fontWeight:800, lineHeight:1.3 }}>昨日</div>
-                <div style={{ fontSize:15, fontWeight:800, color:"#fff", lineHeight:1.35 }}>{wx.yest}°</div>
-              </div>
-              <div style={{ fontSize:24, fontWeight:900, color:"#fff", opacity:0.9, flexShrink:0, lineHeight:1, padding:"0 1px" }}>{wx.dy > 0 ? "↗" : wx.dy < 0 ? "↘" : "→"}</div>
-              <div style={{ textAlign:"center", flex:1.3 }}>
-                <div style={{ fontSize:10, color:"rgba(255,255,255,0.8)", fontWeight:800, lineHeight:1.3 }}>今日</div>
-                <div style={{ fontSize:19, fontWeight:900, color:"#fff", lineHeight:1.35 }}>{wmoIcon(wx.code).e}{wx.today}°</div>
-              </div>
-              {wx.tmMax != null && (
-                <>
-                  <div style={{ fontSize:24, fontWeight:900, color:"#fff", opacity:0.9, flexShrink:0, lineHeight:1, padding:"0 1px" }}>{wx.tmDiff > 0 ? "↗" : wx.tmDiff < 0 ? "↘" : "→"}</div>
-                  <div style={{ textAlign:"center", flex:1 }}>
-                    <div style={{ fontSize:10, color:"rgba(255,255,255,0.8)", fontWeight:800, lineHeight:1.3 }}>明日</div>
-                    <div style={{ fontSize:15, fontWeight:800, color:"#fff", lineHeight:1.35 }}>{wmoIcon(wx.tmCode).e}{wx.tmMax}°</div>
-                  </div>
-                </>
-              )}
-            </div>
-            <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginTop:5, flexWrap:"wrap" }}>
-              <span style={{ fontSize:10.5, color:"rgba(255,255,255,0.92)", fontWeight:800 }}>先週より{sign(wx.dw)}{wx.dw > 0 ? "、暑い一日" : wx.dw < 0 ? "、涼しい一日" : ""}</span>
-              {wx.today >= 35 && <span style={{ fontSize:10, fontWeight:900, color:"#fff", background:"rgba(224,36,94,0.85)", borderRadius:7, padding:"1px 8px" }}>🥵 猛暑日予想</span>}
-              {wx.today >= 33 && wx.today < 35 && <span style={{ fontSize:10, fontWeight:900, color:"#fff", background:"rgba(255,255,255,0.22)", borderRadius:7, padding:"1px 8px" }}>☀️ 厳しい暑さ</span>}
-            </div>
-          </div>
-        )}
-        {hint && <div style={{ fontSize:12, color:"#a8480a", fontWeight:700, marginBottom:5 }}>💡 {hint}</div>}
-        {(() => {
-          const badge = (days) => <span style={{ background:"rgba(255,255,255,0.22)", color:"#fff", borderRadius:7, padding:"1px 7px", marginLeft:5, fontSize:10.5, fontWeight:800, whiteSpace:"nowrap" }}>{days === 1 ? "明日" : `あと${days}日`}</span>;
-          const rows = [];
-          let artEmoji = "🗓";
-          if (hol && hol.date) { artEmoji = eventArt(hol.name); rows.push({ t: +hol.date, el: (
-            <div key="hol" style={{ padding:"1px 0" }}>🎌 {jd(hol.date)}（{wd(hol.date)}）{hol.name}{hol.len >= 2 ? `・${hol.len}連休（${jd(hol.blockStart)}〜${jd(hol.blockEnd)}）` : ""}{badge(hol.days)}</div>
-          )}); }
-          if (events.next) { if (!hol || !hol.date) artEmoji = eventArt(events.next.name, events.next.food); rows.push({ t: +events.next.date, el: (
-            <div key="ev" style={{ padding:"1px 0" }}>{eventArt(events.next.name, events.next.food)} {jd(events.next.date)}（{wd(events.next.date)}）{events.next.name}{events.next.food ? `〈${events.next.food}〉` : ""}{badge(Math.round((events.next.date - now)/86400000))}{events.next2 ? <span style={{ color:"rgba(255,255,255,0.7)" }}>　次：{jd(events.next2.date)} {events.next2.name}</span> : null}</div>
-          )}); }
-          rows.sort((a, b) => a.t - b.t);
-          if (!rows.length) return null;
-          return (
-            <div onClick={() => window.dispatchEvent(new CustomEvent("gotoTab", { detail: "calendar" }))}
-              style={{ position:"relative", cursor:"pointer", background:METAL, borderRadius:12, padding:"7px 10px", paddingRight:48, color:"#fff", fontSize:12, fontWeight:800, lineHeight:1.7, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)", overflow:"hidden" }} title="行事カレンダーを開く">
-              <div style={{ position:"absolute", top:"50%", right:12, transform:"translateY(-50%)", fontSize:34, opacity:0.85, filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}>{artEmoji}</div>
-              {rows.map(r => r.el)}
-            </div>
-          );
-        })()}
-      </div>
     </div>
   );
 }
@@ -471,7 +487,7 @@ function WeatherWidget({ onTheme }) {
   return (
     <div style={{ position:"relative" }}>
       <div onClick={() => window.open("https://tenki.jp/forecast/7/35/6810/32203/10days.html", "_blank", "noopener")}
-        style={{ display:"flex", alignItems:"center", gap:8, background:skyBg, border:"1px solid rgba(255,255,255,0.35)", borderRadius:999, height:28, boxSizing:"border-box", padding:"0 12px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
+        style={{ display:"flex", alignItems:"center", gap:8, background:skyBg, border:"1px solid rgba(255,255,255,0.35)", borderRadius:11, height:28, boxSizing:"border-box", padding:"0 12px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
         <span style={{ fontSize:10.5, color:"rgba(255,255,255,0.9)", fontWeight:800 }}>{(() => { const n = new Date(); return `${n.getMonth()+1}/${n.getDate()}`; })()}</span>
         <div style={{ width:1, height:15, background:"rgba(255,255,255,0.35)" }} />
         <span style={{ fontSize:16, filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>{wmo(daily.weather_code[0]).e}</span>
@@ -554,7 +570,7 @@ function TodayEventChip() {
   if (!holName && !ev) return null;
   const label = holName ? `今日は「${holName}」🎌` : `今日は「${ev.name}」${ev.food ? "〈"+ev.food+"〉" : ""}`;
   return (
-    <div style={{ flexShrink:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.3)", borderRadius:999, height:28, boxSizing:"border-box", display:"flex", alignItems:"center", padding:"0 11px", backdropFilter:"blur(4px)", textShadow:"0 1px 2px rgba(0,0,0,0.25)" }}>{label}</div>
+    <div style={{ flexShrink:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontSize:11, fontWeight:700, letterSpacing:"-0.2px", color:"#0f0f0f", background:"rgba(255,255,255,0.92)", borderRadius:11, height:28, boxSizing:"border-box", display:"flex", alignItems:"center", padding:"0 12px", backdropFilter:"blur(8px)", boxShadow:"0 1px 4px rgba(0,0,0,0.08)" }}>{label}</div>
   );
 }
 

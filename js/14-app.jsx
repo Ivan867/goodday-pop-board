@@ -200,21 +200,15 @@ function App() {
             animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
         </div>
       )}
-      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)" }}>
-        {/* 天気テーマ背景：Dynamic Island裏（画面最上端）まで描画。操作UIはセーフエリア内 */}
-        <div style={{ position:"absolute", inset:0, background: skyTheme.bg, boxShadow: scrollP>0.5?"none":"0 2px 12px rgba(0,0,0,0.10)", pointerEvents:"none", overflow:"hidden", opacity:1-scrollP }}>
-          {skyTheme.pat && <div style={{ position:"absolute", inset:0, backgroundImage: skyTheme.pat, backgroundSize: skyTheme.patSize || "auto" }} />}
-        </div>
-        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0, flex:1, overflow:"hidden",
-            transform:`translateX(${-scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}>
-            <div className="app-title" style={{ fontSize:16, fontWeight:900, color: skyTheme.txtDark ? "var(--ink)" : "#fff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, textShadow: skyTheme.txtDark ? "none" : "0 1px 3px rgba(0,0,0,0.25)" }}>鮮魚ポップ共有</div>
-            <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"rgba(255,255,255,0.92)", color:"#0f0f0f", fontWeight:700, fontSize:12, letterSpacing:"-0.2px", height:28, padding:"0 12px", display:"flex", alignItems:"center", borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", backdropFilter:"blur(8px)", boxShadow:"0 1px 4px rgba(0,0,0,0.08)" }}>＋ 投稿</button>
-          </div>
-          {/* 今日の行事チップ（祝日・行事の日だけ）：作成と天気の間 */}
-          <div style={{ flexShrink:1, minWidth:0, display:"flex", justifyContent:"flex-end", flex:1, transform:`translateX(${scrollP*20}px)`, opacity:1-scrollP, pointerEvents:"none" }}><TodayEventChip /></div>
-          {/* 天気：投稿・作成と一緒にスクロールで流れて消える */}
-          <div style={{ flexShrink:0, transform:`translateX(${scrollP*34}px)`, opacity:1-scrollP, pointerEvents: scrollP>0.9?"none":"auto" }}><WeatherWidget onTheme={setWxCode} /></div>
+      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)" }}>
+        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"8px 16px 10px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity:1-scrollP*0.85, transform:`translateY(${-scrollP*4}px)` }}>
+          <div className="app-title" style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, flex:1, letterSpacing:"-0.5px" }}>鮮魚ポップ共有</div>
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></svg>作成
+          </button>
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>投稿
+          </button>
         </div>
       </div>
 
