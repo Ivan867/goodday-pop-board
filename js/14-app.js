@@ -389,26 +389,25 @@ function App() {
       position: "sticky",
       top: 0,
       zIndex: 100,
-      paddingTop: `calc(env(safe-area-inset-top) * ${Math.max(0, 1 - scrollP * 1.6)})`,
+      paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)",
-      maxHeight: `${Math.max(0, 54 * (1 - scrollP * 1.4))}px`,
-      overflow: "hidden",
-      transition: "none"
+      maxHeight: scrollP > 0.85 ? `${58 * (1 - (scrollP - 0.85) / 0.15)}px` : "58px",
+      overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "4px 16px 6px",
+      padding: "6px 16px 8px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       flexWrap: "nowrap",
       gap: 10,
-      opacity: Math.max(0, 1 - scrollP * 1.8),
-      transform: `translateX(${-scrollP * 60}px)`,
-      pointerEvents: scrollP > 0.6 ? "none" : "auto"
+      opacity: 1 - scrollP,
+      transform: `translateX(${-scrollP * 40}px)`,
+      pointerEvents: scrollP > 0.7 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "app-title",
