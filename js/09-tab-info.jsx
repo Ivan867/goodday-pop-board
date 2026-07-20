@@ -471,7 +471,7 @@ function WeatherWidget({ onTheme }) {
   return (
     <div style={{ position:"relative" }}>
       <div onClick={() => window.open("https://tenki.jp/forecast/7/35/6810/32203/10days.html", "_blank", "noopener")}
-        style={{ display:"flex", alignItems:"center", gap:8, background:skyBg, border:"1px solid rgba(255,255,255,0.35)", borderRadius:11, padding:"6px 12px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
+        style={{ display:"flex", alignItems:"center", gap:8, background:skyBg, border:"1px solid rgba(255,255,255,0.35)", borderRadius:999, height:28, boxSizing:"border-box", padding:"0 12px", whiteSpace:"nowrap", flexShrink:0, cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
         <span style={{ fontSize:10.5, color:"rgba(255,255,255,0.9)", fontWeight:800 }}>{(() => { const n = new Date(); return `${n.getMonth()+1}/${n.getDate()}`; })()}</span>
         <div style={{ width:1, height:15, background:"rgba(255,255,255,0.35)" }} />
         <span style={{ fontSize:16, filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}>{wmo(daily.weather_code[0]).e}</span>
@@ -554,7 +554,7 @@ function TodayEventChip() {
   if (!holName && !ev) return null;
   const label = holName ? `今日は「${holName}」🎌` : `今日は「${ev.name}」${ev.food ? "〈"+ev.food+"〉" : ""}`;
   return (
-    <div style={{ flexShrink:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.3)", borderRadius:999, padding:"3px 10px", backdropFilter:"blur(4px)", textShadow:"0 1px 2px rgba(0,0,0,0.25)" }}>{label}</div>
+    <div style={{ flexShrink:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.3)", borderRadius:999, height:28, boxSizing:"border-box", display:"flex", alignItems:"center", padding:"0 11px", backdropFilter:"blur(4px)", textShadow:"0 1px 2px rgba(0,0,0,0.25)" }}>{label}</div>
   );
 }
 

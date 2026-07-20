@@ -459,37 +459,17 @@ function App() {
       fontWeight: 700,
       fontSize: 12,
       letterSpacing: "-0.2px",
-      padding: "4px 11px",
+      height: 28,
+      padding: "0 12px",
+      display: "flex",
+      alignItems: "center",
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      lineHeight: 1.4,
       backdropFilter: "blur(8px)",
       boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
     }
-  }, "＋ 投稿"), /*#__PURE__*/React.createElement("button", {
-    className: "hig-pill",
-    onClick: () => {
-      setRadialOpen(false);
-      setTab("tool");
-    },
-    style: {
-      flexShrink: 0,
-      border: "none",
-      background: "rgba(255,255,255,0.92)",
-      color: "#0f0f0f",
-      fontWeight: 700,
-      fontSize: 12,
-      letterSpacing: "-0.2px",
-      padding: "4px 11px",
-      borderRadius: 999,
-      cursor: "pointer",
-      whiteSpace: "nowrap",
-      lineHeight: 1.4,
-      backdropFilter: "blur(8px)",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
-    }
-  }, "作成")), /*#__PURE__*/React.createElement("div", {
+  }, "＋ 投稿")), /*#__PURE__*/React.createElement("div", {
     style: {
       flexShrink: 1,
       minWidth: 0,
