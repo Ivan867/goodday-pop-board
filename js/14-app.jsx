@@ -241,10 +241,10 @@ function App() {
 
       {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
         <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
-          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(86px + env(safe-area-inset-bottom))" : "calc(60px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
+          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(60px + env(safe-area-inset-bottom))" : "calc(42px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 4px), 8px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 16px", pointerEvents:"none" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 12px), 4px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 16px", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background: moreOpen ? "rgba(255,255,255,0.6)" : "#fff", border:"1px solid var(--line)", borderRadius:16, boxShadow:"0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.08)", padding:"6px 10px", pointerEvents:"auto", transition:"background .2s" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);

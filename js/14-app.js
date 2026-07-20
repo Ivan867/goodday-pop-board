@@ -577,7 +577,7 @@ function App() {
     style: {
       position: "fixed",
       left: 14,
-      bottom: tab === "board" ? "calc(86px + env(safe-area-inset-bottom))" : "calc(60px + env(safe-area-inset-bottom))",
+      bottom: tab === "board" ? "calc(60px + env(safe-area-inset-bottom))" : "calc(42px + env(safe-area-inset-bottom))",
       zIndex: 190,
       width: 46,
       height: 46,
@@ -600,7 +600,7 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "max(calc(env(safe-area-inset-bottom) - 4px), 8px)",
+      bottom: "max(calc(env(safe-area-inset-bottom) - 12px), 4px)",
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
