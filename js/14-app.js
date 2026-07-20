@@ -406,6 +406,7 @@ function App() {
       gap: 10,
       opacity: 1 - scrollP,
       transform: `translateX(${scrollP * 80}px)`,
+      marginTop: `${-scrollP * 52}px`,
       pointerEvents: scrollP > 0.7 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
