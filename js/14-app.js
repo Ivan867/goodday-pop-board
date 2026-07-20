@@ -195,16 +195,6 @@ function App() {
   })();
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
-  const headerRef = React.useRef(null);
-  const [headerH, setHeaderH] = useState(0);
-  useEffect(() => {
-    const measure = () => {
-      if (headerRef.current) setHeaderH(headerRef.current.scrollHeight);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
@@ -401,11 +391,9 @@ function App() {
       zIndex: 100,
       paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)",
-      overflow: "hidden",
-      height: headerH ? `${headerH * (1 - scrollP)}px` : "auto"
+      overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    ref: headerRef,
     style: {
       position: "relative",
       maxWidth: 1080,
@@ -417,7 +405,7 @@ function App() {
       flexWrap: "nowrap",
       gap: 10,
       opacity: 1 - scrollP,
-      transform: `translateX(${-scrollP * 40}px)`,
+      transform: `translateX(${scrollP * 80}px)`,
       pointerEvents: scrollP > 0.7 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
