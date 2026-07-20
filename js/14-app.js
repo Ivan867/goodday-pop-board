@@ -398,7 +398,7 @@ function App() {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "6px 16px 8px",
+      padding: "6px 16px 3px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",

@@ -124,7 +124,7 @@ function BoardTab({
     style: {
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "12px 16px 185px"
+      padding: "4px 16px 185px"
     }
   }, /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {

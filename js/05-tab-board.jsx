@@ -72,7 +72,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
   return (
     <>
-      <div style={{ maxWidth:1080, margin:"0 auto", padding:"12px 16px 185px" }}>
+      <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 16px 185px" }}>
         <TodayInfoCard />
         {feat && feat.enabled && feat.message && featShow && (
           <div onClick={() => { if (feat.tab && onFeatGo) onFeatGo(feat.tab); }}
