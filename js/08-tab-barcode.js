@@ -435,7 +435,14 @@ function BarcodeTab() {
     name: "日本食研",
     color: "#8a6d1f",
     pat: "tate"
-  } // 金茶・縦しま
+  },
+  // 金茶・縦しま
+  {
+    key: "honbu",
+    name: "本部",
+    color: "#455a64",
+    pat: "grid"
+  } // グレー・格子
   ];
   const companyPatStyle = c => {
     if (!c) return {

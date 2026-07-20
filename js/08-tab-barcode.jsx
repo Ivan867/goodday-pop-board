@@ -234,6 +234,7 @@ function BarcodeTab() {
     { key:"moranbon",  name:"モランボン", color:"#b0517f", pat:"dot" },    // ローズ・ドット
     { key:"daisho",    name:"ダイショー", color:"#3f51b5", pat:"naname2" },// インディゴ・逆ななめ
     { key:"nihonshokken", name:"日本食研", color:"#8a6d1f", pat:"tate" },  // 金茶・縦しま
+    { key:"honbu",     name:"本部",      color:"#455a64", pat:"grid" },   // グレー・格子
   ];
   const companyPatStyle = (c) => {
     if (!c) return { background:"#eef1f4" };
