@@ -457,9 +457,9 @@ function App() {
       background: "rgba(255,255,255,0.92)",
       color: "#0f0f0f",
       fontWeight: 700,
-      fontSize: 13,
+      fontSize: 12,
       letterSpacing: "-0.2px",
-      padding: "6px 14px",
+      padding: "4px 11px",
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
@@ -479,9 +479,9 @@ function App() {
       background: "rgba(255,255,255,0.92)",
       color: "#0f0f0f",
       fontWeight: 700,
-      fontSize: 13,
+      fontSize: 12,
       letterSpacing: "-0.2px",
-      padding: "6px 14px",
+      padding: "4px 11px",
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
@@ -490,6 +490,17 @@ function App() {
       boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
     }
   }, "作成")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flexShrink: 1,
+      minWidth: 0,
+      display: "flex",
+      justifyContent: "flex-end",
+      flex: 1,
+      transform: `translateX(${scrollP * 20}px)`,
+      opacity: 1 - scrollP,
+      pointerEvents: "none"
+    }
+  }, /*#__PURE__*/React.createElement(TodayEventChip, null)), /*#__PURE__*/React.createElement("div", {
     style: {
       flexShrink: 0,
       transform: `translateX(${scrollP * 34}px)`,

@@ -864,14 +864,7 @@ function TodayInfoCard() {
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "wcard"
-  }, hol && hol.todayName || events.todayEv ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      color: "var(--ink)",
-      fontWeight: 800,
-      marginBottom: 6
-    }
-  }, hol && hol.todayName ? `今日は「${hol.todayName}」🎌` : "", events.todayEv ? `${hol && hol.todayName ? "・" : ""}今日は「${events.todayEv.name}」${events.todayEv.food ? "〈" + events.todayEv.food + "〉" : ""}` : "") : null, (() => {
+  }, (() => {
     const chips = [];
     warns.forEach(w => chips.push({
       t: (w.lv >= 2 ? "⚠️ " : "") + w.n,
@@ -921,8 +914,8 @@ function TodayInfoCard() {
       position: "relative",
       background: timeSky.g,
       borderRadius: 12,
-      padding: "9px 12px",
-      marginBottom: 8,
+      padding: "7px 10px",
+      marginBottom: 6,
       boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
       overflow: "hidden"
     }
@@ -1120,8 +1113,8 @@ function TodayInfoCard() {
         cursor: "pointer",
         background: METAL,
         borderRadius: 12,
-        padding: "9px 12px",
-        paddingRight: 52,
+        padding: "7px 10px",
+        paddingRight: 48,
         color: "#fff",
         fontSize: 12,
         fontWeight: 800,
@@ -1604,6 +1597,34 @@ function DevTab() {
 // ── Main App ──
 // ===== GNE：POP画像ジェネレーター（Canvasで柄テンプレに文字を焼く） =====
 
+// ── ヘッダー用：今日の行事チップ（今日が祝日・行事の日だけ表示） ──
+function TodayEventChip() {
+  const now = new Date();
+  const n0 = new Date(now);
+  n0.setHours(0, 0, 0, 0);
+  const holName = holidayName(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const ev = [...seasonalEventsFor(now.getFullYear())].find(e => e.date.getTime() === n0.getTime()) || null;
+  if (!holName && !ev) return null;
+  const label = holName ? `今日は「${holName}」🎌` : `今日は「${ev.name}」${ev.food ? "〈" + ev.food + "〉" : ""}`;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      flexShrink: 1,
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      fontSize: 10.5,
+      fontWeight: 800,
+      color: "#fff",
+      background: "rgba(255,255,255,0.18)",
+      border: "1px solid rgba(255,255,255,0.3)",
+      borderRadius: 999,
+      padding: "3px 10px",
+      backdropFilter: "blur(4px)",
+      textShadow: "0 1px 2px rgba(0,0,0,0.25)"
+    }
+  }, label);
+}
 ;
 Object.assign(window, {
   DevTab,

@@ -318,9 +318,7 @@ function TodayInfoCard() {
   };
   return (
     <div className="wcard">
-      {(hol && hol.todayName) || events.todayEv ? (
-        <div style={{ fontSize:11.5, color:"var(--ink)", fontWeight:800, marginBottom:6 }}>{hol && hol.todayName ? `今日は「${hol.todayName}」🎌` : ""}{events.todayEv ? `${hol && hol.todayName ? "・" : ""}今日は「${events.todayEv.name}」${events.todayEv.food ? "〈"+events.todayEv.food+"〉" : ""}` : ""}</div>
-      ) : null}
+
       {(() => {
         const chips = [];
         warns.forEach(w => chips.push({ t:(w.lv >= 2 ? "⚠️ " : "") + w.n, lv:w.lv }));
@@ -342,7 +340,7 @@ function TodayInfoCard() {
       })()}
       <div style={{ fontSize:12.5, fontWeight:700, color:"var(--text)", lineHeight:1.7, textAlign:"left" }}>
         {wx && (
-          <div style={{ position:"relative", background:timeSky.g, borderRadius:12, padding:"9px 12px", marginBottom:8, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)", overflow:"hidden" }}>
+          <div style={{ position:"relative", background:timeSky.g, borderRadius:12, padding:"7px 10px", marginBottom:6, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)", overflow:"hidden" }}>
             <div style={{ position:"absolute", top:7, right:10, fontSize:22, filter:"drop-shadow(0 1px 3px rgba(0,0,0,0.3))", opacity:0.9 }}>{timeSky.emo}</div>
             <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.12))", pointerEvents:"none" }} />
             <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
@@ -387,7 +385,7 @@ function TodayInfoCard() {
           if (!rows.length) return null;
           return (
             <div onClick={() => window.dispatchEvent(new CustomEvent("gotoTab", { detail: "calendar" }))}
-              style={{ position:"relative", cursor:"pointer", background:METAL, borderRadius:12, padding:"9px 12px", paddingRight:52, color:"#fff", fontSize:12, fontWeight:800, lineHeight:1.7, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)", overflow:"hidden" }} title="行事カレンダーを開く">
+              style={{ position:"relative", cursor:"pointer", background:METAL, borderRadius:12, padding:"7px 10px", paddingRight:48, color:"#fff", fontSize:12, fontWeight:800, lineHeight:1.7, boxShadow:"0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)", overflow:"hidden" }} title="行事カレンダーを開く">
               <div style={{ position:"absolute", top:"50%", right:12, transform:"translateY(-50%)", fontSize:34, opacity:0.85, filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.35))" }}>{artEmoji}</div>
               {rows.map(r => r.el)}
             </div>
@@ -546,5 +544,18 @@ function DevTab() {
 // ── Main App ──
 // ===== GNE：POP画像ジェネレーター（Canvasで柄テンプレに文字を焼く） =====
 
+
+
+// ── ヘッダー用：今日の行事チップ（今日が祝日・行事の日だけ表示） ──
+function TodayEventChip() {
+  const now = new Date(); const n0 = new Date(now); n0.setHours(0,0,0,0);
+  const holName = holidayName(now.getFullYear(), now.getMonth()+1, now.getDate());
+  const ev = [...seasonalEventsFor(now.getFullYear())].find(e => e.date.getTime() === n0.getTime()) || null;
+  if (!holName && !ev) return null;
+  const label = holName ? `今日は「${holName}」🎌` : `今日は「${ev.name}」${ev.food ? "〈"+ev.food+"〉" : ""}`;
+  return (
+    <div style={{ flexShrink:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.3)", borderRadius:999, padding:"3px 10px", backdropFilter:"blur(4px)", textShadow:"0 1px 2px rgba(0,0,0,0.25)" }}>{label}</div>
+  );
+}
 
 ;Object.assign(window, { DevTab, PromptAddModal, PromptCard, PromptGuide, PromptTab, TodayInfoCard, WeatherWidget });
