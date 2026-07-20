@@ -1632,6 +1632,7 @@ Object.assign(window, {
   PromptCard,
   PromptGuide,
   PromptTab,
+  TodayEventChip,
   TodayInfoCard,
   WeatherWidget
 });

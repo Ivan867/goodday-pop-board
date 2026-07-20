@@ -558,4 +558,4 @@ function TodayEventChip() {
   );
 }
 
-;Object.assign(window, { DevTab, PromptAddModal, PromptCard, PromptGuide, PromptTab, TodayInfoCard, WeatherWidget });
+;Object.assign(window, { DevTab, PromptAddModal, PromptCard, PromptGuide, PromptTab, TodayEventChip, TodayInfoCard, WeatherWidget });
