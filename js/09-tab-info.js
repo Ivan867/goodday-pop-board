@@ -940,11 +940,36 @@ function TodayInfoCard() {
   }, "\u3000", todayLabel)), wx && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
-      color: "var(--sub)",
-      fontWeight: 700,
+      fontWeight: 800,
       marginTop: 2
     }
-  }, "先週より", sign(wx.dw), wx.today >= 35 ? "・猛暑日予想" : wx.today >= 33 ? "・厳しい暑さ" : wx.dw > 0 ? "・暑い一日" : wx.dw < 0 ? "・涼しい一日" : ""))), wx && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--sub)"
+    }
+  }, "先週より"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)"
+    }
+  }, sign(wx.dw)), wx.today >= 35 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#d63a44",
+      fontWeight: 900
+    }
+  }, "・猛暑日予想") : wx.today >= 33 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#e07a1a",
+      fontWeight: 900
+    }
+  }, "・厳しい暑さ") : wx.dw > 0 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#c96a2e"
+    }
+  }, "・暑い一日") : wx.dw < 0 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#3d8fd1"
+    }
+  }, "・涼しい一日") : null))), wx && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       width: 1,
       alignSelf: "stretch",

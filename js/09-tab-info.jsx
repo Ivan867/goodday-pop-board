@@ -334,7 +334,17 @@ function TodayInfoCard() {
             </div>
             <div style={{ minWidth:0 }}>
               <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
-              {wx && <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:2 }}>先週より{sign(wx.dw)}{wx.today >= 35 ? "・猛暑日予想" : wx.today >= 33 ? "・厳しい暑さ" : wx.dw > 0 ? "・暑い一日" : wx.dw < 0 ? "・涼しい一日" : ""}</div>}
+              {wx && (
+                <div style={{ fontSize:11.5, fontWeight:800, marginTop:2 }}>
+                  <span style={{ color:"var(--sub)" }}>先週より</span>
+                  <span style={{ color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)" }}>{sign(wx.dw)}</span>
+                  {wx.today >= 35 ? <span style={{ color:"#d63a44", fontWeight:900 }}>・猛暑日予想</span>
+                    : wx.today >= 33 ? <span style={{ color:"#e07a1a", fontWeight:900 }}>・厳しい暑さ</span>
+                    : wx.dw > 0 ? <span style={{ color:"#c96a2e" }}>・暑い一日</span>
+                    : wx.dw < 0 ? <span style={{ color:"#3d8fd1" }}>・涼しい一日</span>
+                    : null}
+                </div>
+              )}
             </div>
           </div>
           {wx && (
