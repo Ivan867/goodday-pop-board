@@ -41,11 +41,16 @@
   --soft: #F4EDE4;
   --soft-text: #6E4F2F;
 }
-.wcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:12px; }
+.wcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); }
 .sk { background:linear-gradient(90deg, #EDEAE2 25%, #F7F4EE 50%, #EDEAE2 75%); background-size:200% 100%; animation:skm 1.3s infinite; }
 @keyframes skm { from { background-position:200% 0; } to { background-position:-200% 0; } }
 img.fdin { opacity:0; transition:opacity .35s ease; }
 img.fdin.ld { opacity:1; }
+/* カード共通：統一した影＋タップで沈む */
+.ucard { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); transition: transform .16s ease, box-shadow .16s ease; }
+.ucard:active { transform: scale(.975); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+/* 画像スケルトン（読み込み中の淡い明滅） */
+.imgskel { background: linear-gradient(100deg, #eceef1 30%, #f5f6f8 50%, #eceef1 70%); background-size: 200% 100%; animation: skm 1.3s linear infinite; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overscroll-behavior: none; }
 html { background: #8FA0B0; }
@@ -119,21 +124,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260719e"></script>
-<script src="js/02-api.js?v=20260719e"></script>
-<script src="js/03-utils.js?v=20260719e"></script>
-<script src="js/04-shared.js?v=20260719e"></script>
-<script src="js/05-tab-board.js?v=20260719e"></script>
-<script src="js/06-tab-create.js?v=20260719e"></script>
-<script src="js/07-tab-floor.js?v=20260719e"></script>
-<script src="js/09-tab-info.js?v=20260719e"></script>
-<script src="js/11-tab-check-fish.js?v=20260719e"></script>
-<script src="js/12-tab-learn.js?v=20260719e"></script>
-<script src="js/14-app.js?v=20260719e"></script>
+<script src="js/01-config.js?v=20260719f"></script>
+<script src="js/02-api.js?v=20260719f"></script>
+<script src="js/03-utils.js?v=20260719f"></script>
+<script src="js/04-shared.js?v=20260719f"></script>
+<script src="js/05-tab-board.js?v=20260719f"></script>
+<script src="js/06-tab-create.js?v=20260719f"></script>
+<script src="js/07-tab-floor.js?v=20260719f"></script>
+<script src="js/09-tab-info.js?v=20260719f"></script>
+<script src="js/11-tab-check-fish.js?v=20260719f"></script>
+<script src="js/12-tab-learn.js?v=20260719f"></script>
+<script src="js/14-app.js?v=20260719f"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260719e";
+window.APP_VER = "20260719f";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

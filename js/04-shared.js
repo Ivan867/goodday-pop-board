@@ -1004,15 +1004,53 @@ function PopCard({
   onClick,
   hasComment
 }) {
+  const CAT_TINT = {
+    "鮮魚": {
+      bg: "#e7f1fa",
+      tx: "#1d5a94"
+    },
+    "刺身": {
+      bg: "#fdeaf0",
+      tx: "#b03a63"
+    },
+    "寿司": {
+      bg: "#fef0e6",
+      tx: "#c2691a"
+    },
+    "惣菜": {
+      bg: "#eef7e8",
+      tx: "#4a7d2a"
+    },
+    "広告": {
+      bg: "#fef6e0",
+      tx: "#a8820a"
+    },
+    "特売": {
+      bg: "#fdeae8",
+      tx: "#c0392b"
+    },
+    "行事": {
+      bg: "#f0ecf9",
+      tx: "#6b4ea0"
+    },
+    "塩干": {
+      bg: "#e9f3f4",
+      tx: "#2f7d86"
+    },
+    "その他": {
+      bg: "#eef0f2",
+      tx: "#556"
+    }
+  };
+  const tint = CAT_TINT[pop.category] || CAT_TINT["その他"];
   return /*#__PURE__*/React.createElement("div", {
+    className: "ucard",
     style: {
       borderRadius: 14,
       overflow: "hidden",
       background: "white",
-      boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
       cursor: "pointer",
-      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`,
-      transition: "all 0.15s"
+      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`
     },
     onClick: () => onClick(pop),
     onMouseEnter: e => {
@@ -1021,11 +1059,11 @@ function PopCard({
     },
     onMouseLeave: e => {
       e.currentTarget.style.transform = "none";
-      e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.07)";
+      e.currentTarget.style.boxShadow = "";
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "imgskel",
     style: {
-      background: "#efefef",
       minHeight: 120,
       position: "relative"
     }
@@ -1034,7 +1072,11 @@ function PopCard({
     loading: "lazy",
     decoding: "async",
     className: "fdin",
-    onLoad: e => e.target.classList.add("ld"),
+    onLoad: e => {
+      e.target.classList.add("ld");
+      const p = e.target.parentElement;
+      if (p) p.classList.remove("imgskel");
+    },
     style: {
       width: "100%",
       display: "block"
@@ -1048,7 +1090,7 @@ function PopCard({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "読み込み中…"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3000"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: 6,
@@ -1101,11 +1143,11 @@ function PopCard({
   }, pop.store_name), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
-      background: "var(--chip)",
+      background: tint.bg,
       padding: "2px 8px",
       borderRadius: 20,
-      fontWeight: 700,
-      color: "var(--text)",
+      fontWeight: 800,
+      color: tint.tx,
       whiteSpace: "nowrap",
       flexShrink: 0
     }

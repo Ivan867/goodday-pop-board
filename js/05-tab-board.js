@@ -679,16 +679,45 @@ function SearchTab({
   }, "読み込み中...")) : !hasFilter ? allPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      padding: 60,
+      padding: "70px 40px",
       color: "var(--faint)"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "72",
+    height: "72",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      opacity: 0.5,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M3 12c2-4 6-6 10-6 3 0 5 1 6.5 2.5C21 10 21.5 12 21.5 12S21 14 19.5 15.5C18 17 16 18 13 18c-4 0-8-2-10-6z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 12l-1.5-2.5M3 12l-1.5 2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "15",
+    cy: "10.5",
+    r: "0.9",
+    fill: "currentColor",
+    stroke: "none"
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 700,
+      fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだポップがありません")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "まだポップがありません"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      marginTop: 6,
+      lineHeight: 1.6
+    }
+  }, "「＋投稿」から最初のポップを共有してみましょう")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
@@ -719,18 +748,41 @@ function SearchTab({
   })))) : results.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      padding: 60,
+      padding: "70px 40px",
       color: "var(--faint)"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "72",
+    height: "72",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      opacity: 0.5,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M3 12c2-4 6-6 10-6 3 0 5 1 6.5 2.5C21 10 21.5 12 21.5 12S21 14 19.5 15.5C18 17 16 18 13 18c-4 0-8-2-10-6z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 12l-1.5-2.5M3 12l-1.5 2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "15",
+    cy: "10.5",
+    r: "0.9",
+    fill: "currentColor",
+    stroke: "none"
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 700,
+      fontWeight: 800,
       color: "var(--sub)"
     }
   }, "一致するポップが見つかりません"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 12.5,
       marginTop: 6
     }
   }, "別のキーワードで試してみてください")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {

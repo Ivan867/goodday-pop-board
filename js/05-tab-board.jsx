@@ -306,9 +306,10 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
         </div>
       ) : !hasFilter ? (
         allPops.length === 0 ? (
-          <div style={{ textAlign:"center", padding:60, color:"var(--faint)" }}>
-            
-            <div style={{ fontSize:15, fontWeight:700, color:"var(--sub)" }}>まだポップがありません</div>
+          <div style={{ textAlign:"center", padding:"70px 40px", color:"var(--faint)" }}>
+            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.5, marginBottom:14 }}><path d="M3 12c2-4 6-6 10-6 3 0 5 1 6.5 2.5C21 10 21.5 12 21.5 12S21 14 19.5 15.5C18 17 16 18 13 18c-4 0-8-2-10-6z"/><path d="M3 12l-1.5-2.5M3 12l-1.5 2.5"/><circle cx="15" cy="10.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+            <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>まだポップがありません</div>
+            <div style={{ fontSize:12.5, marginTop:6, lineHeight:1.6 }}>「＋投稿」から最初のポップを共有してみましょう</div>
           </div>
         ) : (
           <div>
@@ -322,10 +323,10 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           </div>
         )
       ) : results.length === 0 ? (
-        <div style={{ textAlign:"center", padding:60, color:"var(--faint)" }}>
-          
-          <div style={{ fontSize:15, fontWeight:700, color:"var(--sub)" }}>一致するポップが見つかりません</div>
-          <div style={{ fontSize:13, marginTop:6 }}>別のキーワードで試してみてください</div>
+        <div style={{ textAlign:"center", padding:"70px 40px", color:"var(--faint)" }}>
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.5, marginBottom:14 }}><path d="M3 12c2-4 6-6 10-6 3 0 5 1 6.5 2.5C21 10 21.5 12 21.5 12S21 14 19.5 15.5C18 17 16 18 13 18c-4 0-8-2-10-6z"/><path d="M3 12l-1.5-2.5M3 12l-1.5 2.5"/><circle cx="15" cy="10.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+          <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>一致するポップが見つかりません</div>
+          <div style={{ fontSize:12.5, marginTop:6 }}>別のキーワードで試してみてください</div>
         </div>
       ) : (
         <>

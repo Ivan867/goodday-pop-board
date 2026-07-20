@@ -338,16 +338,28 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
 // ── Pop Card (shared) ──
 function PopCard({ pop, index, onClick, hasComment }) {
+  const CAT_TINT = {
+    "鮮魚":  { bg:"#e7f1fa", tx:"#1d5a94" },
+    "刺身":  { bg:"#fdeaf0", tx:"#b03a63" },
+    "寿司":  { bg:"#fef0e6", tx:"#c2691a" },
+    "惣菜":  { bg:"#eef7e8", tx:"#4a7d2a" },
+    "広告":  { bg:"#fef6e0", tx:"#a8820a" },
+    "特売":  { bg:"#fdeae8", tx:"#c0392b" },
+    "行事":  { bg:"#f0ecf9", tx:"#6b4ea0" },
+    "塩干":  { bg:"#e9f3f4", tx:"#2f7d86" },
+    "その他":{ bg:"#eef0f2", tx:"#556" },
+  };
+  const tint = CAT_TINT[pop.category] || CAT_TINT["その他"];
   return (
-    <div
-      style={{ borderRadius:14, overflow:"hidden", background:"white", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(index,10)*0.04}s both`, transition:"all 0.15s" }}
+    <div className="ucard"
+      style={{ borderRadius:14, overflow:"hidden", background:"white", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(index,10)*0.04}s both` }}
       onClick={()=>onClick(pop)}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
-      <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
+      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
+      <div className="imgskel" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => e.target.classList.add("ld")} style={{ width:"100%", display:"block" }} />
-          : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>}
+          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block" }} />
+          : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
@@ -356,7 +368,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
       <div style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
         <div style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.product_name}</div>
         <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
-        <div style={{ fontSize:11, background:"var(--chip)", padding:"2px 8px", borderRadius:20, fontWeight:700, color:"var(--text)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
+        <div style={{ fontSize:11, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
       </div>
     </div>
   );
