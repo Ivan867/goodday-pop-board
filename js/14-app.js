@@ -389,10 +389,11 @@ function App() {
       position: "sticky",
       top: 0,
       zIndex: 100,
-      paddingTop: "env(safe-area-inset-top)",
+      paddingTop: `calc(env(safe-area-inset-top) * ${Math.max(0, 1 - scrollP * 1.6)})`,
       background: "var(--bg)",
-      height: scrollP >= 1 ? 0 : "auto",
-      overflow: "hidden"
+      maxHeight: `${Math.max(0, 54 * (1 - scrollP * 1.4))}px`,
+      overflow: "hidden",
+      transition: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -405,7 +406,7 @@ function App() {
       justifyContent: "space-between",
       flexWrap: "nowrap",
       gap: 10,
-      opacity: Math.max(0, 1 - scrollP * 1.6),
+      opacity: Math.max(0, 1 - scrollP * 1.8),
       transform: `translateX(${-scrollP * 60}px)`,
       pointerEvents: scrollP > 0.6 ? "none" : "auto"
     }

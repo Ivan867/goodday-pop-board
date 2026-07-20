@@ -200,8 +200,8 @@ function App() {
             animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
         </div>
       )}
-      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", height: scrollP>=1 ? 0 : "auto", overflow:"hidden" }}>
-        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px 6px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity: Math.max(0, 1-scrollP*1.6), transform:`translateX(${-scrollP*60}px)`, pointerEvents: scrollP>0.6?"none":"auto" }}>
+      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:`calc(env(safe-area-inset-top) * ${Math.max(0,1-scrollP*1.6)})`, background:"var(--bg)", maxHeight: `${Math.max(0, 54*(1-scrollP*1.4))}px`, overflow:"hidden", transition:"none" }}>
+        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"4px 16px 6px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity: Math.max(0, 1-scrollP*1.8), transform:`translateX(${-scrollP*60}px)`, pointerEvents: scrollP>0.6?"none":"auto" }}>
           <div className="app-title" style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, flex:1, letterSpacing:"-0.5px" }}>鮮魚ポップ共有</div>
           <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></svg>作成
