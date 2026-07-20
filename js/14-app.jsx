@@ -200,7 +200,7 @@ function App() {
             animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
         </div>
       )}
-      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", maxHeight: scrollP > 0.85 ? `${58*(1-(scrollP-0.85)/0.15)}px` : "58px", overflow:"hidden" }}>
+      <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", overflow:"hidden" }}>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"6px 16px 8px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity: 1-scrollP, transform:`translateX(${-scrollP*40}px)`, pointerEvents: scrollP>0.7?"none":"auto" }}>
           <div className="app-title" style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, flex:1, letterSpacing:"-0.5px" }}>鮮魚ポップ共有</div>
           <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>

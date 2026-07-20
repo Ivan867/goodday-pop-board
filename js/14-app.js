@@ -391,7 +391,6 @@ function App() {
       zIndex: 100,
       paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)",
-      maxHeight: scrollP > 0.85 ? `${58 * (1 - (scrollP - 0.85) / 0.15)}px` : "58px",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
