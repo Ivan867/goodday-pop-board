@@ -230,6 +230,10 @@ function BarcodeTab() {
     { key:"cgc",       name:"CGC",       color:"#7b5ea7", pat:"tate" },   // 紫・縦しま
     { key:"kobayashi", name:"小林冷蔵",  color:"#c0392b", pat:"naname" }, // 赤・ななめ
     { key:"sanrei",    name:"さんれい",  color:"#e08a1e", pat:"grid" },   // オレンジ・格子
+    { key:"daikou",    name:"大幸",      color:"#0e8f9e", pat:"yoko" },   // ティール・横しま
+    { key:"moranbon",  name:"モランボン", color:"#b0517f", pat:"dot" },    // ローズ・ドット
+    { key:"daisho",    name:"ダイショー", color:"#3f51b5", pat:"naname2" },// インディゴ・逆ななめ
+    { key:"nihonshokken", name:"日本食研", color:"#8a6d1f", pat:"tate" },  // 金茶・縦しま
   ];
   const companyPatStyle = (c) => {
     if (!c) return { background:"#eef1f4" };
@@ -237,6 +241,7 @@ function BarcodeTab() {
     if (c.pat === "yoko")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
     if (c.pat === "tate")   return { background:`repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
     if (c.pat === "naname") return { background:`repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)` };
+    if (c.pat === "naname2") return { background:`repeating-linear-gradient(-45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)` };
     if (c.pat === "dot")    return { background:`radial-gradient(${col} 1.2px, transparent 1.35px)`, backgroundSize:"5.5px 5.5px", backgroundColor:"#fff" };
     if (c.pat === "grid")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.3px, transparent 1.3px, transparent 5px), repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.3px, #fff 1.3px, #fff 5px)` };
     return { background: col };

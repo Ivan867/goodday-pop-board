@@ -407,7 +407,35 @@ function BarcodeTab() {
     name: "さんれい",
     color: "#e08a1e",
     pat: "grid"
-  } // オレンジ・格子
+  },
+  // オレンジ・格子
+  {
+    key: "daikou",
+    name: "大幸",
+    color: "#0e8f9e",
+    pat: "yoko"
+  },
+  // ティール・横しま
+  {
+    key: "moranbon",
+    name: "モランボン",
+    color: "#b0517f",
+    pat: "dot"
+  },
+  // ローズ・ドット
+  {
+    key: "daisho",
+    name: "ダイショー",
+    color: "#3f51b5",
+    pat: "naname2"
+  },
+  // インディゴ・逆ななめ
+  {
+    key: "nihonshokken",
+    name: "日本食研",
+    color: "#8a6d1f",
+    pat: "tate"
+  } // 金茶・縦しま
   ];
   const companyPatStyle = c => {
     if (!c) return {
@@ -422,6 +450,9 @@ function BarcodeTab() {
     };
     if (c.pat === "naname") return {
       background: `repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)`
+    };
+    if (c.pat === "naname2") return {
+      background: `repeating-linear-gradient(-45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)`
     };
     if (c.pat === "dot") return {
       background: `radial-gradient(${col} 1.2px, transparent 1.35px)`,
