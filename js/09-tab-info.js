@@ -657,6 +657,8 @@ function TodayInfoCard() {
       const t = d.daily.temperature_2m_max,
         i = t.length - 2; // i=今日, i+1=明日
       if (t[i] == null || t[i - 1] == null || t[i - 7] == null) return false;
+      const mn = d.daily.temperature_2m_min || [];
+      const r = v => v == null ? null : Math.round(v);
       setWx({
         today: Math.round(t[i]),
         yest: Math.round(t[i - 1]),
@@ -666,7 +668,20 @@ function TodayInfoCard() {
         tmMax: t[i + 1] == null ? null : Math.round(t[i + 1]),
         tmCode: d.daily.weather_code[i + 1],
         tmDiff: t[i + 1] == null ? null : Math.round(t[i + 1] - t[i]),
-        tmMin: d.daily.temperature_2m_min && d.daily.temperature_2m_min[i] != null ? Math.round(d.daily.temperature_2m_min[i]) : null
+        tmMin: mn[i] != null ? Math.round(mn[i]) : null,
+        series: [{
+          label: "昨日",
+          hi: r(t[i - 1]),
+          lo: r(mn[i - 1])
+        }, {
+          label: "今日",
+          hi: r(t[i]),
+          lo: r(mn[i])
+        }, {
+          label: "明日",
+          hi: r(t[i + 1]),
+          lo: r(mn[i + 1])
+        }]
       });
       return true;
     };
@@ -880,13 +895,70 @@ function TodayInfoCard() {
     className: "ucard",
     onClick: jumpCal,
     style: {
+      position: "relative",
       background: "#fff",
       borderRadius: 16,
       padding: "13px 15px",
-      cursor: "pointer"
+      cursor: "pointer",
+      overflow: "hidden"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, wx && wx.series && (() => {
+    const s = wx.series;
+    const his = s.map(d => d.hi).filter(v => v != null);
+    const los = s.map(d => d.lo).filter(v => v != null);
+    if (his.length < 2) return null;
+    const all = his.concat(los);
+    const mx = Math.max(...all),
+      mn = Math.min(...all);
+    const rng = mx - mn || 1;
+    const W = 320,
+      H = 84,
+      padX = 34,
+      padY = 16;
+    const x = i => padX + (W - padX * 2) * (i / (s.length - 1));
+    const y = v => padY + (H - padY * 2) * (1 - (v - mn) / rng);
+    const line = key => s.map((d, i) => d[key] == null ? null : `${x(i)},${y(d[key])}`).filter(Boolean).join(" ");
+    return /*#__PURE__*/React.createElement("svg", {
+      viewBox: `0 0 ${W} ${H}`,
+      preserveAspectRatio: "none",
+      style: {
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        opacity: 0.16,
+        pointerEvents: "none"
+      }
+    }, /*#__PURE__*/React.createElement("polyline", {
+      points: line("hi"),
+      fill: "none",
+      stroke: "#e0555f",
+      strokeWidth: "3",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }), /*#__PURE__*/React.createElement("polyline", {
+      points: line("lo"),
+      fill: "none",
+      stroke: "#3d8fd1",
+      strokeWidth: "3",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }), s.map((d, i) => d.hi != null ? /*#__PURE__*/React.createElement("circle", {
+      key: "h" + i,
+      cx: x(i),
+      cy: y(d.hi),
+      r: "3.5",
+      fill: "#e0555f"
+    }) : null), s.map((d, i) => d.lo != null ? /*#__PURE__*/React.createElement("circle", {
+      key: "l" + i,
+      cx: x(i),
+      cy: y(d.lo),
+      r: "3.5",
+      fill: "#3d8fd1"
+    }) : null));
+  })(), /*#__PURE__*/React.createElement("div", {
     style: {
+      position: "relative",
       display: "flex",
       alignItems: "center",
       gap: 12
