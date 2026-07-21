@@ -973,28 +973,6 @@ function TodayInfoCard() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      flexShrink: 0,
-      color: "var(--primary)"
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "26",
-    height: "26",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "4.5",
-    width: "18",
-    height: "17",
-    rx: "2.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M3 9h18M8 2.5v4M16 2.5v4"
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
       minWidth: 0
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -1052,17 +1030,17 @@ function TodayInfoCard() {
     style: {
       display: "flex",
       alignItems: "center",
-      gap: 8,
+      gap: 9,
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 30,
+      fontSize: 38,
       lineHeight: 1
     }
   }, wmoIcon(wx.code).e), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 22,
+      fontSize: 28,
       fontWeight: 900
     }
   }, /*#__PURE__*/React.createElement("span", {
@@ -1072,7 +1050,7 @@ function TodayInfoCard() {
   }, wx.today, "°"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
-      fontSize: 17
+      fontSize: 20
     }
   }, " / "), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1176,7 +1154,7 @@ function TodayInfoCard() {
       style: {
         flexShrink: 0,
         width: 92,
-        background: "var(--primary)",
+        background: "var(--primary-soft)",
         color: "#fff",
         display: "flex",
         flexDirection: "column",

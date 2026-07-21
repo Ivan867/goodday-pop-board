@@ -357,9 +357,6 @@ function TodayInfoCard() {
         })()}
         <div style={{ position:"relative", display:"flex", alignItems:"center", gap:12 }}>
           <div style={{ display:"flex", alignItems:"center", gap:10, flex:1, minWidth:0 }}>
-            <div style={{ flexShrink:0, color:"var(--primary)" }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
-            </div>
             <div style={{ minWidth:0 }}>
               <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
               {wx && (
@@ -378,9 +375,9 @@ function TodayInfoCard() {
           {wx && (
             <>
               <div style={{ width:1, alignSelf:"stretch", background:"var(--line)", flexShrink:0 }} />
-              <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-                <span style={{ fontSize:30, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
-                <span style={{ fontSize:22, fontWeight:900 }}><span style={{ color:"#e0555f" }}>{wx.today}°</span><span style={{ color:"var(--faint)", fontSize:17 }}> / </span><span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span></span>
+              <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
+                <span style={{ fontSize:38, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
+                <span style={{ fontSize:28, fontWeight:900 }}><span style={{ color:"#e0555f" }}>{wx.today}°</span><span style={{ color:"var(--faint)", fontSize:20 }}> / </span><span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span></span>
               </div>
             </>
           )}
@@ -410,7 +407,7 @@ function TodayInfoCard() {
                   </div>
                 </div>
               </div>
-              <div style={{ flexShrink:0, width:92, background:"var(--primary)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
+              <div style={{ flexShrink:0, width:92, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
                 <span style={{ fontSize:11, fontWeight:800, opacity:0.85 }}>あと</span>
                 <span style={{ fontSize:30, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:14 }}>日</span></span>
               </div>
