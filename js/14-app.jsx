@@ -203,10 +203,10 @@ function App() {
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", overflow:"hidden" }}>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"6px 16px 3px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
           <div className="app-title" style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, flex:1, letterSpacing:"-0.5px" }}>鮮魚ポップ共有</div>
-          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></svg>作成
           </button>
-          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(29,58,87,0.28)" }}>
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>投稿
           </button>
         </div>
@@ -245,7 +245,7 @@ function App() {
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 18px), 2px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 16px", pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background: moreOpen ? "rgba(255,255,255,0.6)" : "#fff", border:"1px solid var(--line)", borderRadius:16, boxShadow:"0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.08)", padding:"6px 10px", pointerEvents:"auto", transition:"background .2s" }}>
+       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background:"var(--primary-soft)", border:"none", borderRadius:16, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"6px 10px", pointerEvents:"auto" }}>
         {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
@@ -253,13 +253,19 @@ function App() {
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
             : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
-          const navIcon = key==="board" ? "🏠" : key==="search" ? "🔍" : "≡";
+          const NAV_SVG = {
+            board: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>,
+            search: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>,
+            more: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>,
+            close: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>,
+          };
+          const navIcon = key==="board" ? NAV_SVG.board : key==="search" ? NAV_SVG.search : NAV_SVG.more;
           const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
           return (
             <button key={key} onClick={onClick}
-              style={{ position:"relative", border:"none", cursor:"pointer", padding:"9px 15px", display:"flex", flexDirection:"row", alignItems:"center", gap:6, borderRadius:22, background: active ? "var(--soft)" : "transparent", transition:"background .2s" }}>
-              <span style={{ fontSize:18, lineHeight:1, filter: active ? "none" : "grayscale(0.4) opacity(0.75)" }}>{moreOpen && more ? "✕" : navIcon}</span>
-              <span style={{ fontSize:12.5, fontWeight:800, color: active ? "var(--primary)" : "var(--text)", whiteSpace:"nowrap" }}>{navLabel}</span>
+              style={{ position:"relative", border:"none", cursor:"pointer", padding:"8px 16px", display:"flex", flexDirection:"row", alignItems:"center", gap:6, borderRadius:22, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
+              <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
+              <span style={{ fontSize:12.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>
             </button>
           );
         })}

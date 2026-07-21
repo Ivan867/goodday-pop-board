@@ -431,7 +431,7 @@ function App() {
     style: {
       flexShrink: 0,
       border: "none",
-      background: "var(--primary)",
+      background: "var(--primary-soft)",
       color: "#fff",
       fontWeight: 800,
       fontSize: 14,
@@ -444,7 +444,7 @@ function App() {
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      boxShadow: "0 2px 8px rgba(29,58,87,0.28)"
+      boxShadow: "0 2px 8px rgba(74,122,176,0.32)"
     }
   }, /*#__PURE__*/React.createElement("svg", {
     width: "15",
@@ -469,7 +469,7 @@ function App() {
     style: {
       flexShrink: 0,
       border: "none",
-      background: "var(--primary)",
+      background: "var(--primary-soft)",
       color: "#fff",
       fontWeight: 800,
       fontSize: 14,
@@ -482,7 +482,7 @@ function App() {
       borderRadius: 999,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      boxShadow: "0 2px 8px rgba(29,58,87,0.28)"
+      boxShadow: "0 2px 8px rgba(74,122,176,0.32)"
     }
   }, /*#__PURE__*/React.createElement("svg", {
     width: "15",
@@ -615,13 +615,12 @@ function App() {
       gap: 4,
       width: "100%",
       maxWidth: 1080,
-      background: moreOpen ? "rgba(255,255,255,0.6)" : "#fff",
-      border: "1px solid var(--line)",
+      background: "var(--primary-soft)",
+      border: "none",
       borderRadius: 16,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.08)",
+      boxShadow: "0 2px 12px rgba(74,122,176,0.35)",
       padding: "6px 10px",
-      pointerEvents: "auto",
-      transition: "background .2s"
+      pointerEvents: "auto"
     }
   }, [tabs[0], tabs[3], {
     key: "__more",
@@ -659,7 +658,63 @@ function App() {
       setRadialOpen(false);
       setTab(key);
     };
-    const navIcon = key === "board" ? "🏠" : key === "search" ? "🔍" : "≡";
+    const NAV_SVG = {
+      board: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M3 10.5L12 3l9 7.5"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M5 9.5V20h14V9.5"
+      })),
+      search: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("circle", {
+        cx: "11",
+        cy: "11",
+        r: "7"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M20 20l-3.5-3.5"
+      })),
+      more: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M4 7h16M4 12h16M4 17h16"
+      })),
+      close: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2.2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M6 6l12 12M18 6L6 18"
+      }))
+    };
+    const navIcon = key === "board" ? NAV_SVG.board : key === "search" ? NAV_SVG.search : NAV_SVG.more;
     const navLabel = more ? moreOpen ? "閉じる" : "メニュー" : label;
     return /*#__PURE__*/React.createElement("button", {
       key: key,
@@ -668,26 +723,26 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "9px 15px",
+        padding: "8px 16px",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
         borderRadius: 22,
-        background: active ? "var(--soft)" : "transparent",
+        background: active ? "#fff" : "transparent",
+        color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)",
         transition: "background .2s"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 18,
+        display: "flex",
         lineHeight: 1,
-        filter: active ? "none" : "grayscale(0.4) opacity(0.75)"
+        opacity: active ? 1 : 0.95
       }
-    }, moreOpen && more ? "✕" : navIcon), /*#__PURE__*/React.createElement("span", {
+    }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 12.5,
         fontWeight: 800,
-        color: active ? "var(--primary)" : "var(--text)",
         whiteSpace: "nowrap"
       }
     }, navLabel));
