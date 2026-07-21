@@ -628,7 +628,60 @@ function IndustryTab() {
       margin: "0 auto",
       padding: "16px 16px 120px"
     }
-  }, SITES.map((site, idx) => {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ucard",
+    style: {
+      background: "#fff",
+      borderRadius: 16,
+      padding: "13px 15px",
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 19
+    }
+  }, "🗞"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14.5,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, "鮮魚ニュースを探す")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginBottom: 11,
+      lineHeight: 1.6
+    }
+  }, "気になるテーマをタップすると、Googleニュースの最新記事まとめが開きます。"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 7
+    }
+  }, [["鮮魚 売場", "鮮魚 売場"], ["水産 市況", "水産 市況"], ["魚価", "魚価"], ["豊洲市場", "豊洲市場 水産"], ["漁獲・水揚げ", "漁獲量 水揚げ"], ["うなぎ", "うなぎ 相場"], ["寿司・刺身", "刺身 寿司 スーパー"], ["山陰の水産", "島根 水産 漁"]].map(([label, q]) => /*#__PURE__*/React.createElement("a", {
+    key: label,
+    href: "https://news.google.com/search?q=" + encodeURIComponent(q) + "&hl=ja&gl=JP&ceid=JP%3Aja",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: {
+      textDecoration: "none",
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "#4a7ab0",
+      background: "var(--soft)",
+      border: "1px solid #cfe2f3",
+      borderRadius: 999,
+      padding: "7px 13px"
+    }
+  }, label)))), SITES.map((site, idx) => {
     const st = data[idx];
     return /*#__PURE__*/React.createElement("div", {
       key: site.feed,
