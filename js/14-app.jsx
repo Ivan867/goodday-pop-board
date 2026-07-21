@@ -262,7 +262,7 @@ function App() {
           const navIcon = key==="board" ? NAV_SVG.board : key==="search" ? NAV_SVG.search : NAV_SVG.more;
           const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
           return (
-            <button key={key} onClick={onClick}
+            <button key={key} onClick={onClick} className="hig-pill"
               style={{ position:"relative", border:"none", cursor:"pointer", padding:"8px 16px", display:"flex", flexDirection:"row", alignItems:"center", gap:6, borderRadius:22, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
               <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
               <span style={{ fontSize:12.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>

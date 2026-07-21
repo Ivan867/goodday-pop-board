@@ -594,7 +594,9 @@ function PopDetail({
     style: {
       position: "fixed",
       inset: 0,
-      background: "rgba(0,0,0,0.7)",
+      background: "rgba(15,25,38,0.62)",
+      backdropFilter: "blur(3px)",
+      WebkitBackdropFilter: "blur(3px)",
       display: "flex",
       alignItems: "flex-end",
       justifyContent: "center",
@@ -628,7 +630,20 @@ function PopDetail({
       minHeight: "52vh",
       maxHeight: "64vh"
     }
-  }, /*#__PURE__*/React.createElement("img", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 8,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: 40,
+      height: 5,
+      borderRadius: 3,
+      background: "rgba(255,255,255,0.75)",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+      zIndex: 6
+    }
+  }), /*#__PURE__*/React.createElement("img", {
     src: pop.image_url,
     style: {
       maxWidth: "100%",

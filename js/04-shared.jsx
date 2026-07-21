@@ -250,11 +250,12 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   );
 
   return (
-    <div data-popdetail="1" style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
+    <div data-popdetail="1" style={{ position:"fixed", inset:0, background:"rgba(15,25,38,0.62)", backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
       <div id="pd-sheet" style={{ background:"#fff", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)", WebkitOverflowScrolling:"touch" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
         <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh" }}>
+          <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url} style={{ maxWidth:"100%", maxHeight:"64vh", objectFit:"contain", display:"block" }} />
 
           {navList && navIdx >= 0 && (

@@ -313,7 +313,10 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           </div>
         ) : (
           <div>
-            <div style={{ fontSize:13, fontWeight:800, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>みんなのポップ（{allPops.length}）</div>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12, paddingLeft:2 }}>
+              <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px" }}>みんなのポップ</span>
+              <span style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft, #4a7ab0)", background:"var(--soft)", borderRadius:999, padding:"2px 10px" }}>{allPops.length}</span>
+            </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
               {allPops.map(pop=>(
                 <img key={pop.id} src={pop.image_url} loading="lazy" onClick={()=>setSel(pop)}

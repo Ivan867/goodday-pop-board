@@ -719,6 +719,7 @@ function App() {
     return /*#__PURE__*/React.createElement("button", {
       key: key,
       onClick: onClick,
+      className: "hig-pill",
       style: {
         position: "relative",
         border: "none",
