@@ -332,56 +332,97 @@ function TodayInfoCard() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
 
-      {/* カード1：日付・行事・天気（背景に気温グラフ） */}
-      <div className="ucard" onClick={jumpCal} style={{ position:"relative", background:"#fff", borderRadius:16, padding:"13px 15px", cursor:"pointer", overflow:"hidden" }}>
-        {wx && wx.series && (() => {
-          const s = wx.series;
-          const his = s.map(d=>d.hi).filter(v=>v!=null);
-          const los = s.map(d=>d.lo).filter(v=>v!=null);
-          if (his.length < 2) return null;
-          const all = his.concat(los);
-          const mx = Math.max(...all), mn = Math.min(...all);
-          const rng = mx - mn || 1;
-          const W = 320, H = 84, padX = 34, padY = 16;
-          const x = (i) => padX + (W - padX*2) * (i/(s.length-1));
-          const y = (v) => padY + (H - padY*2) * (1 - (v-mn)/rng);
-          const line = (key) => s.map((d,i)=> d[key]==null?null:`${x(i)},${y(d[key])}`).filter(Boolean).join(" ");
-          return (
-            <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.16, pointerEvents:"none" }}>
-              <polyline points={line("hi")} fill="none" stroke="#e0555f" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <polyline points={line("lo")} fill="none" stroke="#3d8fd1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              {s.map((d,i)=> d.hi!=null ? <circle key={"h"+i} cx={x(i)} cy={y(d.hi)} r="3.5" fill="#e0555f" /> : null)}
-              {s.map((d,i)=> d.lo!=null ? <circle key={"l"+i} cx={x(i)} cy={y(d.lo)} r="3.5" fill="#3d8fd1" /> : null)}
-            </svg>
-          );
-        })()}
-        <div style={{ position:"relative", display:"flex", alignItems:"center", gap:12 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10, flex:1, minWidth:0 }}>
-            <div style={{ minWidth:0 }}>
-              <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
-              {wx && (
-                <div style={{ fontSize:11.5, fontWeight:800, marginTop:2 }}>
-                  <span style={{ color:"var(--sub)" }}>先週より</span>
-                  <span style={{ color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)" }}>{sign(wx.dw)}</span>
-                  {wx.today >= 35 ? <span style={{ color:"#d63a44", fontWeight:900 }}>・猛暑日予想</span>
-                    : wx.today >= 33 ? <span style={{ color:"#e07a1a", fontWeight:900 }}>・厳しい暑さ</span>
-                    : wx.dw > 0 ? <span style={{ color:"#c96a2e" }}>・暑い一日</span>
-                    : wx.dw < 0 ? <span style={{ color:"#3d8fd1" }}>・涼しい一日</span>
-                    : null}
-                </div>
-              )}
-            </div>
+      {/* カード1：日付・行事・気温推移グラフ */}
+      <div className="ucard" onClick={jumpCal} style={{ position:"relative", background:"#fff", borderRadius:16, padding:"12px 15px 11px", cursor:"pointer", overflow:"hidden" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ minWidth:0, flex:1 }}>
+            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
+            {wx && (
+              <div style={{ fontSize:11.5, fontWeight:800, marginTop:2 }}>
+                <span style={{ color:"var(--sub)" }}>先週より</span>
+                <span style={{ color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)" }}>{sign(wx.dw)}</span>
+                {wx.today >= 35 ? <span style={{ color:"#d63a44", fontWeight:900 }}>・猛暑日予想</span>
+                  : wx.today >= 33 ? <span style={{ color:"#e07a1a", fontWeight:900 }}>・厳しい暑さ</span>
+                  : wx.dw > 0 ? <span style={{ color:"#c96a2e" }}>・暑い一日</span>
+                  : wx.dw < 0 ? <span style={{ color:"#3d8fd1" }}>・涼しい一日</span>
+                  : null}
+              </div>
+            )}
           </div>
           {wx && (
-            <>
-              <div style={{ width:1, alignSelf:"stretch", background:"var(--line)", flexShrink:0 }} />
-              <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
-                <span style={{ fontSize:38, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
-                <span style={{ fontSize:28, fontWeight:900 }}><span style={{ color:"#e0555f" }}>{wx.today}°</span><span style={{ color:"var(--faint)", fontSize:20 }}> / </span><span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span></span>
-              </div>
-            </>
+            <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+              <span style={{ fontSize:34, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
+              <span style={{ fontSize:26, fontWeight:900, whiteSpace:"nowrap" }}>
+                <span style={{ color:"#e0555f" }}>{wx.today}°</span>
+                <span style={{ color:"var(--faint)", fontSize:19 }}>/</span>
+                <span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span>
+              </span>
+            </div>
           )}
         </div>
+
+        {/* 気温推移：昨日→今日→明日 */}
+        {wx && wx.series && (() => {
+          const s2 = wx.series;
+          const his = s2.map(d => d.hi).filter(v => v != null);
+          if (his.length < 2) return null;
+          const mx = Math.max(...his), mn = Math.min(...his);
+          const mid = (mx + mn) / 2;
+          const span = Math.max(mx - mn, 5);   // 差が小さい日はなだらかに描く
+          const yOf = (v) => 50 - ((v - mid) / span) * 60;
+          const xOf = (i2) => ((i2 + 0.5) / s2.length) * 100;
+          const P = s2.map((d, i2) => ({ x: xOf(i2), y: d.hi == null ? null : yOf(d.hi) }));
+          const valid = P.filter(pt => pt.y != null);
+          let dPath = "";
+          valid.forEach((pt, k) => {
+            if (k === 0) { dPath += "M " + pt.x + " " + pt.y; }
+            else {
+              const q = valid[k-1], mid = (q.x + pt.x) / 2;
+              dPath += " C " + mid + " " + q.y + " " + mid + " " + pt.y + " " + pt.x + " " + pt.y;
+            }
+          });
+          const areaPath = dPath + " L " + valid[valid.length-1].x + " 100 L " + valid[0].x + " 100 Z";
+          return (
+            <div style={{ marginTop:9 }}>
+              <div style={{ display:"flex" }}>
+                {s2.map((d, i2) => (
+                  <div key={i2} style={{ flex:1, textAlign:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:800, color: i2 === 1 ? "var(--ink)" : "var(--faint)", letterSpacing:"-0.2px" }}>{d.label}</div>
+                    <div style={{ fontSize: i2 === 1 ? 12.5 : 11, fontWeight:800, marginTop:1, whiteSpace:"nowrap" }}>
+                      <span style={{ color: i2 === 1 ? "#e0555f" : "var(--sub)" }}>{d.hi != null ? d.hi + "°" : "—"}</span>
+                      <span style={{ color:"var(--faint)" }}> / </span>
+                      <span style={{ color: i2 === 1 ? "#4a86c5" : "var(--sub)" }}>{d.lo != null ? d.lo + "°" : "—"}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ position:"relative", height:30, marginTop:3 }}>
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position:"absolute", inset:0, width:"100%", height:"100%" }}>
+                  <defs>
+                    <linearGradient id="gdTempFill" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#e0555f" stopOpacity="0.10" />
+                      <stop offset="50%" stopColor="#e0555f" stopOpacity="0.28" />
+                      <stop offset="100%" stopColor="#4a86c5" stopOpacity="0.12" />
+                    </linearGradient>
+                    <linearGradient id="gdTempLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#f0a8ac" />
+                      <stop offset="50%" stopColor="#e0555f" />
+                      <stop offset="100%" stopColor="#93b7d9" />
+                    </linearGradient>
+                  </defs>
+                  <path d={areaPath} fill="url(#gdTempFill)" />
+                  <path d={dPath} fill="none" stroke="url(#gdTempLine)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                </svg>
+                {P.map((pt, i2) => pt.y == null ? null : (
+                  <div key={i2} style={{ position:"absolute", left: pt.x + "%", top: pt.y + "%", transform:"translate(-50%,-50%)",
+                    width: i2 === 1 ? 12 : 9, height: i2 === 1 ? 12 : 9, borderRadius:"50%", background:"#fff",
+                    border: (i2 === 1 ? 2.5 : 2) + "px solid " + (i2 === 1 ? "#e0555f" : "#c7d4e0"),
+                    boxShadow:"0 1px 3px rgba(0,0,0,0.14)" }} />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* カード2：次の販促（行事） */}
