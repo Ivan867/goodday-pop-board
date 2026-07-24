@@ -1795,6 +1795,7 @@ function HeaderWeather() {
     }).catch(() => {});
   }, []);
   if (!w) return null;
+  const emo = c => c <= 1 ? "☀️" : c <= 3 ? "⛅" : c === 45 || c === 48 ? "🌫" : c >= 95 ? "⛈" : c >= 71 && c <= 77 ? "❄️" : c >= 51 ? "🌧" : "☁️";
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1807,7 +1808,7 @@ function HeaderWeather() {
       fontSize: 20,
       lineHeight: 1
     }
-  }, wmoIcon(w.code).e), /*#__PURE__*/React.createElement("span", {
+  }, emo(w.code)), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 16,
       fontWeight: 900,

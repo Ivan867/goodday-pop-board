@@ -635,9 +635,10 @@ function HeaderWeather() {
       .catch(() => {});
   }, []);
   if (!w) return null;
+  const emo = (c) => c <= 1 ? "☀️" : c <= 3 ? "⛅" : (c === 45 || c === 48) ? "🌫" : c >= 95 ? "⛈" : (c >= 71 && c <= 77) ? "❄️" : c >= 51 ? "🌧" : "☁️";
   return (
     <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
-      <span style={{ fontSize:20, lineHeight:1 }}>{wmoIcon(w.code).e}</span>
+      <span style={{ fontSize:20, lineHeight:1 }}>{emo(w.code)}</span>
       <span style={{ fontSize:16, fontWeight:900, whiteSpace:"nowrap" }}>
         <span style={{ color:"#e0555f" }}>{w.hi}°</span>
         <span style={{ color:"var(--faint)", fontSize:13 }}> / </span>
