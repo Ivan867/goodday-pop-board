@@ -902,18 +902,19 @@ function TodayInfoCard() {
     style: {
       background: "#fff",
       borderRadius: 16,
-      padding: "13px 12px",
+      padding: "12px 10px",
       cursor: "pointer"
     }
   }, (() => {
     const dcol = v => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
+    const tm = wx && wx.series && wx.series[2] ? wx.series[2] : null;
     const IconWrap = ({
       children
     }) => /*#__PURE__*/React.createElement("div", {
       style: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
+        width: 32,
+        height: 32,
+        borderRadius: 10,
         background: "var(--soft)",
         color: "var(--primary-soft, #4a7ab0)",
         display: "flex",
@@ -923,12 +924,12 @@ function TodayInfoCard() {
       }
     }, children);
     const trendSvg = /*#__PURE__*/React.createElement("svg", {
-      width: "20",
-      height: "20",
+      width: "17",
+      height: "17",
       viewBox: "0 0 24 24",
       fill: "none",
       stroke: "currentColor",
-      strokeWidth: "2",
+      strokeWidth: "2.1",
       strokeLinecap: "round",
       strokeLinejoin: "round"
     }, /*#__PURE__*/React.createElement("path", {
@@ -937,12 +938,12 @@ function TodayInfoCard() {
       d: "M14 7h6v6"
     }));
     const calSvg = /*#__PURE__*/React.createElement("svg", {
-      width: "20",
-      height: "20",
+      width: "17",
+      height: "17",
       viewBox: "0 0 24 24",
       fill: "none",
       stroke: "currentColor",
-      strokeWidth: "2",
+      strokeWidth: "2.1",
       strokeLinecap: "round",
       strokeLinejoin: "round"
     }, /*#__PURE__*/React.createElement("rect", {
@@ -964,8 +965,8 @@ function TodayInfoCard() {
         minWidth: 0,
         display: "flex",
         alignItems: "center",
-        gap: 9,
-        padding: "0 4px"
+        gap: 6,
+        padding: "0 2px"
       }
     }, /*#__PURE__*/React.createElement(IconWrap, null, icon), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -973,14 +974,14 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10.5,
+        fontSize: 10,
         fontWeight: 800,
         color: "var(--sub)",
         whiteSpace: "nowrap"
       }
     }, label), /*#__PURE__*/React.createElement("div", {
       style: {
-        marginTop: 2,
+        marginTop: 1,
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
@@ -1004,28 +1005,31 @@ function TodayInfoCard() {
       label: "昨日比"
     }, wx ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 14.5,
+        fontSize: 14,
         fontWeight: 900
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)",
-        fontSize: 11.5
+        fontSize: 9.5,
+        fontWeight: 800
       }
-    }, "最高 "), /*#__PURE__*/React.createElement("span", {
+    }, "最高"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: dcol(wx.dy)
       }
     }, sign(wx.dy)), wx.loDiff != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
       style: {
-        color: "var(--faint)"
+        color: "var(--faint)",
+        fontSize: 11
       }
     }, " / "), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)",
-        fontSize: 11.5
+        fontSize: 9.5,
+        fontWeight: 800
       }
-    }, "最低 "), /*#__PURE__*/React.createElement("span", {
+    }, "最低"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: dcol(wx.loDiff)
       }
@@ -1048,7 +1052,33 @@ function TodayInfoCard() {
         fontSize: 12,
         color: "var(--faint)"
       }
-    }, "—")));
+    }, "—")), tm && tm.hi != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement(Cell, {
+      icon: /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 17,
+          lineHeight: 1
+        }
+      }, wmoIcon(wx.tmCode).e),
+      label: "明日"
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 900
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "#e0555f"
+      }
+    }, tm.hi, "°"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "var(--faint)",
+        fontSize: 11
+      }
+    }, " / "), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "#4a86c5"
+      }
+    }, tm.lo != null ? tm.lo + "°" : "—")))));
   })()), (() => {
     const up = [];
     if (hol && hol.date) up.push({
