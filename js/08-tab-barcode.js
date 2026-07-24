@@ -605,10 +605,9 @@ function BarcodeTab() {
       style: {
         position: "relative",
         border: "1px solid #cfd8de",
-        borderLeft: `${forPrint ? "1.5mm" : "4px"} solid ${cc}`,
         borderRadius: 4,
         padding: forPrint ? "2mm 1.5mm" : "3px",
-        paddingTop: comp ? forPrint ? "4.5mm" : "11px" : undefined,
+        paddingTop: comp ? forPrint ? "7mm" : "17px" : undefined,
         breakInside: "avoid",
         display: "grid",
         minWidth: 0,
@@ -627,9 +626,9 @@ function BarcodeTab() {
         top: 0,
         left: 0,
         right: 0,
-        height: forPrint ? "3.6mm" : "9px",
+        height: forPrint ? "6mm" : "15px",
         ...companyPatStyle(comp),
-        borderBottom: `1px solid ${comp.color}`,
+        borderBottom: `1.5px solid ${comp.color}`,
         display: "flex",
         alignItems: "center"
       }
@@ -640,16 +639,16 @@ function BarcodeTab() {
         border: `1px solid ${comp.color}`,
         color: comp.color,
         fontWeight: 900,
-        fontSize: forPrint ? "6.5pt" : "6px",
+        fontSize: forPrint ? "8pt" : "8px",
         borderRadius: 3,
-        padding: forPrint ? "0 1.2mm" : "0 3px",
-        lineHeight: 1.5,
+        padding: forPrint ? "0.3mm 1.5mm" : "1px 4px",
+        lineHeight: 1.4,
         whiteSpace: "nowrap"
       }
     }, comp.name)), tags.length > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         position: "absolute",
-        top: comp ? forPrint ? "0.4mm" : "1px" : forPrint ? "1mm" : "2px",
+        top: comp ? forPrint ? "1.2mm" : "3px" : forPrint ? "1mm" : "2px",
         right: forPrint ? "1.5mm" : "3px",
         fontSize: forPrint ? "8pt" : "7px",
         fontWeight: 800,
