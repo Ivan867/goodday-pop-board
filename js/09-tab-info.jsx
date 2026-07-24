@@ -215,6 +215,7 @@ function TodayInfoCard() {
         today: Math.round(t[i]), yest: Math.round(t[i-1]), dy: Math.round(t[i] - t[i-1]), dw: Math.round(t[i] - t[i-7]), code: d.daily.weather_code[i],
         tmMax: t[i+1] == null ? null : Math.round(t[i+1]), tmCode: d.daily.weather_code[i+1], tmDiff: t[i+1] == null ? null : Math.round(t[i+1] - t[i]),
         tmMin: (mn[i] != null) ? Math.round(mn[i]) : null,
+        loDiff: (mn[i] != null && mn[i-1] != null) ? Math.round(mn[i]) - Math.round(mn[i-1]) : null,
         series: [
           { label:"昨日", hi:r(t[i-1]), lo:r(mn[i-1]) },
           { label:"今日", hi:r(t[i]),   lo:r(mn[i]) },
@@ -287,6 +288,14 @@ function TodayInfoCard() {
     else if (wx.dy <= -3) hint = "昨日より涼しい日。鍋・煮付け・フライなど温か系が動きやすい。";
     else if (rainy) hint = "雨予報。まとめ買い・簡便系の提案が効きやすい日。";
   }
+  let hintShort = "通常展開でOK";
+  if (wx) {
+    if (wx.dy >= 3) hintShort = "刺身・涼味を強めに";
+    else if (wx.dy >= 1) hintShort = "刺身・涼味やや強め";
+    else if (wx.dy <= -3) hintShort = "鍋・温か系を強めに";
+    else if (wx.dy <= -1) hintShort = "温か系やや強め";
+    else if (rainy) hintShort = "まとめ買い・簡便系";
+  }
   const now = new Date();
   const METAL = "repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0.06) 1px, rgba(0,0,0,0.06) 3px), linear-gradient(120deg, #1c3350 0%, #2f4d72 42%, #587aa6 60%, #2f4d72 78%, #1c3350 100%)";
   // 時間帯で変わる空（朝＝日の出／昼＝晴天／夕＝夕焼け／夜＝夜空）。天気が悪い日はやや暗く。
@@ -332,94 +341,49 @@ function TodayInfoCard() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
 
-      {/* カード1：日付・行事・気温推移グラフ */}
-      <div className="ucard" onClick={jumpCal} style={{ position:"relative", background:"#fff", borderRadius:16, padding:"12px 15px 11px", cursor:"pointer", overflow:"hidden" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-          <div style={{ minWidth:0, flex:1 }}>
-            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{jd(now)}（{wd(now)}）{todayLabel && <span style={{ color:"var(--primary)" }}>　{todayLabel}</span>}</div>
-            {wx && (
-              <div style={{ fontSize:11.5, fontWeight:800, marginTop:2 }}>
-                <span style={{ color:"var(--sub)" }}>先週より</span>
-                <span style={{ color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)" }}>{sign(wx.dw)}</span>
-                {wx.today >= 35 ? <span style={{ color:"#d63a44", fontWeight:900 }}>・猛暑日予想</span>
-                  : wx.today >= 33 ? <span style={{ color:"#e07a1a", fontWeight:900 }}>・厳しい暑さ</span>
-                  : wx.dw > 0 ? <span style={{ color:"#c96a2e" }}>・暑い一日</span>
-                  : wx.dw < 0 ? <span style={{ color:"#3d8fd1" }}>・涼しい一日</span>
-                  : null}
+      {/* カード1：昨日比・先週比・売場ヒント */}
+      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, padding:"13px 12px", cursor:"pointer" }}>
+        {(() => {
+          const dcol = (v) => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
+          const IconWrap = ({ children }) => (
+            <div style={{ width:40, height:40, borderRadius:12, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{children}</div>
+          );
+          const trendSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg>;
+          const calSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>;
+          const bulbSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6.5 6.5 0 00-4 11.6c.7.6 1 1.4 1 2.4h6c0-1 .3-1.8 1-2.4A6.5 6.5 0 0012 3z"/></svg>;
+          const Cell = ({ icon, label, children }) => (
+            <div style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:9, padding:"0 4px" }}>
+              <IconWrap>{icon}</IconWrap>
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontSize:10.5, fontWeight:800, color:"var(--sub)", whiteSpace:"nowrap" }}>{label}</div>
+                <div style={{ marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{children}</div>
               </div>
-            )}
-          </div>
-          {wx && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-              <span style={{ fontSize:34, lineHeight:1 }}>{wmoIcon(wx.code).e}</span>
-              <span style={{ fontSize:26, fontWeight:900, whiteSpace:"nowrap" }}>
-                <span style={{ color:"#e0555f" }}>{wx.today}°</span>
-                <span style={{ color:"var(--faint)", fontSize:19 }}>/</span>
-                <span style={{ color:"#4a86c5" }}>{wx.tmMin != null ? wx.tmMin : wx.yest}°</span>
-              </span>
             </div>
-          )}
-        </div>
-
-        {/* 気温推移：昨日→今日→明日 */}
-        {wx && wx.series && (() => {
-          const s2 = wx.series;
-          const his = s2.map(d => d.hi).filter(v => v != null);
-          if (his.length < 2) return null;
-          const mx = Math.max(...his), mn = Math.min(...his);
-          const mid = (mx + mn) / 2;
-          const span = Math.max(mx - mn, 5);   // 差が小さい日はなだらかに描く
-          const yOf = (v) => 50 - ((v - mid) / span) * 60;
-          const xOf = (i2) => ((i2 + 0.5) / s2.length) * 100;
-          const P = s2.map((d, i2) => ({ x: xOf(i2), y: d.hi == null ? null : yOf(d.hi) }));
-          const valid = P.filter(pt => pt.y != null);
-          let dPath = "";
-          valid.forEach((pt, k) => {
-            if (k === 0) { dPath += "M " + pt.x + " " + pt.y; }
-            else {
-              const q = valid[k-1], mid = (q.x + pt.x) / 2;
-              dPath += " C " + mid + " " + q.y + " " + mid + " " + pt.y + " " + pt.x + " " + pt.y;
-            }
-          });
-          const areaPath = dPath + " L " + valid[valid.length-1].x + " 100 L " + valid[0].x + " 100 Z";
+          );
+          const Div = () => <div style={{ width:1, alignSelf:"stretch", background:"var(--line)", flexShrink:0 }} />;
           return (
-            <div style={{ marginTop:9 }}>
-              <div style={{ display:"flex" }}>
-                {s2.map((d, i2) => (
-                  <div key={i2} style={{ flex:1, textAlign:"center" }}>
-                    <div style={{ fontSize:10, fontWeight:800, color: i2 === 1 ? "var(--ink)" : "var(--faint)", letterSpacing:"-0.2px" }}>{d.label}</div>
-                    <div style={{ fontSize: i2 === 1 ? 12.5 : 11, fontWeight:800, marginTop:1, whiteSpace:"nowrap" }}>
-                      <span style={{ color: i2 === 1 ? "#e0555f" : "var(--sub)" }}>{d.hi != null ? d.hi + "°" : "—"}</span>
+            <div style={{ display:"flex", alignItems:"stretch" }}>
+              <Cell icon={trendSvg} label="昨日比">
+                {wx ? (
+                  <span style={{ fontSize:13.5, fontWeight:900 }}>
+                    <span style={{ color:"var(--sub)", fontSize:11 }}>最高 </span>
+                    <span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>
+                    {wx.loDiff != null && <>
                       <span style={{ color:"var(--faint)" }}> / </span>
-                      <span style={{ color: i2 === 1 ? "#4a86c5" : "var(--sub)" }}>{d.lo != null ? d.lo + "°" : "—"}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ position:"relative", height:30, marginTop:3 }}>
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position:"absolute", inset:0, width:"100%", height:"100%" }}>
-                  <defs>
-                    <linearGradient id="gdTempFill" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#e0555f" stopOpacity="0.10" />
-                      <stop offset="50%" stopColor="#e0555f" stopOpacity="0.28" />
-                      <stop offset="100%" stopColor="#4a86c5" stopOpacity="0.12" />
-                    </linearGradient>
-                    <linearGradient id="gdTempLine" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#f0a8ac" />
-                      <stop offset="50%" stopColor="#e0555f" />
-                      <stop offset="100%" stopColor="#93b7d9" />
-                    </linearGradient>
-                  </defs>
-                  <path d={areaPath} fill="url(#gdTempFill)" />
-                  <path d={dPath} fill="none" stroke="url(#gdTempLine)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
-                </svg>
-                {P.map((pt, i2) => pt.y == null ? null : (
-                  <div key={i2} style={{ position:"absolute", left: pt.x + "%", top: pt.y + "%", transform:"translate(-50%,-50%)",
-                    width: i2 === 1 ? 12 : 9, height: i2 === 1 ? 12 : 9, borderRadius:"50%", background:"#fff",
-                    border: (i2 === 1 ? 2.5 : 2) + "px solid " + (i2 === 1 ? "#e0555f" : "#c7d4e0"),
-                    boxShadow:"0 1px 3px rgba(0,0,0,0.14)" }} />
-                ))}
-              </div>
+                      <span style={{ color:"var(--sub)", fontSize:11 }}>最低 </span>
+                      <span style={{ color:dcol(wx.loDiff) }}>{sign(wx.loDiff)}</span>
+                    </>}
+                  </span>
+                ) : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
+              </Cell>
+              <Div />
+              <Cell icon={calSvg} label="先週比">
+                {wx ? <span style={{ fontSize:15, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
+              </Cell>
+              <Div />
+              <Cell icon={bulbSvg} label="売場ヒント">
+                <span style={{ display:"inline-block", fontSize:11, fontWeight:900, color:"var(--primary)", background:"var(--soft)", borderRadius:999, padding:"2px 10px", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis" }}>{hintShort}</span>
+              </Cell>
             </div>
           );
         })()}
@@ -650,4 +614,37 @@ function TodayEventChip() {
   );
 }
 
-;Object.assign(window, { DevTab, PromptAddModal, PromptCard, PromptGuide, PromptTab, TodayEventChip, TodayInfoCard, WeatherWidget });
+
+// ── ヘッダー用：今日の天気アイコン＋最高/最低（軽量・3時間キャッシュ） ──
+function HeaderWeather() {
+  const [w, setW] = useState(null);
+  useEffect(() => {
+    const KEY = "hdrWx1";
+    try {
+      const c = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (c && Date.now() - c.t < 3*3600*1000) { setW(c.w); return; }
+    } catch(e) {}
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d || !d.daily || d.daily.temperature_2m_max[0] == null) return;
+        const w2 = { code: d.daily.weather_code[0], hi: Math.round(d.daily.temperature_2m_max[0]), lo: Math.round(d.daily.temperature_2m_min[0]) };
+        setW(w2);
+        try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), w: w2 })); } catch(e) {}
+      })
+      .catch(() => {});
+  }, []);
+  if (!w) return null;
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
+      <span style={{ fontSize:20, lineHeight:1 }}>{wmoIcon(w.code).e}</span>
+      <span style={{ fontSize:16, fontWeight:900, whiteSpace:"nowrap" }}>
+        <span style={{ color:"#e0555f" }}>{w.hi}°</span>
+        <span style={{ color:"var(--faint)", fontSize:13 }}> / </span>
+        <span style={{ color:"#4a86c5" }}>{w.lo}°</span>
+      </span>
+    </div>
+  );
+}
+
+;Object.assign(window, { DevTab, HeaderWeather, PromptAddModal, PromptCard, PromptGuide, PromptTab, TodayEventChip, TodayInfoCard, WeatherWidget });

@@ -669,6 +669,7 @@ function TodayInfoCard() {
         tmCode: d.daily.weather_code[i + 1],
         tmDiff: t[i + 1] == null ? null : Math.round(t[i + 1] - t[i]),
         tmMin: mn[i] != null ? Math.round(mn[i]) : null,
+        loDiff: mn[i] != null && mn[i - 1] != null ? Math.round(mn[i]) - Math.round(mn[i - 1]) : null,
         series: [{
           label: "昨日",
           hi: r(t[i - 1]),
@@ -821,6 +822,10 @@ function TodayInfoCard() {
   if (wx) {
     if (wx.dy >= 3) hint = "昨日よりグッと暑い日。刺身・たたき・冷たい系が動きやすい。";else if (wx.dy <= -3) hint = "昨日より涼しい日。鍋・煮付け・フライなど温か系が動きやすい。";else if (rainy) hint = "雨予報。まとめ買い・簡便系の提案が効きやすい日。";
   }
+  let hintShort = "通常展開でOK";
+  if (wx) {
+    if (wx.dy >= 3) hintShort = "刺身・涼味を強めに";else if (wx.dy >= 1) hintShort = "刺身・涼味やや強め";else if (wx.dy <= -3) hintShort = "鍋・温か系を強めに";else if (wx.dy <= -1) hintShort = "温か系やや強め";else if (rainy) hintShort = "まとめ買い・簡便系";
+  }
   const now = new Date();
   const METAL = "repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0.06) 1px, rgba(0,0,0,0.06) 3px), linear-gradient(120deg, #1c3350 0%, #2f4d72 42%, #587aa6 60%, #2f4d72 78%, #1c3350 100%)";
   // 時間帯で変わる空（朝＝日の出／昼＝晴天／夕＝夕焼け／夜＝夜空）。天気が悪い日はやや暗く。
@@ -895,240 +900,185 @@ function TodayInfoCard() {
     className: "ucard",
     onClick: jumpCal,
     style: {
-      position: "relative",
       background: "#fff",
       borderRadius: 16,
-      padding: "12px 15px 11px",
-      cursor: "pointer",
-      overflow: "hidden"
+      padding: "13px 12px",
+      cursor: "pointer"
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      minWidth: 0,
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 16,
-      fontWeight: 900,
-      color: "var(--ink)",
-      lineHeight: 1.3,
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, jd(now), "（", wd(now), "）", todayLabel && /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "var(--primary)"
-    }
-  }, "\u3000", todayLabel)), wx && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      fontWeight: 800,
-      marginTop: 2
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "var(--sub)"
-    }
-  }, "先週より"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: wx.dw > 0 ? "#e0555f" : wx.dw < 0 ? "#3d8fd1" : "var(--sub)"
-    }
-  }, sign(wx.dw)), wx.today >= 35 ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#d63a44",
-      fontWeight: 900
-    }
-  }, "・猛暑日予想") : wx.today >= 33 ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#e07a1a",
-      fontWeight: 900
-    }
-  }, "・厳しい暑さ") : wx.dw > 0 ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#c96a2e"
-    }
-  }, "・暑い一日") : wx.dw < 0 ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#3d8fd1"
-    }
-  }, "・涼しい一日") : null)), wx && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 34,
-      lineHeight: 1
-    }
-  }, wmoIcon(wx.code).e), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 26,
-      fontWeight: 900,
-      whiteSpace: "nowrap"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#e0555f"
-    }
-  }, wx.today, "°"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "var(--faint)",
-      fontSize: 19
-    }
-  }, "/"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "#4a86c5"
-    }
-  }, wx.tmMin != null ? wx.tmMin : wx.yest, "°")))), wx && wx.series && (() => {
-    const s2 = wx.series;
-    const his = s2.map(d => d.hi).filter(v => v != null);
-    if (his.length < 2) return null;
-    const mx = Math.max(...his),
-      mn = Math.min(...his);
-    const mid = (mx + mn) / 2;
-    const span = Math.max(mx - mn, 5); // 差が小さい日はなだらかに描く
-    const yOf = v => 50 - (v - mid) / span * 60;
-    const xOf = i2 => (i2 + 0.5) / s2.length * 100;
-    const P = s2.map((d, i2) => ({
-      x: xOf(i2),
-      y: d.hi == null ? null : yOf(d.hi)
+  }, (() => {
+    const dcol = v => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
+    const IconWrap = ({
+      children
+    }) => /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        background: "var(--soft)",
+        color: "var(--primary-soft, #4a7ab0)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0
+      }
+    }, children);
+    const trendSvg = /*#__PURE__*/React.createElement("svg", {
+      width: "20",
+      height: "20",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M3 17l6-6 4 4 7-8"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M14 7h6v6"
     }));
-    const valid = P.filter(pt => pt.y != null);
-    let dPath = "";
-    valid.forEach((pt, k) => {
-      if (k === 0) {
-        dPath += "M " + pt.x + " " + pt.y;
-      } else {
-        const q = valid[k - 1],
-          mid = (q.x + pt.x) / 2;
-        dPath += " C " + mid + " " + q.y + " " + mid + " " + pt.y + " " + pt.x + " " + pt.y;
-      }
-    });
-    const areaPath = dPath + " L " + valid[valid.length - 1].x + " 100 L " + valid[0].x + " 100 Z";
-    return /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 9
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex"
-      }
-    }, s2.map((d, i2) => /*#__PURE__*/React.createElement("div", {
-      key: i2,
+    const calSvg = /*#__PURE__*/React.createElement("svg", {
+      width: "20",
+      height: "20",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("rect", {
+      x: "3",
+      y: "4.5",
+      width: "18",
+      height: "17",
+      rx: "2.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M3 9h18M8 2.5v4M16 2.5v4"
+    }));
+    const bulbSvg = /*#__PURE__*/React.createElement("svg", {
+      width: "20",
+      height: "20",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M9 18h6M10 21h4"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M12 3a6.5 6.5 0 00-4 11.6c.7.6 1 1.4 1 2.4h6c0-1 .3-1.8 1-2.4A6.5 6.5 0 0012 3z"
+    }));
+    const Cell = ({
+      icon,
+      label,
+      children
+    }) => /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        textAlign: "center"
+        minWidth: 0,
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        padding: "0 4px"
+      }
+    }, /*#__PURE__*/React.createElement(IconWrap, null, icon), /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: 0
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10,
+        fontSize: 10.5,
         fontWeight: 800,
-        color: i2 === 1 ? "var(--ink)" : "var(--faint)",
-        letterSpacing: "-0.2px"
-      }
-    }, d.label), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: i2 === 1 ? 12.5 : 11,
-        fontWeight: 800,
-        marginTop: 1,
+        color: "var(--sub)",
         whiteSpace: "nowrap"
+      }
+    }, label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 2,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, children)));
+    const Div = () => /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 1,
+        alignSelf: "stretch",
+        background: "var(--line)",
+        flexShrink: 0
+      }
+    });
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "stretch"
+      }
+    }, /*#__PURE__*/React.createElement(Cell, {
+      icon: trendSvg,
+      label: "昨日比"
+    }, wx ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 900
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        color: i2 === 1 ? "#e0555f" : "var(--sub)"
+        color: "var(--sub)",
+        fontSize: 11
       }
-    }, d.hi != null ? d.hi + "°" : "—"), /*#__PURE__*/React.createElement("span", {
+    }, "最高 "), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: dcol(wx.dy)
+      }
+    }, sign(wx.dy)), wx.loDiff != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--faint)"
       }
     }, " / "), /*#__PURE__*/React.createElement("span", {
       style: {
-        color: i2 === 1 ? "#4a86c5" : "var(--sub)"
+        color: "var(--sub)",
+        fontSize: 11
       }
-    }, d.lo != null ? d.lo + "°" : "—"))))), /*#__PURE__*/React.createElement("div", {
+    }, "最低 "), /*#__PURE__*/React.createElement("span", {
       style: {
-        position: "relative",
-        height: 30,
-        marginTop: 3
+        color: dcol(wx.loDiff)
       }
-    }, /*#__PURE__*/React.createElement("svg", {
-      viewBox: "0 0 100 100",
-      preserveAspectRatio: "none",
+    }, sign(wx.loDiff)))) : /*#__PURE__*/React.createElement("span", {
       style: {
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%"
+        fontSize: 12,
+        color: "var(--faint)"
       }
-    }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
-      id: "gdTempFill",
-      x1: "0",
-      y1: "0",
-      x2: "1",
-      y2: "0"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#e0555f",
-      stopOpacity: "0.10"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "50%",
-      stopColor: "#e0555f",
-      stopOpacity: "0.28"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#4a86c5",
-      stopOpacity: "0.12"
-    })), /*#__PURE__*/React.createElement("linearGradient", {
-      id: "gdTempLine",
-      x1: "0",
-      y1: "0",
-      x2: "1",
-      y2: "0"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#f0a8ac"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "50%",
-      stopColor: "#e0555f"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#93b7d9"
-    }))), /*#__PURE__*/React.createElement("path", {
-      d: areaPath,
-      fill: "url(#gdTempFill)"
-    }), /*#__PURE__*/React.createElement("path", {
-      d: dPath,
-      fill: "none",
-      stroke: "url(#gdTempLine)",
-      strokeWidth: "2.5",
-      vectorEffect: "non-scaling-stroke",
-      strokeLinecap: "round"
-    })), P.map((pt, i2) => pt.y == null ? null : /*#__PURE__*/React.createElement("div", {
-      key: i2,
+    }, "—")), /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement(Cell, {
+      icon: calSvg,
+      label: "先週比"
+    }, wx ? /*#__PURE__*/React.createElement("span", {
       style: {
-        position: "absolute",
-        left: pt.x + "%",
-        top: pt.y + "%",
-        transform: "translate(-50%,-50%)",
-        width: i2 === 1 ? 12 : 9,
-        height: i2 === 1 ? 12 : 9,
-        borderRadius: "50%",
-        background: "#fff",
-        border: (i2 === 1 ? 2.5 : 2) + "px solid " + (i2 === 1 ? "#e0555f" : "#c7d4e0"),
-        boxShadow: "0 1px 3px rgba(0,0,0,0.14)"
+        fontSize: 15,
+        fontWeight: 900,
+        color: dcol(wx.dw)
       }
-    }))));
+    }, sign(wx.dw)) : /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: "var(--faint)"
+      }
+    }, "—")), /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement(Cell, {
+      icon: bulbSvg,
+      label: "売場ヒント"
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "inline-block",
+        fontSize: 11,
+        fontWeight: 900,
+        color: "var(--primary)",
+        background: "var(--soft)",
+        borderRadius: 999,
+        padding: "2px 10px",
+        maxWidth: "100%",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, hintShort)));
   })()), (() => {
     const up = [];
     if (hol && hol.date) up.push({
@@ -1815,9 +1765,73 @@ function TodayEventChip() {
     }
   }, label);
 }
+
+// ── ヘッダー用：今日の天気アイコン＋最高/最低（軽量・3時間キャッシュ） ──
+function HeaderWeather() {
+  const [w, setW] = useState(null);
+  useEffect(() => {
+    const KEY = "hdrWx1";
+    try {
+      const c = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (c && Date.now() - c.t < 3 * 3600 * 1000) {
+        setW(c.w);
+        return;
+      }
+    } catch (e) {}
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1").then(r => r.ok ? r.json() : null).then(d => {
+      if (!d || !d.daily || d.daily.temperature_2m_max[0] == null) return;
+      const w2 = {
+        code: d.daily.weather_code[0],
+        hi: Math.round(d.daily.temperature_2m_max[0]),
+        lo: Math.round(d.daily.temperature_2m_min[0])
+      };
+      setW(w2);
+      try {
+        localStorage.setItem(KEY, JSON.stringify({
+          t: Date.now(),
+          w: w2
+        }));
+      } catch (e) {}
+    }).catch(() => {});
+  }, []);
+  if (!w) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 20,
+      lineHeight: 1
+    }
+  }, wmoIcon(w.code).e), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      fontWeight: 900,
+      whiteSpace: "nowrap"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#e0555f"
+    }
+  }, w.hi, "°"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--faint)",
+      fontSize: 13
+    }
+  }, " / "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#4a86c5"
+    }
+  }, w.lo, "°")));
+}
 ;
 Object.assign(window, {
   DevTab,
+  HeaderWeather,
   PromptAddModal,
   PromptCard,
   PromptGuide,

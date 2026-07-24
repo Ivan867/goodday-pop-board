@@ -416,13 +416,15 @@ function App() {
       fontWeight: 900,
       color: "var(--primary)",
       whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      minWidth: 0,
-      flex: 1,
+      flexShrink: 0,
       letterSpacing: "-0.5px"
     }
-  }, "鮮魚ポップ共有"), /*#__PURE__*/React.createElement("button", {
+  }, "鮮魚共有"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }), /*#__PURE__*/React.createElement("button", {
     className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
