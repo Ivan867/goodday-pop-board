@@ -403,7 +403,6 @@ function TodayInfoCard() {
                   <span style={{ fontSize:30, flexShrink:0 }}>{art}</span>
                   <div style={{ minWidth:0 }}>
                     <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3 }}>{main.name}　<span style={{ fontSize:13, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span>{main.food ? <span style={{ fontSize:12, color:"var(--sub)" }}>〈{main.food}〉</span> : null}</div>
-                    {nextItems[0] && <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:3 }}>次：{jd(nextItems[0].d)} {nextItems[0].name}</div>}
                   </div>
                 </div>
               </div>

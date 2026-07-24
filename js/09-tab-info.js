@@ -1136,14 +1136,7 @@ function TodayInfoCard() {
         fontSize: 12,
         color: "var(--sub)"
       }
-    }, "〈", main.food, "〉") : null), nextItems[0] && /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 11.5,
-        color: "var(--sub)",
-        fontWeight: 700,
-        marginTop: 3
-      }
-    }, "次：", jd(nextItems[0].d), " ", nextItems[0].name)))), /*#__PURE__*/React.createElement("div", {
+    }, "〈", main.food, "〉") : null)))), /*#__PURE__*/React.createElement("div", {
       style: {
         flexShrink: 0,
         width: 92,
