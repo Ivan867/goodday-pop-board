@@ -954,20 +954,6 @@ function TodayInfoCard() {
     }), /*#__PURE__*/React.createElement("path", {
       d: "M3 9h18M8 2.5v4M16 2.5v4"
     }));
-    const bulbSvg = /*#__PURE__*/React.createElement("svg", {
-      width: "20",
-      height: "20",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2",
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }, /*#__PURE__*/React.createElement("path", {
-      d: "M9 18h6M10 21h4"
-    }), /*#__PURE__*/React.createElement("path", {
-      d: "M12 3a6.5 6.5 0 00-4 11.6c.7.6 1 1.4 1 2.4h6c0-1 .3-1.8 1-2.4A6.5 6.5 0 0012 3z"
-    }));
     const Cell = ({
       icon,
       label,
@@ -1018,13 +1004,13 @@ function TodayInfoCard() {
       label: "昨日比"
     }, wx ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13.5,
+        fontSize: 14.5,
         fontWeight: 900
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)",
-        fontSize: 11
+        fontSize: 11.5
       }
     }, "最高 "), /*#__PURE__*/React.createElement("span", {
       style: {
@@ -1037,7 +1023,7 @@ function TodayInfoCard() {
     }, " / "), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)",
-        fontSize: 11
+        fontSize: 11.5
       }
     }, "最低 "), /*#__PURE__*/React.createElement("span", {
       style: {
@@ -1062,23 +1048,7 @@ function TodayInfoCard() {
         fontSize: 12,
         color: "var(--faint)"
       }
-    }, "—")), /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement(Cell, {
-      icon: bulbSvg,
-      label: "売場ヒント"
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "inline-block",
-        fontSize: 11,
-        fontWeight: 900,
-        color: "var(--primary)",
-        background: "var(--soft)",
-        borderRadius: 999,
-        padding: "2px 10px",
-        maxWidth: "100%",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
-      }
-    }, hintShort)));
+    }, "—")));
   })()), (() => {
     const up = [];
     if (hol && hol.date) up.push({

@@ -350,7 +350,6 @@ function TodayInfoCard() {
           );
           const trendSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg>;
           const calSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>;
-          const bulbSvg = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6.5 6.5 0 00-4 11.6c.7.6 1 1.4 1 2.4h6c0-1 .3-1.8 1-2.4A6.5 6.5 0 0012 3z"/></svg>;
           const Cell = ({ icon, label, children }) => (
             <div style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:9, padding:"0 4px" }}>
               <IconWrap>{icon}</IconWrap>
@@ -365,12 +364,12 @@ function TodayInfoCard() {
             <div style={{ display:"flex", alignItems:"stretch" }}>
               <Cell icon={trendSvg} label="昨日比">
                 {wx ? (
-                  <span style={{ fontSize:13.5, fontWeight:900 }}>
-                    <span style={{ color:"var(--sub)", fontSize:11 }}>最高 </span>
+                  <span style={{ fontSize:14.5, fontWeight:900 }}>
+                    <span style={{ color:"var(--sub)", fontSize:11.5 }}>最高 </span>
                     <span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>
                     {wx.loDiff != null && <>
                       <span style={{ color:"var(--faint)" }}> / </span>
-                      <span style={{ color:"var(--sub)", fontSize:11 }}>最低 </span>
+                      <span style={{ color:"var(--sub)", fontSize:11.5 }}>最低 </span>
                       <span style={{ color:dcol(wx.loDiff) }}>{sign(wx.loDiff)}</span>
                     </>}
                   </span>
@@ -379,10 +378,6 @@ function TodayInfoCard() {
               <Div />
               <Cell icon={calSvg} label="先週比">
                 {wx ? <span style={{ fontSize:15, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
-              </Cell>
-              <Div />
-              <Cell icon={bulbSvg} label="売場ヒント">
-                <span style={{ display:"inline-block", fontSize:11, fontWeight:900, color:"var(--primary)", background:"var(--soft)", borderRadius:999, padding:"2px 10px", maxWidth:"100%", overflow:"hidden", textOverflow:"ellipsis" }}>{hintShort}</span>
               </Cell>
             </div>
           );
