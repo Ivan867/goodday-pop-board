@@ -329,7 +329,13 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
         <div style={{ textAlign:"center", padding:"70px 40px", color:"var(--faint)" }}>
           <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.5, marginBottom:14 }}><path d="M3 12c2-4 6-6 10-6 3 0 5 1 6.5 2.5C21 10 21.5 12 21.5 12S21 14 19.5 15.5C18 17 16 18 13 18c-4 0-8-2-10-6z"/><path d="M3 12l-1.5-2.5M3 12l-1.5 2.5"/><circle cx="15" cy="10.5" r="0.9" fill="currentColor" stroke="none"/></svg>
           <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>一致するポップが見つかりません</div>
-          <div style={{ fontSize:12.5, marginTop:6 }}>別のキーワードで試してみてください</div>
+          <div style={{ fontSize:12.5, marginTop:6 }}>{(fStore || fCat || fGenre) ? "絞り込みが多すぎるかもしれません" : "別のキーワードで試してみてください"}</div>
+          {(fStore || fCat || fGenre || search) && (
+            <button onClick={(e)=>{ e.stopPropagation(); setFStore(""); setFCat(""); setFGenre(""); setSearch(""); }}
+              style={{ marginTop:16, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer", boxShadow:"0 2px 8px rgba(74,122,176,0.3)" }}>
+              絞り込みを外す
+            </button>
+          )}
         </div>
       ) : (
         <>

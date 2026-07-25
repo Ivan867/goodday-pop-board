@@ -195,6 +195,15 @@ function App() {
   })();
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
+  const [toast, setToast] = useState(null);
+  useEffect(() => {
+    const h = e => {
+      setToast(e.detail || "完了しました");
+      setTimeout(() => setToast(null), 2200);
+    };
+    window.addEventListener("appToast", h);
+    return () => window.removeEventListener("appToast", h);
+  }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
@@ -597,7 +606,52 @@ function App() {
       justifyContent: "center",
       animation: "fadeUp .25s ease"
     }
-  }, "↑"), /*#__PURE__*/React.createElement("div", {
+  }, "↑"), toast && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      left: 0,
+      right: 0,
+      bottom: "calc(96px + env(safe-area-inset-bottom))",
+      zIndex: 400,
+      display: "flex",
+      justifyContent: "center",
+      pointerEvents: "none",
+      padding: "0 24px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      background: "rgba(26,43,60,0.94)",
+      color: "#fff",
+      borderRadius: 999,
+      padding: "11px 20px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      boxShadow: "0 6px 20px rgba(0,0,0,0.28)",
+      animation: "fadeUp .28s ease",
+      backdropFilter: "blur(8px)",
+      maxWidth: "100%"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "17",
+    height: "17",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#6fe08a",
+    strokeWidth: "2.8",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 12.5l5 5L20 6.5"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, toast))), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       left: 0,

@@ -415,7 +415,8 @@ function TodayInfoCard() {
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <span style={{ fontSize:30, flexShrink:0 }}>{art}</span>
                   <div style={{ minWidth:0 }}>
-                    <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3 }}>{main.name}　<span style={{ fontSize:13, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span>{main.food ? <span style={{ fontSize:12, color:"var(--sub)" }}>〈{main.food}〉</span> : null}</div>
+                    <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}　<span style={{ fontSize:13, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span></div>
+                    {main.food ? <div style={{ fontSize:11, color:"var(--sub)", fontWeight:700, marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</div> : null}
                   </div>
                 </div>
               </div>

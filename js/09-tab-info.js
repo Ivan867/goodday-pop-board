@@ -1153,7 +1153,10 @@ function TodayInfoCard() {
         fontSize: 16,
         fontWeight: 900,
         color: "var(--ink)",
-        lineHeight: 1.3
+        lineHeight: 1.3,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       }
     }, main.name, "\u3000", /*#__PURE__*/React.createElement("span", {
       style: {
@@ -1161,12 +1164,17 @@ function TodayInfoCard() {
         color: "var(--sub)",
         fontWeight: 800
       }
-    }, jd(main.d), "（", wd(main.d), "）"), main.food ? /*#__PURE__*/React.createElement("span", {
+    }, jd(main.d), "（", wd(main.d), "）")), main.food ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
-        color: "var(--sub)"
+        fontSize: 11,
+        color: "var(--sub)",
+        fontWeight: 700,
+        marginTop: 2,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       }
-    }, "〈", main.food, "〉") : null)))), /*#__PURE__*/React.createElement("div", {
+    }, main.food) : null))), /*#__PURE__*/React.createElement("div", {
       style: {
         flexShrink: 0,
         width: 92,

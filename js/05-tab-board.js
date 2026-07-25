@@ -801,7 +801,27 @@ function SearchTab({
       fontSize: 12.5,
       marginTop: 6
     }
-  }, "別のキーワードで試してみてください")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, fStore || fCat || fGenre ? "絞り込みが多すぎるかもしれません" : "別のキーワードで試してみてください"), (fStore || fCat || fGenre || search) && /*#__PURE__*/React.createElement("button", {
+    onClick: e => {
+      e.stopPropagation();
+      setFStore("");
+      setFCat("");
+      setFGenre("");
+      setSearch("");
+    },
+    style: {
+      marginTop: 16,
+      border: "none",
+      background: "var(--primary-soft, #4a7ab0)",
+      color: "#fff",
+      borderRadius: 999,
+      padding: "10px 22px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      boxShadow: "0 2px 8px rgba(74,122,176,0.3)"
+    }
+  }, "絞り込みを外す")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",

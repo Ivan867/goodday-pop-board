@@ -95,6 +95,15 @@ function App() {
   })();
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
+  const [toast, setToast] = useState(null);
+  useEffect(() => {
+    const h = (e) => {
+      setToast(e.detail || "完了しました");
+      setTimeout(() => setToast(null), 2200);
+    };
+    window.addEventListener("appToast", h);
+    return () => window.removeEventListener("appToast", h);
+  }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
@@ -244,6 +253,15 @@ function App() {
       {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
         <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
           style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(46px + env(safe-area-inset-bottom))" : "calc(30px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
+      )}
+
+      {toast && (
+        <div style={{ position:"fixed", left:0, right:0, bottom:"calc(96px + env(safe-area-inset-bottom))", zIndex:400, display:"flex", justifyContent:"center", pointerEvents:"none", padding:"0 24px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(26,43,60,0.94)", color:"#fff", borderRadius:999, padding:"11px 20px", fontSize:13.5, fontWeight:800, boxShadow:"0 6px 20px rgba(0,0,0,0.28)", animation:"fadeUp .28s ease", backdropFilter:"blur(8px)", maxWidth:"100%" }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6fe08a" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+            <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{toast}</span>
+          </div>
+        </div>
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 18px), 2px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 16px", pointerEvents:"none" }}>

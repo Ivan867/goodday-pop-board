@@ -45,6 +45,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
     try {
       const image_url = await api.upload(file);
       const pop = await api.insert({ store_name: store, product_name: product.trim(), category, image_url, likes: 0, author: author.trim(), comment: comment.trim() });
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail: "投稿しました" })); } catch(e) {}
       onSuccess(pop);
     } catch(e) { setError("エラー: " + e.message); }
     finally { setLoading(false); }
@@ -114,8 +115,13 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   const navIdx = navList ? navList.findIndex(x => x.id === pop.id) : -1;
   const hasPrev = navList && navIdx > 0;
   const hasNext = navList && navIdx >= 0 && navIdx < navList.length - 1;
+  const [slideAnim, setSlideAnim] = useState(null);   // "up" = 次へ移動中
   const goPrev = () => { if (hasPrev && onNav) onNav(navList[navIdx - 1]); };
-  const goNext = () => { if (hasNext && onNav) onNav(navList[navIdx + 1]); };
+  const goNext = () => {
+    if (!hasNext || !onNav) return;
+    setSlideAnim("up");
+    setTimeout(() => { onNav(navList[navIdx + 1]); setSlideAnim(null); }, 180);
+  };
   const touchY = useRef(null);
   const onImgTouchStart = (e) => { touchY.current = e.touches[0].clientY; };
   const onImgTouchEnd = (e) => {
@@ -254,7 +260,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <div id="pd-sheet" style={{ background:"#fff", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)", WebkitOverflowScrolling:"touch" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
-        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh" }}>
+        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url} style={{ maxWidth:"100%", maxHeight:"64vh", objectFit:"contain", display:"block" }} />
 

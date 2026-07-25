@@ -72,6 +72,11 @@ function UploadModal({
         author: author.trim(),
         comment: comment.trim()
       });
+      try {
+        window.dispatchEvent(new CustomEvent("appToast", {
+          detail: "投稿しました"
+        }));
+      } catch (e) {}
       onSuccess(pop);
     } catch (e) {
       setError("エラー: " + e.message);
@@ -358,11 +363,17 @@ function PopDetail({
   const navIdx = navList ? navList.findIndex(x => x.id === pop.id) : -1;
   const hasPrev = navList && navIdx > 0;
   const hasNext = navList && navIdx >= 0 && navIdx < navList.length - 1;
+  const [slideAnim, setSlideAnim] = useState(null); // "up" = 次へ移動中
   const goPrev = () => {
     if (hasPrev && onNav) onNav(navList[navIdx - 1]);
   };
   const goNext = () => {
-    if (hasNext && onNav) onNav(navList[navIdx + 1]);
+    if (!hasNext || !onNav) return;
+    setSlideAnim("up");
+    setTimeout(() => {
+      onNav(navList[navIdx + 1]);
+      setSlideAnim(null);
+    }, 180);
   };
   const touchY = useRef(null);
   const onImgTouchStart = e => {
@@ -628,7 +639,10 @@ function PopDetail({
       alignItems: "center",
       justifyContent: "center",
       minHeight: "52vh",
-      maxHeight: "64vh"
+      maxHeight: "64vh",
+      transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)",
+      opacity: slideAnim === "up" ? 0.25 : 1,
+      transition: "transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
