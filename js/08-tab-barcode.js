@@ -444,32 +444,46 @@ function BarcodeTab() {
     pat: "grid"
   } // グレー・格子
   ];
-  const companyPatStyle = c => {
+  const companyPatStyle = (c, forPrint) => {
     if (!c) return {
       background: "#eef1f4"
     };
     const col = c.color;
+    // 印刷では細い線が飛ぶため、線を太く・間隔を広くする
+    const t = forPrint ? 3 : 2; // 線の太さ
+    const g = forPrint ? 7 : 5.2; // 1周期の幅
+    const base = {
+      WebkitPrintColorAdjust: "exact",
+      printColorAdjust: "exact"
+    };
     if (c.pat === "yoko") return {
-      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)`
+      ...base,
+      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g}px)`
     };
     if (c.pat === "tate") return {
-      background: `repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)`
+      ...base,
+      background: `repeating-linear-gradient(90deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g}px)`
     };
     if (c.pat === "naname") return {
-      background: `repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)`
+      ...base,
+      background: `repeating-linear-gradient(45deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g + 1}px)`
     };
     if (c.pat === "naname2") return {
-      background: `repeating-linear-gradient(-45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)`
+      ...base,
+      background: `repeating-linear-gradient(-45deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g + 1}px)`
     };
     if (c.pat === "dot") return {
-      background: `radial-gradient(${col} 1.2px, transparent 1.35px)`,
-      backgroundSize: "5.5px 5.5px",
-      backgroundColor: "#fff"
+      ...base,
+      backgroundColor: "#fff",
+      backgroundImage: `radial-gradient(${col} ${forPrint ? 2 : 1.6}px, transparent ${forPrint ? 2.2 : 1.8}px)`,
+      backgroundSize: forPrint ? "7px 7px" : "5.5px 5.5px"
     };
     if (c.pat === "grid") return {
-      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.3px, transparent 1.3px, transparent 5px), repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.3px, #fff 1.3px, #fff 5px)`
+      ...base,
+      background: `repeating-linear-gradient(0deg, ${col} 0px, ${col} ${t - 0.5}px, transparent ${t - 0.5}px, transparent ${g}px), repeating-linear-gradient(90deg, ${col} 0px, ${col} ${t - 0.5}px, #fff ${t - 0.5}px, #fff ${g}px)`
     };
     return {
+      ...base,
       background: col
     };
   };
@@ -627,7 +641,7 @@ function BarcodeTab() {
         left: 0,
         right: 0,
         height: forPrint ? "6mm" : "15px",
-        ...companyPatStyle(comp),
+        ...companyPatStyle(comp, forPrint),
         borderBottom: `1.5px solid ${comp.color}`,
         display: "flex",
         alignItems: "center"

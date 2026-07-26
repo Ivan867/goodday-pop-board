@@ -90,6 +90,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 #barcode-print-portal { display: none; }
 @media print {
   @page { size: A4 landscape; margin: 8mm; }
+  /* 印刷時に背景（納品会社の色・模様）を省略させない */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   /* 固定シェル（画面ずれ対策）を印刷時だけ解除：しないと1ページ分で切れて2枚目以降が消える */
   html, body { position: static !important; overflow: visible !important; width: auto !important; height: auto !important; }
   #root { position: static !important; overflow: visible !important; height: auto !important; }
@@ -125,21 +127,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260724g"></script>
-<script src="js/02-api.js?v=20260724g"></script>
-<script src="js/03-utils.js?v=20260724g"></script>
-<script src="js/04-shared.js?v=20260724g"></script>
-<script src="js/05-tab-board.js?v=20260724g"></script>
-<script src="js/06-tab-create.js?v=20260724g"></script>
-<script src="js/07-tab-floor.js?v=20260724g"></script>
-<script src="js/09-tab-info.js?v=20260724g"></script>
-<script src="js/11-tab-check-fish.js?v=20260724g"></script>
-<script src="js/12-tab-learn.js?v=20260724g"></script>
-<script src="js/14-app.js?v=20260724g"></script>
+<script src="js/01-config.js?v=20260724h"></script>
+<script src="js/02-api.js?v=20260724h"></script>
+<script src="js/03-utils.js?v=20260724h"></script>
+<script src="js/04-shared.js?v=20260724h"></script>
+<script src="js/05-tab-board.js?v=20260724h"></script>
+<script src="js/06-tab-create.js?v=20260724h"></script>
+<script src="js/07-tab-floor.js?v=20260724h"></script>
+<script src="js/09-tab-info.js?v=20260724h"></script>
+<script src="js/11-tab-check-fish.js?v=20260724h"></script>
+<script src="js/12-tab-learn.js?v=20260724h"></script>
+<script src="js/14-app.js?v=20260724h"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260724g";
+window.APP_VER = "20260724h";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

@@ -236,16 +236,20 @@ function BarcodeTab() {
     { key:"nihonshokken", name:"日本食研", color:"#8a6d1f", pat:"tate" },  // 金茶・縦しま
     { key:"honbu",     name:"本部",      color:"#455a64", pat:"grid" },   // グレー・格子
   ];
-  const companyPatStyle = (c) => {
+  const companyPatStyle = (c, forPrint) => {
     if (!c) return { background:"#eef1f4" };
     const col = c.color;
-    if (c.pat === "yoko")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
-    if (c.pat === "tate")   return { background:`repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.6px, #fff 1.6px, #fff 4.6px)` };
-    if (c.pat === "naname") return { background:`repeating-linear-gradient(45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)` };
-    if (c.pat === "naname2") return { background:`repeating-linear-gradient(-45deg, ${col} 0px, ${col} 2px, #fff 2px, #fff 5.6px)` };
-    if (c.pat === "dot")    return { background:`radial-gradient(${col} 1.2px, transparent 1.35px)`, backgroundSize:"5.5px 5.5px", backgroundColor:"#fff" };
-    if (c.pat === "grid")   return { background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} 1.3px, transparent 1.3px, transparent 5px), repeating-linear-gradient(90deg, ${col} 0px, ${col} 1.3px, #fff 1.3px, #fff 5px)` };
-    return { background: col };
+    // 印刷では細い線が飛ぶため、線を太く・間隔を広くする
+    const t = forPrint ? 3 : 2;        // 線の太さ
+    const g = forPrint ? 7 : 5.2;      // 1周期の幅
+    const base = { WebkitPrintColorAdjust:"exact", printColorAdjust:"exact" };
+    if (c.pat === "yoko")   return { ...base, background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g}px)` };
+    if (c.pat === "tate")   return { ...base, background:`repeating-linear-gradient(90deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g}px)` };
+    if (c.pat === "naname") return { ...base, background:`repeating-linear-gradient(45deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g+1}px)` };
+    if (c.pat === "naname2") return { ...base, background:`repeating-linear-gradient(-45deg, ${col} 0px, ${col} ${t}px, #fff ${t}px, #fff ${g+1}px)` };
+    if (c.pat === "dot")    return { ...base, backgroundColor:"#fff", backgroundImage:`radial-gradient(${col} ${forPrint?2:1.6}px, transparent ${forPrint?2.2:1.8}px)`, backgroundSize: forPrint?"7px 7px":"5.5px 5.5px" };
+    if (c.pat === "grid")   return { ...base, background:`repeating-linear-gradient(0deg, ${col} 0px, ${col} ${t-0.5}px, transparent ${t-0.5}px, transparent ${g}px), repeating-linear-gradient(90deg, ${col} 0px, ${col} ${t-0.5}px, #fff ${t-0.5}px, #fff ${g}px)` };
+    return { ...base, background: col };
   };
   const [bcCompany, setBcCompany] = useState(() => {
     try { return JSON.parse(localStorage.getItem("bcCompanyMap") || "{}"); } catch(e) { return {}; }
@@ -326,7 +330,7 @@ function BarcodeTab() {
           <div key={it.bcode} className="bc-label"
             style={{ position:"relative", border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", paddingTop: comp ? (forPrint?"7mm":"17px") : undefined, breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
             {comp && (
-              <div style={{ position:"absolute", top:0, left:0, right:0, height: forPrint?"6mm":"15px", ...companyPatStyle(comp), borderBottom:`1.5px solid ${comp.color}`, display:"flex", alignItems:"center" }}>
+              <div style={{ position:"absolute", top:0, left:0, right:0, height: forPrint?"6mm":"15px", ...companyPatStyle(comp, forPrint), borderBottom:`1.5px solid ${comp.color}`, display:"flex", alignItems:"center" }}>
                 <span style={{ marginLeft: forPrint?"1.5mm":"3px", background:"#fff", border:`1px solid ${comp.color}`, color:comp.color, fontWeight:900, fontSize: forPrint?"8pt":"8px", borderRadius:3, padding: forPrint?"0.3mm 1.5mm":"1px 4px", lineHeight:1.4, whiteSpace:"nowrap" }}>{comp.name}</span>
               </div>
             )}
