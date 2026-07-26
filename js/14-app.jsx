@@ -211,7 +211,8 @@ function App() {
       )}
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", overflow:"hidden" }}>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"6px 16px 3px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:10, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
-          <div className="app-title" style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.5px" }}>鮮魚共有</div>
+          <div className="app-title hig-pill" onClick={() => { setRadialOpen(false); setMoreOpen(false); setTab("board"); const el = scroller(); if (el) el.scrollTo({ top: 0, behavior: "smooth" }); }}
+            style={{ fontSize:19, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.5px", cursor:"pointer" }} title="一覧に戻る">鮮魚共有</div>
           <HeaderWeather />
           <div style={{ flex:1, minWidth:0 }} />
           <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:14, letterSpacing:"-0.2px", height:38, padding:"0 18px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }}>

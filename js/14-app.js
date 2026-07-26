@@ -419,15 +419,27 @@ function App() {
       pointerEvents: scrollP > 0.7 ? "none" : "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "app-title",
+    className: "app-title hig-pill",
+    onClick: () => {
+      setRadialOpen(false);
+      setMoreOpen(false);
+      setTab("board");
+      const el = scroller();
+      if (el) el.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    },
     style: {
       fontSize: 19,
       fontWeight: 900,
       color: "var(--primary)",
       whiteSpace: "nowrap",
       flexShrink: 0,
-      letterSpacing: "-0.5px"
-    }
+      letterSpacing: "-0.5px",
+      cursor: "pointer"
+    },
+    title: "一覧に戻る"
   }, "鮮魚共有"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
