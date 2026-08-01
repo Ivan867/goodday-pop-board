@@ -127,7 +127,7 @@ function BoardTab({
       padding: "4px 16px 185px"
     }
   }, /*#__PURE__*/React.createElement(TodayInfoCard, null), /*#__PURE__*/React.createElement("a", {
-    href: "https://docs.google.com/spreadsheets/d/12tBvxjhetRweGhxRiuy8ZnTxfqEUu_i3atFiXGmcvxY/edit?usp=sharing",
+    href: "/pop10.pdf",
     target: "_blank",
     rel: "noopener noreferrer",
     className: "ucard",
@@ -178,7 +178,7 @@ function BoardTab({
       color: "var(--ink)",
       lineHeight: 1.35
     }
-  }, "これからの計画"), /*#__PURE__*/React.createElement("div", {
+  }, "魚売場POP 10シリーズ"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10.5,
       color: "var(--sub)",
@@ -186,7 +186,7 @@ function BoardTab({
       marginTop: 2,
       lineHeight: 1.5
     }
-  }, "売場でやっていきたいこと・改善の予定をまとめています。気づいたことがあれば書き込んでください。")), /*#__PURE__*/React.createElement("span", {
+  }, "売場のPOPを10の型で運用する進め方をまとめました。まずは資産型3本から。")), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10.5,
       fontWeight: 800,
