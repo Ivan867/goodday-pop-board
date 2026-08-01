@@ -489,6 +489,23 @@ function PromptTab({
   }));
 }
 function TodayInfoCard() {
+  const [promoOpen, setPromoOpen] = useState(() => {
+    try {
+      return localStorage.getItem("promoOpen") !== "0";
+    } catch (e) {
+      return true;
+    }
+  });
+  const togglePromo = e => {
+    e.stopPropagation();
+    setPromoOpen(v => {
+      const n = !v;
+      try {
+        localStorage.setItem("promoOpen", n ? "1" : "0");
+      } catch (x) {}
+      return n;
+    });
+  };
   const [wx, setWx] = useState(null);
   const [warns, setWarns] = useState([]);
 
@@ -1124,16 +1141,44 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "inline-block",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 7
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
         fontSize: 10.5,
         fontWeight: 900,
         color: "var(--primary)",
         border: "1.5px solid var(--primary)",
         borderRadius: 7,
-        padding: "1px 8px",
-        marginBottom: 7
+        padding: "1px 8px"
       }
-    }, "次の販促"), /*#__PURE__*/React.createElement("div", {
+    }, "次の販促"), nextItems[0] && /*#__PURE__*/React.createElement("button", {
+      onClick: togglePromo,
+      className: "hig-pill",
+      style: {
+        border: "none",
+        background: "var(--soft)",
+        color: "var(--primary-soft)",
+        borderRadius: 999,
+        padding: "3px 10px",
+        fontSize: 10.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: 4
+      }
+    }, promoOpen ? "とじる" : "もっと見る", /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "inline-block",
+        transform: promoOpen ? "rotate(180deg)" : "none",
+        transition: "transform .2s",
+        lineHeight: 1
+      }
+    }, "▾"))), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         alignItems: "center",
@@ -1201,7 +1246,7 @@ function TodayInfoCard() {
       style: {
         fontSize: 14
       }
-    }, "日")))), nextItems[0] && /*#__PURE__*/React.createElement("div", {
+    }, "日")))), promoOpen && nextItems[0] && /*#__PURE__*/React.createElement("div", {
       style: {
         borderTop: "1px solid var(--line)",
         padding: "8px 14px",

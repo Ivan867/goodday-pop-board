@@ -160,6 +160,13 @@ function PromptTab({ embedded }) {
 }
 
 function TodayInfoCard() {
+  const [promoOpen, setPromoOpen] = useState(() => {
+    try { return localStorage.getItem("promoOpen") !== "0"; } catch(e) { return true; }
+  });
+  const togglePromo = (e) => {
+    e.stopPropagation();
+    setPromoOpen(v => { const n = !v; try { localStorage.setItem("promoOpen", n ? "1" : "0"); } catch(x){} return n; });
+  };
   const [wx, setWx] = useState(null);
   const [warns, setWarns] = useState([]);
 
@@ -411,7 +418,16 @@ function TodayInfoCard() {
           <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"stretch" }}>
               <div style={{ flex:1, minWidth:0, padding:"12px 14px" }}>
-                <div style={{ display:"inline-block", fontSize:10.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 8px", marginBottom:7 }}>次の販促</div>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
+                  <span style={{ fontSize:10.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 8px" }}>次の販促</span>
+                  {nextItems[0] && (
+                    <button onClick={togglePromo} className="hig-pill"
+                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"3px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                      {promoOpen ? "とじる" : "もっと見る"}
+                      <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
+                    </button>
+                  )}
+                </div>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <span style={{ fontSize:30, flexShrink:0 }}>{art}</span>
                   <div style={{ minWidth:0 }}>
@@ -425,7 +441,7 @@ function TodayInfoCard() {
                 <span style={{ fontSize:30, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:14 }}>日</span></span>
               </div>
             </div>
-            {nextItems[0] && (
+            {promoOpen && nextItems[0] && (
               <div style={{ borderTop:"1px solid var(--line)", padding:"8px 14px", display:"flex", alignItems:"center", gap:9 }}>
                 <span style={{ fontSize:17, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
                 <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
