@@ -134,18 +134,18 @@ function BoardTab({
     style: {
       display: "flex",
       alignItems: "center",
-      gap: 12,
+      gap: 11,
       marginBottom: 12,
       background: "#fff",
       borderRadius: 16,
-      padding: "14px 15px",
+      padding: "11px 13px",
       textDecoration: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: 42,
-      height: 42,
-      borderRadius: 13,
+      width: 36,
+      height: 36,
+      borderRadius: 11,
       background: "var(--soft)",
       color: "var(--primary-soft, #4a7ab0)",
       display: "flex",
@@ -173,27 +173,27 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: 900,
       color: "var(--ink)",
       lineHeight: 1.35
     }
   }, "これからの計画"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 10.5,
       color: "var(--sub)",
       fontWeight: 700,
-      marginTop: 3,
-      lineHeight: 1.55
+      marginTop: 2,
+      lineHeight: 1.5
     }
   }, "売場でやっていきたいこと・改善の予定をまとめています。気づいたことがあれば書き込んでください。")), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 10.5,
       fontWeight: 800,
       color: "#fff",
       background: "var(--primary-soft, #4a7ab0)",
       borderRadius: 999,
-      padding: "6px 13px",
+      padding: "5px 12px",
       flexShrink: 0,
       whiteSpace: "nowrap"
     }

@@ -491,9 +491,9 @@ function PromptTab({
 function TodayInfoCard() {
   const [promoOpen, setPromoOpen] = useState(() => {
     try {
-      return localStorage.getItem("promoOpen") !== "0";
+      return localStorage.getItem("promoOpen") === "1";
     } catch (e) {
-      return true;
+      return false;
     }
   });
   const togglePromo = e => {
@@ -919,7 +919,7 @@ function TodayInfoCard() {
     style: {
       background: "#fff",
       borderRadius: 16,
-      padding: "12px 10px",
+      padding: "10px 9px",
       cursor: "pointer"
     }
   }, (() => {
@@ -929,9 +929,9 @@ function TodayInfoCard() {
       children
     }) => /*#__PURE__*/React.createElement("div", {
       style: {
-        width: 32,
-        height: 32,
-        borderRadius: 10,
+        width: 29,
+        height: 29,
+        borderRadius: 9,
         background: "var(--soft)",
         color: "var(--primary-soft, #4a7ab0)",
         display: "flex",
@@ -991,7 +991,7 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10,
+        fontSize: 9.5,
         fontWeight: 800,
         color: "var(--sub)",
         whiteSpace: "nowrap"
@@ -1022,13 +1022,13 @@ function TodayInfoCard() {
       label: "昨日比"
     }, wx ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 900
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)",
-        fontSize: 9.5,
+        fontSize: 9,
         fontWeight: 800
       }
     }, "最高"), /*#__PURE__*/React.createElement("span", {
@@ -1060,7 +1060,7 @@ function TodayInfoCard() {
       label: "先週比"
     }, wx ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: 900,
         color: dcol(wx.dw)
       }
@@ -1137,7 +1137,7 @@ function TodayInfoCard() {
       style: {
         flex: 1,
         minWidth: 0,
-        padding: "12px 14px"
+        padding: "10px 13px"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1148,12 +1148,12 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 9.5,
         fontWeight: 900,
         color: "var(--primary)",
         border: "1.5px solid var(--primary)",
         borderRadius: 7,
-        padding: "1px 8px"
+        padding: "1px 7px"
       }
     }, "次の販促"), nextItems[0] && /*#__PURE__*/React.createElement("button", {
       onClick: togglePromo,
@@ -1163,8 +1163,8 @@ function TodayInfoCard() {
         background: "var(--soft)",
         color: "var(--primary-soft)",
         borderRadius: 999,
-        padding: "3px 10px",
-        fontSize: 10.5,
+        padding: "2px 9px",
+        fontSize: 9.5,
         fontWeight: 800,
         cursor: "pointer",
         display: "flex",
@@ -1186,7 +1186,7 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 30,
+        fontSize: 26,
         flexShrink: 0
       }
     }, art), /*#__PURE__*/React.createElement("div", {
@@ -1195,7 +1195,7 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 16,
+        fontSize: 14.5,
         fontWeight: 900,
         color: "var(--ink)",
         lineHeight: 1.3,
@@ -1205,13 +1205,13 @@ function TodayInfoCard() {
       }
     }, main.name, "\u3000", /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13,
+        fontSize: 12,
         color: "var(--sub)",
         fontWeight: 800
       }
     }, jd(main.d), "（", wd(main.d), "）")), main.food ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 10,
         color: "var(--sub)",
         fontWeight: 700,
         marginTop: 2,
@@ -1222,7 +1222,7 @@ function TodayInfoCard() {
     }, main.food) : null))), /*#__PURE__*/React.createElement("div", {
       style: {
         flexShrink: 0,
-        width: 92,
+        width: 80,
         background: "var(--primary-soft)",
         color: "#fff",
         display: "flex",
@@ -1233,35 +1233,35 @@ function TodayInfoCard() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: 800,
         opacity: 0.85
       }
     }, "あと"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 900
       }
     }, daysLeft(main.d), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 14
+        fontSize: 12
       }
     }, "日")))), promoOpen && nextItems[0] && /*#__PURE__*/React.createElement("div", {
       style: {
         borderTop: "1px solid var(--line)",
-        padding: "8px 14px",
+        padding: "7px 13px",
         display: "flex",
         alignItems: "center",
-        gap: 9
+        gap: 8
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 17,
+        fontSize: 15,
         flexShrink: 0
       }
     }, eventArt(nextItems[0].name, nextItems[0].food)), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 12.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: "var(--ink)",
         flex: 1,
@@ -1269,7 +1269,7 @@ function TodayInfoCard() {
       }
     }, jd(nextItems[0].d), "（", wd(nextItems[0].d), "）\u3000", nextItems[0].name), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: 800,
         color: "var(--sub)"
       }

@@ -161,7 +161,7 @@ function PromptTab({ embedded }) {
 
 function TodayInfoCard() {
   const [promoOpen, setPromoOpen] = useState(() => {
-    try { return localStorage.getItem("promoOpen") !== "0"; } catch(e) { return true; }
+    try { return localStorage.getItem("promoOpen") === "1"; } catch(e) { return false; }
   });
   const togglePromo = (e) => {
     e.stopPropagation();
@@ -349,12 +349,12 @@ function TodayInfoCard() {
     <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
 
       {/* カード1：昨日比・先週比・明日 */}
-      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, padding:"12px 10px", cursor:"pointer" }}>
+      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, padding:"10px 9px", cursor:"pointer" }}>
         {(() => {
           const dcol = (v) => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
           const tm = (wx && wx.series && wx.series[2]) ? wx.series[2] : null;
           const IconWrap = ({ children }) => (
-            <div style={{ width:32, height:32, borderRadius:10, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{children}</div>
+            <div style={{ width:29, height:29, borderRadius:9, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{children}</div>
           );
           const trendSvg = <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg>;
           const calSvg = <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>;
@@ -362,7 +362,7 @@ function TodayInfoCard() {
             <div style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:6, padding:"0 2px" }}>
               <IconWrap>{icon}</IconWrap>
               <div style={{ minWidth:0 }}>
-                <div style={{ fontSize:10, fontWeight:800, color:"var(--sub)", whiteSpace:"nowrap" }}>{label}</div>
+                <div style={{ fontSize:9.5, fontWeight:800, color:"var(--sub)", whiteSpace:"nowrap" }}>{label}</div>
                 <div style={{ marginTop:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{children}</div>
               </div>
             </div>
@@ -372,8 +372,8 @@ function TodayInfoCard() {
             <div style={{ display:"flex", alignItems:"stretch" }}>
               <Cell icon={trendSvg} label="昨日比">
                 {wx ? (
-                  <span style={{ fontSize:14, fontWeight:900 }}>
-                    <span style={{ color:"var(--sub)", fontSize:9.5, fontWeight:800 }}>最高</span>
+                  <span style={{ fontSize:13, fontWeight:900 }}>
+                    <span style={{ color:"var(--sub)", fontSize:9, fontWeight:800 }}>最高</span>
                     <span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>
                     {wx.loDiff != null && <>
                       <span style={{ color:"var(--faint)", fontSize:11 }}> / </span>
@@ -385,7 +385,7 @@ function TodayInfoCard() {
               </Cell>
               <Div />
               <Cell icon={calSvg} label="先週比">
-                {wx ? <span style={{ fontSize:15, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
+                {wx ? <span style={{ fontSize:14, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
               </Cell>
               {tm && tm.hi != null && (
                 <>
@@ -417,35 +417,35 @@ function TodayInfoCard() {
         return (
           <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"stretch" }}>
-              <div style={{ flex:1, minWidth:0, padding:"12px 14px" }}>
+              <div style={{ flex:1, minWidth:0, padding:"10px 13px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
-                  <span style={{ fontSize:10.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 8px" }}>次の販促</span>
+                  <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 7px" }}>次の販促</span>
                   {nextItems[0] && (
                     <button onClick={togglePromo} className="hig-pill"
-                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"3px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"2px 9px", fontSize:9.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
                       {promoOpen ? "とじる" : "もっと見る"}
                       <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
                     </button>
                   )}
                 </div>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                  <span style={{ fontSize:30, flexShrink:0 }}>{art}</span>
+                  <span style={{ fontSize:26, flexShrink:0 }}>{art}</span>
                   <div style={{ minWidth:0 }}>
-                    <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}　<span style={{ fontSize:13, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span></div>
-                    {main.food ? <div style={{ fontSize:11, color:"var(--sub)", fontWeight:700, marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</div> : null}
+                    <div style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}　<span style={{ fontSize:12, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span></div>
+                    {main.food ? <div style={{ fontSize:10, color:"var(--sub)", fontWeight:700, marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</div> : null}
                   </div>
                 </div>
               </div>
-              <div style={{ flexShrink:0, width:92, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
-                <span style={{ fontSize:11, fontWeight:800, opacity:0.85 }}>あと</span>
-                <span style={{ fontSize:30, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:14 }}>日</span></span>
+              <div style={{ flexShrink:0, width:80, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
+                <span style={{ fontSize:10, fontWeight:800, opacity:0.85 }}>あと</span>
+                <span style={{ fontSize:25, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:12 }}>日</span></span>
               </div>
             </div>
             {promoOpen && nextItems[0] && (
-              <div style={{ borderTop:"1px solid var(--line)", padding:"8px 14px", display:"flex", alignItems:"center", gap:9 }}>
-                <span style={{ fontSize:17, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
-                <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
-                <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
+              <div style={{ borderTop:"1px solid var(--line)", padding:"7px 13px", display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ fontSize:15, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
+                <span style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
+                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
               </div>
             )}
           </div>
