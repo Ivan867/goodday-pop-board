@@ -74,6 +74,19 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 16px 185px" }}>
         <TodayInfoCard />
+        {/* これからの計画（計画表スプレッドシートへ） */}
+        <a href="https://docs.google.com/spreadsheets/d/12tBvxjhetRweGhxRiuy8ZnTxfqEUu_i3atFiXGmcvxY/edit?usp=sharing"
+          target="_blank" rel="noopener noreferrer" className="ucard"
+          style={{ display:"flex", alignItems:"center", gap:12, marginBottom:12, background:"#fff", borderRadius:16, padding:"14px 15px", textDecoration:"none" }}>
+          <div style={{ width:42, height:42, borderRadius:13, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4.5h16v15H4z"/><path d="M4 9.5h16M9.5 9.5v10M4 14.5h16"/></svg>
+          </div>
+          <div style={{ minWidth:0, flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", lineHeight:1.35 }}>これからの計画</div>
+            <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:3, lineHeight:1.55 }}>売場でやっていきたいこと・改善の予定をまとめています。気づいたことがあれば書き込んでください。</div>
+          </div>
+          <span style={{ fontSize:11.5, fontWeight:800, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"6px 13px", flexShrink:0, whiteSpace:"nowrap" }}>ひらく</span>
+        </a>
         {feat && feat.enabled && feat.message && featShow && (
           <div onClick={() => { if (feat.tab && onFeatGo) onFeatGo(feat.tab); }}
             style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px", marginBottom:12, cursor: feat.tab ? "pointer" : "default", boxShadow:"0 4px 16px rgba(47,111,176,0.22)", animation:"fadeUp .35s ease" }}>
@@ -118,20 +131,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
           </div>
         )}
-
-        {/* これからの計画（計画表スプレッドシートへ） */}
-        <a href="https://docs.google.com/spreadsheets/d/12tBvxjhetRweGhxRiuy8ZnTxfqEUu_i3atFiXGmcvxY/edit?usp=sharing"
-          target="_blank" rel="noopener noreferrer" className="ucard"
-          style={{ display:"flex", alignItems:"center", gap:12, marginTop:18, background:"#fff", borderRadius:16, padding:"14px 15px", textDecoration:"none" }}>
-          <div style={{ width:42, height:42, borderRadius:13, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4.5h16v15H4z"/><path d="M4 9.5h16M9.5 9.5v10M4 14.5h16"/></svg>
-          </div>
-          <div style={{ minWidth:0, flex:1 }}>
-            <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", lineHeight:1.35 }}>これからの計画</div>
-            <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700, marginTop:3, lineHeight:1.55 }}>売場でやっていきたいこと・改善の予定をまとめています。気づいたことがあれば書き込んでください。</div>
-          </div>
-          <span style={{ fontSize:11.5, fontWeight:800, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"6px 13px", flexShrink:0, whiteSpace:"nowrap" }}>ひらく</span>
-        </a>
       </div>
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onSuccess={pop=>{setPops(p=>[pop,...p]);setShowUp(false);}} />}
       {radialOpen && (
