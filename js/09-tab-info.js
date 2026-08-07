@@ -1155,7 +1155,39 @@ function TodayInfoCard() {
         borderRadius: 7,
         padding: "1px 7px"
       }
-    }, "次の販促"), nextItems[0] && /*#__PURE__*/React.createElement("button", {
+    }, "次の販促"), /*#__PURE__*/React.createElement("a", {
+      href: "/pop10.pdf",
+      target: "_blank",
+      rel: "noopener noreferrer",
+      onClick: e => e.stopPropagation(),
+      className: "hig-pill",
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 3,
+        textDecoration: "none",
+        fontSize: 9.5,
+        fontWeight: 900,
+        color: "#fff",
+        background: "var(--primary-soft, #4a7ab0)",
+        borderRadius: 999,
+        padding: "2px 9px",
+        whiteSpace: "nowrap"
+      }
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: "10",
+      height: "10",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2.4",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M5 3.5h9l5 5v12H5z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M14 3.5v5h5"
+    })), "POP10"), nextItems[0] && /*#__PURE__*/React.createElement("button", {
       onClick: togglePromo,
       className: "hig-pill",
       style: {

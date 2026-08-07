@@ -420,6 +420,11 @@ function TodayInfoCard() {
               <div style={{ flex:1, minWidth:0, padding:"10px 13px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
                   <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 7px" }}>次の販促</span>
+                  <a href="/pop10.pdf" target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill"
+                    style={{ display:"flex", alignItems:"center", gap:3, textDecoration:"none", fontSize:9.5, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"2px 9px", whiteSpace:"nowrap" }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5"/></svg>
+                    POP10
+                  </a>
                   {nextItems[0] && (
                     <button onClick={togglePromo} className="hig-pill"
                       style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"2px 9px", fontSize:9.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>

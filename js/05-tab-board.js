@@ -126,78 +126,7 @@ function BoardTab({
       margin: "0 auto",
       padding: "4px 16px 185px"
     }
-  }, /*#__PURE__*/React.createElement(TodayInfoCard, null), /*#__PURE__*/React.createElement("a", {
-    href: "/pop10.pdf",
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "ucard",
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 11,
-      marginBottom: 12,
-      background: "#fff",
-      borderRadius: 16,
-      padding: "11px 13px",
-      textDecoration: "none"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 36,
-      height: 36,
-      borderRadius: 11,
-      background: "var(--soft)",
-      color: "var(--primary-soft, #4a7ab0)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "21",
-    height: "21",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 4.5h16v15H4z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M4 9.5h16M9.5 9.5v10M4 14.5h16"
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      minWidth: 0,
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 900,
-      color: "var(--ink)",
-      lineHeight: 1.35
-    }
-  }, "魚売場POP 10シリーズ"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10.5,
-      color: "var(--sub)",
-      fontWeight: 700,
-      marginTop: 2,
-      lineHeight: 1.5
-    }
-  }, "売場のPOPを10の型で運用する進め方をまとめました。まずは資産型3本から。")), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 10.5,
-      fontWeight: 800,
-      color: "#fff",
-      background: "var(--primary-soft, #4a7ab0)",
-      borderRadius: 999,
-      padding: "5px 12px",
-      flexShrink: 0,
-      whiteSpace: "nowrap"
-    }
-  }, "ひらく")), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
