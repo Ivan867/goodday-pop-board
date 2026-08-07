@@ -348,55 +348,44 @@ function TodayInfoCard() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
 
-      {/* カード1：昨日比・先週比・明日 */}
-      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, padding:"10px 9px", cursor:"pointer" }}>
+      {/* カード1：昨日比・先週比・明日（コンパクト1行） */}
+      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:14, padding:"7px 11px", cursor:"pointer" }}>
         {(() => {
           const dcol = (v) => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
           const tm = (wx && wx.series && wx.series[2]) ? wx.series[2] : null;
-          const IconWrap = ({ children }) => (
-            <div style={{ width:29, height:29, borderRadius:9, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{children}</div>
-          );
-          const trendSvg = <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg>;
-          const calSvg = <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>;
-          const Cell = ({ icon, label, children }) => (
-            <div style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:6, padding:"0 2px" }}>
-              <IconWrap>{icon}</IconWrap>
-              <div style={{ minWidth:0 }}>
-                <div style={{ fontSize:9.5, fontWeight:800, color:"var(--sub)", whiteSpace:"nowrap" }}>{label}</div>
-                <div style={{ marginTop:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{children}</div>
-              </div>
-            </div>
-          );
-          const Div = () => <div style={{ width:1, alignSelf:"stretch", background:"var(--line)", flexShrink:0 }} />;
+          const Lb = ({ children }) => <span style={{ fontSize:9.5, fontWeight:800, color:"var(--sub)", marginRight:4 }}>{children}</span>;
+          const Div = () => <div style={{ width:1, height:14, background:"var(--line)", flexShrink:0, margin:"0 2px" }} />;
           return (
-            <div style={{ display:"flex", alignItems:"stretch" }}>
-              <Cell icon={trendSvg} label="昨日比">
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:4, flexWrap:"nowrap", overflow:"hidden" }}>
+              <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap", minWidth:0 }}>
+                <Lb>昨日比</Lb>
                 {wx ? (
-                  <span style={{ fontSize:13, fontWeight:900 }}>
-                    <span style={{ color:"var(--sub)", fontSize:9, fontWeight:800 }}>最高</span>
+                  <span style={{ fontSize:12.5, fontWeight:900 }}>
                     <span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>
                     {wx.loDiff != null && <>
-                      <span style={{ color:"var(--faint)", fontSize:11 }}> / </span>
-                      <span style={{ color:"var(--sub)", fontSize:9.5, fontWeight:800 }}>最低</span>
+                      <span style={{ color:"var(--faint)", fontSize:10 }}>／</span>
                       <span style={{ color:dcol(wx.loDiff) }}>{sign(wx.loDiff)}</span>
                     </>}
                   </span>
-                ) : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
-              </Cell>
+                ) : <span style={{ fontSize:11, color:"var(--faint)" }}>—</span>}
+              </div>
               <Div />
-              <Cell icon={calSvg} label="先週比">
-                {wx ? <span style={{ fontSize:14, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:12, color:"var(--faint)" }}>—</span>}
-              </Cell>
+              <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap" }}>
+                <Lb>先週比</Lb>
+                {wx ? <span style={{ fontSize:12.5, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:11, color:"var(--faint)" }}>—</span>}
+              </div>
               {tm && tm.hi != null && (
                 <>
                   <Div />
-                  <Cell icon={<span style={{ fontSize:17, lineHeight:1 }}>{wmoIcon(wx.tmCode).e}</span>} label="明日">
-                    <span style={{ fontSize:14, fontWeight:900 }}>
+                  <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap" }}>
+                    <Lb>明日</Lb>
+                    <span style={{ fontSize:13, marginRight:3 }}>{wmoIcon(wx.tmCode).e}</span>
+                    <span style={{ fontSize:12.5, fontWeight:900 }}>
                       <span style={{ color:"#e0555f" }}>{tm.hi}°</span>
-                      <span style={{ color:"var(--faint)", fontSize:11 }}> / </span>
+                      <span style={{ color:"var(--faint)", fontSize:10 }}>／</span>
                       <span style={{ color:"#4a86c5" }}>{tm.lo != null ? tm.lo + "°" : "—"}</span>
                     </span>
-                  </Cell>
+                  </div>
                 </>
               )}
             </div>
