@@ -1009,9 +1009,11 @@ function DeviceStatsPanel() {
 function RankingPanel({ onCreateFromPop }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [metric, setMetric] = useState("view");
+  const [metric, setMetric] = useState("recent");
   const [sel, setSel] = useState(null);
   const [ver, setVer] = useState(0);
+  const [recent, setRecent] = useState({});     // pop_id -> 回数
+  const [days, setDays] = useState(7);
 
   useEffect(() => {
     let alive = true;
@@ -1019,12 +1021,21 @@ function RankingPanel({ onCreateFromPop }) {
     (async () => {
       try { const d = await api.listActive(); if (alive) setPops(d); }
       catch(e) {}
+      try {
+        const v = await api.listRecentViews(days);
+        if (alive) {
+          const m = {};
+          (v || []).forEach(x => { m[x.pop_id] = (m[x.pop_id] || 0) + 1; });
+          setRecent(m);
+        }
+      } catch(e) { if (alive) setRecent({}); }
       finally { if (alive) setLoading(false); }
     })();
     return () => { alive = false; };
-  }, [ver]);
+  }, [ver, days]);
 
   const METRICS = [
+    { key:"recent", label:"最近", get: p => recent[p.id] || 0, unit:"回" },
     { key:"view", label:"閲覧数", get: p => p.view_count || 0, unit:"回" },
     { key:"used", label:"使った", get: p => p.used_count || 0, unit:"回" },
     { key:"like", label:"いいね", get: p => p.likes || 0, unit:"" },
@@ -1037,10 +1048,21 @@ function RankingPanel({ onCreateFromPop }) {
   return (
     <div>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-        <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>ポップの閲覧数・使った回数・いいねの記録です。<br/>この画面は管理者だけが見られます。</div>
+        <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>ポップの閲覧・使った回数・いいねの記録です。<br/>「最近」は直近{days}日でよく見られたポップです。</div>
         <button onClick={() => setVer(v => v + 1)} disabled={loading}
           style={{ flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12, fontWeight:800, cursor: loading?"default":"pointer" }}>{loading ? "更新中…" : "更新"}</button>
       </div>
+
+      {metric === "recent" && (
+        <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+          {[3,7,30].map(d => (
+            <button key={d} onClick={() => setDays(d)}
+              style={{ border: days===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: days===d ? "var(--soft)" : "#fff", color: days===d ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 14px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              {d === 30 ? "1か月" : d + "日間"}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div style={{ display:"flex", gap:7, marginBottom:12 }}>
         {METRICS.map(x => (

@@ -104,6 +104,8 @@ const api = {
       } catch(e) {}
       localStorage.setItem(key, "1");
       await sbFetch(`/rest/v1/rpc/increment_pop_view`, { method:"POST", body:{ p_id:id } });
+      // いつ見られたかの履歴（誰が見たかは記録しない）
+      try { await sbFetch(`/rest/v1/pop_views`, { method:"POST", body:{ pop_id: id } }); } catch(e) {}
       return true;
     } catch(e) { return false; }
   },
@@ -208,6 +210,12 @@ const api = {
     return rows[0] || { enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"" };
   },
   async updateNotice(patch) { return sbOne(`/rest/v1/rpc/admin_update_notice`, { method:"POST", body:{ p_patch: patch, p_password: PW_CACHE.admin || "" } }); },
+
+  // ── 最近の閲覧（期間内の履歴を取得して集計する）──
+  async listRecentViews(days) {
+    const since = new Date(Date.now() - (days || 7) * 86400000).toISOString();
+    return sbJson(`/rest/v1/pop_views?select=pop_id,created_at&created_at=gte.${since}&order=created_at.desc&limit=5000`);
+  },
 
   // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
   async setRotation(id, deg) {

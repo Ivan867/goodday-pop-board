@@ -190,6 +190,15 @@ const api = {
           p_id: id
         }
       });
+      // いつ見られたかの履歴（誰が見たかは記録しない）
+      try {
+        await sbFetch(`/rest/v1/pop_views`, {
+          method: "POST",
+          body: {
+            pop_id: id
+          }
+        });
+      } catch (e) {}
       return true;
     } catch (e) {
       return false;
@@ -439,6 +448,11 @@ const api = {
         p_password: PW_CACHE.admin || ""
       }
     });
+  },
+  // ── 最近の閲覧（期間内の履歴を取得して集計する）──
+  async listRecentViews(days) {
+    const since = new Date(Date.now() - (days || 7) * 86400000).toISOString();
+    return sbJson(`/rest/v1/pop_views?select=pop_id,created_at&created_at=gte.${since}&order=created_at.desc&limit=5000`);
   },
   // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
   async setRotation(id, deg) {
