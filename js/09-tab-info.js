@@ -926,124 +926,7 @@ function TodayInfoCard() {
       gap: 7,
       marginBottom: 8
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "ucard",
-    onClick: jumpCal,
-    style: {
-      background: "#fff",
-      borderRadius: 13,
-      padding: "5px 10px",
-      cursor: "pointer"
-    }
   }, (() => {
-    const dcol = v => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
-    const tm = wx && wx.series && wx.series[2] ? wx.series[2] : null;
-    const Lb = ({
-      children
-    }) => /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 9.5,
-        fontWeight: 800,
-        color: "var(--sub)",
-        marginRight: 4
-      }
-    }, children);
-    const Div = () => /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 1,
-        height: 14,
-        background: "var(--line)",
-        flexShrink: 0,
-        margin: "0 2px"
-      }
-    });
-    return /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 4,
-        flexWrap: "nowrap",
-        overflow: "hidden"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap",
-        minWidth: 0
-      }
-    }, /*#__PURE__*/React.createElement(Lb, null, "昨日比"), wx ? /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 900
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: dcol(wx.dy)
-      }
-    }, sign(wx.dy)), wx.loDiff != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: "var(--faint)",
-        fontSize: 10
-      }
-    }, "／"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: dcol(wx.loDiff)
-      }
-    }, sign(wx.loDiff)))) : /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        color: "var(--faint)"
-      }
-    }, "—")), /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap"
-      }
-    }, /*#__PURE__*/React.createElement(Lb, null, "先週比"), wx ? /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 900,
-        color: dcol(wx.dw)
-      }
-    }, sign(wx.dw)) : /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        color: "var(--faint)"
-      }
-    }, "—")), tm && tm.hi != null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Div, null), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap"
-      }
-    }, /*#__PURE__*/React.createElement(Lb, null, "明日"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 13,
-        marginRight: 3
-      }
-    }, wmoIcon(wx.tmCode).e), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 900
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: "#e0555f"
-      }
-    }, tm.hi, "°"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: "var(--faint)",
-        fontSize: 10
-      }
-    }, "／"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: "#4a86c5"
-      }
-    }, tm.lo != null ? tm.lo + "°" : "—")))));
-  })()), (() => {
     const up = [];
     if (hol && hol.date) up.push({
       d: hol.date,
@@ -1785,7 +1668,7 @@ function TodayEventChip() {
 function HeaderWeather() {
   const [w, setW] = useState(null);
   useEffect(() => {
-    const KEY = "hdrWx1";
+    const KEY = "hdrWx2";
     try {
       const c = JSON.parse(localStorage.getItem(KEY) || "null");
       if (c && Date.now() - c.t < 3 * 3600 * 1000) {
@@ -1793,12 +1676,16 @@ function HeaderWeather() {
         return;
       }
     } catch (e) {}
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1").then(r => r.ok ? r.json() : null).then(d => {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=2").then(r => r.ok ? r.json() : null).then(d => {
       if (!d || !d.daily || d.daily.temperature_2m_max[0] == null) return;
+      const dd = d.daily;
       const w2 = {
-        code: d.daily.weather_code[0],
-        hi: Math.round(d.daily.temperature_2m_max[0]),
-        lo: Math.round(d.daily.temperature_2m_min[0])
+        code: dd.weather_code[0],
+        hi: Math.round(dd.temperature_2m_max[0]),
+        lo: Math.round(dd.temperature_2m_min[0]),
+        tCode: dd.weather_code[1],
+        tHi: dd.temperature_2m_max[1] == null ? null : Math.round(dd.temperature_2m_max[1]),
+        tLo: dd.temperature_2m_min[1] == null ? null : Math.round(dd.temperature_2m_min[1])
       };
       setW(w2);
       try {
@@ -1811,21 +1698,13 @@ function HeaderWeather() {
   }, []);
   if (!w) return null;
   const emo = c => c <= 1 ? "☀️" : c <= 3 ? "⛅" : c === 45 || c === 48 ? "🌫" : c >= 95 ? "⛈" : c >= 71 && c <= 77 ? "❄️" : c >= 51 ? "🌧" : "☁️";
-  return /*#__PURE__*/React.createElement("div", {
+  const Temp = ({
+    hi,
+    lo,
+    size
+  }) => /*#__PURE__*/React.createElement("span", {
     style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 5,
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 20,
-      lineHeight: 1
-    }
-  }, emo(w.code)), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
+      fontSize: size,
       fontWeight: 900,
       whiteSpace: "nowrap"
     }
@@ -1833,16 +1712,66 @@ function HeaderWeather() {
     style: {
       color: "#e0555f"
     }
-  }, w.hi, "°"), /*#__PURE__*/React.createElement("span", {
+  }, hi, "°"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
-      fontSize: 13
+      fontSize: size - 3
     }
-  }, " / "), /*#__PURE__*/React.createElement("span", {
+  }, "/"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "#4a86c5"
     }
-  }, w.lo, "°")));
+  }, lo, "°"));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      flexShrink: 1,
+      minWidth: 0,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 3,
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 17,
+      lineHeight: 1
+    }
+  }, emo(w.code)), /*#__PURE__*/React.createElement(Temp, {
+    hi: w.hi,
+    lo: w.lo,
+    size: 15
+  })), w.tHi != null && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 3,
+      flexShrink: 0,
+      paddingLeft: 6,
+      borderLeft: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 8.5,
+      fontWeight: 900,
+      color: "var(--sub)"
+    }
+  }, "明"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      lineHeight: 1
+    }
+  }, emo(w.tCode)), /*#__PURE__*/React.createElement(Temp, {
+    hi: w.tHi,
+    lo: w.tLo,
+    size: 12
+  })));
 }
 ;
 Object.assign(window, {

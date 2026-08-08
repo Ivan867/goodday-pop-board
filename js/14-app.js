@@ -431,7 +431,7 @@ function App() {
       });
     },
     style: {
-      fontSize: 17,
+      fontSize: 15.5,
       fontWeight: 900,
       color: "var(--primary)",
       whiteSpace: "nowrap",
@@ -440,7 +440,7 @@ function App() {
       cursor: "pointer"
     },
     title: "一覧に戻る"
-  }, "鮮魚共有"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
+  }, "魚POP"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0
@@ -459,19 +459,20 @@ function App() {
       fontWeight: 800,
       fontSize: 13,
       letterSpacing: "-0.2px",
-      height: 32,
-      padding: "0 15px",
+      width: 33,
+      height: 33,
+      padding: 0,
       display: "flex",
       alignItems: "center",
-      gap: 5,
+      justifyContent: "center",
       borderRadius: 999,
       cursor: "pointer",
-      whiteSpace: "nowrap",
       boxShadow: "0 2px 8px rgba(74,122,176,0.32)"
-    }
+    },
+    title: "作成"
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "15",
-    height: "15",
+    width: "16",
+    height: "16",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -482,7 +483,7 @@ function App() {
     d: "M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M14 6.5l3.5 3.5"
-  })), "作成"), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("button", {
     className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
@@ -497,28 +498,29 @@ function App() {
       fontWeight: 800,
       fontSize: 13,
       letterSpacing: "-0.2px",
-      height: 32,
-      padding: "0 15px",
+      width: 33,
+      height: 33,
+      padding: 0,
       display: "flex",
       alignItems: "center",
-      gap: 5,
+      justifyContent: "center",
       borderRadius: 999,
       cursor: "pointer",
-      whiteSpace: "nowrap",
       boxShadow: "0 2px 8px rgba(74,122,176,0.32)"
-    }
+    },
+    title: "投稿"
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "15",
-    height: "15",
+    width: "17",
+    height: "17",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.4",
+    strokeWidth: "2.6",
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  })), "投稿"))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
+  }))))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1080,
       margin: "0 auto",

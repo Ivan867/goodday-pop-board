@@ -212,14 +212,14 @@ function App() {
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", overflow:"hidden" }}>
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"3px 16px 2px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:8, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
           <div className="app-title hig-pill" onClick={() => { setRadialOpen(false); setMoreOpen(false); setTab("board"); const el = scroller(); if (el) el.scrollTo({ top: 0, behavior: "smooth" }); }}
-            style={{ fontSize:17, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.5px", cursor:"pointer" }} title="一覧に戻る">鮮魚共有</div>
+            style={{ fontSize:15.5, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.5px", cursor:"pointer" }} title="一覧に戻る">魚POP</div>
           <HeaderWeather />
           <div style={{ flex:1, minWidth:0 }} />
-          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:13, letterSpacing:"-0.2px", height:32, padding:"0 15px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></svg>作成
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("tool"); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:13, letterSpacing:"-0.2px", width:33, height:33, padding:0, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:999, cursor:"pointer", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }} title="作成">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></svg>
           </button>
-          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:13, letterSpacing:"-0.2px", height:32, padding:"0 15px", display:"flex", alignItems:"center", gap:5, borderRadius:999, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>投稿
+          <button className="hig-pill" onClick={() => { setRadialOpen(false); setTab("board"); setShowUpload(true); }} style={{ flexShrink:0, border:"none", background:"var(--primary-soft)", color:"#fff", fontWeight:800, fontSize:13, letterSpacing:"-0.2px", width:33, height:33, padding:0, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:999, cursor:"pointer", boxShadow:"0 2px 8px rgba(74,122,176,0.32)" }} title="投稿">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
       </div>

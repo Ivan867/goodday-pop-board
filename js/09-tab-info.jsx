@@ -356,51 +356,6 @@ function TodayInfoCard() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:7, marginBottom:8 }}>
 
-      {/* カード1：昨日比・先週比・明日（コンパクト1行） */}
-      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:13, padding:"5px 10px", cursor:"pointer" }}>
-        {(() => {
-          const dcol = (v) => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
-          const tm = (wx && wx.series && wx.series[2]) ? wx.series[2] : null;
-          const Lb = ({ children }) => <span style={{ fontSize:9.5, fontWeight:800, color:"var(--sub)", marginRight:4 }}>{children}</span>;
-          const Div = () => <div style={{ width:1, height:14, background:"var(--line)", flexShrink:0, margin:"0 2px" }} />;
-          return (
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:4, flexWrap:"nowrap", overflow:"hidden" }}>
-              <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap", minWidth:0 }}>
-                <Lb>昨日比</Lb>
-                {wx ? (
-                  <span style={{ fontSize:12.5, fontWeight:900 }}>
-                    <span style={{ color:dcol(wx.dy) }}>{sign(wx.dy)}</span>
-                    {wx.loDiff != null && <>
-                      <span style={{ color:"var(--faint)", fontSize:10 }}>／</span>
-                      <span style={{ color:dcol(wx.loDiff) }}>{sign(wx.loDiff)}</span>
-                    </>}
-                  </span>
-                ) : <span style={{ fontSize:11, color:"var(--faint)" }}>—</span>}
-              </div>
-              <Div />
-              <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap" }}>
-                <Lb>先週比</Lb>
-                {wx ? <span style={{ fontSize:12.5, fontWeight:900, color:dcol(wx.dw) }}>{sign(wx.dw)}</span> : <span style={{ fontSize:11, color:"var(--faint)" }}>—</span>}
-              </div>
-              {tm && tm.hi != null && (
-                <>
-                  <Div />
-                  <div style={{ display:"flex", alignItems:"center", whiteSpace:"nowrap" }}>
-                    <Lb>明日</Lb>
-                    <span style={{ fontSize:13, marginRight:3 }}>{wmoIcon(wx.tmCode).e}</span>
-                    <span style={{ fontSize:12.5, fontWeight:900 }}>
-                      <span style={{ color:"#e0555f" }}>{tm.hi}°</span>
-                      <span style={{ color:"var(--faint)", fontSize:10 }}>／</span>
-                      <span style={{ color:"#4a86c5" }}>{tm.lo != null ? tm.lo + "°" : "—"}</span>
-                    </span>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })()}
-      </div>
-
       {/* カード2：次の販促（行事） */}
       {(() => {
         const up = [];
@@ -643,16 +598,22 @@ function TodayEventChip() {
 function HeaderWeather() {
   const [w, setW] = useState(null);
   useEffect(() => {
-    const KEY = "hdrWx1";
+    const KEY = "hdrWx2";
     try {
       const c = JSON.parse(localStorage.getItem(KEY) || "null");
       if (c && Date.now() - c.t < 3*3600*1000) { setW(c.w); return; }
     } catch(e) {}
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1")
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.367&longitude=132.755&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=2")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d || !d.daily || d.daily.temperature_2m_max[0] == null) return;
-        const w2 = { code: d.daily.weather_code[0], hi: Math.round(d.daily.temperature_2m_max[0]), lo: Math.round(d.daily.temperature_2m_min[0]) };
+        const dd = d.daily;
+        const w2 = {
+          code: dd.weather_code[0], hi: Math.round(dd.temperature_2m_max[0]), lo: Math.round(dd.temperature_2m_min[0]),
+          tCode: dd.weather_code[1],
+          tHi: dd.temperature_2m_max[1] == null ? null : Math.round(dd.temperature_2m_max[1]),
+          tLo: dd.temperature_2m_min[1] == null ? null : Math.round(dd.temperature_2m_min[1]),
+        };
         setW(w2);
         try { localStorage.setItem(KEY, JSON.stringify({ t: Date.now(), w: w2 })); } catch(e) {}
       })
@@ -660,14 +621,26 @@ function HeaderWeather() {
   }, []);
   if (!w) return null;
   const emo = (c) => c <= 1 ? "☀️" : c <= 3 ? "⛅" : (c === 45 || c === 48) ? "🌫" : c >= 95 ? "⛈" : (c >= 71 && c <= 77) ? "❄️" : c >= 51 ? "🌧" : "☁️";
+  const Temp = ({ hi, lo, size }) => (
+    <span style={{ fontSize:size, fontWeight:900, whiteSpace:"nowrap" }}>
+      <span style={{ color:"#e0555f" }}>{hi}°</span>
+      <span style={{ color:"var(--faint)", fontSize:size-3 }}>/</span>
+      <span style={{ color:"#4a86c5" }}>{lo}°</span>
+    </span>
+  );
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
-      <span style={{ fontSize:20, lineHeight:1 }}>{emo(w.code)}</span>
-      <span style={{ fontSize:16, fontWeight:900, whiteSpace:"nowrap" }}>
-        <span style={{ color:"#e0555f" }}>{w.hi}°</span>
-        <span style={{ color:"var(--faint)", fontSize:13 }}> / </span>
-        <span style={{ color:"#4a86c5" }}>{w.lo}°</span>
-      </span>
+    <div style={{ display:"flex", alignItems:"center", gap:7, flexShrink:1, minWidth:0, overflow:"hidden" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+        <span style={{ fontSize:17, lineHeight:1 }}>{emo(w.code)}</span>
+        <Temp hi={w.hi} lo={w.lo} size={15} />
+      </div>
+      {w.tHi != null && (
+        <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0, paddingLeft:6, borderLeft:"1px solid var(--line)" }}>
+          <span style={{ fontSize:8.5, fontWeight:900, color:"var(--sub)" }}>明</span>
+          <span style={{ fontSize:13, lineHeight:1 }}>{emo(w.tCode)}</span>
+          <Temp hi={w.tHi} lo={w.tLo} size={12} />
+        </div>
+      )}
     </div>
   );
 }
