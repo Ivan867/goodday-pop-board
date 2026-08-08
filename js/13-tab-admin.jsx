@@ -167,6 +167,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {mainSeg("ranking", "記録")}
         {mainSeg("device", "端末")}
         {mainSeg("res", "資料")}
+        {mainSeg("rot", "向き")}
       </div>
 
       {section === "notice" && <NoticeAdmin onNoticeChange={onNoticeChange} />}
@@ -176,6 +177,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "device" && <DeviceStatsPanel />}
 
       {section === "res" && <ResourceAdmin />}
+
+      {section === "rot" && <RotateAdmin />}
 
       {section === "req" && (
         reqLoading ? (
@@ -703,6 +706,83 @@ function NoticeAdmin({ onNoticeChange }) {
 
 // ═══════════ RankingPanel：管理画面内の記録（閲覧数・使った・いいね）═══════════
 // 一般メニューには出さない。管理画面にログインした管理者だけが見られる。
+// ═══════════ RotateAdmin：画像の向きを直す（表示だけ回す。並び順は変わりません） ═══════════
+function RotateAdmin() {
+  const [pops, setPops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState(null);
+  const [msg, setMsg] = useState("");
+  const [onlyRotated, setOnlyRotated] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try { const d = await api.listAll(); if (alive) setPops(d || []); }
+      catch(e) { if (alive) setMsg("読み込みに失敗しました"); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const rotate = async (pop, delta) => {
+    const next = (((pop.rotation || 0) + delta) % 360 + 360) % 360;
+    setBusyId(pop.id); setMsg("");
+    try {
+      await api.setRotation(pop.id, next);
+      setPops(list => list.map(x => x.id === pop.id ? { ...x, rotation: next } : x));
+    } catch(e) { setMsg("保存に失敗しました（パスワードを確認してください）"); }
+    finally { setBusyId(null); }
+  };
+
+  const shown = onlyRotated ? pops.filter(p => (p.rotation || 0) !== 0) : pops;
+
+  return (
+    <div>
+      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:10 }}>
+        横向きになってしまったポップを、90度ずつ回して直せます。見た目だけを回す方式なので、投稿日は変わらず<b>並び順もそのまま</b>です。
+      </div>
+      <label style={{ display:"flex", alignItems:"center", gap:7, fontSize:12, fontWeight:800, color:"var(--text)", marginBottom:12, cursor:"pointer" }}>
+        <input type="checkbox" checked={onlyRotated} onChange={e => setOnlyRotated(e.target.checked)} />
+        回転させたものだけ表示
+      </label>
+      {msg && <div style={{ fontSize:12, color:"#b3261e", fontWeight:800, marginBottom:10 }}>{msg}</div>}
+
+      {loading ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0", fontSize:13 }}>読み込み中…</div>
+      ) : shown.length === 0 ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"36px 0", fontSize:13 }}>該当するポップがありません</div>
+      ) : (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(132px, 1fr))", gap:10 }}>
+          {shown.map(pop => {
+            const rot = pop.rotation || 0;
+            const side = (rot === 90 || rot === 270);
+            return (
+              <div key={pop.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:8, background:"#fff" }}>
+                <div style={{ width:"100%", aspectRatio:"1/1", overflow:"hidden", borderRadius:8, background:"var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:7 }}>
+                  <img src={pop.image_url} loading="lazy"
+                    style={{ maxWidth: side ? "100%" : "100%", maxHeight:"100%", objectFit:"contain", transform: rot ? `rotate(${rot}deg)` : "none", transition:"transform .25s ease" }} />
+                </div>
+                <div style={{ fontSize:11, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
+                <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                  <button onClick={() => rotate(pop, -90)} disabled={busyId === pop.id}
+                    style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="左に90度">↺</button>
+                  <button onClick={() => rotate(pop, 90)} disabled={busyId === pop.id}
+                    style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="右に90度">↻</button>
+                  {rot !== 0 && (
+                    <button onClick={() => rotate(pop, -rot)} disabled={busyId === pop.id}
+                      style={{ border:"1px solid var(--line)", background:"var(--soft)", color:"var(--primary)", borderRadius:7, padding:"6px 8px", fontSize:10, fontWeight:800, cursor:"pointer" }} title="元に戻す">戻す</button>
+                  )}
+                </div>
+                {rot !== 0 && <div style={{ fontSize:10, color:"var(--primary-soft)", fontWeight:800, marginTop:5, textAlign:"center" }}>{rot}度</div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════
 function ResourceAdmin() {
   const KINDS = [
@@ -1012,4 +1092,4 @@ function RankingPanel({ onCreateFromPop }) {
   );
 }
 
-;Object.assign(window, { ResourceAdmin, DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });
+;Object.assign(window, { RotateAdmin, ResourceAdmin, DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });

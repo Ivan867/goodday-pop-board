@@ -8,7 +8,7 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
@@ -208,6 +208,13 @@ const api = {
     return rows[0] || { enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"" };
   },
   async updateNotice(patch) { return sbOne(`/rest/v1/rpc/admin_update_notice`, { method:"POST", body:{ p_patch: patch, p_password: PW_CACHE.admin || "" } }); },
+
+  // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
+  async setRotation(id, deg) {
+    const r = await sbFetch(`/rest/v1/pops?id=eq.${id}`, { method:"PATCH", body:{ rotation: ((deg % 360) + 360) % 360 } });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
 
   // ── resources：資料（PDF/画像/シート/リンク）──
   async listResources(onlyVisible) {

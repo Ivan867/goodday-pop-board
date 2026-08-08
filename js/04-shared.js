@@ -693,10 +693,12 @@ function PopDetail({
   }), /*#__PURE__*/React.createElement("img", {
     src: pop.image_url,
     style: {
-      maxWidth: "100%",
-      maxHeight: "64vh",
+      maxWidth: pop.rotation === 90 || pop.rotation === 270 ? "64vh" : "100%",
+      maxHeight: pop.rotation === 90 || pop.rotation === 270 ? "100%" : "64vh",
       objectFit: "contain",
-      display: "block"
+      display: "block",
+      transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none",
+      transition: "transform .25s ease"
     }
   }), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1258,7 +1260,8 @@ function PopCard({
     },
     style: {
       width: "100%",
-      display: "block"
+      display: "block",
+      transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {

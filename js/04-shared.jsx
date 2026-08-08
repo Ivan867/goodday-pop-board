@@ -281,7 +281,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         {/* 画像エリア（ショート風・シート内で大きく） */}
         <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
-          <img src={pop.image_url} style={{ maxWidth:"100%", maxHeight:"64vh", objectFit:"contain", display:"block" }} />
+          <img src={pop.image_url} style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "64vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "64vh", objectFit:"contain", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none", transition:"transform .25s ease" }} />
 
           {navList && navIdx >= 0 && (
             <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:11, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
@@ -404,7 +404,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
       <div className="imgskel" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block" }} />
+          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
