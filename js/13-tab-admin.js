@@ -876,6 +876,45 @@ function ArchiveTab({
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sel, setSel] = useState(null);
+  const [resTarget, setResTarget] = useState(null);
+  const [resTitle, setResTitle] = useState("");
+  const [resDesc, setResDesc] = useState("");
+  const [resVisible, setResVisible] = useState(false);
+  const [resBusy, setResBusy] = useState(false);
+  const [resMsg, setResMsg] = useState("");
+  const openResForm = (pop, e) => {
+    if (e) e.stopPropagation();
+    setResTarget(pop);
+    setResTitle(pop.product_name || "");
+    setResDesc("");
+    setResVisible(false);
+    setResMsg("");
+  };
+  const saveAsResource = async () => {
+    if (!resTitle.trim()) {
+      setResMsg("タイトルを入力してください");
+      return;
+    }
+    setResBusy(true);
+    setResMsg("");
+    try {
+      await api.addResource({
+        title: resTitle.trim(),
+        description: resDesc.trim() || null,
+        kind: "image",
+        url: resTarget.image_url,
+        emoji: "🖼",
+        visible: resVisible,
+        sort_order: 99
+      });
+      setResMsg("資料に登録しました");
+      setTimeout(() => setResTarget(null), 900);
+    } catch (e) {
+      setResMsg("登録に失敗しました：" + (e.message || ""));
+    } finally {
+      setResBusy(false);
+    }
+  };
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -952,8 +991,12 @@ function ArchiveTab({
       gridTemplateColumns: "repeat(auto-fill, minmax(118px, 1fr))",
       gap: 3
     }
-  }, pops.map(pop => /*#__PURE__*/React.createElement("img", {
+  }, pops.map(pop => /*#__PURE__*/React.createElement("div", {
     key: pop.id,
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("img", {
     src: pop.image_url,
     loading: "lazy",
     onClick: () => setSel(pop),
@@ -966,7 +1009,150 @@ function ArchiveTab({
       background: "var(--chip)",
       display: "block"
     }
-  })))), sel && /*#__PURE__*/React.createElement(PopDetail, {
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: e => openResForm(pop, e),
+    title: "資料に登録",
+    style: {
+      position: "absolute",
+      right: 5,
+      bottom: 5,
+      border: "none",
+      background: "rgba(29,58,87,0.86)",
+      color: "#fff",
+      borderRadius: 999,
+      padding: "4px 9px",
+      fontSize: 10,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "資料へ"))))), resTarget && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setResTarget(null),
+    style: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.55)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1100,
+      padding: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "#fff",
+      borderRadius: 16,
+      padding: 18,
+      width: "100%",
+      maxWidth: 340,
+      maxHeight: "86vh",
+      overflowY: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 4
+    }
+  }, "資料に登録"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      lineHeight: 1.6,
+      marginBottom: 12
+    }
+  }, "このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。"), /*#__PURE__*/React.createElement("img", {
+    src: resTarget.image_url,
+    style: {
+      width: "100%",
+      borderRadius: 10,
+      marginBottom: 12,
+      background: "var(--chip)"
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    value: resTitle,
+    onChange: e => setResTitle(e.target.value),
+    placeholder: "タイトル",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "10px 11px",
+      border: "1px solid var(--line)",
+      borderRadius: 9,
+      fontSize: 13.5,
+      outline: "none",
+      marginBottom: 8
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    value: resDesc,
+    onChange: e => setResDesc(e.target.value),
+    placeholder: "説明（任意）",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "10px 11px",
+      border: "1px solid var(--line)",
+      borderRadius: 9,
+      fontSize: 13,
+      outline: "none",
+      marginBottom: 11
+    }
+  }), /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--text)",
+      cursor: "pointer",
+      marginBottom: 13
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    checked: resVisible,
+    onChange: e => setResVisible(e.target.checked)
+  }), "一覧に表示する（みんなが見られます）"), resMsg && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      fontWeight: 700,
+      marginBottom: 10
+    }
+  }, resMsg), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setResTarget(null),
+    style: {
+      flex: 1,
+      padding: "11px",
+      background: "var(--chip)",
+      color: "var(--text)",
+      border: "none",
+      borderRadius: 9,
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+    onClick: saveAsResource,
+    disabled: resBusy,
+    style: {
+      flex: 1,
+      padding: "11px",
+      background: resBusy ? "#ccc" : "var(--primary-soft, #4a7ab0)",
+      color: "#fff",
+      border: "none",
+      borderRadius: 9,
+      fontSize: 13,
+      fontWeight: 900,
+      cursor: resBusy ? "default" : "pointer"
+    }
+  }, resBusy ? "登録中…" : "登録する")))), sel && /*#__PURE__*/React.createElement(PopDetail, {
     pop: sel,
     onClose: () => setSel(null),
     navList: pops,
