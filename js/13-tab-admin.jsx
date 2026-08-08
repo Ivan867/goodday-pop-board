@@ -147,19 +147,40 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   };
   const fmtDate = (s) => { try { const d = new Date(s); return `${d.getMonth()+1}/${d.getDate()}`; } catch(e){ return ""; } };
 
-  const mainSeg = (v, label) => (
-    <button onClick={() => setSection(v)}
-      style={{ flex:1, border:"none", padding:"11px", fontSize:14, fontWeight:800,
-        background: section===v ? "#222" : "#fff", color: section===v ? "#fff" : "#888", cursor:"pointer" }}>{label}</button>
-  );
+  const SEG_ICON = {
+    req:     <><path d="M20 11.5a7.5 7.5 0 01-10.9 6.7L4 19.5l1.4-4.4A7.5 7.5 0 1120 11.5z"/></>,
+    genre:   <><path d="M4 5h16M7 12h13M10 19h10"/><circle cx="4" cy="12" r="1.2"/><circle cx="6.5" cy="19" r="1.2"/></>,
+    archive: <><path d="M3 8.5h18v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5z"/><path d="M2.5 4.5h19v4h-19zM9.5 12.5h5"/></>,
+    notice:  <><path d="M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"/><path d="M10.5 20a2 2 0 003 0"/></>,
+    pinned:  <><path d="M15 3l6 6-3 1-4.5 4.5L12 21l-2.5-6L3 12l6.5-1.5L14 6z"/></>,
+    memo:    <><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"/><path d="M14 6.5l3.5 3.5"/></>,
+    ranking: <><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></>,
+    device:  <><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></>,
+    res:     <><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></>,
+    rot:     <><path d="M3.5 12a8.5 8.5 0 018.5-8.5c3 0 5.6 1.6 7.1 3.9"/><path d="M20.5 4v4h-4"/><path d="M20.5 12a8.5 8.5 0 01-8.5 8.5c-3 0-5.6-1.6-7.1-3.9"/><path d="M3.5 20v-4h4"/></>,
+  };
+  const mainSeg = (v, label, badge) => {
+    const on = section === v;
+    return (
+      <button onClick={() => setSection(v)} className="hig-pill"
+        style={{ position:"relative", border: on ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+          background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--text)",
+          borderRadius:12, padding:"11px 6px", fontSize:12, fontWeight:800, cursor:"pointer",
+          display:"flex", flexDirection:"column", alignItems:"center", gap:5, lineHeight:1.3 }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{SEG_ICON[v]}</svg>
+        <span style={{ whiteSpace:"nowrap" }}>{label}</span>
+        {badge ? <span style={{ position:"absolute", top:5, right:6, background:"#e0555f", color:"#fff", fontSize:9.5, fontWeight:900, borderRadius:999, minWidth:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 4px" }}>{badge}</span> : null}
+      </button>
+    );
+  };
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:140, animation:"fadeUp .3s ease" }}>
       <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>管理画面</div>
 
-      <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid var(--line)", marginBottom:16, flexWrap:"wrap" }}>
-        {mainSeg("req", `依頼${openReqs ? `（${openReqs}）` : ""}`)}
-        {mainSeg("genre", `ジャンル選別${genreCount("未分類") ? `（${genreCount("未分類")}）` : ""}`)}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(76px, 1fr))", gap:7, marginBottom:16 }}>
+        {mainSeg("req", "依頼", openReqs || 0)}
+        {mainSeg("genre", "ジャンル", genreCount("未分類") || 0)}
         {mainSeg("archive", "アーカイブ")}
         {mainSeg("notice", "お知らせ")}
         {mainSeg("pinned", "ピン留め")}
