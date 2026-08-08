@@ -397,6 +397,8 @@ function PopDetail({
   const [views, setViews] = useState(pop.view_count || 0);
   const [deleting, setDeleting] = useState(false);
   const [showDelConfirm, setShowDelConfirm] = useState(false);
+  const [showArcConfirm, setShowArcConfirm] = useState(false);
+  const [arcBusy, setArcBusy] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
   const [comments, setComments] = useState([]);
@@ -449,6 +451,32 @@ function PopDetail({
     a.download = `${pop.store_name}_${pop.product_name}.jpg`;
     a.target = "_blank";
     a.click();
+  };
+  const handleArchiveConfirm = async () => {
+    if (!pwInput.trim()) {
+      setPwError("パスワードを入力してください");
+      return;
+    }
+    setArcBusy(true);
+    setPwError("");
+    try {
+      PW_CACHE.admin = pwInput.trim();
+      await api.setArchivedMany([pop.id], true);
+      try {
+        window.dispatchEvent(new CustomEvent("appToast", {
+          detail: "アーカイブに移しました"
+        }));
+      } catch (e) {}
+      setShowArcConfirm(false);
+      setPwInput("");
+      if (onDelete) onDelete(pop.id); // 一覧から取り除く
+      onClose && onClose();
+    } catch (e) {
+      PW_CACHE.admin = "";
+      setPwError("パスワードが違うか、移動に失敗しました");
+    } finally {
+      setArcBusy(false);
+    }
   };
   const handleDeleteConfirm = async () => {
     if (deleting) return;
@@ -550,6 +578,11 @@ function PopDetail({
     })),
     trash: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M4 7h16M9 7V5a1.5 1.5 0 013 0v0a1.5 1.5 0 013 0v2M6 7l1 12.5A1.5 1.5 0 008.5 21h7A1.5 1.5 0 0017 19.5L18 7"
+    })),
+    box: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M3 8.5h18v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M2.5 4.5h19v4h-19zM9.5 12.5h5"
     }))
   };
   const ActionBtn = ({
@@ -744,6 +777,14 @@ function PopDetail({
     label: "作成"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
+      setShowArcConfirm(true);
+      setPwInput("");
+      setPwError("");
+    },
+    icon: "box",
+    label: "保管"
+  }), /*#__PURE__*/React.createElement(ActionBtn, {
+    onClick: () => {
       setShowDelConfirm(true);
       setPwInput("");
       setPwError("");
@@ -787,7 +828,116 @@ function PopDetail({
       WebkitBoxOrient: "vertical",
       overflow: "hidden"
     }
-  }, pop.comment)), showDelConfirm && /*#__PURE__*/React.createElement("div", {
+  }, pop.comment)), showArcConfirm && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      background: "rgba(0,0,0,0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 10,
+      padding: 20
+    },
+    onClick: () => {
+      setShowArcConfirm(false);
+      setPwInput("");
+      setPwError("");
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "#fff",
+      borderRadius: 16,
+      padding: "18px",
+      width: "100%",
+      maxWidth: 320
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 6
+    }
+  }, "アーカイブに移しますか？"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      marginBottom: 10,
+      lineHeight: 1.6
+    }
+  }, "一覧から見えなくなりますが、消えるわけではありません。管理画面の「アーカイブ」からいつでも戻せます。"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      marginBottom: 10
+    }
+  }, "ヒント：本社の郵便番号"), /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    value: pwInput,
+    onChange: e => {
+      setPwInput(e.target.value);
+      setPwError("");
+    },
+    onKeyDown: e => e.key === "Enter" && handleArchiveConfirm(),
+    placeholder: "パスワードを入力",
+    autoFocus: true,
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "11px 12px",
+      border: `2px solid ${pwError ? "var(--primary)" : "var(--line)"}`,
+      borderRadius: 9,
+      fontSize: 14,
+      outline: "none",
+      marginBottom: 10
+    }
+  }), pwError && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--primary)",
+      fontWeight: 700,
+      marginBottom: 8
+    }
+  }, pwError), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setShowArcConfirm(false);
+      setPwInput("");
+      setPwError("");
+    },
+    style: {
+      flex: 1,
+      padding: "10px",
+      background: "var(--chip)",
+      color: "var(--text)",
+      border: "none",
+      borderRadius: 9,
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "戻る"), /*#__PURE__*/React.createElement("button", {
+    onClick: handleArchiveConfirm,
+    disabled: arcBusy,
+    style: {
+      flex: 1,
+      padding: "10px",
+      background: "var(--primary-soft, #4a7ab0)",
+      color: "#fff",
+      border: "none",
+      borderRadius: 9,
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      opacity: arcBusy ? 0.6 : 1
+    }
+  }, arcBusy ? "移動中…" : "移す")))), showDelConfirm && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       inset: 0,

@@ -139,6 +139,8 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   const [views, setViews] = useState(pop.view_count||0);
   const [deleting, setDeleting] = useState(false);
   const [showDelConfirm, setShowDelConfirm] = useState(false);
+  const [showArcConfirm, setShowArcConfirm] = useState(false);
+  const [arcBusy, setArcBusy] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
   const [comments, setComments] = useState([]);
@@ -182,6 +184,22 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     a.download = `${pop.store_name}_${pop.product_name}.jpg`;
     a.target = "_blank";
     a.click();
+  };
+
+  const handleArchiveConfirm = async () => {
+    if (!pwInput.trim()) { setPwError("パスワードを入力してください"); return; }
+    setArcBusy(true); setPwError("");
+    try {
+      PW_CACHE.admin = pwInput.trim();
+      await api.setArchivedMany([pop.id], true);
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail: "アーカイブに移しました" })); } catch(e) {}
+      setShowArcConfirm(false); setPwInput("");
+      if (onDelete) onDelete(pop.id);   // 一覧から取り除く
+      onClose && onClose();
+    } catch(e) {
+      PW_CACHE.admin = "";
+      setPwError("パスワードが違うか、移動に失敗しました");
+    } finally { setArcBusy(false); }
   };
 
   const handleDeleteConfirm = async () => {
@@ -244,6 +262,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     save: <><path d="M12 3.5v11m0 0l-4-4m4 4l4-4" /><path d="M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2" /></>,
     edit: <><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z" /><path d="M14 6.5l3.5 3.5" /></>,
     trash: <><path d="M4 7h16M9 7V5a1.5 1.5 0 013 0v0a1.5 1.5 0 013 0v2M6 7l1 12.5A1.5 1.5 0 008.5 21h7A1.5 1.5 0 0017 19.5L18 7" /></>,
+    box: <><path d="M3 8.5h18v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5z" /><path d="M2.5 4.5h19v4h-19zM9.5 12.5h5" /></>,
   };
   const ActionBtn = ({ onClick, disabled, active, icon, label, activeColor, fillWhenActive }) => (
     <button onClick={onClick} disabled={disabled}
@@ -277,6 +296,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} icon="chat" label={String(comments.length)} />
             <ActionBtn onClick={handleDownload} icon="save" label="保存" />
             {onCreateFromPop && <ActionBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
+            <ActionBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管" />
             <ActionBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="削除" />
           </div>
 
@@ -287,6 +307,25 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             {pop.comment && <div style={{ fontSize:12, color:"rgba(255,255,255,0.92)", marginTop:6, lineHeight:1.6, textShadow:"0 1px 3px rgba(0,0,0,0.6)", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{pop.comment}</div>}
           </div>
 
+          {showArcConfirm && (
+            <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10, padding:20 }} onClick={()=>{ setShowArcConfirm(false); setPwInput(""); setPwError(""); }}>
+              <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
+                <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>アーカイブに移しますか？</div>
+                <div style={{ fontSize:12, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>一覧から見えなくなりますが、消えるわけではありません。管理画面の「アーカイブ」からいつでも戻せます。</div>
+                <div style={{ fontSize:12, color:"var(--sub)", marginBottom:10 }}>ヒント：本社の郵便番号</div>
+                <input type="password" value={pwInput} onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
+                  onKeyDown={e=>e.key==="Enter" && handleArchiveConfirm()} placeholder="パスワードを入力" autoFocus
+                  style={{ width:"100%", boxSizing:"border-box", padding:"11px 12px", border:`2px solid ${pwError?"var(--primary)":"var(--line)"}`, borderRadius:9, fontSize:14, outline:"none", marginBottom:10 }} />
+                {pwError && <div style={{ fontSize:12, color:"var(--primary)", fontWeight:700, marginBottom:8 }}>{pwError}</div>}
+                <div style={{ display:"flex", gap:8 }}>
+                  <button onClick={()=>{ setShowArcConfirm(false); setPwInput(""); setPwError(""); }}
+                    style={{ flex:1, padding:"10px", background:"var(--chip)", color:"var(--text)", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer" }}>戻る</button>
+                  <button onClick={handleArchiveConfirm} disabled={arcBusy}
+                    style={{ flex:1, padding:"10px", background:"var(--primary-soft, #4a7ab0)", color:"#fff", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer", opacity:arcBusy?0.6:1 }}>{arcBusy ? "移動中…" : "移す"}</button>
+                </div>
+              </div>
+            </div>
+          )}
           {showDelConfirm && (
             <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10, padding:20 }} onClick={()=>{ setShowDelConfirm(false); setPwInput(""); setPwError(""); }}>
               <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
