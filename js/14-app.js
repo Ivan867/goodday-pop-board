@@ -407,12 +407,12 @@ function App() {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "6px 16px 3px",
+      padding: "3px 16px 2px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       flexWrap: "nowrap",
-      gap: 10,
+      gap: 8,
       opacity: 1 - scrollP,
       transform: `translateX(${scrollP * 80}px)`,
       marginTop: `${-scrollP * 52}px`,
@@ -431,7 +431,7 @@ function App() {
       });
     },
     style: {
-      fontSize: 19,
+      fontSize: 17,
       fontWeight: 900,
       color: "var(--primary)",
       whiteSpace: "nowrap",
@@ -457,10 +457,10 @@ function App() {
       background: "var(--primary-soft)",
       color: "#fff",
       fontWeight: 800,
-      fontSize: 14,
+      fontSize: 13,
       letterSpacing: "-0.2px",
-      height: 38,
-      padding: "0 18px",
+      height: 32,
+      padding: "0 15px",
       display: "flex",
       alignItems: "center",
       gap: 5,
@@ -495,10 +495,10 @@ function App() {
       background: "var(--primary-soft)",
       color: "#fff",
       fontWeight: 800,
-      fontSize: 14,
+      fontSize: 13,
       letterSpacing: "-0.2px",
-      height: 38,
-      padding: "0 18px",
+      height: 32,
+      padding: "0 15px",
       display: "flex",
       alignItems: "center",
       gap: 5,
@@ -672,7 +672,7 @@ function App() {
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
-      padding: "0 16px",
+      padding: "0 8px",
       pointerEvents: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -685,9 +685,9 @@ function App() {
       maxWidth: 1080,
       background: "var(--primary-soft)",
       border: "none",
-      borderRadius: 16,
+      borderRadius: 18,
       boxShadow: "0 2px 12px rgba(74,122,176,0.35)",
-      padding: "6px 10px",
+      padding: "9px 10px",
       pointerEvents: "auto"
     }
   }, [tabs[0], tabs[3], {
@@ -792,12 +792,12 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "8px 16px",
+        padding: "10px 20px",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: 6,
-        borderRadius: 22,
+        gap: 7,
+        borderRadius: 24,
         background: active ? "#fff" : "transparent",
         color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)",
         transition: "background .2s"
@@ -810,7 +810,7 @@ function App() {
       }
     }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 12.5,
+        fontSize: 13.5,
         fontWeight: 800,
         whiteSpace: "nowrap"
       }
