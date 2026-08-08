@@ -414,42 +414,38 @@ function TodayInfoCard() {
         return (
           <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"stretch" }}>
-              <div style={{ flex:1, minWidth:0, padding:"8px 11px", display:"flex", alignItems:"center", gap:9 }}>
-                <span style={{ fontSize:23, flexShrink:0 }}>{art}</span>
-                <div style={{ minWidth:0, flex:1 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6, minWidth:0 }}>
-                    <span style={{ fontSize:8.5, fontWeight:900, color:"var(--primary)", border:"1px solid var(--primary)", borderRadius:5, padding:"0px 5px", flexShrink:0, lineHeight:1.6 }}>販促</span>
-                    <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}</span>
-                    <span style={{ fontSize:11, color:"var(--sub)", fontWeight:800, flexShrink:0, whiteSpace:"nowrap" }}>{jd(main.d)}（{wd(main.d)}）</span>
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:7, marginTop:1, minWidth:0 }}>
-                    {main.food ? <span style={{ fontSize:9.5, color:"var(--sub)", fontWeight:700, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</span> : null}
-                    {resList.map(r => (
-                      <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill" title={r.description || r.title}
-                        style={{ display:"flex", alignItems:"center", gap:2, textDecoration:"none", fontSize:9, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"1px 7px", whiteSpace:"nowrap", flexShrink:0 }}>
-                        <span style={{ fontSize:9 }}>{r.emoji || "📄"}</span>{r.title}
-                      </a>
-                    ))}
-                    {nextItems[0] && (
-                      <button onClick={togglePromo} className="hig-pill"
-                        style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"1px 8px", fontSize:9, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:3, flexShrink:0, marginLeft:"auto" }}>
-                        {promoOpen ? "とじる" : "次も見る"}
-                        <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
-                      </button>
-                    )}
-                  </div>
+              <div style={{ flex:1, minWidth:0, padding:"9px 11px", display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ fontSize:22, flexShrink:0 }}>{art}</span>
+                <div style={{ display:"flex", alignItems:"center", gap:7, minWidth:0, flex:1, whiteSpace:"nowrap", overflow:"hidden" }}>
+                  <span style={{ fontSize:9, fontWeight:900, color:"var(--primary)", border:"1px solid var(--primary)", borderRadius:5, padding:"0 5px", flexShrink:0, lineHeight:1.7 }}>販促</span>
+                  <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", flexShrink:0 }}>{main.name}</span>
+                  <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", flexShrink:0 }}>{jd(main.d)}</span>
+                  {main.food ? <span style={{ fontSize:12, fontWeight:700, color:"var(--sub)", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>{main.food}</span> : null}
+                  {resList.map(r => (
+                    <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill" title={r.description || r.title}
+                      style={{ display:"flex", alignItems:"center", gap:2, textDecoration:"none", fontSize:10, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"1px 8px", flexShrink:0 }}>
+                      <span style={{ fontSize:9 }}>{r.emoji || "📄"}</span>{r.title}
+                    </a>
+                  ))}
+                  {nextItems[0] && (
+                    <button onClick={togglePromo} className="hig-pill"
+                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"2px 7px", fontSize:10, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:2, flexShrink:0, marginLeft:"auto" }}>
+                      {promoOpen ? "閉" : "次"}
+                      <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
+                    </button>
+                  )}
                 </div>
               </div>
-              <div style={{ flexShrink:0, width:66, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
+              <div style={{ flexShrink:0, width:54, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
                 <span style={{ fontSize:9, fontWeight:800, opacity:0.85 }}>あと</span>
-                <span style={{ fontSize:21, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:11 }}>日</span></span>
+                <span style={{ fontSize:19, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:10 }}>日</span></span>
               </div>
             </div>
             {promoOpen && nextItems[0] && (
               <div style={{ borderTop:"1px solid var(--line)", padding:"6px 11px", display:"flex", alignItems:"center", gap:7 }}>
                 <span style={{ fontSize:15, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
-                <span style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
-                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
+                <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
+                <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
               </div>
             )}
           </div>
