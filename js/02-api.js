@@ -440,6 +440,32 @@ const api = {
       }
     });
   },
+  // ── resources：資料（PDF/画像/シート/リンク）──
+  async listResources(onlyVisible) {
+    const q = onlyVisible ? "&visible=eq.true" : "";
+    return sbJson(`/rest/v1/resources?select=*${q}&order=sort_order.asc,created_at.desc`);
+  },
+  async addResource(r) {
+    return sbOne(`/rest/v1/resources`, {
+      method: "POST",
+      body: r,
+      prefer: "return=representation"
+    });
+  },
+  async updateResource(id, patch) {
+    return sbOne(`/rest/v1/resources?id=eq.${id}`, {
+      method: "PATCH",
+      body: patch,
+      prefer: "return=representation"
+    });
+  },
+  async deleteResource(id) {
+    const r = await sbFetch(`/rest/v1/resources?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   // ── production_notes：生産メモ ──
   async getMemo() {
     try {

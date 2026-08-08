@@ -166,6 +166,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {mainSeg("memo", "制作メモ")}
         {mainSeg("ranking", "記録")}
         {mainSeg("device", "端末")}
+        {mainSeg("res", "資料")}
       </div>
 
       {section === "notice" && <NoticeAdmin onNoticeChange={onNoticeChange} />}
@@ -173,6 +174,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "ranking" && <RankingPanel onCreateFromPop={onCreateFromPop} />}
 
       {section === "device" && <DeviceStatsPanel />}
+
+      {section === "res" && <ResourceAdmin />}
 
       {section === "req" && (
         reqLoading ? (
@@ -646,6 +649,168 @@ function NoticeAdmin({ onNoticeChange }) {
 
 // ═══════════ RankingPanel：管理画面内の記録（閲覧数・使った・いいね）═══════════
 // 一般メニューには出さない。管理画面にログインした管理者だけが見られる。
+// ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════
+function ResourceAdmin() {
+  const KINDS = [
+    { k:"pdf",   label:"PDF",       emoji:"📄" },
+    { k:"image", label:"画像",      emoji:"🖼" },
+    { k:"sheet", label:"スプレッドシート", emoji:"📊" },
+    { k:"link",  label:"リンク",    emoji:"🔗" },
+  ];
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ver, setVer] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [form, setForm] = useState({ title:"", description:"", kind:"pdf", url:"", emoji:"📄", visible:true });
+  const fileRef = useRef(null);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      try { const d = await api.listResources(false); if (alive) setList(d || []); }
+      catch(e) { if (alive) setMsg("読み込みに失敗しました"); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, [ver]);
+
+  const setF = (k, v) => setForm(o => ({ ...o, [k]: v }));
+
+  const pickFile = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setBusy(true); setMsg("アップロード中…");
+    try {
+      const url = await api.uploadRaw(f);
+      const isImg = /^image\//.test(f.type);
+      setForm(o => ({ ...o, url, kind: isImg ? "image" : "pdf", emoji: isImg ? "🖼" : "📄", title: o.title || (f.name || "").replace(/\.[^.]+$/, "") }));
+      setMsg("アップロードしました。タイトルを確認して「追加」を押してください");
+    } catch(err) { setMsg("アップロードに失敗しました：" + (err.message || "")); }
+    finally { setBusy(false); if (fileRef.current) fileRef.current.value = ""; }
+  };
+
+  const add = async () => {
+    if (!form.title.trim() || !form.url.trim()) { setMsg("タイトルとURL（またはファイル）が必要です"); return; }
+    setBusy(true); setMsg("");
+    try {
+      await api.addResource({ ...form, title: form.title.trim(), url: form.url.trim(), sort_order: list.length });
+      setForm({ title:"", description:"", kind:"pdf", url:"", emoji:"📄", visible:true });
+      setMsg("追加しました");
+      setVer(v => v + 1);
+    } catch(e) { setMsg("追加に失敗しました：" + (e.message || "")); }
+    finally { setBusy(false); }
+  };
+
+  const toggleVisible = async (r) => {
+    try { await api.updateResource(r.id, { visible: !r.visible }); setVer(v => v + 1); }
+    catch(e) { setMsg("変更に失敗しました"); }
+  };
+  const move = async (r, dir) => {
+    const i = list.findIndex(x => x.id === r.id);
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return;
+    try {
+      await api.updateResource(list[i].id, { sort_order: j });
+      await api.updateResource(list[j].id, { sort_order: i });
+      setVer(v => v + 1);
+    } catch(e) { setMsg("並び替えに失敗しました"); }
+  };
+  const del = async (r) => {
+    if (!window.confirm(`「${r.title}」を削除しますか？`)) return;
+    try { await api.deleteResource(r.id); setVer(v => v + 1); }
+    catch(e) { setMsg("削除に失敗しました"); }
+  };
+
+  const inp = { width:"100%", boxSizing:"border-box", padding:"9px 10px", border:"1px solid var(--line)", borderRadius:9, fontSize:13, outline:"none", background:"#fff", color:"var(--text)" };
+
+  return (
+    <div>
+      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
+        PDF・画像はここからアップロードできます。スプレッドシートなどはURLを貼り付けてください。「表示」をオンにしたものが、一覧ページの資料カードに並びます。
+      </div>
+
+      {/* 追加フォーム */}
+      <div style={{ border:"1px solid var(--line)", borderRadius:12, padding:13, marginBottom:16, background:"#fff" }}>
+        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>資料を追加</div>
+
+        <div style={{ display:"flex", gap:6, marginBottom:10, flexWrap:"wrap" }}>
+          {KINDS.map(k => (
+            <button key={k.k} onClick={() => { setF("kind", k.k); setF("emoji", k.emoji); }}
+              style={{ border: form.kind===k.k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"#fff", color: form.kind===k.k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              {k.emoji} {k.label}
+            </button>
+          ))}
+        </div>
+
+        {(form.kind === "pdf" || form.kind === "image") && (
+          <div style={{ marginBottom:10 }}>
+            <input ref={fileRef} type="file" accept={form.kind === "image" ? "image/*" : "application/pdf,image/*"} onChange={pickFile} disabled={busy}
+              style={{ fontSize:12, width:"100%" }} />
+          </div>
+        )}
+
+        <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="タイトル（例：魚売場POP 10シリーズ）" style={{ ...inp, marginBottom:8 }} />
+        <input value={form.description} onChange={e => setF("description", e.target.value)} placeholder="説明（任意）" style={{ ...inp, marginBottom:8 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:10, fontSize:11.5 }} />
+
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
+            <input type="checkbox" checked={form.visible} onChange={e => setF("visible", e.target.checked)} />
+            一覧に表示する
+          </label>
+          <button onClick={add} disabled={busy}
+            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:9, padding:"10px 20px", fontSize:13, fontWeight:900, cursor: busy ? "default" : "pointer" }}>
+            {busy ? "処理中…" : "追加"}
+          </button>
+        </div>
+        {msg && <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+      </div>
+
+      {/* 一覧 */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:9 }}>
+        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)" }}>登録済み（{list.length}）</div>
+        <button onClick={() => setVer(v => v + 1)} disabled={loading}
+          style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:9, padding:"6px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{loading ? "更新中…" : "更新"}</button>
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 0", fontSize:13 }}>読み込み中…</div>
+      ) : list.length === 0 ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"32px 0", fontSize:13 }}>まだ登録がありません</div>
+      ) : (
+        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          {list.map((r, i) => (
+            <div key={r.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"10px 12px", background:"#fff", opacity: r.visible ? 1 : 0.55 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+                <span style={{ fontSize:19, flexShrink:0 }}>{r.emoji || "📄"}</span>
+                <div style={{ minWidth:0, flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{r.title}</div>
+                  {r.description && <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{r.description}</div>}
+                </div>
+                <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, fontWeight:800, color:"var(--primary-soft)", textDecoration:"none", flexShrink:0 }}>開く</a>
+              </div>
+              <div style={{ display:"flex", gap:6, marginTop:9, flexWrap:"wrap" }}>
+                <button onClick={() => toggleVisible(r)}
+                  style={{ border:"1px solid var(--line)", background: r.visible ? "var(--soft)" : "#fff", color: r.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:11, fontWeight:800, cursor:"pointer" }}>
+                  {r.visible ? "表示中" : "非表示"}
+                </button>
+                <button onClick={() => move(r, -1)} disabled={i === 0}
+                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===0 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:800, cursor: i===0 ? "default" : "pointer" }}>↑</button>
+                <button onClick={() => move(r, 1)} disabled={i === list.length - 1}
+                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===list.length-1 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:800, cursor: i===list.length-1 ? "default" : "pointer" }}>↓</button>
+                <button onClick={() => del(r)}
+                  style={{ marginLeft:"auto", border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"5px 11px", fontSize:11, fontWeight:800, cursor:"pointer" }}>削除</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ═══════════ DeviceStatsPanel：管理画面内の端末アクセス集計 ═══════════
 // 一般メニューには出さない。個人は特定せず、機種・ブラウザの傾向だけを見る。
 function DeviceStatsPanel() {
@@ -793,4 +958,4 @@ function RankingPanel({ onCreateFromPop }) {
   );
 }
 
-;Object.assign(window, { DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });
+;Object.assign(window, { ResourceAdmin, DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });

@@ -489,6 +489,19 @@ function PromptTab({
   }));
 }
 function TodayInfoCard() {
+  const [resList, setResList] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const d = await api.listResources(true);
+        if (alive) setResList(d || []);
+      } catch (e) {}
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   const [promoOpen, setPromoOpen] = useState(() => {
     try {
       return localStorage.getItem("promoOpen") === "1";
@@ -1089,12 +1102,14 @@ function TodayInfoCard() {
         borderRadius: 7,
         padding: "1px 7px"
       }
-    }, "次の販促"), /*#__PURE__*/React.createElement("a", {
-      href: "/pop10.pdf",
+    }, "次の販促"), resList.map(r => /*#__PURE__*/React.createElement("a", {
+      key: r.id,
+      href: r.url,
       target: "_blank",
       rel: "noopener noreferrer",
       onClick: e => e.stopPropagation(),
       className: "hig-pill",
+      title: r.description || r.title,
       style: {
         display: "flex",
         alignItems: "center",
@@ -1106,22 +1121,16 @@ function TodayInfoCard() {
         background: "var(--primary-soft, #4a7ab0)",
         borderRadius: 999,
         padding: "2px 9px",
-        whiteSpace: "nowrap"
+        whiteSpace: "nowrap",
+        maxWidth: 130,
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       }
-    }, /*#__PURE__*/React.createElement("svg", {
-      width: "10",
-      height: "10",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2.4",
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }, /*#__PURE__*/React.createElement("path", {
-      d: "M5 3.5h9l5 5v12H5z"
-    }), /*#__PURE__*/React.createElement("path", {
-      d: "M14 3.5v5h5"
-    })), "POP10"), nextItems[0] && /*#__PURE__*/React.createElement("button", {
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10
+      }
+    }, r.emoji || "📄"), r.title)), nextItems[0] && /*#__PURE__*/React.createElement("button", {
       onClick: togglePromo,
       className: "hig-pill",
       style: {
