@@ -354,10 +354,10 @@ function TodayInfoCard() {
   const daysLeft = (d) => Math.max(0, Math.round((d - now)/86400000));
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:10 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, marginBottom:8 }}>
 
       {/* カード1：昨日比・先週比・明日（コンパクト1行） */}
-      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:14, padding:"7px 11px", cursor:"pointer" }}>
+      <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:13, padding:"5px 10px", cursor:"pointer" }}>
         {(() => {
           const dcol = (v) => v > 0 ? "#e0555f" : v < 0 ? "#4a86c5" : "var(--sub)";
           const tm = (wx && wx.series && wx.series[2]) ? wx.series[2] : null;
@@ -412,40 +412,41 @@ function TodayInfoCard() {
         const nextItems = up.slice(1).concat(events.next2 ? [{ d: events.next2.date, name: events.next2.name, food: events.next2.food }] : []);
         const art = eventArt(main.name, main.food);
         return (
-          <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:16, overflow:"hidden", cursor:"pointer" }}>
+          <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"stretch" }}>
-              <div style={{ flex:1, minWidth:0, padding:"10px 13px" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
-                  <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary)", border:"1.5px solid var(--primary)", borderRadius:7, padding:"1px 7px" }}>次の販促</span>
-                  {resList.map(r => (
-                    <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill" title={r.description || r.title}
-                      style={{ display:"flex", alignItems:"center", gap:3, textDecoration:"none", fontSize:9.5, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"2px 9px", whiteSpace:"nowrap", maxWidth:130, overflow:"hidden", textOverflow:"ellipsis" }}>
-                      <span style={{ fontSize:10 }}>{r.emoji || "📄"}</span>{r.title}
-                    </a>
-                  ))}
-                  {nextItems[0] && (
-                    <button onClick={togglePromo} className="hig-pill"
-                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"2px 9px", fontSize:9.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-                      {promoOpen ? "とじる" : "もっと見る"}
-                      <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
-                    </button>
-                  )}
-                </div>
-                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                  <span style={{ fontSize:26, flexShrink:0 }}>{art}</span>
-                  <div style={{ minWidth:0 }}>
-                    <div style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}　<span style={{ fontSize:12, color:"var(--sub)", fontWeight:800 }}>{jd(main.d)}（{wd(main.d)}）</span></div>
-                    {main.food ? <div style={{ fontSize:10, color:"var(--sub)", fontWeight:700, marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</div> : null}
+              <div style={{ flex:1, minWidth:0, padding:"8px 11px", display:"flex", alignItems:"center", gap:9 }}>
+                <span style={{ fontSize:23, flexShrink:0 }}>{art}</span>
+                <div style={{ minWidth:0, flex:1 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:6, minWidth:0 }}>
+                    <span style={{ fontSize:8.5, fontWeight:900, color:"var(--primary)", border:"1px solid var(--primary)", borderRadius:5, padding:"0px 5px", flexShrink:0, lineHeight:1.6 }}>販促</span>
+                    <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.name}</span>
+                    <span style={{ fontSize:11, color:"var(--sub)", fontWeight:800, flexShrink:0, whiteSpace:"nowrap" }}>{jd(main.d)}（{wd(main.d)}）</span>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:7, marginTop:1, minWidth:0 }}>
+                    {main.food ? <span style={{ fontSize:9.5, color:"var(--sub)", fontWeight:700, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{main.food}</span> : null}
+                    {resList.map(r => (
+                      <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill" title={r.description || r.title}
+                        style={{ display:"flex", alignItems:"center", gap:2, textDecoration:"none", fontSize:9, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"1px 7px", whiteSpace:"nowrap", flexShrink:0 }}>
+                        <span style={{ fontSize:9 }}>{r.emoji || "📄"}</span>{r.title}
+                      </a>
+                    ))}
+                    {nextItems[0] && (
+                      <button onClick={togglePromo} className="hig-pill"
+                        style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"1px 8px", fontSize:9, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:3, flexShrink:0, marginLeft:"auto" }}>
+                        {promoOpen ? "とじる" : "次も見る"}
+                        <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
-              <div style={{ flexShrink:0, width:80, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
-                <span style={{ fontSize:10, fontWeight:800, opacity:0.85 }}>あと</span>
-                <span style={{ fontSize:25, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:12 }}>日</span></span>
+              <div style={{ flexShrink:0, width:66, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
+                <span style={{ fontSize:9, fontWeight:800, opacity:0.85 }}>あと</span>
+                <span style={{ fontSize:21, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:11 }}>日</span></span>
               </div>
             </div>
             {promoOpen && nextItems[0] && (
-              <div style={{ borderTop:"1px solid var(--line)", padding:"7px 13px", display:"flex", alignItems:"center", gap:8 }}>
+              <div style={{ borderTop:"1px solid var(--line)", padding:"6px 11px", display:"flex", alignItems:"center", gap:7 }}>
                 <span style={{ fontSize:15, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
                 <span style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
                 <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
