@@ -624,21 +624,21 @@ function HeaderWeather() {
   const Temp = ({ hi, lo, size }) => (
     <span style={{ fontSize:size, fontWeight:900, whiteSpace:"nowrap" }}>
       <span style={{ color:"#e0555f" }}>{hi}°</span>
-      <span style={{ color:"var(--faint)", fontSize:size-3 }}>/</span>
+      <span style={{ color:"var(--faint)", fontSize:size }}>/</span>
       <span style={{ color:"#4a86c5" }}>{lo}°</span>
     </span>
   );
   return (
     <div style={{ display:"flex", alignItems:"center", gap:7, flexShrink:1, minWidth:0, overflow:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
-        <span style={{ fontSize:17, lineHeight:1 }}>{emo(w.code)}</span>
-        <Temp hi={w.hi} lo={w.lo} size={15} />
+        <span style={{ fontSize:16, lineHeight:1 }}>{emo(w.code)}</span>
+        <Temp hi={w.hi} lo={w.lo} size={13.5} />
       </div>
       {w.tHi != null && (
         <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0, paddingLeft:6, borderLeft:"1px solid var(--line)" }}>
-          <span style={{ fontSize:8.5, fontWeight:900, color:"var(--sub)" }}>明</span>
-          <span style={{ fontSize:13, lineHeight:1 }}>{emo(w.tCode)}</span>
-          <Temp hi={w.tHi} lo={w.tLo} size={12} />
+          <span style={{ fontSize:13.5, fontWeight:900, color:"var(--sub)" }}>明</span>
+          <span style={{ fontSize:16, lineHeight:1 }}>{emo(w.tCode)}</span>
+          <Temp hi={w.tHi} lo={w.tLo} size={13.5} />
         </div>
       )}
     </div>

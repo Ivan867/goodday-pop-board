@@ -1715,7 +1715,7 @@ function HeaderWeather() {
   }, hi, "°"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
-      fontSize: size - 3
+      fontSize: size
     }
   }, "/"), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1740,13 +1740,13 @@ function HeaderWeather() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 17,
+      fontSize: 16,
       lineHeight: 1
     }
   }, emo(w.code)), /*#__PURE__*/React.createElement(Temp, {
     hi: w.hi,
     lo: w.lo,
-    size: 15
+    size: 13.5
   })), w.tHi != null && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1758,19 +1758,19 @@ function HeaderWeather() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 8.5,
+      fontSize: 13.5,
       fontWeight: 900,
       color: "var(--sub)"
     }
   }, "明"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13,
+      fontSize: 16,
       lineHeight: 1
     }
   }, emo(w.tCode)), /*#__PURE__*/React.createElement(Temp, {
     hi: w.tHi,
     lo: w.tLo,
-    size: 12
+    size: 13.5
   })));
 }
 ;
