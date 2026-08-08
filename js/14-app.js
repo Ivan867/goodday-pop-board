@@ -407,12 +407,12 @@ function App() {
       position: "relative",
       maxWidth: 1080,
       margin: "0 auto",
-      padding: "3px 16px 2px",
+      padding: "3px 12px 2px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       flexWrap: "nowrap",
-      gap: 8,
+      gap: 6,
       opacity: 1 - scrollP,
       transform: `translateX(${scrollP * 80}px)`,
       marginTop: `${-scrollP * 52}px`,
@@ -431,16 +431,16 @@ function App() {
       });
     },
     style: {
-      fontSize: 15.5,
+      fontSize: 15,
       fontWeight: 900,
       color: "var(--primary)",
       whiteSpace: "nowrap",
       flexShrink: 0,
-      letterSpacing: "-0.5px",
+      letterSpacing: "-0.6px",
       cursor: "pointer"
     },
     title: "一覧に戻る"
-  }, "魚POP"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
+  }, "鮮魚POP"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0
