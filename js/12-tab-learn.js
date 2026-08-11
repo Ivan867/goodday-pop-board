@@ -1861,11 +1861,7 @@ function CatalogTab() {
       cursor: "pointer"
     }
   }, g.label))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: 11
-    }
+    className: "pop-grid"
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
     c: c
@@ -1884,11 +1880,7 @@ function CatalogTab() {
       lineHeight: 1.6
     }
   }, "当日に何を前面に出して売るかを見る用"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: 11
-    }
+    className: "pop-grid"
   }, flyers.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
     c: c

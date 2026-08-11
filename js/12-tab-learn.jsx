@@ -714,7 +714,7 @@ function CatalogTab() {
               ))}
             </div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:11 }}>
+            <div className="pop-grid">
               {cats.map(c => <Card key={c.id} c={c} />)}
             </div>
 
@@ -722,7 +722,7 @@ function CatalogTab() {
               <>
                 <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
                 <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:11 }}>
+                <div className="pop-grid">
                   {flyers.map(c => <Card key={c.id} c={c} />)}
                 </div>
               </>

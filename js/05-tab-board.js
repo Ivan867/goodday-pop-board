@@ -124,7 +124,7 @@ function BoardTab({
     style: {
       maxWidth: 1600,
       margin: "0 auto",
-      padding: "0 16px 185px"
+      padding: "9px 16px 185px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -345,12 +345,7 @@ function BoardTab({
       flex: 1
     }
   }, tipText))), loading ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: 12,
-      alignItems: "start"
-    }
+    className: "pop-grid"
   }, [210, 150, 180, 230, 160, 200, 140, 190].map((h, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -401,12 +396,7 @@ function BoardTab({
       fontSize: 13
     }
   }, "アップロードボタンから最初のポップを共有しましょう！")) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: 12,
-      alignItems: "start"
-    }
+    className: "pop-grid"
   }, filtered.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
     pop: pop,
@@ -956,12 +946,7 @@ function SearchTab({
       color: "var(--ink)"
     }
   }, results.length, "件")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: 12,
-      alignItems: "start"
-    }
+    className: "pop-grid"
   }, results.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
     pop: pop,

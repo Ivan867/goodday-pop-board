@@ -72,7 +72,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
   return (
     <>
-      <div style={{ maxWidth:1600, margin:"0 auto", padding:"0 16px 185px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 185px" }}>
         {/* よく使う機能へのショートカット */}
         <div style={{ display:"grid", gridTemplateColumns:"repeat(5, minmax(0, 1fr))", gap:7, marginBottom:9, maxWidth:640 }}>
           {[
@@ -113,7 +113,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           </div>
         )}
         {loading ? (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
+          <div className="pop-grid">
             {[210,150,180,230,160,200,140,190].map((h,i) => (
               <div key={i} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:14, overflow:"hidden" }}>
                 <div className="sk" style={{ width:"100%", height:h }} />
@@ -131,7 +131,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             <div style={{ fontSize:13 }}>アップロードボタンから最初のポップを共有しましょう！</div>
           </div>
         ) : (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
+          <div className="pop-grid">
             {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
           </div>
         )}
@@ -361,7 +361,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             {(fGenre||fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fGenre,fStore,fCat].filter(Boolean).join(" · ")} </span>}
             の検索結果：<span style={{ color:"var(--ink)" }}>{results.length}件</span>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
+          <div className="pop-grid">
             {results.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
           </div>
         </>
