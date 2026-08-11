@@ -356,57 +356,6 @@ function TodayInfoCard() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:7, marginBottom:8 }}>
 
-      {/* カード2：次の販促（行事） */}
-      {(() => {
-        const up = [];
-        if (hol && hol.date) up.push({ d: hol.date, name: hol.name, food: null, isHol:true });
-        if (events.next) up.push({ d: events.next.date, name: events.next.name, food: events.next.food, isHol:false });
-        up.sort((a,b)=>a.d-b.d);
-        if (!up.length) return null;
-        const main = up[0];
-        const nextItems = up.slice(1).concat(events.next2 ? [{ d: events.next2.date, name: events.next2.name, food: events.next2.food }] : []);
-        const art = eventArt(main.name, main.food);
-        return (
-          <div className="ucard" onClick={jumpCal} style={{ background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer" }}>
-            <div style={{ display:"flex", alignItems:"stretch" }}>
-              <div style={{ flex:1, minWidth:0, padding:"9px 11px", display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontSize:22, flexShrink:0 }}>{art}</span>
-                <div style={{ display:"flex", alignItems:"center", gap:7, minWidth:0, flex:1, whiteSpace:"nowrap", overflow:"hidden" }}>
-                  <span style={{ fontSize:9, fontWeight:900, color:"var(--primary)", border:"1px solid var(--primary)", borderRadius:5, padding:"0 5px", flexShrink:0, lineHeight:1.7 }}>販促</span>
-                  <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", flexShrink:0 }}>{main.name}</span>
-                  <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", flexShrink:0 }}>{jd(main.d)}</span>
-                  {main.food ? <span style={{ fontSize:12, fontWeight:700, color:"var(--sub)", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>{main.food}</span> : null}
-                  {resList.map(r => (
-                    <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} className="hig-pill" title={r.description || r.title}
-                      style={{ display:"flex", alignItems:"center", gap:2, textDecoration:"none", fontSize:10, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:999, padding:"1px 8px", flexShrink:0 }}>
-                      <span style={{ fontSize:9 }}>{r.emoji || "📄"}</span>{r.title}
-                    </a>
-                  ))}
-                  {nextItems[0] && (
-                    <button onClick={togglePromo} className="hig-pill"
-                      style={{ border:"none", background:"var(--soft)", color:"var(--primary-soft)", borderRadius:999, padding:"2px 7px", fontSize:10, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:2, flexShrink:0, marginLeft:"auto" }}>
-                      {promoOpen ? "閉" : "次"}
-                      <span style={{ display:"inline-block", transform: promoOpen ? "rotate(180deg)" : "none", transition:"transform .2s", lineHeight:1 }}>▾</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div style={{ flexShrink:0, width:54, background:"var(--primary-soft)", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", lineHeight:1.1 }}>
-                <span style={{ fontSize:9, fontWeight:800, opacity:0.85 }}>あと</span>
-                <span style={{ fontSize:19, fontWeight:900 }}>{daysLeft(main.d)}<span style={{ fontSize:10 }}>日</span></span>
-              </div>
-            </div>
-            {promoOpen && nextItems[0] && (
-              <div style={{ borderTop:"1px solid var(--line)", padding:"6px 11px", display:"flex", alignItems:"center", gap:7 }}>
-                <span style={{ fontSize:15, flexShrink:0 }}>{eventArt(nextItems[0].name, nextItems[0].food)}</span>
-                <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0 }}>{jd(nextItems[0].d)}（{wd(nextItems[0].d)}）　{nextItems[0].name}</span>
-                <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>あと{daysLeft(nextItems[0].d)}日</span>
-              </div>
-            )}
-          </div>
-        );
-      })()}
-
       {/* 警報・時化（あれば） */}
       {(() => {
         const chips = [];

@@ -445,7 +445,7 @@ function App() {
       cursor: "pointer"
     },
     title: "一覧に戻る"
-  }, "鮮魚POP"), /*#__PURE__*/React.createElement(HeaderWeather, null), /*#__PURE__*/React.createElement("div", {
+  }, "鮮魚POP"), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0

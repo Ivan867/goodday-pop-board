@@ -73,6 +73,21 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   return (
     <>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 16px 185px" }}>
+        {/* よく使う機能へのショートカット */}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8, marginBottom:10 }}>
+          {[
+            ["souba", "便利機能", <svg key="a" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M8 7h8M8 11.5h2M12 11.5h2M16 11.5h.01M8 15.5h2M12 15.5h2M16 15.5h.01M8 19h6"/></svg>],
+            ["gne", "入力ジェネ", <svg key="b" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></svg>],
+            ["industry", "業界情報", <svg key="c" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4.5h13v15H4z"/><path d="M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"/></svg>],
+          ].map(([key, label, icon]) => (
+            <button key={key} onClick={() => onFeatGo && onFeatGo(key)} className="hig-pill"
+              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4, border:"1px solid var(--line)", background:"#fff", color:"var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"10px 4px", cursor:"pointer", boxShadow:"0 1px 3px rgba(0,0,0,0.05)" }}>
+              {icon}
+              <span style={{ fontSize:11, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
+            </button>
+          ))}
+        </div>
+
         <TodayInfoCard />
         {feat && feat.enabled && feat.message && featShow && (
           <div onClick={() => { if (feat.tab && onFeatGo) onFeatGo(feat.tab); }}

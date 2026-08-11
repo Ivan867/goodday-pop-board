@@ -214,7 +214,6 @@ function App() {
         <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"3px 12px 2px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:6, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
           <div className="app-title hig-pill" onClick={() => { setRadialOpen(false); setMoreOpen(false); setTab("board"); const el = scroller(); if (el) el.scrollTo({ top: 0, behavior: "smooth" }); }}
             style={{ fontSize:15, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.6px", cursor:"pointer" }} title="一覧に戻る">鮮魚POP</div>
-          <HeaderWeather />
           <div style={{ flex:1, minWidth:0 }} />
           <button className="hig-pill" onClick={() => { setRadialOpen(false); setMoreOpen(false); setTab("request"); }} style={{ flexShrink:0, border:"1.5px solid var(--primary-soft)", background:"#fff", color:"var(--primary-soft)", fontWeight:800, fontSize:13, letterSpacing:"-0.2px", width:33, height:33, padding:0, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:999, cursor:"pointer" }} title="お問い合わせ">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>
