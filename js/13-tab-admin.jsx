@@ -816,7 +816,10 @@ function CatalogAdmin() {
   const [ver, setVer] = useState(0);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
-  const [form, setForm] = useState({ store:"グッディー", title:"", note:"", kind:"image", url:"", visible:true });
+  const NOW_Y = new Date().getFullYear();
+  const SEASONS = ["お盆","年末年始","土用の丑","お花見","GW","母の日","父の日","敬老の日","クリスマス","恵方巻","通年"];
+  const [form, setForm] = useState({ store:"グッディー", title:"", note:"", kind:"image", url:"", visible:true, season:"お盆", year:NOW_Y, thumb_url:"" });
+  const thumbRef = useRef(null);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -844,18 +847,35 @@ function CatalogAdmin() {
     finally { setBusy(false); if (fileRef.current) fileRef.current.value = ""; }
   };
 
+  const pickThumb = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setBusy(true); setMsg("表紙をアップロード中…");
+    try {
+      const url = await api.uploadRaw(f);
+      setForm(o => ({ ...o, thumb_url: url }));
+      setMsg("表紙を登録しました");
+    } catch(err) { setMsg("表紙のアップロードに失敗しました"); }
+    finally { setBusy(false); if (thumbRef.current) thumbRef.current.value = ""; }
+  };
+
   const add = async () => {
     if (!form.title.trim() || !form.url.trim()) { setMsg("カタログ名とファイル（またはURL）が必要です"); return; }
     setBusy(true); setMsg("");
     try {
       await api.addCatalog({ ...form, title: form.title.trim(), url: form.url.trim(), note: form.note.trim() || null, sort_order: list.length });
-      setForm({ store: form.store, title:"", note:"", kind:"image", url:"", visible:true });
+      setForm({ store: form.store, title:"", note:"", kind:"image", url:"", visible:true, season: form.season, year: form.year, thumb_url:"" });
       setMsg("追加しました"); setVer(v => v + 1);
     } catch(e) { setMsg("追加に失敗しました"); }
     finally { setBusy(false); }
   };
 
   const toggle = async (c) => { try { await api.updateCatalog(c.id, { visible: !c.visible }); setVer(v=>v+1); } catch(e) { setMsg("変更に失敗しました"); } };
+  const toggleDead = async (c) => {
+    const next = c.link_status === "dead" ? "ok" : "dead";
+    try { await api.updateCatalog(c.id, { link_status: next, checked_at: new Date().toISOString() }); setVer(v=>v+1); }
+    catch(e) { setMsg("変更に失敗しました"); }
+  };
   const del = async (c) => {
     if (!window.confirm(`「${c.title}」を削除しますか？`)) return;
     try { await api.deleteCatalog(c.id); setVer(v=>v+1); } catch(e) { setMsg("削除に失敗しました"); }
@@ -894,6 +914,25 @@ function CatalogAdmin() {
             style={{ fontSize:12, width:"100%", marginBottom:10 }} />
         )}
 
+        <div style={{ display:"flex", gap:7, marginBottom:9 }}>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>年</div>
+            <input value={form.year} onChange={e => setF("year", e.target.value.replace(/[^0-9]/g, ""))} inputMode="numeric" placeholder="2026" style={{ ...inp }} />
+          </div>
+          <div style={{ flex:2, minWidth:0 }}>
+            <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</div>
+            <select value={form.season} onChange={e => setF("season", e.target.value)} style={{ ...inp, appearance:"auto" }}>
+              {SEASONS.map(x => <option key={x} value={x}>{x}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ marginBottom:9 }}>
+          <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
+          <input ref={thumbRef} type="file" accept="image/*" onChange={pickThumb} disabled={busy} style={{ fontSize:12, width:"100%" }} />
+          {form.thumb_url && <img src={form.thumb_url} style={{ width:60, borderRadius:6, marginTop:6, display:"block" }} />}
+        </div>
+
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="カタログ名（例：お歳暮 2026）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.note} onChange={e => setF("note", e.target.value)} placeholder="メモ（例：締切 12/10）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:11.5 }} />
@@ -922,13 +961,15 @@ function CatalogAdmin() {
                 ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--chip)" }} />
                 : <div style={{ width:38, height:48, borderRadius:6, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
               <div style={{ minWidth:0, flex:1 }}>
-                <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}</div>
+                <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
                 <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.title}</div>
                 {c.note && <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
                 <button onClick={() => toggle(c)}
                   style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "#fff", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
+                <button onClick={() => toggleDead(c)}
+                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "#fff", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
                 <button onClick={() => del(c)}
                   style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>削除</button>
               </div>

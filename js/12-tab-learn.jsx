@@ -603,11 +603,12 @@ function SoubaTab({ onCreatePop }) {
 
 
 
-// ═══════════ CatalogTab：予約カタログ（スーパー別・研究用リンク集） ═══════════
+// ═══════════ CatalogTab：予約カタログ（年・シーズン別に蓄積） ═══════════
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [store, setStore] = useState("");
+  const [year, setYear] = useState("");
   const [sel, setSel] = useState(null);
 
   useEffect(() => {
@@ -622,36 +623,51 @@ function CatalogTab() {
 
   const mark = (v) => v >= 2 ? "🟦" : v === 1 ? "🟩" : "⬜";
   const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
-  const stores = [...new Set(list.map(c => c.store))];
-  const shown = store ? list.filter(c => c.store === store) : list;
+  const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
+  const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
+  const stores = [...new Set(byYear.map(c => c.store))];
+  const shown = store ? byYear.filter(c => c.store === store) : byYear;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
   const flyers = shown.filter(c => c.purpose === "flyer");
 
   const Card = ({ c }) => {
-    const isLink = c.kind === "link" || c.kind === "pdf";
+    const dead = c.link_status === "dead";
+    const thumb = c.thumb_url || (c.kind === "image" ? c.url : null);
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:13, overflow:"hidden", cursor:"pointer" }}
-        onClick={() => { if (c.kind === "image") setSel(c); else window.open(c.url, "_blank", "noopener"); }}>
-        {c.kind === "image" && (
-          <div className="imgskel" style={{ width:"100%", aspectRatio:"3/4", background:"var(--chip)" }}>
-            <img src={c.url} loading="lazy" className="fdin" onLoad={e => { e.target.classList.add("ld"); const pa=e.target.parentElement; if(pa) pa.classList.remove("imgskel"); }}
+      <div className="ucard" style={{ background:"#fff", borderRadius:13, overflow:"hidden", cursor:"pointer", position:"relative", opacity: dead ? 0.72 : 1 }}
+        onClick={() => {
+          if (thumb && (c.kind === "image" || dead)) { setSel({ ...c, url: thumb }); return; }
+          window.open(c.url, "_blank", "noopener");
+        }}>
+        {thumb ? (
+          <div className="imgskel" style={{ width:"100%", aspectRatio:"3/4", background:"var(--chip)", position:"relative" }}>
+            <img src={thumb} loading="lazy" className="fdin" onLoad={e => { e.target.classList.add("ld"); const pa=e.target.parentElement; if(pa) pa.classList.remove("imgskel"); }}
               style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+            {dead && <div style={{ position:"absolute", top:6, left:6, background:"rgba(179,38,30,0.9)", color:"#fff", fontSize:9.5, fontWeight:900, borderRadius:6, padding:"2px 7px" }}>掲載終了</div>}
+          </div>
+        ) : (
+          <div style={{ width:"100%", aspectRatio:"3/4", background:"var(--soft)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, color:"var(--primary-soft)" }}>
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5"/></svg>
+            {dead && <span style={{ fontSize:10, fontWeight:900, color:"#b3261e" }}>掲載終了</span>}
           </div>
         )}
-        <div style={{ padding:"10px 11px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:3 }}>
-            <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
-            {c.priority ? <span style={{ fontSize:10, fontWeight:900, color:"#e0a020", flexShrink:0 }}>{stars(c.priority)}</span> : null}
+        <div style={{ padding:"9px 10px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
+            <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
+            {c.priority ? <span style={{ fontSize:9.5, fontWeight:900, color:"#e0a020", flexShrink:0 }}>{stars(c.priority)}</span> : null}
           </div>
-          {c.area && <div style={{ fontSize:10, color:"var(--faint)", fontWeight:800, marginBottom:4 }}>{c.area}</div>}
-          <div style={{ display:"flex", gap:7, fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>
-            <span>寿司{mark(c.rate_sushi)}</span>
-            <span>刺身{mark(c.rate_sashimi)}</span>
-            <span>惣菜{mark(c.rate_souzai)}</span>
+          <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:4 }}>
+            {c.year && <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:5, padding:"1px 6px" }}>{c.year}{c.season ? " " + c.season : ""}</span>}
+            {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, alignSelf:"center" }}>{c.area}</span>}
           </div>
-          <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", lineHeight:1.4, marginBottom:3 }}>{c.title}</div>
-          {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5 }}>{c.note}</div>}
-          {isLink && <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)", marginTop:6 }}>ひらく →</div>}
+          <div style={{ display:"flex", gap:6, fontSize:10, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>
+            <span>寿司{mark(c.rate_sushi)}</span><span>刺身{mark(c.rate_sashimi)}</span><span>惣菜{mark(c.rate_souzai)}</span>
+          </div>
+          <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", lineHeight:1.4 }}>{c.title}</div>
+          {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5, marginTop:2 }}>{c.note}</div>}
+          <div style={{ fontSize:10, fontWeight:900, color: dead ? "var(--faint)" : "var(--primary-soft)", marginTop:6 }}>
+            {dead ? (thumb ? "保存した画像を見る" : "リンク切れ") : "ひらく →"}
+          </div>
         </div>
       </div>
     );
@@ -661,7 +677,7 @@ function CatalogTab() {
     <div>
       <div style={{ background:"var(--primary)", padding:"14px 16px", color:"#fff" }}>
         <div style={{ fontSize:18, fontWeight:900 }}>予約カタログ</div>
-        <div style={{ fontSize:11.5, opacity:0.78, marginTop:2, lineHeight:1.5 }}>各社の寿司・刺身の商品構成を研究する用のリンク集です</div>
+        <div style={{ fontSize:11.5, opacity:0.78, marginTop:2, lineHeight:1.5 }}>各社の寿司・刺身の商品構成を研究する用。過去の年の分も残しています</div>
       </div>
 
       <div style={{ maxWidth:900, margin:"0 auto", padding:"14px 16px 140px" }}>
@@ -674,33 +690,47 @@ function CatalogTab() {
           </div>
         ) : (
           <>
+            {years.length > 1 && (
+              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:9 }}>
+                <button onClick={() => { setYear(""); setStore(""); }}
+                  style={{ border: !year ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !year ? "var(--soft)" : "#fff", color: !year ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべての年</button>
+                {years.map(y => (
+                  <button key={y} onClick={() => { setYear(String(y)); setStore(""); }}
+                    style={{ border: String(year)===String(y) ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: String(year)===String(y) ? "var(--soft)" : "#fff", color: String(year)===String(y) ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{y}年</button>
+                ))}
+              </div>
+            )}
             <div style={{ fontSize:11, color:"var(--sub)", fontWeight:700, marginBottom:9, lineHeight:1.6 }}>
               評価：🟦かなり参考になる　🟩参考になる　⬜少なめ
             </div>
             {stores.length > 1 && (
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
                 <button onClick={() => setStore("")}
-                  style={{ border: !store ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !store ? "var(--soft)" : "#fff", color: !store ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべて</button>
+                  style={{ border: !store ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !store ? "var(--soft)" : "#fff", color: !store ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
                 {stores.map(st => (
                   <button key={st} onClick={() => setStore(st)}
-                    style={{ border: store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: store===st ? "var(--soft)" : "#fff", color: store===st ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{st}</button>
+                    style={{ border: store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: store===st ? "var(--soft)" : "#fff", color: store===st ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{st}</button>
                 ))}
               </div>
             )}
 
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:11 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:11 }}>
               {cats.map(c => <Card key={c.id} c={c} />)}
             </div>
 
             {flyers.length > 0 && (
               <>
                 <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
-                <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>お盆当日に何を前面に出して売るかを見る用</div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:11 }}>
+                <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:11 }}>
                   {flyers.map(c => <Card key={c.id} c={c} />)}
                 </div>
               </>
             )}
+
+            <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
+              各社の予約ページは時期が終わると消えることがあります。見つけたときにスクリーンショットを撮って管理画面から登録しておくと、来年の参考として残せます。
+            </div>
           </>
         )}
       </div>
@@ -709,8 +739,8 @@ function CatalogTab() {
         <div onClick={() => setSel(null)}
           style={{ position:"fixed", inset:0, background:"rgba(15,25,38,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
           <div onClick={e => e.stopPropagation()} style={{ maxWidth:"100%", maxHeight:"100%", display:"flex", flexDirection:"column", alignItems:"center", gap:10 }}>
-            <img src={sel.url} style={{ maxWidth:"100%", maxHeight:"80vh", objectFit:"contain", borderRadius:10 }} />
-            <div style={{ color:"#fff", fontSize:13, fontWeight:800, textAlign:"center" }}>{sel.store}　{sel.title}</div>
+            <img src={sel.url} style={{ maxWidth:"100%", maxHeight:"78vh", objectFit:"contain", borderRadius:10 }} />
+            <div style={{ color:"#fff", fontSize:13, fontWeight:800, textAlign:"center" }}>{sel.store}　{sel.title}{sel.year ? `（${sel.year}${sel.season || ""}）` : ""}</div>
             <button onClick={() => setSel(null)}
               style={{ border:"none", background:"rgba(255,255,255,0.9)", color:"#111", borderRadius:999, padding:"9px 24px", fontSize:13, fontWeight:800, cursor:"pointer" }}>閉じる</button>
           </div>

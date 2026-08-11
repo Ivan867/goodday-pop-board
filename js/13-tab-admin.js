@@ -2173,14 +2173,20 @@ function CatalogAdmin() {
   const [ver, setVer] = useState(0);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const NOW_Y = new Date().getFullYear();
+  const SEASONS = ["お盆", "年末年始", "土用の丑", "お花見", "GW", "母の日", "父の日", "敬老の日", "クリスマス", "恵方巻", "通年"];
   const [form, setForm] = useState({
     store: "グッディー",
     title: "",
     note: "",
     kind: "image",
     url: "",
-    visible: true
+    visible: true,
+    season: "お盆",
+    year: NOW_Y,
+    thumb_url: ""
   });
+  const thumbRef = useRef(null);
   const fileRef = useRef(null);
   useEffect(() => {
     let alive = true;
@@ -2225,6 +2231,25 @@ function CatalogAdmin() {
       if (fileRef.current) fileRef.current.value = "";
     }
   };
+  const pickThumb = async e => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setBusy(true);
+    setMsg("表紙をアップロード中…");
+    try {
+      const url = await api.uploadRaw(f);
+      setForm(o => ({
+        ...o,
+        thumb_url: url
+      }));
+      setMsg("表紙を登録しました");
+    } catch (err) {
+      setMsg("表紙のアップロードに失敗しました");
+    } finally {
+      setBusy(false);
+      if (thumbRef.current) thumbRef.current.value = "";
+    }
+  };
   const add = async () => {
     if (!form.title.trim() || !form.url.trim()) {
       setMsg("カタログ名とファイル（またはURL）が必要です");
@@ -2246,7 +2271,10 @@ function CatalogAdmin() {
         note: "",
         kind: "image",
         url: "",
-        visible: true
+        visible: true,
+        season: form.season,
+        year: form.year,
+        thumb_url: ""
       });
       setMsg("追加しました");
       setVer(v => v + 1);
@@ -2260,6 +2288,18 @@ function CatalogAdmin() {
     try {
       await api.updateCatalog(c.id, {
         visible: !c.visible
+      });
+      setVer(v => v + 1);
+    } catch (e) {
+      setMsg("変更に失敗しました");
+    }
+  };
+  const toggleDead = async c => {
+    const next = c.link_status === "dead" ? "ok" : "dead";
+    try {
+      await api.updateCatalog(c.id, {
+        link_status: next,
+        checked_at: new Date().toISOString()
       });
       setVer(v => v + 1);
     } catch (e) {
@@ -2375,7 +2415,83 @@ function CatalogAdmin() {
       width: "100%",
       marginBottom: 10
     }
-  }), /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 9
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 4
+    }
+  }, "年"), /*#__PURE__*/React.createElement("input", {
+    value: form.year,
+    onChange: e => setF("year", e.target.value.replace(/[^0-9]/g, "")),
+    inputMode: "numeric",
+    placeholder: "2026",
+    style: {
+      ...inp
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 2,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 4
+    }
+  }, "時期"), /*#__PURE__*/React.createElement("select", {
+    value: form.season,
+    onChange: e => setF("season", e.target.value),
+    style: {
+      ...inp,
+      appearance: "auto"
+    }
+  }, SEASONS.map(x => /*#__PURE__*/React.createElement("option", {
+    key: x,
+    value: x
+  }, x))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 9
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 4
+    }
+  }, "表紙の画像（任意・ページが消えても残ります）"), /*#__PURE__*/React.createElement("input", {
+    ref: thumbRef,
+    type: "file",
+    accept: "image/*",
+    onChange: pickThumb,
+    disabled: busy,
+    style: {
+      fontSize: 12,
+      width: "100%"
+    }
+  }), form.thumb_url && /*#__PURE__*/React.createElement("img", {
+    src: form.thumb_url,
+    style: {
+      width: 60,
+      borderRadius: 6,
+      marginTop: 6,
+      display: "block"
+    }
+  })), /*#__PURE__*/React.createElement("input", {
     value: form.title,
     onChange: e => setF("title", e.target.value),
     placeholder: "カタログ名（例：お歳暮 2026）",
@@ -2514,7 +2630,7 @@ function CatalogAdmin() {
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
-  }, c.store), /*#__PURE__*/React.createElement("div", {
+  }, c.store, c.year ? `　${c.year}${c.season || ""}` : "", c.link_status === "dead" ? "　⚠リンク切れ" : ""), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 900,
@@ -2551,6 +2667,18 @@ function CatalogAdmin() {
       cursor: "pointer"
     }
   }, c.visible ? "表示中" : "非表示"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleDead(c),
+    style: {
+      border: "1px solid var(--line)",
+      background: c.link_status === "dead" ? "#fdeaea" : "#fff",
+      color: c.link_status === "dead" ? "#b3261e" : "var(--sub)",
+      borderRadius: 7,
+      padding: "4px 10px",
+      fontSize: 10.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, c.link_status === "dead" ? "切れ中" : "切れ報告"), /*#__PURE__*/React.createElement("button", {
     onClick: () => del(c),
     style: {
       border: "1px solid #f0c8c4",
