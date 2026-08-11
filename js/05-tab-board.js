@@ -129,15 +129,15 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-      gap: 8,
+      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+      gap: 7,
       marginBottom: 9,
-      maxWidth: 520
+      maxWidth: 640
     }
-  }, [["souba", "便利機能", /*#__PURE__*/React.createElement("svg", {
+  }, [["souba", "便利機能", false, /*#__PURE__*/React.createElement("svg", {
     key: "a",
-    width: "19",
-    height: "19",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -152,10 +152,10 @@ function BoardTab({
     rx: "2.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 7h8M8 11.5h2M12 11.5h2M16 11.5h.01M8 15.5h2M12 15.5h2M16 15.5h.01M8 19h6"
-  }))], ["gne", "入力ジェネ", /*#__PURE__*/React.createElement("svg", {
+  }))], ["gne", "入力ジェネ", false, /*#__PURE__*/React.createElement("svg", {
     key: "b",
-    width: "19",
-    height: "19",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -170,10 +170,10 @@ function BoardTab({
     rx: "2.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M7 9.5h6M7 14h10"
-  }))], ["industry", "業界情報", /*#__PURE__*/React.createElement("svg", {
+  }))], ["industry", "業界情報", false, /*#__PURE__*/React.createElement("svg", {
     key: "c",
-    width: "19",
-    height: "19",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -184,29 +184,61 @@ function BoardTab({
     d: "M4 4.5h13v15H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"
-  }))]].map(([key, label, icon]) => /*#__PURE__*/React.createElement("button", {
+  }))], ["__upload", "投稿", true, /*#__PURE__*/React.createElement("svg", {
+    key: "d",
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 5v14M5 12h14"
+  }))], ["request", "問い合せ", false, /*#__PURE__*/React.createElement("svg", {
+    key: "e",
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.9",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "2.5",
+    y: "5",
+    width: "19",
+    height: "14",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 7l9 6 9-6"
+  }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
-    onClick: () => onFeatGo && onFeatGo(key),
+    onClick: () => {
+      if (key === "__upload") setShowUp(true);else if (onFeatGo) onFeatGo(key);
+    },
     className: "hig-pill",
     style: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      gap: 4,
-      border: "1px solid var(--line)",
-      background: "#fff",
-      color: "var(--primary-soft, #4a7ab0)",
+      gap: 3,
+      border: primary ? "none" : "1px solid var(--line)",
+      background: primary ? "var(--primary-soft, #4a7ab0)" : "#fff",
+      color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)",
       borderRadius: 12,
-      padding: "8px 4px",
+      padding: "8px 3px",
       cursor: "pointer",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+      boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)"
     }
   }, icon, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 800,
-      color: "var(--ink)",
+      color: primary ? "#fff" : "var(--ink)",
       whiteSpace: "nowrap"
     }
   }, label)))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
