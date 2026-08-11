@@ -454,13 +454,14 @@ function App() {
     className: "hig-pill",
     onClick: () => {
       setRadialOpen(false);
-      setTab("tool");
+      setMoreOpen(false);
+      setTab("request");
     },
     style: {
       flexShrink: 0,
-      border: "none",
-      background: "var(--primary-soft)",
-      color: "#fff",
+      border: "1.5px solid var(--primary-soft)",
+      background: "#fff",
+      color: "var(--primary-soft)",
       fontWeight: 800,
       fontSize: 13,
       letterSpacing: "-0.2px",
@@ -471,23 +472,26 @@ function App() {
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 999,
-      cursor: "pointer",
-      boxShadow: "0 2px 8px rgba(74,122,176,0.32)"
+      cursor: "pointer"
     },
-    title: "作成"
+    title: "お問い合わせ"
   }, /*#__PURE__*/React.createElement("svg", {
     width: "16",
     height: "16",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.2",
+    strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "2.5",
+    y: "5",
+    width: "19",
+    height: "14",
+    rx: "2.5"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M14 6.5l3.5 3.5"
+    d: "M3 7l9 6 9-6"
   }))), /*#__PURE__*/React.createElement("button", {
     className: "hig-pill",
     onClick: () => {
