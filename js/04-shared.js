@@ -51,10 +51,6 @@ function UploadModal({
       setError("商品名を入力してください");
       return;
     }
-    if (!author.trim()) {
-      setError("名前を入力してください");
-      return;
-    }
     if (!file) {
       setError("画像を選択してください");
       return;
@@ -168,9 +164,10 @@ function UploadModal({
     }
   }, "お名前 ", /*#__PURE__*/React.createElement("span", {
     style: {
-      color: "var(--primary)"
+      color: "var(--faint)",
+      fontWeight: 600
     }
-  }, "*")), /*#__PURE__*/React.createElement("div", {
+  }, "（任意）")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,

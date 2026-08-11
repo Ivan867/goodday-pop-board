@@ -39,7 +39,6 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 
   const submit = async () => {
     if (!product.trim()) { setError("商品名を入力してください"); return; }
-    if (!author.trim())  { setError("名前を入力してください"); return; }
     if (!file)           { setError("画像を選択してください"); return; }
     setLoading(true); setError("");
     try {
@@ -67,7 +66,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             </select>
           </div>
           <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>お名前 <span style={{ color:"var(--primary)" }}>*</span></div>
+            <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>お名前 <span style={{ color:"var(--faint)", fontWeight:600 }}>（任意）</span></div>
             <div style={{ display:"flex", gap:8, alignItems:"stretch" }}>
               <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎" style={{ flex:1, minWidth:0, padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
               <button type="button" onClick={()=>setAuthor("勝部")} title="勝部を入力" style={{ flexShrink:0, width:46, border:"2px solid #ffd9bd", background:"#fff3ea", color:"var(--primary)", fontWeight:900, fontSize:18, borderRadius:10, cursor:"pointer", lineHeight:1 }}>※</button>
