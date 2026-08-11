@@ -193,6 +193,7 @@ function App() {
     { key:"floor",   icon:"📸", label:"売場",       color:"#2f6fb0" },
     { key:"tool",    icon:"✏️", label:"作成",       color:"#8B6914" },
     { key:"search",  icon:"🔍", label:"検索",       color:"#059669" },
+    { key:"catalog", icon:"📖", label:"予約カタログ", color:"#b8860b" },
     { key:"barcode", icon:"🏷", label:"発注バーコード生成", color:"var(--primary)" },
     { key:"dev",     icon:"ℹ️", label:"お知らせ",   color:"#6b7280" },
     { key:"gne",     icon:"🅖", label:"入力ジェネレーター",      color:"#7c3aed" },
@@ -236,6 +237,7 @@ function App() {
       {tab==="barcode" && <LazyTab tabKey="barcode" />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
+      {tab==="catalog" && <CatalogTab />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <LazyTab tabKey="gne" />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
@@ -267,7 +269,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 18px), 2px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 8px", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"9px 10px", pointerEvents:"auto" }}>
-        {[tabs[0], tabs[3], { key:"__more", icon:"≡", label:"その他", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+        {[tabs[0], { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
@@ -278,9 +280,10 @@ function App() {
             board: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>,
             search: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>,
             more: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>,
+            catalog: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>,
             close: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>,
           };
-          const navIcon = key==="board" ? NAV_SVG.board : key==="search" ? NAV_SVG.search : NAV_SVG.more;
+          const navIcon = key==="board" ? NAV_SVG.board : key==="catalog" ? NAV_SVG.catalog : key==="search" ? NAV_SVG.search : NAV_SVG.more;
           const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
           return (
             <button key={key} onClick={onClick} className="hig-pill"

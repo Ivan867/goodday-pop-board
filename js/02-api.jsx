@@ -224,6 +224,19 @@ const api = {
     return true;
   },
 
+  // ── catalogs：予約カタログ（スーパー別）──
+  async listCatalogs(onlyVisible) {
+    const q = onlyVisible ? "&visible=eq.true" : "";
+    return sbJson(`/rest/v1/catalogs?select=*${q}&order=store.asc,sort_order.asc,created_at.desc`);
+  },
+  async addCatalog(c) { return sbOne(`/rest/v1/catalogs`, { method:"POST", body:c, prefer:"return=representation" }); },
+  async updateCatalog(id, patch) { return sbOne(`/rest/v1/catalogs?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=representation" }); },
+  async deleteCatalog(id) {
+    const r = await sbFetch(`/rest/v1/catalogs?id=eq.${id}`, { method:"DELETE" });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
+
   // ── resources：資料（PDF/画像/シート/リンク）──
   async listResources(onlyVisible) {
     const q = onlyVisible ? "&visible=eq.true" : "";

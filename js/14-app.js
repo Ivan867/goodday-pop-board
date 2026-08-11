@@ -345,6 +345,11 @@ function App() {
     label: "検索",
     color: "#059669"
   }, {
+    key: "catalog",
+    icon: "📖",
+    label: "予約カタログ",
+    color: "#b8860b"
+  }, {
     key: "barcode",
     icon: "🏷",
     label: "発注バーコード生成",
@@ -572,7 +577,7 @@ function App() {
   }), tab === "tool" && /*#__PURE__*/React.createElement(PopToolTab, {
     seed: toolSeed,
     onSeedConsumed: () => setToolSeed(null)
-  }), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
+  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
     key: "search" + dataVer,
     onCreateFromPop: handleCreateFromPop,
     radialOpen: radialOpen,
@@ -692,10 +697,15 @@ function App() {
       padding: "9px 10px",
       pointerEvents: "auto"
     }
-  }, [tabs[0], tabs[3], {
+  }, [tabs[0], {
+    key: "catalog",
+    icon: "📖",
+    label: "カタログ",
+    color: "#b8860b"
+  }, {
     key: "__more",
     icon: "≡",
-    label: "その他",
+    label: "メニュー",
     color: "#6b7280",
     more: true
   }].map(({
@@ -771,6 +781,20 @@ function App() {
       }, /*#__PURE__*/React.createElement("path", {
         d: "M4 7h16M4 12h16M4 17h16"
       })),
+      catalog: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
+      })),
       close: /*#__PURE__*/React.createElement("svg", {
         width: "18",
         height: "18",
@@ -784,7 +808,7 @@ function App() {
         d: "M6 6l12 12M18 6L6 18"
       }))
     };
-    const navIcon = key === "board" ? NAV_SVG.board : key === "search" ? NAV_SVG.search : NAV_SVG.more;
+    const navIcon = key === "board" ? NAV_SVG.board : key === "catalog" ? NAV_SVG.catalog : key === "search" ? NAV_SVG.search : NAV_SVG.more;
     const navLabel = more ? moreOpen ? "閉じる" : "メニュー" : label;
     return /*#__PURE__*/React.createElement("button", {
       key: key,

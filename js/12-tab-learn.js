@@ -1589,8 +1589,268 @@ function SoubaTab({
 
 // ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
 
+// ═══════════ CatalogTab：予約カタログ（スーパー別） ═══════════
+function CatalogTab() {
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [store, setStore] = useState("");
+  const [sel, setSel] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const d = await api.listCatalogs(true);
+        if (alive) setList(d || []);
+      } catch (e) {} finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const stores = [...new Set(list.map(c => c.store))];
+  const shown = store ? list.filter(c => c.store === store) : list;
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--primary)",
+      padding: "14px 16px",
+      color: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 900
+    }
+  }, "予約カタログ"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      opacity: 0.78,
+      marginTop: 2
+    }
+  }, "各スーパーの予約カタログを集めています")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 900,
+      margin: "0 auto",
+      padding: "14px 16px 140px"
+    }
+  }, loading ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13
+    }
+  }, "読み込み中…") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "56px 20px",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "60",
+    height: "60",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      opacity: 0.5,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 3.5h9l5 5v12H5z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 3.5v5h5M8.5 13h7M8.5 16.5h5"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, "まだカタログがありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, stores.length > 1 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setStore(""),
+    style: {
+      border: !store ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: !store ? "var(--soft)" : "#fff",
+      color: !store ? "var(--primary)" : "var(--sub)",
+      borderRadius: 999,
+      padding: "6px 14px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "すべて"), stores.map(st => /*#__PURE__*/React.createElement("button", {
+    key: st,
+    onClick: () => setStore(st),
+    style: {
+      border: store === st ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: store === st ? "var(--soft)" : "#fff",
+      color: store === st ? "var(--primary)" : "var(--sub)",
+      borderRadius: 999,
+      padding: "6px 14px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, st))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))",
+      gap: 11
+    }
+  }, shown.map(c => /*#__PURE__*/React.createElement("div", {
+    key: c.id,
+    className: "ucard",
+    style: {
+      background: "#fff",
+      borderRadius: 13,
+      overflow: "hidden",
+      cursor: "pointer"
+    },
+    onClick: () => {
+      if (c.kind === "image") setSel(c);else window.open(c.url, "_blank", "noopener");
+    }
+  }, c.kind === "image" ? /*#__PURE__*/React.createElement("div", {
+    className: "imgskel",
+    style: {
+      width: "100%",
+      aspectRatio: "3/4",
+      background: "var(--chip)"
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: c.url,
+    loading: "lazy",
+    className: "fdin",
+    onLoad: e => {
+      e.target.classList.add("ld");
+      const pa = e.target.parentElement;
+      if (pa) pa.classList.remove("imgskel");
+    },
+    style: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block"
+    }
+  })) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      aspectRatio: "3/4",
+      background: "var(--soft)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "var(--primary-soft)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "42",
+    height: "42",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.6",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 3.5h9l5 5v12H5z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 3.5v5h5"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 10px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      fontWeight: 900,
+      color: "var(--primary-soft)",
+      marginBottom: 2
+    }
+  }, c.store), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--ink)",
+      lineHeight: 1.35,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--sub)",
+      marginTop: 2,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, c.note))))))), sel && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setSel(null),
+    style: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(15,25,38,0.85)",
+      zIndex: 1000,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      maxWidth: "100%",
+      maxHeight: "100%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: sel.url,
+    style: {
+      maxWidth: "100%",
+      maxHeight: "80vh",
+      objectFit: "contain",
+      borderRadius: 10
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "#fff",
+      fontSize: 13,
+      fontWeight: 800,
+      textAlign: "center"
+    }
+  }, sel.store, "\u3000", sel.title), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSel(null),
+    style: {
+      border: "none",
+      background: "rgba(255,255,255,0.9)",
+      color: "#111",
+      borderRadius: 999,
+      padding: "9px 24px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "閉じる"))));
+}
 ;
 Object.assign(window, {
+  CatalogTab,
   CalendarTab,
   CompetitorTab,
   IndustryTab,

@@ -157,6 +157,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     ranking: <><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></>,
     device:  <><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></>,
     res:     <><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></>,
+    cat:     <><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></>,
     rot:     <><path d="M3.5 12a8.5 8.5 0 018.5-8.5c3 0 5.6 1.6 7.1 3.9"/><path d="M20.5 4v4h-4"/><path d="M20.5 12a8.5 8.5 0 01-8.5 8.5c-3 0-5.6-1.6-7.1-3.9"/><path d="M3.5 20v-4h4"/></>,
   };
   const mainSeg = (v, label, badge) => {
@@ -188,6 +189,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {mainSeg("ranking", "記録")}
         {mainSeg("device", "端末")}
         {mainSeg("res", "資料")}
+        {mainSeg("cat", "カタログ")}
         {mainSeg("rot", "向き")}
       </div>
 
@@ -198,6 +200,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "device" && <DeviceStatsPanel />}
 
       {section === "res" && <ResourceAdmin />}
+
+      {section === "cat" && <CatalogAdmin />}
 
       {section === "rot" && <RotateAdmin />}
 
@@ -804,6 +808,138 @@ function RotateAdmin() {
   );
 }
 
+// ═══════════ CatalogAdmin：予約カタログの登録 ═══════════
+function CatalogAdmin() {
+  const STORES = ["グッディー", "イオン", "ゆめタウン", "みしまや", "キヌヤ", "その他"];
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ver, setVer] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [form, setForm] = useState({ store:"グッディー", title:"", note:"", kind:"image", url:"", visible:true });
+  const fileRef = useRef(null);
+
+  useEffect(() => {
+    let alive = true; setLoading(true);
+    (async () => {
+      try { const d = await api.listCatalogs(false); if (alive) setList(d || []); }
+      catch(e) { if (alive) setMsg("読み込みに失敗しました"); }
+      finally { if (alive) setLoading(false); }
+    })();
+    return () => { alive = false; };
+  }, [ver]);
+
+  const setF = (k, v) => setForm(o => ({ ...o, [k]: v }));
+
+  const pickFile = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setBusy(true); setMsg("アップロード中…");
+    try {
+      const url = await api.uploadRaw(f);
+      const isImg = /^image\//.test(f.type);
+      setForm(o => ({ ...o, url, kind: isImg ? "image" : "pdf", title: o.title || (f.name || "").replace(/\.[^.]+$/, "") }));
+      setMsg("アップロードしました。内容を確認して「追加」を押してください");
+    } catch(err) { setMsg("アップロードに失敗しました"); }
+    finally { setBusy(false); if (fileRef.current) fileRef.current.value = ""; }
+  };
+
+  const add = async () => {
+    if (!form.title.trim() || !form.url.trim()) { setMsg("カタログ名とファイル（またはURL）が必要です"); return; }
+    setBusy(true); setMsg("");
+    try {
+      await api.addCatalog({ ...form, title: form.title.trim(), url: form.url.trim(), note: form.note.trim() || null, sort_order: list.length });
+      setForm({ store: form.store, title:"", note:"", kind:"image", url:"", visible:true });
+      setMsg("追加しました"); setVer(v => v + 1);
+    } catch(e) { setMsg("追加に失敗しました"); }
+    finally { setBusy(false); }
+  };
+
+  const toggle = async (c) => { try { await api.updateCatalog(c.id, { visible: !c.visible }); setVer(v=>v+1); } catch(e) { setMsg("変更に失敗しました"); } };
+  const del = async (c) => {
+    if (!window.confirm(`「${c.title}」を削除しますか？`)) return;
+    try { await api.deleteCatalog(c.id); setVer(v=>v+1); } catch(e) { setMsg("削除に失敗しました"); }
+  };
+
+  const inp = { width:"100%", boxSizing:"border-box", padding:"9px 10px", border:"1px solid var(--line)", borderRadius:9, fontSize:13, outline:"none", background:"#fff", color:"var(--text)" };
+
+  return (
+    <div>
+      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
+        各スーパーの予約カタログを登録します。写真やPDFをアップロードするか、WebカタログのURLを貼ってください。「表示」にしたものが予約カタログのページに並びます。
+      </div>
+
+      <div style={{ border:"1px solid var(--line)", borderRadius:12, padding:13, marginBottom:16, background:"#fff" }}>
+        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>カタログを追加</div>
+
+        <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>スーパー名</div>
+        <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10 }}>
+          {STORES.map(st => (
+            <button key={st} onClick={() => setF("store", st)}
+              style={{ border: form.store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"#fff", color: form.store===st ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{st}</button>
+          ))}
+        </div>
+        <input value={STORES.includes(form.store) ? "" : form.store} onChange={e => setF("store", e.target.value)} placeholder="上に無ければ入力（例：マルマン）"
+          style={{ ...inp, marginBottom:10, fontSize:12 }} />
+
+        <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+          {[["image","写真"],["pdf","PDF"],["link","リンク"]].map(([k,l]) => (
+            <button key={k} onClick={() => setF("kind", k)}
+              style={{ flex:1, border: form.kind===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"#fff", color: form.kind===k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"7px 0", fontSize:12, fontWeight:800, cursor:"pointer" }}>{l}</button>
+          ))}
+        </div>
+
+        {form.kind !== "link" && (
+          <input ref={fileRef} type="file" accept={form.kind === "image" ? "image/*" : "application/pdf,image/*"} onChange={pickFile} disabled={busy}
+            style={{ fontSize:12, width:"100%", marginBottom:10 }} />
+        )}
+
+        <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="カタログ名（例：お歳暮 2026）" style={{ ...inp, marginBottom:8 }} />
+        <input value={form.note} onChange={e => setF("note", e.target.value)} placeholder="メモ（例：締切 12/10）" style={{ ...inp, marginBottom:8 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:11.5 }} />
+
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
+            <input type="checkbox" checked={form.visible} onChange={e => setF("visible", e.target.checked)} />
+            みんなに表示する
+          </label>
+          <button onClick={add} disabled={busy}
+            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:9, padding:"10px 20px", fontSize:13, fontWeight:900, cursor: busy ? "default" : "pointer" }}>{busy ? "処理中…" : "追加"}</button>
+        </div>
+        {msg && <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+      </div>
+
+      <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>登録済み（{list.length}）</div>
+      {loading ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 0", fontSize:13 }}>読み込み中…</div>
+      ) : list.length === 0 ? (
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"32px 0", fontSize:13 }}>まだ登録がありません</div>
+      ) : (
+        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          {list.map(c => (
+            <div key={c.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"10px 12px", background:"#fff", opacity: c.visible ? 1 : 0.55, display:"flex", alignItems:"center", gap:10 }}>
+              {c.kind === "image"
+                ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--chip)" }} />
+                : <div style={{ width:38, height:48, borderRadius:6, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
+              <div style={{ minWidth:0, flex:1 }}>
+                <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}</div>
+                <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.title}</div>
+                {c.note && <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
+                <button onClick={() => toggle(c)}
+                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "#fff", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
+                <button onClick={() => del(c)}
+                  style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>削除</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════
 function ResourceAdmin() {
   const KINDS = [
@@ -1135,4 +1271,4 @@ function RankingPanel({ onCreateFromPop }) {
   );
 }
 
-;Object.assign(window, { RotateAdmin, ResourceAdmin, DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });
+;Object.assign(window, { CatalogAdmin, RotateAdmin, ResourceAdmin, DeviceStatsPanel, RankingPanel, AdminTab, ArchiveTab, NoticeAdmin, RequestTab });
