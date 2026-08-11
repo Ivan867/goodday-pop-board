@@ -72,7 +72,9 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     ctx.font = `900 46px ${GNE_FONT_STACK}`;
     ctx.fillText("テンプレ画像を選択してください", GNE_W / 2, 500);
   }
-  if (f.origin) gneDrawField(ctx, f.origin, L.origin, font);
+  // 産地と補足（養殖・解凍など）を1行に結合して描く
+  const originLine = [f.origin, f.origin2 ? `（${String(f.origin2).replace(/^（|）$/g, "")}）` : ""].filter(Boolean).join("");
+  if (originLine) gneDrawField(ctx, originLine, L.origin, font);
   if (f.name)   gneDrawField(ctx, f.name,   L.name, font);
   if (f.count)  gneDrawField(ctx, f.count,  L.count, font);
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
@@ -95,7 +97,7 @@ function GeneratorTab() {
   const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
   const [taxMode, setTaxMode] = useState("ceil");
   const [taxRate, setTaxRate] = useState(8);
-  const [f, setF] = useState({ origin:"鹿児島県産（養殖・解凍）", name:"うなぎかば焼き", count:"1尾", price:"2390" });
+  const [f, setF] = useState({ origin:"鹿児島県産", origin2:"養殖・解凍", name:"うなぎかば焼き", count:"1尾", price:"2390" });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -144,7 +146,7 @@ function GeneratorTab() {
       const wb = XLSX.read(new Uint8Array(buf), { type:"array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(ws, { defval:"" });
-      const rs = json.map((r) => ({ origin:r["産地"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "" })).filter((r) => r.name);
+      const rs = json.map((r) => ({ origin:r["産地"] ?? "", origin2:r["補足"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "" })).filter((r) => r.name);
       setRows(rs);
       setStatus(`${rs.length} 件を読み込みました`);
     } catch (e) { setStatus("Excel読み込みに失敗しました"); }
@@ -156,12 +158,12 @@ function GeneratorTab() {
     try {
       await loadScriptOnce(XLSX_SRC);
       const data = [
-        { "産地":"山陰沖",   "商品名":"天然ぶり刺身", "個数":"5切",  "本体価格":498 },
-        { "産地":"北海道",   "商品名":"秋鮭切身",     "個数":"2切",  "本体価格":380 },
-        { "産地":"島根県産", "商品名":"宍道湖しじみ", "個数":"200g", "本体価格":298 },
+        { "産地":"山陰沖",   "補足":"天然",       "商品名":"天然ぶり刺身", "個数":"5切",  "本体価格":498 },
+        { "産地":"北海道",   "補足":"解凍",       "商品名":"秋鮭切身",     "個数":"2切",  "本体価格":380 },
+        { "産地":"島根県産", "補足":"",           "商品名":"宍道湖しじみ", "個数":"200g", "本体価格":298 },
       ];
-      const ws = XLSX.utils.json_to_sheet(data, { header:["産地","商品名","個数","本体価格"] });
-      ws["!cols"] = [{ wch:14 }, { wch:22 }, { wch:10 }, { wch:12 }];
+      const ws = XLSX.utils.json_to_sheet(data, { header:["産地","補足","商品名","個数","本体価格"] });
+      ws["!cols"] = [{ wch:14 }, { wch:14 }, { wch:22 }, { wch:10 }, { wch:12 }];
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "商品リスト");
       XLSX.writeFile(wb, "products_見本.xlsx");
@@ -288,10 +290,10 @@ function GeneratorTab() {
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>単品入力（ライブプレビュー）</div>
-          {[["産地","origin"],["商品名","name"],["個数","count"],["本体価格","price"]].map(([label, key]) => (
+          {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].map(([label, key]) => (
             <div key={key}>
               <div style={{ fontSize:12, color:"var(--sub)", marginBottom:4 }}>{label}</div>
-              <input value={f[key]} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
+              <input value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
                 style={{ width:"100%", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
             </div>
           ))}
@@ -321,7 +323,7 @@ function GeneratorTab() {
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>Excel 一括（products.xlsx）</div>
-          <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>1行目に見出し、2行目から商品を書きます。列名は「<b>産地／商品名／個数／本体価格</b>」のとおりに（順番は自由）。商品名が空の行は飛ばされます。</div>
+          <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>1行目に見出し、2行目から商品を書きます。列名は「<b>産地／補足／商品名／個数／本体価格</b>」のとおりに（順番は自由・補足は空でもOK）。商品名が空の行は飛ばされます。</div>
           <button onClick={downloadTemplate}
             style={{ display:"flex", alignItems:"center", gap:7, border:"none", background:"var(--soft)", color:"var(--primary)", borderRadius:10, padding:"10px 15px", fontSize:13.5, fontWeight:800, cursor:"pointer", width:"fit-content" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3.5v11m0 0l-4-4m4 4l4-4"/><path d="M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>

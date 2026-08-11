@@ -169,7 +169,9 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     ctx.font = `900 46px ${GNE_FONT_STACK}`;
     ctx.fillText("テンプレ画像を選択してください", GNE_W / 2, 500);
   }
-  if (f.origin) gneDrawField(ctx, f.origin, L.origin, font);
+  // 産地と補足（養殖・解凍など）を1行に結合して描く
+  const originLine = [f.origin, f.origin2 ? `（${String(f.origin2).replace(/^（|）$/g, "")}）` : ""].filter(Boolean).join("");
+  if (originLine) gneDrawField(ctx, originLine, L.origin, font);
   if (f.name) gneDrawField(ctx, f.name, L.name, font);
   if (f.count) gneDrawField(ctx, f.count, L.count, font);
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
@@ -192,7 +194,8 @@ function GeneratorTab() {
   const [taxMode, setTaxMode] = useState("ceil");
   const [taxRate, setTaxRate] = useState(8);
   const [f, setF] = useState({
-    origin: "鹿児島県産（養殖・解凍）",
+    origin: "鹿児島県産",
+    origin2: "養殖・解凍",
     name: "うなぎかば焼き",
     count: "1尾",
     price: "2390"
@@ -282,6 +285,7 @@ function GeneratorTab() {
       });
       const rs = json.map(r => ({
         origin: r["産地"] ?? "",
+        origin2: r["補足"] ?? "",
         name: r["商品名"] ?? "",
         count: r["個数"] ?? "",
         price: r["本体価格"] ?? ""
@@ -300,24 +304,29 @@ function GeneratorTab() {
       await loadScriptOnce(XLSX_SRC);
       const data = [{
         "産地": "山陰沖",
+        "補足": "天然",
         "商品名": "天然ぶり刺身",
         "個数": "5切",
         "本体価格": 498
       }, {
         "産地": "北海道",
+        "補足": "解凍",
         "商品名": "秋鮭切身",
         "個数": "2切",
         "本体価格": 380
       }, {
         "産地": "島根県産",
+        "補足": "",
         "商品名": "宍道湖しじみ",
         "個数": "200g",
         "本体価格": 298
       }];
       const ws = XLSX.utils.json_to_sheet(data, {
-        header: ["産地", "商品名", "個数", "本体価格"]
+        header: ["産地", "補足", "商品名", "個数", "本体価格"]
       });
       ws["!cols"] = [{
+        wch: 14
+      }, {
         wch: 14
       }, {
         wch: 22
@@ -742,7 +751,7 @@ function GeneratorTab() {
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, "単品入力（ライブプレビュー）"), [["産地", "origin"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].map(([label, key]) => /*#__PURE__*/React.createElement("div", {
+  }, "単品入力（ライブプレビュー）"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].map(([label, key]) => /*#__PURE__*/React.createElement("div", {
     key: key
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -751,7 +760,7 @@ function GeneratorTab() {
       marginBottom: 4
     }
   }, label), /*#__PURE__*/React.createElement("input", {
-    value: f[key],
+    value: f[key] || "",
     onChange: set(key),
     inputMode: key === "price" ? "numeric" : "text",
     style: {
@@ -862,7 +871,7 @@ function GeneratorTab() {
       color: "var(--sub)",
       lineHeight: 1.6
     }
-  }, "1行目に見出し、2行目から商品を書きます。列名は「", /*#__PURE__*/React.createElement("b", null, "産地／商品名／個数／本体価格"), "」のとおりに（順番は自由）。商品名が空の行は飛ばされます。"), /*#__PURE__*/React.createElement("button", {
+  }, "1行目に見出し、2行目から商品を書きます。列名は「", /*#__PURE__*/React.createElement("b", null, "産地／補足／商品名／個数／本体価格"), "」のとおりに（順番は自由・補足は空でもOK）。商品名が空の行は飛ばされます。"), /*#__PURE__*/React.createElement("button", {
     onClick: downloadTemplate,
     style: {
       display: "flex",
