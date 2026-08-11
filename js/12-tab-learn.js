@@ -1589,7 +1589,7 @@ function SoubaTab({
 
 // ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
 
-// ═══════════ CatalogTab：予約カタログ（スーパー別） ═══════════
+// ═══════════ CatalogTab：予約カタログ（スーパー別・研究用リンク集） ═══════════
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1609,8 +1609,116 @@ function CatalogTab() {
       alive = false;
     };
   }, []);
+  const mark = v => v >= 2 ? "🟦" : v === 1 ? "🟩" : "⬜";
+  const stars = p => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const stores = [...new Set(list.map(c => c.store))];
   const shown = store ? list.filter(c => c.store === store) : list;
+  const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
+  const flyers = shown.filter(c => c.purpose === "flyer");
+  const Card = ({
+    c
+  }) => {
+    const isLink = c.kind === "link" || c.kind === "pdf";
+    return /*#__PURE__*/React.createElement("div", {
+      className: "ucard",
+      style: {
+        background: "#fff",
+        borderRadius: 13,
+        overflow: "hidden",
+        cursor: "pointer"
+      },
+      onClick: () => {
+        if (c.kind === "image") setSel(c);else window.open(c.url, "_blank", "noopener");
+      }
+    }, c.kind === "image" && /*#__PURE__*/React.createElement("div", {
+      className: "imgskel",
+      style: {
+        width: "100%",
+        aspectRatio: "3/4",
+        background: "var(--chip)"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: c.url,
+      loading: "lazy",
+      className: "fdin",
+      onLoad: e => {
+        e.target.classList.add("ld");
+        const pa = e.target.parentElement;
+        if (pa) pa.classList.remove("imgskel");
+      },
+      style: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        display: "block"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "10px 11px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        marginBottom: 3
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 900,
+        color: "var(--ink)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        flex: 1
+      }
+    }, c.store), c.priority ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10,
+        fontWeight: 900,
+        color: "#e0a020",
+        flexShrink: 0
+      }
+    }, stars(c.priority)) : null), c.area && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: "var(--faint)",
+        fontWeight: 800,
+        marginBottom: 4
+      }
+    }, c.area), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 7,
+        fontSize: 10.5,
+        fontWeight: 800,
+        color: "var(--sub)",
+        marginBottom: 5
+      }
+    }, /*#__PURE__*/React.createElement("span", null, "寿司", mark(c.rate_sushi)), /*#__PURE__*/React.createElement("span", null, "刺身", mark(c.rate_sashimi)), /*#__PURE__*/React.createElement("span", null, "惣菜", mark(c.rate_souzai))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        lineHeight: 1.4,
+        marginBottom: 3
+      }
+    }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10.5,
+        color: "var(--sub)",
+        lineHeight: 1.5
+      }
+    }, c.note), isLink && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        fontWeight: 900,
+        color: "var(--primary-soft)",
+        marginTop: 6
+      }
+    }, "ひらく →")));
+  };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
@@ -1624,11 +1732,12 @@ function CatalogTab() {
     }
   }, "予約カタログ"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 11.5,
       opacity: 0.78,
-      marginTop: 2
+      marginTop: 2,
+      lineHeight: 1.5
     }
-  }, "各スーパーの予約カタログを集めています")), /*#__PURE__*/React.createElement("div", {
+  }, "各社の寿司・刺身の商品構成を研究する用のリンク集です")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 900,
       margin: "0 auto",
@@ -1672,7 +1781,15 @@ function CatalogTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだカタログがありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, stores.length > 1 && /*#__PURE__*/React.createElement("div", {
+  }, "まだカタログがありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--sub)",
+      fontWeight: 700,
+      marginBottom: 9,
+      lineHeight: 1.6
+    }
+  }, "評価：🟦かなり参考になる\u3000🟩参考になる\u3000⬜少なめ"), stores.length > 1 && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1707,97 +1824,36 @@ function CatalogTab() {
   }, st))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
       gap: 11
     }
-  }, shown.map(c => /*#__PURE__*/React.createElement("div", {
+  }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
-    className: "ucard",
+    c: c
+  }))), flyers.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
-      borderRadius: 13,
-      overflow: "hidden",
-      cursor: "pointer"
-    },
-    onClick: () => {
-      if (c.kind === "image") setSel(c);else window.open(c.url, "_blank", "noopener");
-    }
-  }, c.kind === "image" ? /*#__PURE__*/React.createElement("div", {
-    className: "imgskel",
-    style: {
-      width: "100%",
-      aspectRatio: "3/4",
-      background: "var(--chip)"
-    }
-  }, /*#__PURE__*/React.createElement("img", {
-    src: c.url,
-    loading: "lazy",
-    className: "fdin",
-    onLoad: e => {
-      e.target.classList.add("ld");
-      const pa = e.target.parentElement;
-      if (pa) pa.classList.remove("imgskel");
-    },
-    style: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      display: "block"
-    }
-  })) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: "100%",
-      aspectRatio: "3/4",
-      background: "var(--soft)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "var(--primary-soft)"
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "42",
-    height: "42",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.6",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M5 3.5h9l5 5v12H5z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M14 3.5v5h5"
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "8px 10px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
+      fontSize: 13.5,
       fontWeight: 900,
-      color: "var(--primary-soft)",
-      marginBottom: 2
-    }
-  }, c.store), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
       color: "var(--ink)",
-      lineHeight: 1.35,
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
+      margin: "22px 0 4px"
     }
-  }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
+  }, "店売りチラシ"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11,
       color: "var(--sub)",
-      marginTop: 2,
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
+      marginBottom: 10,
+      lineHeight: 1.6
     }
-  }, c.note))))))), sel && /*#__PURE__*/React.createElement("div", {
+  }, "お盆当日に何を前面に出して売るかを見る用"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+      gap: 11
+    }
+  }, flyers.map(c => /*#__PURE__*/React.createElement(Card, {
+    key: c.id,
+    c: c
+  })))))), sel && /*#__PURE__*/React.createElement("div", {
     onClick: () => setSel(null),
     style: {
       position: "fixed",

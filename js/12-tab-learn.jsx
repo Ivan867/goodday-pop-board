@@ -603,7 +603,7 @@ function SoubaTab({ onCreatePop }) {
 
 
 
-// ═══════════ CatalogTab：予約カタログ（スーパー別） ═══════════
+// ═══════════ CatalogTab：予約カタログ（スーパー別・研究用リンク集） ═══════════
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -620,14 +620,48 @@ function CatalogTab() {
     return () => { alive = false; };
   }, []);
 
+  const mark = (v) => v >= 2 ? "🟦" : v === 1 ? "🟩" : "⬜";
+  const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const stores = [...new Set(list.map(c => c.store))];
   const shown = store ? list.filter(c => c.store === store) : list;
+  const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
+  const flyers = shown.filter(c => c.purpose === "flyer");
+
+  const Card = ({ c }) => {
+    const isLink = c.kind === "link" || c.kind === "pdf";
+    return (
+      <div className="ucard" style={{ background:"#fff", borderRadius:13, overflow:"hidden", cursor:"pointer" }}
+        onClick={() => { if (c.kind === "image") setSel(c); else window.open(c.url, "_blank", "noopener"); }}>
+        {c.kind === "image" && (
+          <div className="imgskel" style={{ width:"100%", aspectRatio:"3/4", background:"var(--chip)" }}>
+            <img src={c.url} loading="lazy" className="fdin" onLoad={e => { e.target.classList.add("ld"); const pa=e.target.parentElement; if(pa) pa.classList.remove("imgskel"); }}
+              style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+          </div>
+        )}
+        <div style={{ padding:"10px 11px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:3 }}>
+            <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
+            {c.priority ? <span style={{ fontSize:10, fontWeight:900, color:"#e0a020", flexShrink:0 }}>{stars(c.priority)}</span> : null}
+          </div>
+          {c.area && <div style={{ fontSize:10, color:"var(--faint)", fontWeight:800, marginBottom:4 }}>{c.area}</div>}
+          <div style={{ display:"flex", gap:7, fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>
+            <span>寿司{mark(c.rate_sushi)}</span>
+            <span>刺身{mark(c.rate_sashimi)}</span>
+            <span>惣菜{mark(c.rate_souzai)}</span>
+          </div>
+          <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", lineHeight:1.4, marginBottom:3 }}>{c.title}</div>
+          {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5 }}>{c.note}</div>}
+          {isLink && <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)", marginTop:6 }}>ひらく →</div>}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"14px 16px", color:"#fff" }}>
         <div style={{ fontSize:18, fontWeight:900 }}>予約カタログ</div>
-        <div style={{ fontSize:12, opacity:0.78, marginTop:2 }}>各スーパーの予約カタログを集めています</div>
+        <div style={{ fontSize:11.5, opacity:0.78, marginTop:2, lineHeight:1.5 }}>各社の寿司・刺身の商品構成を研究する用のリンク集です</div>
       </div>
 
       <div style={{ maxWidth:900, margin:"0 auto", padding:"14px 16px 140px" }}>
@@ -640,6 +674,9 @@ function CatalogTab() {
           </div>
         ) : (
           <>
+            <div style={{ fontSize:11, color:"var(--sub)", fontWeight:700, marginBottom:9, lineHeight:1.6 }}>
+              評価：🟦かなり参考になる　🟩参考になる　⬜少なめ
+            </div>
             {stores.length > 1 && (
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
                 <button onClick={() => setStore("")}
@@ -651,28 +688,19 @@ function CatalogTab() {
               </div>
             )}
 
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(152px, 1fr))", gap:11 }}>
-              {shown.map(c => (
-                <div key={c.id} className="ucard" style={{ background:"#fff", borderRadius:13, overflow:"hidden", cursor:"pointer" }}
-                  onClick={() => { if (c.kind === "image") setSel(c); else window.open(c.url, "_blank", "noopener"); }}>
-                  {c.kind === "image" ? (
-                    <div className="imgskel" style={{ width:"100%", aspectRatio:"3/4", background:"var(--chip)" }}>
-                      <img src={c.url} loading="lazy" className="fdin" onLoad={e => { e.target.classList.add("ld"); const pa=e.target.parentElement; if(pa) pa.classList.remove("imgskel"); }}
-                        style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
-                    </div>
-                  ) : (
-                    <div style={{ width:"100%", aspectRatio:"3/4", background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--primary-soft)" }}>
-                      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5"/></svg>
-                    </div>
-                  )}
-                  <div style={{ padding:"8px 10px" }}>
-                    <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)", marginBottom:2 }}>{c.store}</div>
-                    <div style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", lineHeight:1.35, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.title}</div>
-                    {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.note}</div>}
-                  </div>
-                </div>
-              ))}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:11 }}>
+              {cats.map(c => <Card key={c.id} c={c} />)}
             </div>
+
+            {flyers.length > 0 && (
+              <>
+                <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
+                <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>お盆当日に何を前面に出して売るかを見る用</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:11 }}>
+                  {flyers.map(c => <Card key={c.id} c={c} />)}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
