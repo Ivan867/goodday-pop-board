@@ -150,6 +150,25 @@ function GeneratorTab() {
     } catch (e) { setStatus("Excel読み込みに失敗しました"); }
   };
 
+  // 見本の Excel をその場で作ってダウンロード（列名を間違えないように）
+  const downloadTemplate = async () => {
+    setStatus("見本を作成中…");
+    try {
+      await loadScriptOnce(XLSX_SRC);
+      const data = [
+        { "産地":"山陰沖",   "商品名":"天然ぶり刺身", "個数":"5切",  "本体価格":498 },
+        { "産地":"北海道",   "商品名":"秋鮭切身",     "個数":"2切",  "本体価格":380 },
+        { "産地":"島根県産", "商品名":"宍道湖しじみ", "個数":"200g", "本体価格":298 },
+      ];
+      const ws = XLSX.utils.json_to_sheet(data, { header:["産地","商品名","個数","本体価格"] });
+      ws["!cols"] = [{ wch:14 }, { wch:22 }, { wch:10 }, { wch:12 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "商品リスト");
+      XLSX.writeFile(wb, "products_見本.xlsx");
+      setStatus("見本をダウンロードしました。中身を書き換えて読み込んでください");
+    } catch (e) { setStatus("見本の作成に失敗しました"); }
+  };
+
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = GNE_W; c.height = GNE_H;
     gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale });
@@ -299,7 +318,12 @@ function GeneratorTab() {
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>Excel 一括（products.xlsx）</div>
-          <div style={{ fontSize:12, color:"var(--sub)" }}>列：産地／商品名／個数／本体価格。読み込んで ZIP で一括出力。</div>
+          <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>1行目に見出し、2行目から商品を書きます。列名は「<b>産地／商品名／個数／本体価格</b>」のとおりに（順番は自由）。商品名が空の行は飛ばされます。</div>
+          <button onClick={downloadTemplate}
+            style={{ display:"flex", alignItems:"center", gap:7, border:"none", background:"var(--soft)", color:"var(--primary)", borderRadius:10, padding:"10px 15px", fontSize:13.5, fontWeight:800, cursor:"pointer", width:"fit-content" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3.5v11m0 0l-4-4m4 4l4-4"/><path d="M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            見本ファイルをダウンロード
+          </button>
           <button onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", width:"fit-content" }}>.xlsx を選択</button>
           <input ref={xlsxInput} type="file" accept=".xlsx,.xls" onChange={(e) => onExcel(e.target.files[0])} style={{ display:"none" }} />
           <button onClick={generateZip} disabled={!rows.length || busy}
