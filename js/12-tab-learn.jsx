@@ -608,11 +608,10 @@ function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [grp, setGrp] = useState("");
-  const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月", "土用の丑", "恵方巻", "母の日", "行楽"];
+  const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月"];
   const NOW_YEAR = new Date().getFullYear();
   const YEAR_OPTS = []; for (let y = NOW_YEAR; y >= 2020; y--) YEAR_OPTS.push(y);
-  const [qSeason, setQSeason] = useState("お盆");
-  const [qYear, setQYear] = useState(NOW_YEAR);
+  const [cardYear, setCardYear] = useState({});   // カードごとに選んだ年
   const [year, setYear] = useState("");
 
   useEffect(() => {
@@ -637,8 +636,8 @@ function CatalogTab() {
       : "https://www.google.com/search?q=";
     return base + encodeURIComponent(q);
   };
-  const imgSearchUrl = (c) => {
-    const q = [c.store, qSeason, "予約", "寿司 刺身", String(qYear)].filter(Boolean).join(" ");
+  const imgSearchUrl = (c, season, y) => {
+    const q = [c.store, season, "予約", "寿司 刺身", String(y)].filter(Boolean).join(" ");
     return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q);
   };
   const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
@@ -656,26 +655,24 @@ function CatalogTab() {
   const flyers = shown.filter(c => c.purpose === "flyer");
 
   const Card = ({ c }) => {
-    const dead = c.link_status === "dead";
+    const y = cardYear[c.id] || NOW_YEAR;
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:13, cursor:"pointer", opacity: dead ? 0.8 : 1 }}
-        onClick={() => window.open(c.url, "_blank", "noopener")}>
-        <div style={{ padding:"9px 10px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
-            <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
-            {dead && <span style={{ fontSize:8.5, fontWeight:900, color:"#b3261e", background:"#fdeaea", borderRadius:5, padding:"1px 5px", flexShrink:0 }}>終了</span>}
-          </div>
-          <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:4 }}>
-            {c.year && <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:5, padding:"1px 6px" }}>{c.year}{c.season ? " " + c.season : ""}</span>}
-            {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, alignSelf:"center" }}>{c.area}</span>}
-          </div>
-          <div style={{ fontSize:10, fontWeight:900, color: dead ? "var(--faint)" : "var(--primary-soft)", marginTop:6 }}>
-            {dead ? "リンク切れ" : "ひらく →"}
-          </div>
-          <div style={{ marginTop:7 }} onClick={(e) => e.stopPropagation()}>
-            <a href={imgSearchUrl(c)} target="_blank" rel="noopener noreferrer"
-              style={{ display:"block", textAlign:"center", textDecoration:"none", fontSize:10, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:7, padding:"6px 0" }}>画像で探す</a>
-          </div>
+      <div className="ucard" style={{ background:"#fff", borderRadius:13, padding:"10px 11px" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:7 }}>
+          <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
+          {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>{c.area}</span>}
+        </div>
+
+        <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
+          style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"5px 8px", fontSize:11.5, fontWeight:800, color:"var(--text)", background:"#fff", marginBottom:7, outline:"none" }}>
+          {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}年</option>)}
+        </select>
+
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:5 }}>
+          {SEASON_OPTS.map(sn => (
+            <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
+              style={{ textAlign:"center", textDecoration:"none", fontSize:10.5, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:7, padding:"6px 0" }}>{sn}</a>
+          ))}
         </div>
       </div>
     );
@@ -708,22 +705,6 @@ function CatalogTab() {
                 ))}
               </div>
             )}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"11px 12px", marginBottom:12 }}>
-              <div style={{ fontSize:11.5, fontWeight:900, color:"var(--ink)", marginBottom:7 }}>🔍 画像検索の条件</div>
-              <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:8 }}>
-                {SEASON_OPTS.map(sn => (
-                  <button key={sn} onClick={() => setQSeason(sn)}
-                    style={{ border: qSeason===sn ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: qSeason===sn ? "var(--soft)" : "#fff", color: qSeason===sn ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"4px 11px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>{sn}</button>
-                ))}
-              </div>
-              <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
-                {YEAR_OPTS.map(y => (
-                  <button key={y} onClick={() => setQYear(y)}
-                    style={{ border: qYear===y ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: qYear===y ? "var(--soft)" : "#fff", color: qYear===y ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"4px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>{y}</button>
-                ))}
-              </div>
-              <div style={{ fontSize:10.5, color:"var(--sub)", marginTop:8, lineHeight:1.5 }}>各カードの「画像で探す」で「{qSeason} {qYear}」の商品画像を検索します</div>
-            </div>
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
               <button onClick={() => setGrp("")}
                 style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべて</button>
