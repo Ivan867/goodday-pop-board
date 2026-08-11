@@ -65,6 +65,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
 /* タイトルは常時表示（モックアップ準拠） */
+/* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
+@media (min-width: 900px) {
+  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
+  .gne-preview { position: sticky; top: 12px; }
+  .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
+}
 /* HIG風ボタン：押した瞬間うっすら透明＋わずかに縮む */
 .hig-pill { transition: opacity .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
 .hig-pill:active { opacity:.55; transform:scale(.96); }
@@ -127,21 +133,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260811m"></script>
-<script src="js/02-api.js?v=20260811m"></script>
-<script src="js/03-utils.js?v=20260811m"></script>
-<script src="js/04-shared.js?v=20260811m"></script>
-<script src="js/05-tab-board.js?v=20260811m"></script>
-<script src="js/06-tab-create.js?v=20260811m"></script>
-<script src="js/07-tab-floor.js?v=20260811m"></script>
-<script src="js/09-tab-info.js?v=20260811m"></script>
-<script src="js/11-tab-check-fish.js?v=20260811m"></script>
-<script src="js/12-tab-learn.js?v=20260811m"></script>
-<script src="js/14-app.js?v=20260811m"></script>
+<script src="js/01-config.js?v=20260812a"></script>
+<script src="js/02-api.js?v=20260812a"></script>
+<script src="js/03-utils.js?v=20260812a"></script>
+<script src="js/04-shared.js?v=20260812a"></script>
+<script src="js/05-tab-board.js?v=20260812a"></script>
+<script src="js/06-tab-create.js?v=20260812a"></script>
+<script src="js/07-tab-floor.js?v=20260812a"></script>
+<script src="js/09-tab-info.js?v=20260812a"></script>
+<script src="js/11-tab-check-fish.js?v=20260812a"></script>
+<script src="js/12-tab-learn.js?v=20260812a"></script>
+<script src="js/14-app.js?v=20260812a"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260811m";
+window.APP_VER = "20260812a";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

@@ -462,10 +462,40 @@ function GeneratorTab() {
       marginBottom: 16
     }
   }, "柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。"), /*#__PURE__*/React.createElement("div", {
+    className: "gne-grid",
     style: {
       display: "grid",
       gridTemplateColumns: "minmax(0, 1fr)",
       gap: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "gne-preview"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: card
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("canvas", {
+    ref: previewRef,
+    width: GNE_W,
+    height: GNE_H,
+    style: {
+      width: "100%",
+      maxWidth: "100%",
+      height: "auto",
+      borderRadius: 10,
+      border: "1px solid var(--line)",
+      display: "block"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "gne-settings",
+    style: {
+      display: "grid",
+      gap: 14,
+      minWidth: 0
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: card
@@ -504,26 +534,6 @@ function GeneratorTab() {
     onChange: e => onTpl(e.target.files[0]),
     style: {
       display: "none"
-    }
-  })), /*#__PURE__*/React.createElement("div", {
-    style: card
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("canvas", {
-    ref: previewRef,
-    width: GNE_W,
-    height: GNE_H,
-    style: {
-      width: "100%",
-      maxWidth: "100%",
-      height: "auto",
-      borderRadius: 10,
-      border: "1px solid var(--line)",
-      display: "block"
     }
   })), /*#__PURE__*/React.createElement("div", {
     style: card
@@ -1124,7 +1134,7 @@ function GeneratorTab() {
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, status))));
+  }, status)))));
 }
 
 // ===== 相場タブ：先週比の「相場安」計算＋売価計算（プロトタイプ） =====

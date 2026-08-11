@@ -223,7 +223,16 @@ function GeneratorTab() {
       <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>GNE｜POP画像ジェネレーター</div>
       <div style={{ fontSize:13, color:"var(--sub)", marginBottom:16 }}>柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。</div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr)", gap:14 }}>
+      <div className="gne-grid" style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr)", gap:14 }}>
+        <div className="gne-preview">
+        <div style={card}>
+            <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8 }}>プレビュー {fontNote}</div>
+            <canvas ref={previewRef} width={GNE_W} height={GNE_H} style={{ width:"100%", maxWidth:"100%", height:"auto", borderRadius:10, border:"1px solid var(--line)", display:"block" }} />
+          </div>
+        </div>
+
+        <div className="gne-settings" style={{ display:"grid", gap:14, minWidth:0 }}>
+
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>テンプレ画像（文字なし・1200×1697推奨）</div>
           <button {...dzTpl.props} onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", ...dzTpl.style }}>{dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"}</button>
@@ -231,10 +240,6 @@ function GeneratorTab() {
           <input ref={tplInput} type="file" accept="image/*" onChange={(e) => onTpl(e.target.files[0])} style={{ display:"none" }} />
         </div>
 
-        <div style={card}>
-          <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8 }}>プレビュー {fontNote}</div>
-          <canvas ref={previewRef} width={GNE_W} height={GNE_H} style={{ width:"100%", maxWidth:"100%", height:"auto", borderRadius:10, border:"1px solid var(--line)", display:"block" }} />
-        </div>
 
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", marginBottom:4 }}>文字の位置・サイズ</div>
@@ -379,6 +384,7 @@ function GeneratorTab() {
             {busy ? "生成中…" : (rows.length ? `${rows.length} 件を ZIP 出力` : "ファイル未読込")}
           </button>
           {status && <div style={{ fontSize:12, color:"var(--sub)" }}>{status}</div>}
+        </div>
         </div>
       </div>
     </div>
