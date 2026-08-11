@@ -1593,7 +1593,7 @@ function SoubaTab({
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [store, setStore] = useState("");
+  const [grp, setGrp] = useState("");
   const [year, setYear] = useState("");
   useEffect(() => {
     let alive = true;
@@ -1626,9 +1626,22 @@ function CatalogTab() {
   };
   const stars = p => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a, b) => b - a);
+  const GROUPS = [{
+    key: "major",
+    label: "大手スーパー"
+  }, {
+    key: "local",
+    label: "ローカルスーパー"
+  }, {
+    key: "coop",
+    label: "生協"
+  }, {
+    key: "pro",
+    label: "専門店・魚屋"
+  }];
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
-  const stores = [...new Set(byYear.map(c => c.store))];
-  const shown = store ? byYear.filter(c => c.store === store) : byYear;
+  const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
+  const shown = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
   const flyers = shown.filter(c => c.purpose === "flyer");
   const Card = ({
@@ -1675,14 +1688,7 @@ function CatalogTab() {
         padding: "1px 5px",
         flexShrink: 0
       }
-    }, "終了"), c.priority ? /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 9.5,
-        fontWeight: 900,
-        color: "#e0a020",
-        flexShrink: 0
-      }
-    }, stars(c.priority)) : null), /*#__PURE__*/React.createElement("div", {
+    }, "終了")), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 5,
@@ -1715,20 +1721,6 @@ function CatalogTab() {
         marginBottom: 4
       }
     }, /*#__PURE__*/React.createElement("span", null, "寿司", mark(c.rate_sushi)), /*#__PURE__*/React.createElement("span", null, "刺身", mark(c.rate_sashimi)), /*#__PURE__*/React.createElement("span", null, "惣菜", mark(c.rate_souzai))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 11.5,
-        fontWeight: 800,
-        color: "var(--ink)",
-        lineHeight: 1.4
-      }
-    }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10.5,
-        color: "var(--sub)",
-        lineHeight: 1.5,
-        marginTop: 2
-      }
-    }, c.note), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
         fontWeight: 900,
@@ -1847,7 +1839,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setYear("");
-      setStore("");
+      setGrp("");
     },
     style: {
       border: !year ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
@@ -1863,7 +1855,7 @@ function CatalogTab() {
     key: y,
     onClick: () => {
       setYear(String(y));
-      setStore("");
+      setGrp("");
     },
     style: {
       border: String(year) === String(y) ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
@@ -1883,7 +1875,7 @@ function CatalogTab() {
       marginBottom: 9,
       lineHeight: 1.6
     }
-  }, "評価：🟦かなり参考になる\u3000🟩参考になる\u3000⬜少なめ"), stores.length > 1 && /*#__PURE__*/React.createElement("div", {
+  }, "評価：🟦かなり参考になる\u3000🟩参考になる\u3000⬜少なめ"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1891,31 +1883,31 @@ function CatalogTab() {
       marginBottom: 14
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setStore(""),
+    onClick: () => setGrp(""),
     style: {
-      border: !store ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: !store ? "var(--soft)" : "#fff",
-      color: !store ? "var(--primary)" : "var(--sub)",
+      border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: !grp ? "var(--soft)" : "#fff",
+      color: !grp ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
-      padding: "5px 12px",
-      fontSize: 12,
+      padding: "6px 14px",
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "すべて"), stores.map(st => /*#__PURE__*/React.createElement("button", {
-    key: st,
-    onClick: () => setStore(st),
+  }, "すべて"), groupsIn.map(g => /*#__PURE__*/React.createElement("button", {
+    key: g.key,
+    onClick: () => setGrp(g.key),
     style: {
-      border: store === st ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: store === st ? "var(--soft)" : "#fff",
-      color: store === st ? "var(--primary)" : "var(--sub)",
+      border: grp === g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: grp === g.key ? "var(--soft)" : "#fff",
+      color: grp === g.key ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
-      padding: "5px 12px",
-      fontSize: 12,
+      padding: "6px 14px",
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, st))), /*#__PURE__*/React.createElement("div", {
+  }, g.label))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",

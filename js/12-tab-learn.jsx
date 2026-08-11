@@ -607,7 +607,7 @@ function SoubaTab({ onCreatePop }) {
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [store, setStore] = useState("");
+  const [grp, setGrp] = useState("");
   const [year, setYear] = useState("");
 
   useEffect(() => {
@@ -639,9 +639,15 @@ function CatalogTab() {
   };
   const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
+  const GROUPS = [
+    { key:"major", label:"大手スーパー" },
+    { key:"local", label:"ローカルスーパー" },
+    { key:"coop",  label:"生協" },
+    { key:"pro",   label:"専門店・魚屋" },
+  ];
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
-  const stores = [...new Set(byYear.map(c => c.store))];
-  const shown = store ? byYear.filter(c => c.store === store) : byYear;
+  const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
+  const shown = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
   const flyers = shown.filter(c => c.purpose === "flyer");
 
@@ -654,7 +660,6 @@ function CatalogTab() {
           <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
             <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
             {dead && <span style={{ fontSize:8.5, fontWeight:900, color:"#b3261e", background:"#fdeaea", borderRadius:5, padding:"1px 5px", flexShrink:0 }}>終了</span>}
-            {c.priority ? <span style={{ fontSize:9.5, fontWeight:900, color:"#e0a020", flexShrink:0 }}>{stars(c.priority)}</span> : null}
           </div>
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:4 }}>
             {c.year && <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:5, padding:"1px 6px" }}>{c.year}{c.season ? " " + c.season : ""}</span>}
@@ -663,8 +668,6 @@ function CatalogTab() {
           <div style={{ display:"flex", gap:6, fontSize:10, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>
             <span>寿司{mark(c.rate_sushi)}</span><span>刺身{mark(c.rate_sashimi)}</span><span>惣菜{mark(c.rate_souzai)}</span>
           </div>
-          <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", lineHeight:1.4 }}>{c.title}</div>
-          {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5, marginTop:2 }}>{c.note}</div>}
           <div style={{ fontSize:10, fontWeight:900, color: dead ? "var(--faint)" : "var(--primary-soft)", marginTop:6 }}>
             {dead ? "リンク切れ" : "ひらく →"}
           </div>
@@ -698,10 +701,10 @@ function CatalogTab() {
           <>
             {years.length > 1 && (
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:9 }}>
-                <button onClick={() => { setYear(""); setStore(""); }}
+                <button onClick={() => { setYear(""); setGrp(""); }}
                   style={{ border: !year ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !year ? "var(--soft)" : "#fff", color: !year ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべての年</button>
                 {years.map(y => (
-                  <button key={y} onClick={() => { setYear(String(y)); setStore(""); }}
+                  <button key={y} onClick={() => { setYear(String(y)); setGrp(""); }}
                     style={{ border: String(year)===String(y) ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: String(year)===String(y) ? "var(--soft)" : "#fff", color: String(year)===String(y) ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{y}年</button>
                 ))}
               </div>
@@ -709,16 +712,14 @@ function CatalogTab() {
             <div style={{ fontSize:11, color:"var(--sub)", fontWeight:700, marginBottom:9, lineHeight:1.6 }}>
               評価：🟦かなり参考になる　🟩参考になる　⬜少なめ
             </div>
-            {stores.length > 1 && (
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-                <button onClick={() => setStore("")}
-                  style={{ border: !store ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !store ? "var(--soft)" : "#fff", color: !store ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
-                {stores.map(st => (
-                  <button key={st} onClick={() => setStore(st)}
-                    style={{ border: store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: store===st ? "var(--soft)" : "#fff", color: store===st ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{st}</button>
-                ))}
-              </div>
-            )}
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              <button onClick={() => setGrp("")}
+                style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべて</button>
+              {groupsIn.map(g => (
+                <button key={g.key} onClick={() => setGrp(g.key)}
+                  style={{ border: grp===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: grp===g.key ? "var(--soft)" : "#fff", color: grp===g.key ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{g.label}</button>
+              ))}
+            </div>
 
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:11 }}>
               {cats.map(c => <Card key={c.id} c={c} />)}
