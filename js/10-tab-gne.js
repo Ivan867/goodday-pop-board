@@ -143,11 +143,16 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
   const L = {};
   for (const k in GNE_LAYOUT) {
     const o = GNE_LAYOUT[k];
-    const fsc = (fs[GROUP[k]] || 100) / 100 * sc; // 全体倍率 × フィールド別倍率
+    const g = GROUP[k];
+    const fsc = (fs[g] || 100) / 100 * sc; // 全体倍率 × フィールド別倍率
+    const fo = fp[g] || {
+      x: 0,
+      y: 0
+    }; // フィールド別の位置ずらし
     L[k] = {
       ...o,
-      x: o.x + dx,
-      y: o.y + dy,
+      x: o.x + dx + fo.x,
+      y: o.y + dy + fo.y,
       size: Math.round(o.size * fsc),
       sw: Math.max(1, Math.round(o.sw * fsc))
     };

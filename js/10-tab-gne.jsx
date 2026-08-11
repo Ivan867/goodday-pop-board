@@ -57,8 +57,10 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
   const L = {};
   for (const k in GNE_LAYOUT) {
     const o = GNE_LAYOUT[k];
-    const fsc = ((fs[GROUP[k]] || 100) / 100) * sc;   // 全体倍率 × フィールド別倍率
-    L[k] = { ...o, x: o.x + dx, y: o.y + dy, size: Math.round(o.size * fsc), sw: Math.max(1, Math.round(o.sw * fsc)) };
+    const g = GROUP[k];
+    const fsc = ((fs[g] || 100) / 100) * sc;   // 全体倍率 × フィールド別倍率
+    const fo = fp[g] || { x:0, y:0 };          // フィールド別の位置ずらし
+    L[k] = { ...o, x: o.x + dx + fo.x, y: o.y + dy + fo.y, size: Math.round(o.size * fsc), sw: Math.max(1, Math.round(o.sw * fsc)) };
     if (o.maxW) L[k].maxW = o.maxW;  // 折り返し幅は据え置き（はみ出し防止）
   }
   ctx.clearRect(0, 0, GNE_W, GNE_H);
