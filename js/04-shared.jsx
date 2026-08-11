@@ -37,6 +37,8 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
     im.src = url;
   };
 
+  const dzImg = useDropZone((f) => onFile({ target:{ files:[f] } }), "image");
+
   const submit = async () => {
     if (!product.trim()) { setError("商品名を入力してください"); return; }
     if (!file)           { setError("画像を選択してください"); return; }
@@ -88,8 +90,8 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>画像</div>
-            <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:"14px", textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
-              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>タップして選択</div>}
+            <label {...dzImg.props} style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:"14px", textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa", ...dzImg.style }}>
+              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:200, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>{dzImg.over ? "ここに離してください" : "タップして選択（画像をドラッグしてもOK）"}</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
             {ratioWarn && (

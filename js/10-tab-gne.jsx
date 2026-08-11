@@ -169,6 +169,9 @@ function GeneratorTab() {
     } catch (e) { setStatus("見本の作成に失敗しました"); }
   };
 
+  const dzTpl = useDropZone((f) => onTpl(f), "image");
+  const dzXlsx = useDropZone((f) => onExcel(f), "excel");
+
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = GNE_W; c.height = GNE_H;
     gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale });
@@ -211,7 +214,7 @@ function GeneratorTab() {
       <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr)", gap:14 }}>
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>テンプレ画像（文字なし・1200×1697推奨）</div>
-          <button onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer" }}>画像を選択</button>
+          <button {...dzTpl.props} onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", ...dzTpl.style }}>{dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"}</button>
           {tpl && <span style={{ marginLeft:10, fontSize:12, color:"#2f6fb0", fontWeight:700 }}>読込済み</span>}
           <input ref={tplInput} type="file" accept="image/*" onChange={(e) => onTpl(e.target.files[0])} style={{ display:"none" }} />
         </div>
@@ -324,7 +327,7 @@ function GeneratorTab() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3.5v11m0 0l-4-4m4 4l4-4"/><path d="M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
             見本ファイルをダウンロード
           </button>
-          <button onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", width:"fit-content" }}>.xlsx を選択</button>
+          <button {...dzXlsx.props} onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", width:"fit-content", ...dzXlsx.style }}>{dzXlsx.over ? "ここに離す" : ".xlsx を選択（ドラッグでもOK）"}</button>
           <input ref={xlsxInput} type="file" accept=".xlsx,.xls" onChange={(e) => onExcel(e.target.files[0])} style={{ display:"none" }} />
           <button onClick={generateZip} disabled={!rows.length || busy}
             style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "#cbb8ef" : "#2f6fb0", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>

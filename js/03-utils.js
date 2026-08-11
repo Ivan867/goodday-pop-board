@@ -161,8 +161,57 @@ function soubaWari(pct) {
   const s = Number.isInteger(w) ? String(w) : w.toFixed(1);
   return `約${s}割`;
 }
+
+// ── ドラッグ&ドロップ：画像やファイルを枠に投げ込めるようにする共通ヘルパー ──
+// 使い方: const dz = useDropZone(file => 取り込み処理); <div {...dz.props} style={{...dz.style}}>
+function useDropZone(onFile, accept) {
+  const [over, setOver] = React.useState(false);
+  const ok = f => {
+    if (!f) return false;
+    if (accept === "image") return /^image\//.test(f.type);
+    if (accept === "excel") return /\.(xlsx|xls)$/i.test(f.name || "");
+    return true;
+  };
+  const props = {
+    onDragOver: e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!over) setOver(true);
+    },
+    onDragEnter: e => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOver(true);
+    },
+    onDragLeave: e => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOver(false);
+    },
+    onDrop: e => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOver(false);
+      const dt = e.dataTransfer;
+      if (!dt) return;
+      const f = dt.files && dt.files[0] || null;
+      if (f && ok(f)) onFile(f);
+    }
+  };
+  const style = over ? {
+    outline: "2.5px dashed var(--primary-soft, #4a7ab0)",
+    outlineOffset: "-3px",
+    background: "var(--soft, #e7f1fa)"
+  } : {};
+  return {
+    props,
+    style,
+    over
+  };
+}
 ;
 Object.assign(window, {
+  useDropZone,
   soubaWari,
   JP_HOLIDAYS,
   holidayName,

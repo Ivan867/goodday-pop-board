@@ -661,6 +661,11 @@ function FloorUploadModal({
     setFile(f);
     setPreview(URL.createObjectURL(f));
   };
+  const dzFloor = useDropZone(f => onFile({
+    target: {
+      files: [f]
+    }
+  }), "image");
   const submit = async () => {
     if (!file) {
       setError("写真を選択してください");
@@ -859,6 +864,7 @@ function FloorUploadModal({
       color: "var(--primary)"
     }
   }, "*")), /*#__PURE__*/React.createElement("label", {
+    ...dzFloor.props,
     style: {
       display: "block",
       border: "2px dashed #e0e0e0",
@@ -866,7 +872,8 @@ function FloorUploadModal({
       padding: 16,
       textAlign: "center",
       cursor: "pointer",
-      background: preview ? "transparent" : "#fafafa"
+      background: preview ? "transparent" : "#fafafa",
+      ...dzFloor.style
     }
   }, preview ? /*#__PURE__*/React.createElement("img", {
     src: preview,
@@ -880,7 +887,7 @@ function FloorUploadModal({
       color: "var(--sub)",
       fontSize: 14
     }
-  }, "タップして選択"), /*#__PURE__*/React.createElement("input", {
+  }, dzFloor.over ? "ここに離してください" : "タップして選択（ドラッグでもOK）"), /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: "image/*",
     onChange: onFile,

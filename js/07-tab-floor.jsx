@@ -277,6 +277,8 @@ function FloorUploadModal({ onClose, onSuccess }) {
     setPreview(URL.createObjectURL(f));
   };
 
+  const dzFloor = useDropZone((f) => onFile({ target:{ files:[f] } }), "image");
+
   const submit = async () => {
     if (!file)          { setError("写真を選択してください"); return; }
     if (!author.trim()) { setError("お名前を入力してください"); return; }
@@ -324,8 +326,8 @@ function FloorUploadModal({ onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:5 }}>写真 <span style={{ color:"var(--primary)" }}>*</span></div>
-            <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa" }}>
-              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>タップして選択</div>}
+            <label {...dzFloor.props} style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa", ...dzFloor.style }}>
+              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>{dzFloor.over ? "ここに離してください" : "タップして選択（ドラッグでもOK）"}</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>

@@ -334,6 +334,8 @@ function GeneratorTab() {
       setStatus("見本の作成に失敗しました");
     }
   };
+  const dzTpl = useDropZone(f => onTpl(f), "image");
+  const dzXlsx = useDropZone(f => onExcel(f), "excel");
   const renderBlob = row => new Promise(res => {
     const c = document.createElement("canvas");
     c.width = GNE_W;
@@ -431,6 +433,7 @@ function GeneratorTab() {
       marginBottom: 8
     }
   }, "テンプレ画像（文字なし・1200×1697推奨）"), /*#__PURE__*/React.createElement("button", {
+    ...dzTpl.props,
     onClick: () => tplInput.current && tplInput.current.click(),
     style: {
       border: "1px dashed #ccc",
@@ -440,9 +443,10 @@ function GeneratorTab() {
       fontSize: 14,
       fontWeight: 700,
       color: "var(--text)",
-      cursor: "pointer"
+      cursor: "pointer",
+      ...dzTpl.style
     }
-  }, "画像を選択"), tpl && /*#__PURE__*/React.createElement("span", {
+  }, dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: 10,
       fontSize: 12,
@@ -888,6 +892,7 @@ function GeneratorTab() {
   }), /*#__PURE__*/React.createElement("path", {
     d: "M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"
   })), "見本ファイルをダウンロード"), /*#__PURE__*/React.createElement("button", {
+    ...dzXlsx.props,
     onClick: () => xlsxInput.current && xlsxInput.current.click(),
     style: {
       border: "1px dashed #ccc",
@@ -898,9 +903,10 @@ function GeneratorTab() {
       fontWeight: 700,
       color: "var(--text)",
       cursor: "pointer",
-      width: "fit-content"
+      width: "fit-content",
+      ...dzXlsx.style
     }
-  }, ".xlsx を選択"), /*#__PURE__*/React.createElement("input", {
+  }, dzXlsx.over ? "ここに離す" : ".xlsx を選択（ドラッグでもOK）"), /*#__PURE__*/React.createElement("input", {
     ref: xlsxInput,
     type: "file",
     accept: ".xlsx,.xls",

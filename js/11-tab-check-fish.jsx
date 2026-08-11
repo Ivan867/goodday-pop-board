@@ -222,6 +222,8 @@ function PopCheckTab() {
     </div>
   );
 
+  const dzCheck = useDropZone((f) => onFile({ target:{ files:[f] } }), "image");
+
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
@@ -234,8 +236,8 @@ function PopCheckTab() {
 
         <div className="wcard">
           <div style={{ display:"flex", gap:8 }}>
-            <label style={{ flex:1, display:"block", textAlign:"center", border:"1.5px dashed var(--line)", borderRadius:11, padding:"14px 8px", fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer", background:"var(--bg)" }}>
-              📷 画像を選ぶ
+            <label {...dzCheck.props} style={{ flex:1, display:"block", textAlign:"center", border:"1.5px dashed var(--line)", borderRadius:11, padding:"14px 8px", fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer", background:"var(--bg)", ...dzCheck.style }}>
+              {dzCheck.over ? "ここに離す" : "📷 画像を選ぶ"}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
             <button onClick={openPicker} style={{ flex:1, border:"1.5px solid var(--line)", background:"#fff", borderRadius:11, fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>🗂 最近のPOPから</button>

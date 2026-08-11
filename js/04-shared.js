@@ -46,6 +46,11 @@ function UploadModal({
     };
     im.src = url;
   };
+  const dzImg = useDropZone(f => onFile({
+    target: {
+      files: [f]
+    }
+  }), "image");
   const submit = async () => {
     if (!product.trim()) {
       setError("商品名を入力してください");
@@ -275,6 +280,7 @@ function UploadModal({
       marginBottom: 6
     }
   }, "画像"), /*#__PURE__*/React.createElement("label", {
+    ...dzImg.props,
     style: {
       display: "block",
       border: "2px dashed #e0e0e0",
@@ -282,7 +288,8 @@ function UploadModal({
       padding: "14px",
       textAlign: "center",
       cursor: "pointer",
-      background: preview ? "transparent" : "#fafafa"
+      background: preview ? "transparent" : "#fafafa",
+      ...dzImg.style
     }
   }, preview ? /*#__PURE__*/React.createElement("img", {
     src: preview,
@@ -296,7 +303,7 @@ function UploadModal({
       color: "var(--sub)",
       fontSize: 14
     }
-  }, "タップして選択"), /*#__PURE__*/React.createElement("input", {
+  }, dzImg.over ? "ここに離してください" : "タップして選択（画像をドラッグしてもOK）"), /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: "image/*",
     onChange: onFile,
