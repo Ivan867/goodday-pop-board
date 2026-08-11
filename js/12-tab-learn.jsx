@@ -609,7 +609,6 @@ function CatalogTab() {
   const [loading, setLoading] = useState(true);
   const [store, setStore] = useState("");
   const [year, setYear] = useState("");
-  const [sel, setSel] = useState(null);
 
   useEffect(() => {
     let alive = true;
@@ -648,28 +647,13 @@ function CatalogTab() {
 
   const Card = ({ c }) => {
     const dead = c.link_status === "dead";
-    const thumb = c.thumb_url || (c.kind === "image" ? c.url : null);
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:13, overflow:"hidden", cursor:"pointer", position:"relative", opacity: dead ? 0.72 : 1 }}
-        onClick={() => {
-          if (thumb && (c.kind === "image" || dead)) { setSel({ ...c, url: thumb }); return; }
-          window.open(c.url, "_blank", "noopener");
-        }}>
-        {thumb ? (
-          <div className="imgskel" style={{ width:"100%", aspectRatio:"3/4", background:"var(--chip)", position:"relative" }}>
-            <img src={thumb} loading="lazy" className="fdin" onLoad={e => { e.target.classList.add("ld"); const pa=e.target.parentElement; if(pa) pa.classList.remove("imgskel"); }}
-              style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
-            {dead && <div style={{ position:"absolute", top:6, left:6, background:"rgba(179,38,30,0.9)", color:"#fff", fontSize:9.5, fontWeight:900, borderRadius:6, padding:"2px 7px" }}>掲載終了</div>}
-          </div>
-        ) : (
-          <div style={{ width:"100%", aspectRatio:"3/4", background:"var(--soft)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, color:"var(--primary-soft)" }}>
-            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5"/></svg>
-            {dead && <span style={{ fontSize:10, fontWeight:900, color:"#b3261e" }}>掲載終了</span>}
-          </div>
-        )}
+      <div className="ucard" style={{ background:"#fff", borderRadius:13, cursor:"pointer", opacity: dead ? 0.8 : 1 }}
+        onClick={() => window.open(c.url, "_blank", "noopener")}>
         <div style={{ padding:"9px 10px" }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
             <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
+            {dead && <span style={{ fontSize:8.5, fontWeight:900, color:"#b3261e", background:"#fdeaea", borderRadius:5, padding:"1px 5px", flexShrink:0 }}>終了</span>}
             {c.priority ? <span style={{ fontSize:9.5, fontWeight:900, color:"#e0a020", flexShrink:0 }}>{stars(c.priority)}</span> : null}
           </div>
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:4 }}>
@@ -682,7 +666,7 @@ function CatalogTab() {
           <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", lineHeight:1.4 }}>{c.title}</div>
           {c.note && <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5, marginTop:2 }}>{c.note}</div>}
           <div style={{ fontSize:10, fontWeight:900, color: dead ? "var(--faint)" : "var(--primary-soft)", marginTop:6 }}>
-            {dead ? (thumb ? "保存した画像を見る" : "リンク切れ") : "ひらく →"}
+            {dead ? "リンク切れ" : "ひらく →"}
           </div>
           <div style={{ display:"flex", gap:5, marginTop:7 }} onClick={(e) => e.stopPropagation()}>
             <a href={searchUrlNow(c, "img")} target="_blank" rel="noopener noreferrer"
@@ -751,23 +735,12 @@ function CatalogTab() {
             )}
 
             <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
-              各社の予約ページは時期が終わると消えることがあります。リンクが切れていても「画像で探す」「検索」から今年の最新ページを探せます。良いものが見つかったらスクリーンショットを撮って管理画面から登録しておくと、来年の参考として残せます。
+              各社の予約ページは時期が終わると消えることがあります。リンクが切れていても「画像で探す」「検索」から今年の最新ページを探せます。
             </div>
           </>
         )}
       </div>
 
-      {sel && (
-        <div onClick={() => setSel(null)}
-          style={{ position:"fixed", inset:0, background:"rgba(15,25,38,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
-          <div onClick={e => e.stopPropagation()} style={{ maxWidth:"100%", maxHeight:"100%", display:"flex", flexDirection:"column", alignItems:"center", gap:10 }}>
-            <img src={sel.url} style={{ maxWidth:"100%", maxHeight:"78vh", objectFit:"contain", borderRadius:10 }} />
-            <div style={{ color:"#fff", fontSize:13, fontWeight:800, textAlign:"center" }}>{sel.store}　{sel.title}{sel.year ? `（${sel.year}${sel.season || ""}）` : ""}</div>
-            <button onClick={() => setSel(null)}
-              style={{ border:"none", background:"rgba(255,255,255,0.9)", color:"#111", borderRadius:999, padding:"9px 24px", fontSize:13, fontWeight:800, cursor:"pointer" }}>閉じる</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
