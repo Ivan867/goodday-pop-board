@@ -410,9 +410,9 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
-      padding: "3px 12px 2px",
+      padding: "3px 14px 2px",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
@@ -531,7 +531,7 @@ function App() {
     d: "M12 5v14M5 12h14"
   }))))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "10px 16px 0"
     }
@@ -693,7 +693,7 @@ function App() {
       justifyContent: "space-around",
       gap: 4,
       width: "100%",
-      maxWidth: 1080,
+      maxWidth: 1600,
       background: "var(--primary-soft)",
       border: "none",
       borderRadius: 18,

@@ -30,12 +30,12 @@ function CalendarTab() {
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <div style={{ maxWidth:1600, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <button onClick={prevM} style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>‹</button>
           <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)" }}>{ym.y}年 {ym.m+1}月</div>
@@ -130,12 +130,12 @@ function CompetitorTab() {
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <div style={{ maxWidth:1600, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>競合情報</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>鮮魚が強い15店舗を4タイプで整理。売り方のヒントに</div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
         {GROUPS.map(g => (
           <div key={g.cat} style={{ marginBottom:22 }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
@@ -195,12 +195,12 @@ function IndustryTab() {
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <div style={{ maxWidth:1600, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>業界情報</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場づくりや業界の動きに役立つ最新記事</div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
 
         {/* 鮮魚ニュースへのショートカット（Googleニュース検索） */}
         <div className="ucard" style={{ background:"#fff", borderRadius:16, padding:"13px 15px", marginBottom:20 }}>
@@ -689,7 +689,7 @@ function CatalogTab() {
         <div style={{ fontSize:11.5, opacity:0.78, marginTop:2, lineHeight:1.5 }}>各社の寿司・刺身の商品構成を研究する用。過去の年の分も残しています</div>
       </div>
 
-      <div style={{ maxWidth:900, margin:"0 auto", padding:"14px 16px 140px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
         {loading ? (
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
         ) : list.length === 0 ? (
@@ -721,7 +721,7 @@ function CatalogTab() {
               ))}
             </div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:11 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:11 }}>
               {cats.map(c => <Card key={c.id} c={c} />)}
             </div>
 
@@ -729,7 +729,7 @@ function CatalogTab() {
               <>
                 <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
                 <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:11 }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:11 }}>
                   {flyers.map(c => <Card key={c.id} c={c} />)}
                 </div>
               </>

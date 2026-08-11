@@ -53,7 +53,7 @@ function FloorPhotoTab() {
 
       {/* ヘッダーバー */}
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"14px 16px" }}>
-        <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
+        <div style={{ maxWidth:1600, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
           <div style={{ color:"#17324e", fontSize:14, fontWeight:700, opacity:0.9 }}>各店の売場写真を共有・比較</div>
           <div style={{ display:"flex", gap:8 }}>
             <button onClick={()=>setMode("gallery")}
@@ -79,7 +79,7 @@ function FloorPhotoTab() {
 
       {/* ── ギャラリーモード ── */}
       {mode === "gallery" && (
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"16px 16px 40px" }}>
+        <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 40px" }}>
           {/* フィルター */}
           <div style={{ display:"flex", gap:8, marginBottom:12, flexWrap:"wrap" }}>
             {[{lbl:"全店舗",val:""},...FLOOR_STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(

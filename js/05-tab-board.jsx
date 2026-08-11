@@ -72,16 +72,16 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
   return (
     <>
-      <div style={{ maxWidth:1080, margin:"0 auto", padding:"4px 16px 185px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"0 16px 185px" }}>
         {/* よく使う機能へのショートカット */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8, marginBottom:10 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:8, marginBottom:9, maxWidth:520 }}>
           {[
             ["souba", "便利機能", <svg key="a" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M8 7h8M8 11.5h2M12 11.5h2M16 11.5h.01M8 15.5h2M12 15.5h2M16 15.5h.01M8 19h6"/></svg>],
             ["gne", "入力ジェネ", <svg key="b" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></svg>],
             ["industry", "業界情報", <svg key="c" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4.5h13v15H4z"/><path d="M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"/></svg>],
           ].map(([key, label, icon]) => (
             <button key={key} onClick={() => onFeatGo && onFeatGo(key)} className="hig-pill"
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4, border:"1px solid var(--line)", background:"#fff", color:"var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"10px 4px", cursor:"pointer", boxShadow:"0 1px 3px rgba(0,0,0,0.05)" }}>
+              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4, border:"1px solid var(--line)", background:"#fff", color:"var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"8px 4px", cursor:"pointer", boxShadow:"0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
               <span style={{ fontSize:11, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
             </button>
@@ -105,13 +105,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         {tipOn && showNotice && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
-            <div style={{ maxWidth:1080, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(194,78,0,0.18)" }}>
+            <div style={{ maxWidth:1600, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(194,78,0,0.18)" }}>
               <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipText}</span>
             </div>
           </div>
         )}
         {loading ? (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:12, alignItems:"start" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
             {[210,150,180,230,160,200,140,190].map((h,i) => (
               <div key={i} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:14, overflow:"hidden" }}>
                 <div className="sk" style={{ width:"100%", height:h }} />
@@ -129,7 +129,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             <div style={{ fontSize:13 }}>アップロードボタンから最初のポップを共有しましょう！</div>
           </div>
         ) : (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:12, alignItems:"start" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
             {filtered.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
           </div>
         )}
@@ -244,7 +244,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
 
   return (
-    <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 84px" }}>
+    <div style={{ maxWidth:1600, margin:"0 auto", padding:"10px 16px 84px" }}>
 
       {/* 左端のジャンル付箋タブ（扇フィルターと同時に表示。勝部が選別したジャンルで絞り込み） */}
       <div style={{ position:"fixed", left:0, top:"calc(50% + 16px)", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:3 }}>
@@ -359,7 +359,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             {(fGenre||fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fGenre,fStore,fCat].filter(Boolean).join(" · ")} </span>}
             の検索結果：<span style={{ color:"var(--ink)" }}>{results.length}件</span>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:12, alignItems:"start" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))", gap:12, alignItems:"start" }}>
             {results.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
           </div>
         </>

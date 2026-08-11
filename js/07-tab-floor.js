@@ -75,7 +75,7 @@ function FloorPhotoTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       display: "flex",
       justifyContent: "space-between",
@@ -133,7 +133,7 @@ function FloorPhotoTab() {
     }
   }, "＋ 投稿")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "16px 16px 40px"
     }

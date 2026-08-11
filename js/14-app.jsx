@@ -211,7 +211,7 @@ function App() {
         </div>
       )}
       <div style={{ position:"sticky", top:0, zIndex:100, paddingTop:"env(safe-area-inset-top)", background:"var(--bg)", overflow:"hidden" }}>
-        <div style={{ position:"relative", maxWidth:1080, margin:"0 auto", padding:"3px 12px 2px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:6, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
+        <div style={{ position:"relative", maxWidth:1600, margin:"0 auto", padding:"3px 14px 2px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"nowrap", gap:6, opacity: 1-scrollP, transform:`translateX(${scrollP*80}px)`, marginTop: `${-scrollP*52}px`, pointerEvents: scrollP>0.7?"none":"auto" }}>
           <div className="app-title hig-pill" onClick={() => { setRadialOpen(false); setMoreOpen(false); setTab("board"); const el = scroller(); if (el) el.scrollTo({ top: 0, behavior: "smooth" }); }}
             style={{ fontSize:15, fontWeight:900, color:"var(--primary)", whiteSpace:"nowrap", flexShrink:0, letterSpacing:"-0.6px", cursor:"pointer" }} title="一覧に戻る">鮮魚POP</div>
           <div style={{ flex:1, minWidth:0 }} />
@@ -225,7 +225,7 @@ function App() {
       </div>
 
       {notice.enabled && notice.message && (
-        <div style={{ maxWidth:1080, margin:"0 auto", padding:"10px 16px 0" }}>
+        <div style={{ maxWidth:1600, margin:"0 auto", padding:"10px 16px 0" }}>
           <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
             <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
             <span style={{ whiteSpace:"pre-wrap" }}>{notice.message}</span>
@@ -267,7 +267,7 @@ function App() {
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 18px), 2px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 8px", pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1080, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"9px 10px", pointerEvents:"auto" }}>
+       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"9px 10px", pointerEvents:"auto" }}>
         {[tabs[0], { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }

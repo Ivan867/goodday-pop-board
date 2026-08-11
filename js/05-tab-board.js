@@ -122,16 +122,17 @@ function BoardTab({
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
-      padding: "4px 16px 185px"
+      padding: "0 16px 185px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
       gap: 8,
-      marginBottom: 10
+      marginBottom: 9,
+      maxWidth: 520
     }
   }, [["souba", "便利機能", /*#__PURE__*/React.createElement("svg", {
     key: "a",
@@ -197,7 +198,7 @@ function BoardTab({
       background: "#fff",
       color: "var(--primary-soft, #4a7ab0)",
       borderRadius: 12,
-      padding: "10px 4px",
+      padding: "8px 4px",
       cursor: "pointer",
       boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
     }
@@ -292,7 +293,7 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       display: "flex",
       alignItems: "center",
@@ -314,7 +315,7 @@ function BoardTab({
   }, tipText))), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
       gap: 12,
       alignItems: "start"
     }
@@ -370,7 +371,7 @@ function BoardTab({
   }, "アップロードボタンから最初のポップを共有しましょう！")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
       gap: 12,
       alignItems: "start"
     }
@@ -559,7 +560,7 @@ function SearchTab({
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "10px 16px 84px"
     }
@@ -925,7 +926,7 @@ function SearchTab({
   }, results.length, "件")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
       gap: 12,
       alignItems: "start"
     }

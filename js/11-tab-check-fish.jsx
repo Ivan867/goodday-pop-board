@@ -227,12 +227,12 @@ function PopCheckTab() {
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <div style={{ maxWidth:900, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>POP診断</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません</div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"16px 16px 120px" }}>
 
         <div className="wcard">
           <div style={{ display:"flex", gap:8 }}>
@@ -375,12 +375,12 @@ function FishTab() {
   return (
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <div style={{ maxWidth:900, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>魚図鑑</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース</div>
         </div>
       </div>
-      <div style={{ maxWidth:600, margin:"0 auto", padding:"14px 16px 120px" }}>
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"14px 16px 120px" }}>
         <input value={q} onChange={e=>setQ(e.target.value)} placeholder="魚の名前やキーワードで検索…"
           style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:12, padding:"11px 14px", fontSize:14, marginBottom:12, background:"#fff" }} />
         <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:9 }}>

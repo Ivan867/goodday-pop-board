@@ -351,7 +351,7 @@ function PopCheckTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 900,
       margin: "0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -368,7 +368,7 @@ function PopCheckTab() {
     }
   }, "色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 900,
       margin: "0 auto",
       padding: "16px 16px 120px"
     }
@@ -1023,7 +1023,7 @@ function FishTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 900,
       margin: "0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -1040,7 +1040,7 @@ function FishTab() {
     }
   }, "旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 900,
       margin: "0 auto",
       padding: "14px 16px 120px"
     }

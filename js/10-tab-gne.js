@@ -443,7 +443,7 @@ function GeneratorTab() {
   const ACC = "#7c3aed";
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1080,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: 16,
       animation: "fadeUp .3s ease"

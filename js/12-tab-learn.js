@@ -64,7 +64,7 @@ function CalendarTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -81,7 +81,7 @@ function CalendarTab() {
     }
   }, "売場に関わる行事・ハレの日をチェック"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "16px 16px 120px"
     }
@@ -408,7 +408,7 @@ function CompetitorTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -425,7 +425,7 @@ function CompetitorTab() {
     }
   }, "鮮魚が強い15店舗を4タイプで整理。売り方のヒントに"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "16px 16px 120px"
     }
@@ -607,7 +607,7 @@ function IndustryTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -624,7 +624,7 @@ function IndustryTab() {
     }
   }, "売場づくりや業界の動きに役立つ最新記事"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 600,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "16px 16px 120px"
     }
@@ -1787,7 +1787,7 @@ function CatalogTab() {
     }
   }, "各社の寿司・刺身の商品構成を研究する用。過去の年の分も残しています")), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 900,
+      maxWidth: 1600,
       margin: "0 auto",
       padding: "14px 16px 140px"
     }
@@ -1910,7 +1910,7 @@ function CatalogTab() {
   }, g.label))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
       gap: 11
     }
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
@@ -1933,7 +1933,7 @@ function CatalogTab() {
   }, "当日に何を前面に出して売るかを見る用"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
       gap: 11
     }
   }, flyers.map(c => /*#__PURE__*/React.createElement(Card, {

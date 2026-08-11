@@ -219,7 +219,7 @@ function GeneratorTab() {
   const ACC = "#7c3aed";
 
   return (
-    <div style={{ maxWidth:1080, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
+    <div style={{ maxWidth:1600, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
       <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>GNE｜POP画像ジェネレーター</div>
       <div style={{ fontSize:13, color:"var(--sub)", marginBottom:16 }}>柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。</div>
 
