@@ -129,6 +129,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     dy = off && off.y || 0;
   const sc = off && off.scale || 1;
   const fs = off && off.fieldScale || {};
+  const fp = off && off.fieldPos || {};
   const GROUP = {
     origin: "origin",
     name: "name",
@@ -239,7 +240,37 @@ function GeneratorTab() {
     price: 100,
     tax: 100
   }); // フィールド別（%）
-
+  const ZERO_POS = {
+    origin: {
+      x: 0,
+      y: 0
+    },
+    name: {
+      x: 0,
+      y: 0
+    },
+    count: {
+      x: 0,
+      y: 0
+    },
+    price: {
+      x: 0,
+      y: 0
+    },
+    tax: {
+      x: 0,
+      y: 0
+    }
+  };
+  const [fPos, setFPos] = useState(ZERO_POS); // フィールド別の位置ずらし（px）
+  const [posTarget, setPosTarget] = useState("name"); // いま位置を動かす対象
+  const nudge = (k, ax, d) => setFPos(v => ({
+    ...v,
+    [k]: {
+      ...v[k],
+      [ax]: v[k][ax] + d
+    }
+  }));
   useEffect(() => {
     const cv = previewRef.current;
     if (!cv) return;
@@ -247,7 +278,8 @@ function GeneratorTab() {
       x: gx,
       y: gy,
       scale: gScale / 100,
-      fieldScale: fScale
+      fieldScale: fScale,
+      fieldPos: fPos
     });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale]);
   const onTpl = file => {
@@ -353,7 +385,8 @@ function GeneratorTab() {
       x: gx,
       y: gy,
       scale: gScale / 100,
-      fieldScale: fScale
+      fieldScale: fScale,
+      fieldPos: fPos
     });
     c.toBlob(b => res(b), "image/png");
   });
@@ -672,9 +705,147 @@ function GeneratorTab() {
     }
   }, "＋")))), /*#__PURE__*/React.createElement("div", {
     style: {
+      height: 1,
+      background: "var(--line)",
+      margin: "14px 0 12px"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 8
+    }
+  }, "フィールド別の位置"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      flexWrap: "wrap",
+      marginBottom: 10
+    }
+  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].map(([k, lbl]) => {
+    const moved = fPos[k].x !== 0 || fPos[k].y !== 0;
+    return /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setPosTarget(k),
+      style: {
+        border: posTarget === k ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+        background: posTarget === k ? "var(--soft)" : "#fff",
+        color: posTarget === k ? "var(--primary)" : "var(--sub)",
+        borderRadius: 999,
+        padding: "5px 12px",
+        fontSize: 12,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, lbl, moved ? " ●" : "");
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 40px)",
+      gridTemplateRows: "repeat(3, 36px)",
+      gap: 4,
+      alignItems: "center",
+      justifyItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
+    onClick: () => nudge(posTarget, "y", -10),
+    style: {
+      width: 40,
+      height: 36,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "↑"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
+    onClick: () => nudge(posTarget, "x", -10),
+    style: {
+      width: 40,
+      height: 36,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "←"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setFPos(v => ({
+      ...v,
+      [posTarget]: {
+        x: 0,
+        y: 0
+      }
+    })),
+    style: {
+      width: 40,
+      height: 36,
+      border: "1px solid var(--line)",
+      background: "var(--bg)",
+      borderRadius: 8,
+      fontSize: 10,
+      fontWeight: 800,
+      color: "var(--sub)",
+      cursor: "pointer"
+    }
+  }, "戻す"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => nudge(posTarget, "x", 10),
+    style: {
+      width: 40,
+      height: 36,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "→"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
+    onClick: () => nudge(posTarget, "y", 10),
+    style: {
+      width: 40,
+      height: 36,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, "↓"), /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      fontWeight: 800,
+      lineHeight: 1.7,
+      minWidth: 96
+    }
+  }, "選択中：", /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--primary)"
+    }
+  }, {
+    origin: "産地",
+    name: "商品名",
+    count: "個数",
+    price: "価格",
+    tax: "税込表示"
+  }[posTarget]), /*#__PURE__*/React.createElement("br", null), "よこ ", fPos[posTarget].x > 0 ? "+" : "", fPos[posTarget].x, /*#__PURE__*/React.createElement("br", null), "たて ", fPos[posTarget].y > 0 ? "+" : "", fPos[posTarget].y)), /*#__PURE__*/React.createElement("div", {
+    style: {
       display: "flex"
     }
-  }, (gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100)) && /*#__PURE__*/React.createElement("button", {
+  }, (gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(p => p.x !== 0 || p.y !== 0)) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setGx(0);
       setGy(0);
@@ -686,6 +857,7 @@ function GeneratorTab() {
         price: 100,
         tax: 100
       });
+      setFPos(ZERO_POS);
     },
     style: {
       marginTop: 12,
