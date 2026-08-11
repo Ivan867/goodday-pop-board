@@ -1594,6 +1594,12 @@ function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [grp, setGrp] = useState("");
+  const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月", "土用の丑", "恵方巻", "母の日", "行楽"];
+  const NOW_YEAR = new Date().getFullYear();
+  const YEAR_OPTS = [];
+  for (let y = NOW_YEAR; y >= 2020; y--) YEAR_OPTS.push(y);
+  const [qSeason, setQSeason] = useState("お盆");
+  const [qYear, setQYear] = useState(NOW_YEAR);
   const [year, setYear] = useState("");
   useEffect(() => {
     let alive = true;
@@ -1619,10 +1625,9 @@ function CatalogTab() {
     const base = mode === "img" ? "https://www.google.com/search?tbm=isch&q=" : "https://www.google.com/search?q=";
     return base + encodeURIComponent(q);
   };
-  const searchUrlNow = (c, mode) => {
-    // 「今年の分を探す」：年を今年に置き換える
-    const q = [c.store, c.season && c.season !== "通年" ? c.season : "", "予約", "寿司 刺身", String(NOW_Y)].filter(Boolean).join(" ");
-    return (mode === "img" ? "https://www.google.com/search?tbm=isch&q=" : "https://www.google.com/search?q=") + encodeURIComponent(q);
+  const imgSearchUrl = c => {
+    const q = [c.store, qSeason, "予約", "寿司 刺身", String(qYear)].filter(Boolean).join(" ");
+    return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q);
   };
   const stars = p => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a, b) => b - a);
@@ -1713,15 +1718,6 @@ function CatalogTab() {
       }
     }, c.area)), /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "flex",
-        gap: 6,
-        fontSize: 10,
-        fontWeight: 800,
-        color: "var(--sub)",
-        marginBottom: 4
-      }
-    }, /*#__PURE__*/React.createElement("span", null, "寿司", mark(c.rate_sushi)), /*#__PURE__*/React.createElement("span", null, "刺身", mark(c.rate_sashimi)), /*#__PURE__*/React.createElement("span", null, "惣菜", mark(c.rate_souzai))), /*#__PURE__*/React.createElement("div", {
-      style: {
         fontSize: 10,
         fontWeight: 900,
         color: dead ? "var(--faint)" : "var(--primary-soft)",
@@ -1729,43 +1725,25 @@ function CatalogTab() {
       }
     }, dead ? "リンク切れ" : "ひらく →"), /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "flex",
-        gap: 5,
         marginTop: 7
       },
       onClick: e => e.stopPropagation()
     }, /*#__PURE__*/React.createElement("a", {
-      href: searchUrlNow(c, "img"),
+      href: imgSearchUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
       style: {
-        flex: 1,
+        display: "block",
         textAlign: "center",
         textDecoration: "none",
-        fontSize: 9.5,
+        fontSize: 10,
         fontWeight: 900,
         color: "#fff",
         background: "var(--primary-soft, #4a7ab0)",
         borderRadius: 7,
-        padding: "5px 0"
+        padding: "6px 0"
       }
-    }, "画像で探す"), /*#__PURE__*/React.createElement("a", {
-      href: searchUrlNow(c, "web"),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        flex: 1,
-        textAlign: "center",
-        textDecoration: "none",
-        fontSize: 9.5,
-        fontWeight: 900,
-        color: "var(--primary)",
-        background: "var(--soft)",
-        border: "1px solid #cfe2f3",
-        borderRadius: 7,
-        padding: "5px 0"
-      }
-    }, "検索"))));
+    }, "画像で探す"))));
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1869,13 +1847,66 @@ function CatalogTab() {
     }
   }, y, "年"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
-      color: "var(--sub)",
-      fontWeight: 700,
-      marginBottom: 9,
-      lineHeight: 1.6
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "11px 12px",
+      marginBottom: 12
     }
-  }, "評価：🟦かなり参考になる\u3000🟩参考になる\u3000⬜少なめ"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 7
+    }
+  }, "🔍 画像検索の条件"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      flexWrap: "wrap",
+      marginBottom: 8
+    }
+  }, SEASON_OPTS.map(sn => /*#__PURE__*/React.createElement("button", {
+    key: sn,
+    onClick: () => setQSeason(sn),
+    style: {
+      border: qSeason === sn ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: qSeason === sn ? "var(--soft)" : "#fff",
+      color: qSeason === sn ? "var(--primary)" : "var(--sub)",
+      borderRadius: 999,
+      padding: "4px 11px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, sn))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      flexWrap: "wrap"
+    }
+  }, YEAR_OPTS.map(y => /*#__PURE__*/React.createElement("button", {
+    key: y,
+    onClick: () => setQYear(y),
+    style: {
+      border: qYear === y ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: qYear === y ? "var(--soft)" : "#fff",
+      color: qYear === y ? "var(--primary)" : "var(--sub)",
+      borderRadius: 999,
+      padding: "4px 10px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, y))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--sub)",
+      marginTop: 8,
+      lineHeight: 1.5
+    }
+  }, "各カードの「画像で探す」で「", qSeason, " ", qYear, "」の商品画像を検索します")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1946,7 +1977,7 @@ function CatalogTab() {
       lineHeight: 1.7,
       marginTop: 18
     }
-  }, "各社の予約ページは時期が終わると消えることがあります。リンクが切れていても「画像で探す」「検索」から今年の最新ページを探せます。"))));
+  }, "各社の予約ページは時期が終わると消えることがあります。リンクが切れていても「画像で探す」から、選んだ時期・年の商品画像を探せます。"))));
 }
 ;
 Object.assign(window, {
