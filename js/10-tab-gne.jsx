@@ -59,7 +59,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     const o = GNE_LAYOUT[k];
     const g = GROUP[k];
     const fsc = ((fs[g] || 100) / 100) * sc;   // 全体倍率 × フィールド別倍率
-    const fo = fp[g] || { x:0, y:0 };          // フィールド別の位置ずらし
+    const fo = { x: (fp[g + "_x"] || 0), y: (fp[g + "_y"] || 0) };   // フィールド別の位置ずらし
     L[k] = { ...o, x: o.x + dx + fo.x, y: o.y + dy + fo.y, size: Math.round(o.size * fsc), sw: Math.max(1, Math.round(o.sw * fsc)) };
     if (o.maxW) L[k].maxW = o.maxW;  // 折り返し幅は据え置き（はみ出し防止）
   }
@@ -121,15 +121,18 @@ function GeneratorTab() {
   const [gy, setGy] = useState(0);       // 文字位置オフセット（縦：-320〜+40）
   const [gScale, setGScale] = useState(100);  // 文字サイズ（%）：70〜130
   const [fScale, setFScale] = useState({ origin:100, name:100, count:100, price:100, tax:100 });  // フィールド別（%）
-  const ZERO_POS = { origin:{x:0,y:0}, name:{x:0,y:0}, count:{x:0,y:0}, price:{x:0,y:0}, tax:{x:0,y:0} };
-  const [fPos, setFPos] = useState(ZERO_POS);   // フィールド別の位置ずらし（px）
+  // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
+  const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0 };
+  const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name");   // いま位置を動かす対象
-  const nudge = (k, ax, d) => setFPos(v => ({ ...v, [k]: { ...v[k], [ax]: v[k][ax] + d } }));
+  const nudge = (k, ax, d) => setFPos(v => ({ ...v, [k + "_" + ax]: (v[k + "_" + ax] || 0) + d }));
+  const resetOne = (k) => setFPos(v => ({ ...v, [k + "_x"]:0, [k + "_y"]:0 }));
+  const posOf = (k) => ({ x: fPos[k + "_x"] || 0, y: fPos[k + "_y"] || 0 });
 
   useEffect(() => {
     const cv = previewRef.current; if (!cv) return;
     gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos });
-  }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale]);
+  }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
   const onTpl = (file) => {
     if (!file) return;
@@ -271,10 +274,11 @@ function GeneratorTab() {
             ))}
           </div>
           <div style={{ height:1, background:"var(--line)", margin:"14px 0 12px" }} />
-          <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:8 }}>フィールド別の位置</div>
-          <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10 }}>
+          <div style={{ fontSize:12.5, fontWeight:900, color:"var(--primary)", marginBottom:3 }}>▼ 1つずつ動かす（選んだ項目だけ）</div>
+          <div style={{ fontSize:11, color:"var(--sub)", marginBottom:8, lineHeight:1.5 }}>上の「位置」は全部まとめて動きます。ここは選んだ項目だけが動きます。</div>
+          <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10, padding:"9px", background:"var(--soft)", borderRadius:10 }}>
             {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].map(([k, lbl]) => {
-              const moved = fPos[k].x !== 0 || fPos[k].y !== 0;
+              const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
               return (
                 <button key={k} onClick={() => setPosTarget(k)}
                   style={{ border: posTarget===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: posTarget===k ? "var(--soft)" : "#fff", color: posTarget===k ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
@@ -286,24 +290,24 @@ function GeneratorTab() {
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginBottom:8 }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 40px)", gridTemplateRows:"repeat(3, 36px)", gap:4, alignItems:"center", justifyItems:"center" }}>
               <span />
-              <button onClick={() => nudge(posTarget, "y", -10)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↑</button>
+              <button onClick={() => nudge(posTarget, "y", -10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↑</button>
               <span />
-              <button onClick={() => nudge(posTarget, "x", -10)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>←</button>
-              <button onClick={() => setFPos(v => ({ ...v, [posTarget]: { x:0, y:0 } }))} style={{ width:40, height:36, border:"1px solid var(--line)", background:"var(--bg)", borderRadius:8, fontSize:10, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>戻す</button>
-              <button onClick={() => nudge(posTarget, "x", 10)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>→</button>
+              <button onClick={() => nudge(posTarget, "x", -10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>←</button>
+              <button onClick={() => resetOne(posTarget)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"var(--bg)", borderRadius:8, fontSize:10, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>戻す</button>
+              <button onClick={() => nudge(posTarget, "x", 10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>→</button>
               <span />
-              <button onClick={() => nudge(posTarget, "y", 10)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↓</button>
+              <button onClick={() => nudge(posTarget, "y", 10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↓</button>
               <span />
             </div>
             <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:800, lineHeight:1.7, minWidth:96 }}>
               選択中：<span style={{ color:"var(--primary)" }}>{({origin:"産地",name:"商品名",count:"個数",price:"価格",tax:"税込表示"})[posTarget]}</span><br/>
-              よこ {fPos[posTarget].x > 0 ? "+" : ""}{fPos[posTarget].x}<br/>
-              たて {fPos[posTarget].y > 0 ? "+" : ""}{fPos[posTarget].y}
+              よこ {posOf(posTarget).x > 0 ? "+" : ""}{posOf(posTarget).x}<br/>
+              たて {posOf(posTarget).y > 0 ? "+" : ""}{posOf(posTarget).y}
             </div>
           </div>
 
           <div style={{ display:"flex" }}>
-              {(gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(p => p.x !== 0 || p.y !== 0)) && (
+              {(gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(v => v !== 0)) && (
                 <button onClick={() => { setGx(0); setGy(0); setGScale(100); setFScale({ origin:100, name:100, count:100, price:100, tax:100 }); setFPos(ZERO_POS); }}
                   style={{ marginTop:12, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:9, padding:"7px 14px", fontSize:12, fontWeight:800, cursor:"pointer" }}>標準に戻す</button>
               )}

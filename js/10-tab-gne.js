@@ -145,9 +145,9 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     const o = GNE_LAYOUT[k];
     const g = GROUP[k];
     const fsc = (fs[g] || 100) / 100 * sc; // 全体倍率 × フィールド別倍率
-    const fo = fp[g] || {
-      x: 0,
-      y: 0
+    const fo = {
+      x: fp[g + "_x"] || 0,
+      y: fp[g + "_y"] || 0
     }; // フィールド別の位置ずらし
     L[k] = {
       ...o,
@@ -245,37 +245,34 @@ function GeneratorTab() {
     price: 100,
     tax: 100
   }); // フィールド別（%）
+  // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
   const ZERO_POS = {
-    origin: {
-      x: 0,
-      y: 0
-    },
-    name: {
-      x: 0,
-      y: 0
-    },
-    count: {
-      x: 0,
-      y: 0
-    },
-    price: {
-      x: 0,
-      y: 0
-    },
-    tax: {
-      x: 0,
-      y: 0
-    }
+    origin_x: 0,
+    origin_y: 0,
+    name_x: 0,
+    name_y: 0,
+    count_x: 0,
+    count_y: 0,
+    price_x: 0,
+    price_y: 0,
+    tax_x: 0,
+    tax_y: 0
   };
-  const [fPos, setFPos] = useState(ZERO_POS); // フィールド別の位置ずらし（px）
+  const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name"); // いま位置を動かす対象
   const nudge = (k, ax, d) => setFPos(v => ({
     ...v,
-    [k]: {
-      ...v[k],
-      [ax]: v[k][ax] + d
-    }
+    [k + "_" + ax]: (v[k + "_" + ax] || 0) + d
   }));
+  const resetOne = k => setFPos(v => ({
+    ...v,
+    [k + "_x"]: 0,
+    [k + "_y"]: 0
+  }));
+  const posOf = k => ({
+    x: fPos[k + "_x"] || 0,
+    y: fPos[k + "_y"] || 0
+  });
   useEffect(() => {
     const cv = previewRef.current;
     if (!cv) return;
@@ -286,7 +283,7 @@ function GeneratorTab() {
       fieldScale: fScale,
       fieldPos: fPos
     });
-  }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale]);
+  }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
   const onTpl = file => {
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -718,18 +715,28 @@ function GeneratorTab() {
     style: {
       fontSize: 12.5,
       fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 8
+      color: "var(--primary)",
+      marginBottom: 3
     }
-  }, "フィールド別の位置"), /*#__PURE__*/React.createElement("div", {
+  }, "▼ 1つずつ動かす（選んだ項目だけ）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--sub)",
+      marginBottom: 8,
+      lineHeight: 1.5
+    }
+  }, "上の「位置」は全部まとめて動きます。ここは選んだ項目だけが動きます。"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 5,
       flexWrap: "wrap",
-      marginBottom: 10
+      marginBottom: 10,
+      padding: "9px",
+      background: "var(--soft)",
+      borderRadius: 10
     }
   }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].map(([k, lbl]) => {
-    const moved = fPos[k].x !== 0 || fPos[k].y !== 0;
+    const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
     return /*#__PURE__*/React.createElement("button", {
       key: k,
       onClick: () => setPosTarget(k),
@@ -766,8 +773,9 @@ function GeneratorTab() {
     style: {
       width: 40,
       height: 36,
-      border: "1px solid var(--line)",
-      background: "#fff",
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
@@ -778,21 +786,16 @@ function GeneratorTab() {
     style: {
       width: 40,
       height: 36,
-      border: "1px solid var(--line)",
-      background: "#fff",
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
       cursor: "pointer"
     }
   }, "←"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setFPos(v => ({
-      ...v,
-      [posTarget]: {
-        x: 0,
-        y: 0
-      }
-    })),
+    onClick: () => resetOne(posTarget),
     style: {
       width: 40,
       height: 36,
@@ -809,8 +812,9 @@ function GeneratorTab() {
     style: {
       width: 40,
       height: 36,
-      border: "1px solid var(--line)",
-      background: "#fff",
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
@@ -821,8 +825,9 @@ function GeneratorTab() {
     style: {
       width: 40,
       height: 36,
-      border: "1px solid var(--line)",
-      background: "#fff",
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
@@ -846,11 +851,11 @@ function GeneratorTab() {
     count: "個数",
     price: "価格",
     tax: "税込表示"
-  }[posTarget]), /*#__PURE__*/React.createElement("br", null), "よこ ", fPos[posTarget].x > 0 ? "+" : "", fPos[posTarget].x, /*#__PURE__*/React.createElement("br", null), "たて ", fPos[posTarget].y > 0 ? "+" : "", fPos[posTarget].y)), /*#__PURE__*/React.createElement("div", {
+  }[posTarget]), /*#__PURE__*/React.createElement("br", null), "よこ ", posOf(posTarget).x > 0 ? "+" : "", posOf(posTarget).x, /*#__PURE__*/React.createElement("br", null), "たて ", posOf(posTarget).y > 0 ? "+" : "", posOf(posTarget).y)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex"
     }
-  }, (gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(p => p.x !== 0 || p.y !== 0)) && /*#__PURE__*/React.createElement("button", {
+  }, (gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(v => v !== 0)) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setGx(0);
       setGy(0);
