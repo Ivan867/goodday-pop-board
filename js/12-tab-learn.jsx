@@ -164,6 +164,13 @@ function CompetitorTab() {
 }
 
 function IndustryTab() {
+  const [subTab, setSubTab] = useState("news");
+  useEffect(() => {
+    // 魚図鑑は遅延ファイルにあるため、必要になったら読み込む
+    if (subTab === "fish" && !window.FishTab && window.loadLazyTab) {
+      window.loadLazyTab("15-tab-fish").then(() => setSubTab(s => s));
+    }
+  }, [subTab]);
   const GROUPS = [
     {
       cat:"専門店型", emoji:"🐟", note:"鮮魚売場というより「魚屋」の強さ。職人感・対面・丸魚・珍魚・活気。POPは「本日入荷」「店内加工」「鮮魚担当おすすめ」「刺身できます」系が合う。",
@@ -238,7 +245,21 @@ function IndustryTab() {
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>最新記事と、鮮魚が強い15店舗の売り方</div>
         </div>
       </div>
-      <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 120px" }}>
+
+        <div style={{ display:"flex", gap:7, marginBottom:16 }}>
+          {[["news","📰 記事・売り方"],["fish","🐠 魚図鑑"]].map(([k,l]) => (
+            <button key={k} onClick={() => setSubTab(k)}
+              style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+                background: subTab===k ? "var(--primary)" : "#fff", color: subTab===k ? "#fff" : "var(--text)" }}>{l}</button>
+          ))}
+        </div>
+
+        {subTab === "fish" ? (
+          window.FishTab ? React.createElement(window.FishTab, { embedded: true })
+            : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>
+        ) : (
+        <>
 
         {/* 鮮魚ニュースへのショートカット（Googleニュース検索） */}
         <div className="ucard" style={{ background:"#fff", borderRadius:16, padding:"13px 15px", marginBottom:20 }}>
@@ -336,6 +357,8 @@ function IndustryTab() {
             ))}
           </div>
         ))}
+        </>
+        )}
       </div>
     </div>
   );

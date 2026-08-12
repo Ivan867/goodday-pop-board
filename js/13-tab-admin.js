@@ -327,6 +327,13 @@ function AdminTab({
     }), /*#__PURE__*/React.createElement("path", {
       d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
     })),
+    dev: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+      cx: "12",
+      cy: "12",
+      r: "9"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M12 16v-5M12 8h.01"
+    })),
     rot: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M3.5 12a8.5 8.5 0 018.5-8.5c3 0 5.6 1.6 7.1 3.9"
     }), /*#__PURE__*/React.createElement("path", {
@@ -412,11 +419,20 @@ function AdminTab({
       gap: 7,
       marginBottom: 16
     }
-  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
-  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "cat" && /*#__PURE__*/React.createElement(CatalogAdmin, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "cat" && /*#__PURE__*/React.createElement(CatalogAdmin, null), section === "dev" && (window.DevTab ? React.createElement(window.DevTab, {
+    embedded: true
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: 40,
+      color: "var(--faint)",
+      fontSize: 13
+    }
+  }, "読み込み中…")), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",

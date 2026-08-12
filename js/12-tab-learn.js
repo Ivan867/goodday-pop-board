@@ -527,6 +527,13 @@ function CompetitorTab() {
   }, "店名をタップすると公式サイトが別タブで開きます。", /*#__PURE__*/React.createElement("br", null), "各社の売場づくりを参考に、うちの強みを磨きましょう。")));
 }
 function IndustryTab() {
+  const [subTab, setSubTab] = useState("news");
+  useEffect(() => {
+    // 魚図鑑は遅延ファイルにあるため、必要になったら読み込む
+    if (subTab === "fish" && !window.FishTab && window.loadLazyTab) {
+      window.loadLazyTab("15-tab-fish").then(() => setSubTab(s => s));
+    }
+  }, [subTab]);
   const GROUPS = [{
     cat: "専門店型",
     emoji: "🐟",
@@ -737,9 +744,38 @@ function IndustryTab() {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
-      padding: "16px 16px 120px"
+      padding: "14px 16px 120px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 16
+    }
+  }, [["news", "📰 記事・売り方"], ["fish", "🐠 魚図鑑"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setSubTab(k),
+    style: {
+      flex: 1,
+      border: "1px solid var(--line)",
+      borderRadius: 11,
+      padding: "10px 6px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      background: subTab === k ? "var(--primary)" : "#fff",
+      color: subTab === k ? "#fff" : "var(--text)"
+    }
+  }, l))), subTab === "fish" ? window.FishTab ? React.createElement(window.FishTab, {
+    embedded: true
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: 40,
+      color: "var(--faint)",
+      fontSize: 13
+    }
+  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "ucard",
     style: {
       background: "#fff",
@@ -1045,7 +1081,7 @@ function IndustryTab() {
       marginTop: 6,
       lineHeight: 1.5
     }
-  }, "見どころ：", r.hint)))))));
+  }, "見どころ：", r.hint))))))));
 }
 function SoubaTab({
   onCreatePop

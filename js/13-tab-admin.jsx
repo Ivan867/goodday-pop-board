@@ -158,6 +158,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     device:  <><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></>,
     res:     <><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></>,
     cat:     <><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></>,
+    dev:     <><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></>,
     rot:     <><path d="M3.5 12a8.5 8.5 0 018.5-8.5c3 0 5.6 1.6 7.1 3.9"/><path d="M20.5 4v4h-4"/><path d="M20.5 12a8.5 8.5 0 01-8.5 8.5c-3 0-5.6-1.6-7.1-3.9"/><path d="M3.5 20v-4h4"/></>,
   };
   const mainSeg = (v, label, badge) => {
@@ -190,6 +191,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {mainSeg("device", "端末")}
         {mainSeg("res", "資料")}
         {mainSeg("cat", "カタログ")}
+        {mainSeg("dev", "更新履歴")}
         {mainSeg("rot", "向き")}
       </div>
 
@@ -202,6 +204,9 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "res" && <ResourceAdmin />}
 
       {section === "cat" && <CatalogAdmin />}
+
+      {section === "dev" && (window.DevTab ? React.createElement(window.DevTab, { embedded: true })
+        : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>)}
 
       {section === "rot" && <RotateAdmin />}
 
