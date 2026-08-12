@@ -124,6 +124,64 @@ function GeneratorTab() {
   const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0 };
   const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name");   // いま位置を動かす対象
+
+  // ── プリセット：文字の位置・サイズ・税設定をまとめて保存／呼び出し ──
+  const LS_KEY = "gnePresets";
+  const [presets, setPresets] = useState([]);          // 端末に保存した分
+  const [shared, setShared] = useState([]);            // みんなと共有した分
+  const [pName, setPName] = useState("");
+  const [pMsg, setPMsg] = useState("");
+  const [pBusy, setPBusy] = useState(false);
+
+  const currentSettings = () => ({ gx, gy, gScale, fScale, fPos, taxMode, taxRate, fontId });
+  const applySettings = (v) => {
+    if (!v) return;
+    if (typeof v.gx === "number") setGx(v.gx);
+    if (typeof v.gy === "number") setGy(v.gy);
+    if (typeof v.gScale === "number") setGScale(v.gScale);
+    if (v.fScale) setFScale({ origin:100, name:100, count:100, price:100, tax:100, ...v.fScale });
+    if (v.fPos) setFPos({ ...ZERO_POS, ...v.fPos });
+    if (v.taxMode) setTaxMode(v.taxMode);
+    if (typeof v.taxRate === "number") setTaxRate(v.taxRate);
+    if (v.fontId) setFontId(v.fontId);
+    setPMsg("設定を読み込みました");
+    setTimeout(() => setPMsg(""), 1800);
+  };
+
+  useEffect(() => {
+    try { setPresets(JSON.parse(localStorage.getItem(LS_KEY) || "[]")); } catch(e) {}
+    (async () => { try { const d = await api.listPresets(); setShared(d || []); } catch(e) {} })();
+  }, []);
+
+  const saveLocal = () => {
+    const nm = pName.trim() || `設定 ${presets.length + 1}`;
+    const next = [{ id: "L" + Date.now(), name: nm, settings: currentSettings() }, ...presets].slice(0, 20);
+    setPresets(next);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch(e) {}
+    setPName(""); setPMsg("この端末に保存しました");
+    setTimeout(() => setPMsg(""), 1800);
+  };
+  const saveShared = async () => {
+    const nm = pName.trim();
+    if (!nm) { setPMsg("名前を入れてください"); return; }
+    setPBusy(true); setPMsg("");
+    try {
+      await api.addPreset({ name: nm, settings: currentSettings() });
+      const d = await api.listPresets(); setShared(d || []);
+      setPName(""); setPMsg("みんなと共有しました");
+    } catch(e) { setPMsg("共有に失敗しました"); }
+    finally { setPBusy(false); setTimeout(() => setPMsg(""), 2200); }
+  };
+  const delLocal = (id) => {
+    const next = presets.filter(x => x.id !== id);
+    setPresets(next);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch(e) {}
+  };
+  const delShared = async (id) => {
+    if (!window.confirm("この共有プリセットを削除しますか？")) return;
+    try { await api.deletePreset(id); const d = await api.listPresets(); setShared(d || []); }
+    catch(e) { setPMsg("削除に失敗しました"); }
+  };
   const nudge = (k, ax, d) => setFPos(v => ({ ...v, [k + "_" + ax]: (v[k + "_" + ax] || 0) + d }));
   const resetOne = (k) => setFPos(v => ({ ...v, [k + "_x"]:0, [k + "_y"]:0 }));
   const posOf = (k) => ({ x: fPos[k + "_x"] || 0, y: fPos[k + "_y"] || 0 });
@@ -309,6 +367,51 @@ function GeneratorTab() {
               たて {posOf(posTarget).y > 0 ? "+" : ""}{posOf(posTarget).y}
             </div>
           </div>
+
+          <div style={{ height:1, background:"var(--line)", margin:"14px 0 12px" }} />
+          <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>💾 設定を保存する</div>
+          <div style={{ fontSize:11, color:"var(--sub)", marginBottom:8, lineHeight:1.5 }}>いまの文字の位置・サイズ・税の設定をまとめて保存します。次回そのまま呼び出せます。</div>
+          <div style={{ display:"flex", gap:6, marginBottom:8, flexWrap:"wrap" }}>
+            <input value={pName} onChange={e => setPName(e.target.value)} placeholder="名前（例：うなぎ用）"
+              style={{ flex:"1 1 140px", minWidth:0, border:"1px solid var(--line)", borderRadius:9, padding:"8px 10px", fontSize:12.5, outline:"none" }} />
+            <button onClick={saveLocal}
+              style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:9, padding:"8px 13px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>この端末に保存</button>
+            <button onClick={saveShared} disabled={pBusy}
+              style={{ border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:9, padding:"8px 13px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>みんなと共有</button>
+          </div>
+          {pMsg && <div style={{ fontSize:11.5, color:"var(--primary)", fontWeight:800, marginBottom:8 }}>{pMsg}</div>}
+
+          {presets.length > 0 && (
+            <div style={{ marginBottom:8 }}>
+              <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>この端末の保存</div>
+              <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+                {presets.map(x => (
+                  <span key={x.id} style={{ display:"flex", alignItems:"center", gap:4, border:"1px solid var(--line)", borderRadius:999, padding:"3px 4px 3px 11px", background:"#fff" }}>
+                    <button onClick={() => applySettings(x.settings)}
+                      style={{ border:"none", background:"transparent", color:"var(--ink)", fontSize:11.5, fontWeight:800, cursor:"pointer", padding:0 }}>{x.name}</button>
+                    <button onClick={() => delLocal(x.id)} title="削除"
+                      style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:13, fontWeight:900, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>×</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {shared.length > 0 && (
+            <div style={{ marginBottom:10 }}>
+              <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>みんなの共有</div>
+              <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+                {shared.map(x => (
+                  <span key={x.id} style={{ display:"flex", alignItems:"center", gap:4, border:"1px solid #cfe2f3", borderRadius:999, padding:"3px 4px 3px 11px", background:"var(--soft)" }}>
+                    <button onClick={() => applySettings(x.settings)}
+                      style={{ border:"none", background:"transparent", color:"var(--primary)", fontSize:11.5, fontWeight:800, cursor:"pointer", padding:0 }}>{x.name}</button>
+                    <button onClick={() => delShared(x.id)} title="削除"
+                      style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:13, fontWeight:900, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>×</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ display:"flex" }}>
               {(gx !== 0 || gy !== 0 || gScale !== 100 || Object.values(fScale).some(v => v !== 100) || Object.values(fPos).some(v => v !== 0)) && (

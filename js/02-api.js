@@ -465,6 +465,24 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── gne_presets：入力ジェネレーターの設定プリセット ──
+  async listPresets() {
+    return sbJson(`/rest/v1/gne_presets?select=*&order=created_at.desc`);
+  },
+  async addPreset(p) {
+    return sbOne(`/rest/v1/gne_presets`, {
+      method: "POST",
+      body: p,
+      prefer: "return=representation"
+    });
+  },
+  async deletePreset(id) {
+    const r = await sbFetch(`/rest/v1/gne_presets?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   // ── catalogs：予約カタログ（スーパー別）──
   async listCatalogs(onlyVisible) {
     const q = onlyVisible ? "&visible=eq.true" : "";
