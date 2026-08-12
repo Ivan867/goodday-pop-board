@@ -134,7 +134,19 @@ function BoardTab({
       marginBottom: 9,
       maxWidth: 640
     }
-  }, [["souba", "便利機能", false, /*#__PURE__*/React.createElement("svg", {
+  }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
+    key: "d",
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 5v14M5 12h14"
+  }))], ["souba", "便利機能", false, /*#__PURE__*/React.createElement("svg", {
     key: "a",
     width: "18",
     height: "18",
@@ -184,18 +196,6 @@ function BoardTab({
     d: "M4 4.5h13v15H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"
-  }))], ["__upload", "投稿", true, /*#__PURE__*/React.createElement("svg", {
-    key: "d",
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.4",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M12 5v14M5 12h14"
   }))], ["request", "問い合せ", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
