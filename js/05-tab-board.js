@@ -142,10 +142,10 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
       gap: 7,
       marginBottom: 9,
-      maxWidth: 640
+      maxWidth: 520
     }
   }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
     key: "d",
@@ -159,24 +159,6 @@ function BoardTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  }))], ["souba", "便利機能", false, /*#__PURE__*/React.createElement("svg", {
-    key: "a",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "4",
-    y: "2.5",
-    width: "16",
-    height: "19",
-    rx: "2.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M8 7h8M8 11.5h2M12 11.5h2M16 11.5h.01M8 15.5h2M12 15.5h2M16 15.5h.01M8 19h6"
   }))], ["gne", "入力ジェネ", false, /*#__PURE__*/React.createElement("svg", {
     key: "b",
     width: "18",

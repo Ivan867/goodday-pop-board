@@ -76,10 +76,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     <>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 185px" }}>
         {/* よく使う機能へのショートカット */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(5, minmax(0, 1fr))", gap:7, marginBottom:9, maxWidth:640 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4, minmax(0, 1fr))", gap:7, marginBottom:9, maxWidth:520 }}>
           {[
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
-            ["souba", "便利機能", false, <svg key="a" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M8 7h8M8 11.5h2M12 11.5h2M16 11.5h.01M8 15.5h2M12 15.5h2M16 15.5h.01M8 19h6"/></svg>],
             ["gne", "入力ジェネ", false, <svg key="b" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></svg>],
             ["industry", "業界情報", false, <svg key="c" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4.5h13v15H4z"/><path d="M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"/></svg>],
             ["request", "問い合せ", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>],
