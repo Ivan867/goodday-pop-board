@@ -1247,7 +1247,7 @@ function PopCard({
       e.currentTarget.style.boxShadow = "";
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "imgskel",
+    className: "imgskel pc-img",
     style: {
       minHeight: 120,
       position: "relative"
@@ -1303,6 +1303,7 @@ function PopCard({
       borderRadius: 20
     }
   }, pop.likes))), /*#__PURE__*/React.createElement("div", {
+    className: "pc-body",
     style: {
       padding: "9px 12px",
       display: "flex",
@@ -1310,6 +1311,7 @@ function PopCard({
       gap: 6
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "pc-name",
     style: {
       fontWeight: 800,
       fontSize: 13,
@@ -1320,6 +1322,7 @@ function PopCard({
       minWidth: 0
     }
   }, pop.product_name), /*#__PURE__*/React.createElement("div", {
+    className: "pc-meta",
     style: {
       fontSize: 11,
       color: "var(--sub)",
@@ -1327,6 +1330,7 @@ function PopCard({
       flexShrink: 0
     }
   }, pop.store_name), /*#__PURE__*/React.createElement("div", {
+    className: "pc-meta",
     style: {
       fontSize: 11,
       background: tint.bg,

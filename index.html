@@ -65,12 +65,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
 /* タイトルは常時表示（モックアップ準拠） */
-/* ポップ一覧：スマホでも必ず2列、画面が広いほど枚数を増やす */
-.pop-grid { display: grid; gap: 12px; align-items: start; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (min-width: 620px)  { .pop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 900px)  { .pop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 1200px) { .pop-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (min-width: 1500px) { .pop-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+/* ポップ一覧：表示サイズを4段階で切り替え（リスト／小／中／大） */
+.pop-grid { display: grid; gap: 12px; align-items: start; }
+
+/* 中（標準） */
+.pop-grid.v-md { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 620px)  { .pop-grid.v-md { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .pop-grid.v-md { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .pop-grid.v-md { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .pop-grid.v-md { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* 小（たくさん並べる） */
+.pop-grid.v-sm { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 620px)  { .pop-grid.v-sm { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .pop-grid.v-sm { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .pop-grid.v-sm { grid-template-columns: repeat(9, minmax(0, 1fr)); } }
+.pop-grid.v-sm .pc-name { font-size: 11px; }
+.pop-grid.v-sm .pc-meta { display: none; }
+.pop-grid.v-sm .pc-body { padding: 5px 7px; }
+
+/* 大（じっくり見る） */
+.pop-grid.v-lg { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 700px)  { .pop-grid.v-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .pop-grid.v-lg { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pop-grid.v-lg .pc-name { font-size: 15px; }
+
+/* リスト（文字中心・横並び） */
+.pop-grid.v-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+.pop-grid.v-list .ucard { display: flex; align-items: center; }
+.pop-grid.v-list .pc-img { width: 62px; height: 62px; flex-shrink: 0; min-height: 0 !important; }
+.pop-grid.v-list .pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.pop-grid.v-list .pc-body { flex: 1; min-width: 0; padding: 8px 12px; }
+.pop-grid.v-list .pc-name { font-size: 13.5px; }
 /* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
 @media (min-width: 900px) {
   .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
@@ -139,21 +165,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260812p"></script>
-<script src="js/02-api.js?v=20260812p"></script>
-<script src="js/03-utils.js?v=20260812p"></script>
-<script src="js/04-shared.js?v=20260812p"></script>
-<script src="js/05-tab-board.js?v=20260812p"></script>
-<script src="js/06-tab-create.js?v=20260812p"></script>
-<script src="js/07-tab-floor.js?v=20260812p"></script>
-<script src="js/09-tab-info.js?v=20260812p"></script>
-<script src="js/11-tab-check-fish.js?v=20260812p"></script>
-<script src="js/12-tab-learn.js?v=20260812p"></script>
-<script src="js/14-app.js?v=20260812p"></script>
+<script src="js/01-config.js?v=20260812q"></script>
+<script src="js/02-api.js?v=20260812q"></script>
+<script src="js/03-utils.js?v=20260812q"></script>
+<script src="js/04-shared.js?v=20260812q"></script>
+<script src="js/05-tab-board.js?v=20260812q"></script>
+<script src="js/06-tab-create.js?v=20260812q"></script>
+<script src="js/07-tab-floor.js?v=20260812q"></script>
+<script src="js/09-tab-info.js?v=20260812q"></script>
+<script src="js/11-tab-check-fish.js?v=20260812q"></script>
+<script src="js/12-tab-learn.js?v=20260812q"></script>
+<script src="js/14-app.js?v=20260812q"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260812p";
+window.APP_VER = "20260812q";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

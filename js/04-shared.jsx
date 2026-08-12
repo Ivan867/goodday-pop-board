@@ -403,7 +403,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
       onClick={()=>onClick(pop)}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
-      <div className="imgskel" style={{ minHeight:120, position:"relative" }}>
+      <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
           ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
@@ -412,10 +412,10 @@ function PopCard({ pop, index, onClick, hasComment }) {
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
         </div>
       </div>
-      <div style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
-        <div style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.product_name}</div>
-        <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
-        <div style={{ fontSize:11, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
+      <div className="pc-body" style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
+        <div className="pc-name" style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.product_name}</div>
+        <div className="pc-meta" style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
+        <div className="pc-meta" style={{ fontSize:11, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
       </div>
     </div>
   );
