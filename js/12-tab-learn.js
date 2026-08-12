@@ -1857,15 +1857,15 @@ function CatalogTab() {
   const GENRE_OPTS = [{
     key: "both",
     label: "両方",
-    q: "寿司 刺身"
+    q: "寿司盛り合わせ 刺身盛り合わせ"
   }, {
     key: "sashimi",
-    label: "刺身",
-    q: "刺身 盛合せ"
+    label: "お刺身盛り合わせ",
+    q: "刺身盛り合わせ"
   }, {
     key: "sushi",
-    label: "寿司",
-    q: "寿司 にぎり"
+    label: "お寿司盛り合わせ",
+    q: "寿司盛り合わせ"
   }];
   const [genre, setGenre] = useState("both");
   const [year, setYear] = useState("");
@@ -2119,21 +2119,23 @@ function CatalogTab() {
   }, "何を調べますか？"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 6
+      gap: 6,
+      flexWrap: "wrap"
     }
   }, GENRE_OPTS.map(g => /*#__PURE__*/React.createElement("button", {
     key: g.key,
     onClick: () => setGenre(g.key),
     style: {
-      flex: 1,
+      flex: "1 1 auto",
       border: genre === g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
       background: genre === g.key ? "var(--soft)" : "#fff",
       color: genre === g.key ? "var(--primary)" : "var(--sub)",
       borderRadius: 9,
-      padding: "8px 0",
-      fontSize: 13,
+      padding: "8px 10px",
+      fontSize: 12,
       fontWeight: 800,
-      cursor: "pointer"
+      cursor: "pointer",
+      whiteSpace: "nowrap"
     }
   }, g.label)))), /*#__PURE__*/React.createElement("div", {
     style: {

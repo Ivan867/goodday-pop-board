@@ -700,9 +700,9 @@ function CatalogTab() {
   const YEAR_OPTS = []; for (let y = NOW_YEAR; y >= 2020; y--) YEAR_OPTS.push(y);
   const [cardYear, setCardYear] = useState({});   // カードごとに選んだ年
   const GENRE_OPTS = [
-    { key:"both",    label:"両方",   q:"寿司 刺身" },
-    { key:"sashimi", label:"刺身",   q:"刺身 盛合せ" },
-    { key:"sushi",   label:"寿司",   q:"寿司 にぎり" },
+    { key:"both",    label:"両方",           q:"寿司盛り合わせ 刺身盛り合わせ" },
+    { key:"sashimi", label:"お刺身盛り合わせ", q:"刺身盛り合わせ" },
+    { key:"sushi",   label:"お寿司盛り合わせ", q:"寿司盛り合わせ" },
   ];
   const [genre, setGenre] = useState("both");
   const [year, setYear] = useState("");
@@ -802,10 +802,10 @@ function CatalogTab() {
             )}
             <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"10px 12px", marginBottom:12 }}>
               <div style={{ fontSize:11.5, fontWeight:900, color:"var(--ink)", marginBottom:7 }}>何を調べますか？</div>
-              <div style={{ display:"flex", gap:6 }}>
+              <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                 {GENRE_OPTS.map(g => (
                   <button key={g.key} onClick={() => setGenre(g.key)}
-                    style={{ flex:1, border: genre===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: genre===g.key ? "var(--soft)" : "#fff", color: genre===g.key ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"8px 0", fontSize:13, fontWeight:800, cursor:"pointer" }}>{g.label}</button>
+                    style={{ flex:"1 1 auto", border: genre===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: genre===g.key ? "var(--soft)" : "#fff", color: genre===g.key ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"8px 10px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>{g.label}</button>
                 ))}
               </div>
             </div>
