@@ -164,6 +164,44 @@ function CompetitorTab() {
 }
 
 function IndustryTab() {
+  const GROUPS = [
+    {
+      cat:"専門店型", emoji:"🐟", note:"鮮魚売場というより「魚屋」の強さ。職人感・対面・丸魚・珍魚・活気。POPは「本日入荷」「店内加工」「鮮魚担当おすすめ」「刺身できます」系が合う。",
+      rows:[
+        { name:"角上魚類", url:"https://www.kakujoe.co.jp/", desc:"新潟・寺泊発。漁港直結の仕入れ、珍魚、対面販売、職人加工、寿司・惣菜まで強い。", hint:"対面販売・丸魚陳列・珍魚の見せ方・寿司惣菜展開", pri:1 },
+        { name:"魚耕", url:"https://www.uoko.co.jp/", desc:"関東の駅ナカ・駅ビル中心。刺身盛り・下処理・惣菜・テイクアウト寿司など小回りが強い。", hint:"駅ビル型の小スペース売場、刺身惣菜、通勤客向け商品", pri:12 },
+        { name:"魚力", url:"https://www.uoriki.co.jp/", desc:"百貨店・駅ビルに強い老舗。鮮魚と寿司・焼魚など調理品のダブル主力。", hint:"百貨店型の高級感、刺身寿司の盛り付け、清潔感ある陳列", pri:11 },
+      ]
+    },
+    {
+      cat:"大手スーパー型", emoji:"🛒", note:"尖らせるより日常の買いやすさと提案力。店内加工・調理サービス・惣菜連携。POPは「焼くだけ」「煮付けにおすすめ」「下処理済み」「夕飯の一品に」系。",
+      rows:[
+        { name:"ライフ", url:"https://www.lifecorp.jp/", desc:"店内加工に積極的。刺身・対面販売・鮮度管理、寿司焼魚惣菜との連携。", hint:"大型店の店内加工、日常価格と品質のバランス", pri:9 },
+        { name:"ヤオコー", url:"https://www.yaoko-net.com/", desc:"産地直送・市場直仕入れ、売場演出、食べ方提案、惣菜が強い。", hint:"調理提案POP、鮮魚惣菜、売場の見せ方、旬魚の打ち出し", pri:2 },
+        { name:"イトーヨーカドー", url:"https://www.itoyokado.co.jp/", desc:"お魚調理サービス、クッキングサポート、魚離れ対策、買いやすさ重視。", hint:"調理サービスの案内方法、魚調理のハードルを下げるPOP", pri:13 },
+        { name:"サミット", url:"https://www.summitstore.co.jp/", desc:"店内加工、丸魚・刺身・焼魚用まで幅広い商品展開。惣菜連携も強い。", hint:"日常使いの鮮魚売場、焼くだけ・煮るだけ系の提案", pri:8 },
+      ]
+    },
+    {
+      cat:"地域密着型", emoji:"🏘", note:"グッディーの売場に一番近い参考軸。地元の食文化・地魚・日替わり感・活気・鮮魚惣菜。山陰沖産・島根県産を打ち出すなら「地元で親しまれる魚」「山陰の旬」「今日はこの魚」と相性◎。",
+      rows:[
+        { name:"万代", url:"https://www.mandai-net.co.jp/", desc:"関西で人気。安くて新鮮、季節の地魚、珍しい魚、寿司・煮魚・焼魚惣菜が豊富。", hint:"安さと鮮度の見せ方、日替わり感、地魚惣菜展開", pri:3 },
+        { name:"スーパーオカムラ", url:"https://www.google.com/maps/search/%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AA%E3%82%AB%E3%83%A0%E3%83%A9+%E5%AF%8C%E5%A3%AB%E5%B8%82", desc:"静岡・富士エリア。駿河湾近海魚、深海魚、珍しい魚、地元食文化が強い。", hint:"地魚・珍魚の売り方、ローカル感、地域食文化POP", pri:4 },
+        { name:"オオゼキ", url:"https://www.ozeki-net.co.jp/", desc:"東京・神奈川。市場のような活気、マグロ解体、対面販売、調理提案。", hint:"イベント型売場、マグロ解体、都市型の臨場感", pri:5 },
+        { name:"バロー", url:"https://www.valor.co.jp/", desc:"中部中心。本部仕入れと現場目利きの両立。旬と価格・品質バランス。", hint:"地域スーパーでの魚の強さ、寿司惣菜との連動", pri:15 },
+        { name:"関西スーパー", url:"https://www.kansaisuper.co.jp/", desc:"鮮魚と惣菜の融合が強み。寿司・煮付け・焼物を手頃価格で展開。", hint:"鮮魚惣菜の作り方、夕食需要向けの商品構成", pri:10 },
+        { name:"平和堂", url:"https://www.heiwado.jp/", desc:"滋賀・関西圏。地元ニーズ、刺身・切身・味付け魚、惣菜寿司連携。", hint:"地域密着の安定感、日常の魚おかず提案", pri:14 },
+      ]
+    },
+    {
+      cat:"高級・高品質型", emoji:"✨", note:"価格勝負でなく上質感・少量・見た目・特別感。刺身・寿司・海鮮丼・うなぎ・お盆・年末年始・父の日POPの参考に。「ちょっと贅沢」「食卓を華やかに」「上質な味わい」「特別な日の一品」系。",
+      rows:[
+        { name:"成城石井", url:"https://www.seijoishii.com/", desc:"高品質・少量パック・単身者向け・惣菜や加工品が豊富。ちょっと贅沢路線。", hint:"少量高品質パック、パッケージ、上質感あるPOP", pri:7 },
+        { name:"紀ノ国屋", url:"https://www.e-kinokuniya.com/", desc:"老舗高級スーパー。美しい盛り付け、上質なパッケージ、希少魚、特別感。", hint:"高級感、盛り付け、色使い、特別日向けの鮮魚演出", pri:6 },
+      ]
+    },
+  ];
+
   const SITES = [
     { name:"ダイヤモンド・チェーンストア オンライン", home:"https://diamond-rm.net/", feed:"https://diamond-rm.net/feed/", tag:"業界ニュース", emoji:"📰", color:"#2f6fb0" },
     { name:"食未来研究室", home:"https://nsk-shokumirai.com/", feed:"https://nsk-shokumirai.com/feed/", tag:"売場・行事提案", emoji:"🍳", color:"#2f6fb0" },
@@ -197,7 +235,7 @@ function IndustryTab() {
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:1600, margin:"0 auto" }}>
           <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>業界情報</div>
-          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場づくりや業界の動きに役立つ最新記事</div>
+          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>最新記事と、鮮魚が強い15店舗の売り方</div>
         </div>
       </div>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
@@ -272,6 +310,32 @@ function IndustryTab() {
           );
         })}
         <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:4, lineHeight:1.7 }}>記事はタップすると別タブで開きます。<br/>最新情報は各サイトから自動で取得しています。</div>
+
+        {/* 競合の売り方（旧・競合情報） */}
+        <div style={{ height:1, background:"var(--line)", margin:"26px 0 20px" }} />
+        <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>鮮魚が強い店の売り方</div>
+        <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:16, lineHeight:1.6 }}>全国15店舗を4タイプで整理。POPや売場づくりのヒントに</div>
+        {GROUPS.map(g => (
+          <div key={g.cat} style={{ marginBottom:22 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+              <span style={{ fontSize:19 }}>{g.emoji}</span>
+              <span style={{ fontSize:15.5, fontWeight:900, color:"var(--ink)" }}>{g.cat}</span>
+            </div>
+            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.7, marginBottom:11, background:"var(--soft)", borderRadius:10, padding:"9px 11px" }}>{g.note}</div>
+            {g.rows.map(r => (
+              <a key={r.name} href={r.url} target="_blank" rel="noopener noreferrer"
+                style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
+                  <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)" }}>{r.name}</span>
+                  <span style={{ fontSize:10, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
+                  <span style={{ marginLeft:"auto", color:"var(--faint)", fontSize:17 }}>↗</span>
+                </div>
+                <div style={{ fontSize:12, color:"var(--text)", lineHeight:1.65 }}>{r.desc}</div>
+                {r.hint && <div style={{ fontSize:11, color:"var(--primary)", fontWeight:800, marginTop:6, lineHeight:1.5 }}>見どころ：{r.hint}</div>}
+              </a>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
