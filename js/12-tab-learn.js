@@ -1854,6 +1854,20 @@ function CatalogTab() {
   const YEAR_OPTS = [];
   for (let y = NOW_YEAR; y >= 2020; y--) YEAR_OPTS.push(y);
   const [cardYear, setCardYear] = useState({}); // カードごとに選んだ年
+  const GENRE_OPTS = [{
+    key: "both",
+    label: "両方",
+    q: "寿司 刺身"
+  }, {
+    key: "sashimi",
+    label: "刺身",
+    q: "刺身 盛合せ"
+  }, {
+    key: "sushi",
+    label: "寿司",
+    q: "寿司 にぎり"
+  }];
+  const [genre, setGenre] = useState("both");
   const [year, setYear] = useState("");
   useEffect(() => {
     let alive = true;
@@ -1880,7 +1894,8 @@ function CatalogTab() {
     return base + encodeURIComponent(q);
   };
   const imgSearchUrl = (c, season, y) => {
-    const q = [c.store, season, "予約", "寿司 刺身", String(y)].filter(Boolean).join(" ");
+    const g = GENRE_OPTS.find(x => x.key === genre) || GENRE_OPTS[0];
+    const q = [c.store, season, "予約", g.q, String(y)].filter(Boolean).join(" ");
     return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q);
   };
   const stars = p => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
@@ -2087,6 +2102,40 @@ function CatalogTab() {
       cursor: "pointer"
     }
   }, y, "年"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "10px 12px",
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 7
+    }
+  }, "何を調べますか？"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, GENRE_OPTS.map(g => /*#__PURE__*/React.createElement("button", {
+    key: g.key,
+    onClick: () => setGenre(g.key),
+    style: {
+      flex: 1,
+      border: genre === g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: genre === g.key ? "var(--soft)" : "#fff",
+      color: genre === g.key ? "var(--primary)" : "var(--sub)",
+      borderRadius: 9,
+      padding: "8px 0",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, g.label)))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
