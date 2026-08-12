@@ -185,7 +185,6 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     gneDrawField(ctx, String(p), L.price, font);
     gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, L.taxPrice, font);
   }
-  gneDrawField(ctx, GNE_FIXED.plus, L.plus, font);
   gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
   gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
 }
