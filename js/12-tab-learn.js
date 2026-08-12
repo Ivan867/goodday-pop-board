@@ -1642,6 +1642,9 @@ function CatalogTab() {
   }, {
     key: "pro",
     label: "専門店・魚屋"
+  }, {
+    key: "premium",
+    label: "高質スーパー"
   }];
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
   const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
