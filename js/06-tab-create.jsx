@@ -138,14 +138,16 @@ function PopToolTab({ seed, onSeedConsumed }) {
   const [toolSub, setToolSub] = useState("create");
   return (
     <div>
-      <div style={{ maxWidth:680, margin:"0 auto", padding:"14px 16px 0", display:"flex", gap:8 }}>
-        {[["create","✏️ 作成"],["prompts","💡 プロンプト集"]].map(([k,l]) => (
+      <div style={{ maxWidth:680, margin:"0 auto", padding:"14px 16px 0", display:"flex", gap:7 }}>
+        {[["create","✏️ 作成"],["check","🩺 診断"],["prompts","💡 プロンプト集"]].map(([k,l]) => (
           <button key={k} onClick={()=>setToolSub(k)}
-            style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 6px", fontSize:13.5, fontWeight:800, cursor:"pointer",
+            style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 4px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
               background: toolSub===k ? "var(--primary)" : "#fff", color: toolSub===k ? "#fff" : "var(--text)" }}>{l}</button>
         ))}
       </div>
-      {toolSub === "create" ? <PopCreateInner seed={seed} onSeedConsumed={onSeedConsumed} /> : <PromptTab embedded />}
+      {toolSub === "create" ? <PopCreateInner seed={seed} onSeedConsumed={onSeedConsumed} />
+        : toolSub === "check" ? (window.PopCheckTab ? React.createElement(window.PopCheckTab) : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>)
+        : <PromptTab embedded />}
     </div>
   );
 }

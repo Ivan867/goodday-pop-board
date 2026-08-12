@@ -41,12 +41,6 @@ const TAB_REGISTRY = [{
   section: "しらべる",
   badge: "NEW"
 }, {
-  key: "popcheck",
-  icon: "🩺",
-  label: "POP診断",
-  section: "ツール",
-  badge: "NEW"
-}, {
   key: "barcode",
   icon: "🏷",
   label: "バーコード",
@@ -122,6 +116,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-08-12",
+  type: "改善",
+  title: "POP診断を作成ページに統合",
+  body: "別々だった「POP診断」を作成ページの中に移しました。上部の「✏️作成／🩺診断／💡プロンプト集」で切り替えられます。作ったPOPをその場で診断できるので、行き来する手間がなくなります。メニューの「POP診断」は無くなりました。"
+}, {
   date: "2026-08-12",
   type: "改善",
   title: "業界情報と競合情報を1つにまとめました",

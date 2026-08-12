@@ -394,26 +394,34 @@ function PopToolTab({
       margin: "0 auto",
       padding: "14px 16px 0",
       display: "flex",
-      gap: 8
+      gap: 7
     }
-  }, [["create", "✏️ 作成"], ["prompts", "💡 プロンプト集"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["create", "✏️ 作成"], ["check", "🩺 診断"], ["prompts", "💡 プロンプト集"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setToolSub(k),
     style: {
       flex: 1,
       border: "1px solid var(--line)",
       borderRadius: 11,
-      padding: "10px 6px",
-      fontSize: 13.5,
+      padding: "10px 4px",
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer",
+      whiteSpace: "nowrap",
       background: toolSub === k ? "var(--primary)" : "#fff",
       color: toolSub === k ? "#fff" : "var(--text)"
     }
   }, l))), toolSub === "create" ? /*#__PURE__*/React.createElement(PopCreateInner, {
     seed: seed,
     onSeedConsumed: onSeedConsumed
-  }) : /*#__PURE__*/React.createElement(PromptTab, {
+  }) : toolSub === "check" ? window.PopCheckTab ? React.createElement(window.PopCheckTab) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: 40,
+      color: "var(--faint)",
+      fontSize: 13
+    }
+  }, "読み込み中…") : /*#__PURE__*/React.createElement(PromptTab, {
     embedded: true
   }));
 }
