@@ -737,12 +737,19 @@ function CatalogTab() {
   const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
   const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
   const GROUPS = [
-    { key:"major", label:"大手スーパー" },
-    { key:"local", label:"ローカルスーパー" },
-    { key:"coop",  label:"生協" },
-    { key:"pro",   label:"専門店・魚屋" },
-    { key:"premium", label:"高質スーパー" },
+    { key:"major",   label:"大手スーパー",     color:"#3b7dd8", emoji:"🛒" },
+    { key:"local",   label:"ローカルスーパー", color:"#3f9e63", emoji:"🏘" },
+    { key:"pro",     label:"専門店・魚屋",     color:"#d1554f", emoji:"🐟" },
+    { key:"premium", label:"高質スーパー",     color:"#c39a3c", emoji:"✨" },
+    { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
   ];
+  const gInfo = (k) => GROUPS.find(g => g.key === (k || "local")) || GROUPS[1];
+  // 開いたお店を覚えておく（巡回の進み具合が見える）
+  const [seen, setSeen] = useState(() => { try { return JSON.parse(localStorage.getItem("catSeen") || "{}"); } catch(e) { return {}; } });
+  const markSeen = (id) => setSeen(v => { const n = { ...v, [id]: Date.now() }; try { localStorage.setItem("catSeen", JSON.stringify(n)); } catch(e) {} return n; });
+  // 今の季節に近い時期を濃く見せる
+  const NOW_M = new Date().getMonth() + 1;
+  const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
   const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
   const shown = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
@@ -751,12 +758,15 @@ function CatalogTab() {
 
   const Card = ({ c }) => {
     const y = cardYear[c.id] || NOW_YEAR;
+    const g = gInfo(c.group_type);
+    const visited = !!seen[c.id];
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:13, padding:"10px 11px" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:7 }}>
-          <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1 }}>{c.store}</span>
-          {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>{c.area}</span>}
+      <div className="ucard" style={{ background:"#fff", borderRadius:13, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}`, position:"relative" }}>
+        <div style={{ display:"flex", alignItems:"baseline", gap:6, marginBottom:6 }}>
+          <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
+          {visited && <span title="見ました" style={{ fontSize:9, fontWeight:900, color:g.color, flexShrink:0 }}>✓</span>}
         </div>
+        {c.area && <div style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, marginBottom:7 }}>{c.area}</div>}
 
         <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
           style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"5px 8px", fontSize:11.5, fontWeight:800, color:"var(--text)", background:"#fff", marginBottom:7, outline:"none" }}>
@@ -764,10 +774,17 @@ function CatalogTab() {
         </select>
 
         <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:5 }}>
-          {SEASON_OPTS.map(sn => (
-            <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
-              style={{ textAlign:"center", textDecoration:"none", fontSize:10.5, fontWeight:900, color:"#fff", background:"var(--primary-soft, #4a7ab0)", borderRadius:7, padding:"6px 0" }}>{sn}</a>
-          ))}
+          {SEASON_OPTS.map(sn => {
+            const hot = sn === hotSeason;
+            return (
+              <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer" onClick={() => markSeen(c.id)}
+                style={{ textAlign:"center", textDecoration:"none", fontSize:10.5, fontWeight:900,
+                  color: hot ? "#fff" : g.color,
+                  background: hot ? g.color : g.color + "14",
+                  border: hot ? "none" : `1px solid ${g.color}33`,
+                  borderRadius:7, padding:"6px 0" }}>{sn}</a>
+            );
+          })}
         </div>
       </div>
     );
@@ -815,13 +832,35 @@ function CatalogTab() {
                 style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (
                 <button key={g.key} onClick={() => setGrp(g.key)}
-                  style={{ border: grp===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: grp===g.key ? "var(--soft)" : "#fff", color: grp===g.key ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{g.label}</button>
+                  style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"6px 13px", fontSize:12.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
+                  <span style={{ fontSize:12 }}>{g.emoji}</span>{g.label}
+                </button>
               ))}
             </div>
 
-            <div className="pop-grid">
-              {cats.map(c => <Card key={c.id} c={c} />)}
-            </div>
+            {grp ? (
+              <div className="pop-grid">
+                {cats.map(c => <Card key={c.id} c={c} />)}
+              </div>
+            ) : (
+              GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
+                const rows = cats.filter(c => (c.group_type || "local") === g.key);
+                const done = rows.filter(c => seen[c.id]).length;
+                return (
+                  <div key={g.key} style={{ marginBottom:20 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
+                      <span style={{ fontSize:15 }}>{g.emoji}</span>
+                      <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
+                      <span style={{ fontSize:10.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
+                      {done > 0 && <span style={{ fontSize:10, fontWeight:800, color:"var(--faint)", marginLeft:"auto" }}>{done}/{rows.length} 見ました</span>}
+                    </div>
+                    <div className="pop-grid">
+                      {rows.map(c => <Card key={c.id} c={c} />)}
+                    </div>
+                  </div>
+                );
+              })
+            )}
 
             {flyers.length > 0 && (
               <>
