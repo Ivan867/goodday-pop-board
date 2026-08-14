@@ -165,6 +165,12 @@ function CompetitorTab() {
 
 function IndustryTab() {
   const [subTab, setSubTab] = useState("news");
+  const [trends, setTrends] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => { try { const d = await api.listTrends(); if (alive) setTrends(d || []); } catch(e) {} })();
+    return () => { alive = false; };
+  }, []);
   useEffect(() => {
     // 魚図鑑は遅延ファイルにあるため、必要になったら読み込む
     if (subTab === "fish" && !window.FishTab && window.loadLazyTab) {
@@ -333,6 +339,31 @@ function IndustryTab() {
         <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:4, lineHeight:1.7 }}>記事はタップすると別タブで開きます。<br/>最新情報は各サイトから自動で取得しています。</div>
 
         {/* 競合の売り方（旧・競合情報） */}
+        {trends.length > 0 && (
+          <>
+            <div style={{ height:1, background:"var(--line)", margin:"26px 0 20px" }} />
+            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>いまの業界の動き</div>
+            <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:14, lineHeight:1.6 }}>各社の予約カタログや発表から拾った傾向です</div>
+            {trends.map(t => (
+              <div key={t.id} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:13, padding:"13px 14px", marginBottom:10 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8, flexWrap:"wrap" }}>
+                  {t.season && <span style={{ fontSize:9.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:6, padding:"2px 8px" }}>{t.season}{t.year ? " " + t.year : ""}</span>}
+                  <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)", lineHeight:1.4, flex:"1 1 100%" }}>{t.title}</span>
+                </div>
+                <ul style={{ margin:0, paddingLeft:17, listStyle:"none" }}>
+                  {(Array.isArray(t.points) ? t.points : []).map((pt, i) => (
+                    <li key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.75, marginBottom:5, position:"relative" }}>
+                      <span style={{ position:"absolute", left:-15, top:7, width:5, height:5, borderRadius:"50%", background:"var(--primary-soft)" }} />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+                {t.source && <div style={{ fontSize:10, color:"var(--faint)", fontWeight:800, marginTop:8 }}>出典：{t.source}</div>}
+              </div>
+            ))}
+          </>
+        )}
+
         <div style={{ height:1, background:"var(--line)", margin:"26px 0 20px" }} />
         <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>鮮魚が強い店の売り方</div>
         <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:16, lineHeight:1.6 }}>全国15店舗を4タイプで整理。POPや売場づくりのヒントに</div>

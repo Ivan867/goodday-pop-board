@@ -528,6 +528,19 @@ function CompetitorTab() {
 }
 function IndustryTab() {
   const [subTab, setSubTab] = useState("news");
+  const [trends, setTrends] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const d = await api.listTrends();
+        if (alive) setTrends(d || []);
+      } catch (e) {}
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   useEffect(() => {
     // 魚図鑑は遅延ファイルにあるため、必要になったら読み込む
     if (subTab === "fish" && !window.FishTab && window.loadLazyTab) {
@@ -973,7 +986,93 @@ function IndustryTab() {
       marginTop: 4,
       lineHeight: 1.7
     }
-  }, "記事はタップすると別タブで開きます。", /*#__PURE__*/React.createElement("br", null), "最新情報は各サイトから自動で取得しています。"), /*#__PURE__*/React.createElement("div", {
+  }, "記事はタップすると別タブで開きます。", /*#__PURE__*/React.createElement("br", null), "最新情報は各サイトから自動で取得しています。"), trends.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "var(--line)",
+      margin: "26px 0 20px"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 3
+    }
+  }, "いまの業界の動き"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginBottom: 14,
+      lineHeight: 1.6
+    }
+  }, "各社の予約カタログや発表から拾った傾向です"), trends.map(t => /*#__PURE__*/React.createElement("div", {
+    key: t.id,
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 13,
+      padding: "13px 14px",
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      marginBottom: 8,
+      flexWrap: "wrap"
+    }
+  }, t.season && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9.5,
+      fontWeight: 900,
+      color: "var(--primary-soft)",
+      background: "var(--soft)",
+      borderRadius: 6,
+      padding: "2px 8px"
+    }
+  }, t.season, t.year ? " " + t.year : ""), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)",
+      lineHeight: 1.4,
+      flex: "1 1 100%"
+    }
+  }, t.title)), /*#__PURE__*/React.createElement("ul", {
+    style: {
+      margin: 0,
+      paddingLeft: 17,
+      listStyle: "none"
+    }
+  }, (Array.isArray(t.points) ? t.points : []).map((pt, i) => /*#__PURE__*/React.createElement("li", {
+    key: i,
+    style: {
+      fontSize: 12.5,
+      color: "var(--text)",
+      lineHeight: 1.75,
+      marginBottom: 5,
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      left: -15,
+      top: 7,
+      width: 5,
+      height: 5,
+      borderRadius: "50%",
+      background: "var(--primary-soft)"
+    }
+  }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: "var(--faint)",
+      fontWeight: 800,
+      marginTop: 8
+    }
+  }, "出典：", t.source)))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",

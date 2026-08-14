@@ -224,6 +224,9 @@ const api = {
     return true;
   },
 
+  // ── market_trends：業界の動き（文字情報） ──
+  async listTrends() { return sbJson(`/rest/v1/market_trends?select=*&visible=eq.true&order=sort_order.asc`); },
+
   // ── gne_presets：入力ジェネレーターの設定プリセット ──
   async listPresets() { return sbJson(`/rest/v1/gne_presets?select=*&order=created_at.desc`); },
   async addPreset(p) { return sbOne(`/rest/v1/gne_presets`, { method:"POST", body:p, prefer:"return=representation" }); },

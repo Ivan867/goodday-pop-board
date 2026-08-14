@@ -465,6 +465,10 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── market_trends：業界の動き（文字情報） ──
+  async listTrends() {
+    return sbJson(`/rest/v1/market_trends?select=*&visible=eq.true&order=sort_order.asc`);
+  },
   // ── gne_presets：入力ジェネレーターの設定プリセット ──
   async listPresets() {
     return sbJson(`/rest/v1/gne_presets?select=*&order=created_at.desc`);
