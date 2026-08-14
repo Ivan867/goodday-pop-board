@@ -797,7 +797,14 @@ function CatalogTab() {
           <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
           {visited && <span title="見ました" style={{ fontSize:9, fontWeight:900, color:g.color, flexShrink:0 }}>✓</span>}
         </div>
-        {c.area && <div style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800, marginBottom:7 }}>{c.area}</div>}
+        <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:6 }}>
+          {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</span>}
+          {c.stores_count ? <span style={{ fontSize:9.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.stores_count}店</span> : null}
+          {c.revenue ? <span style={{ fontSize:9.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.revenue}</span> : null}
+        </div>
+        {c.strength && (
+          <div style={{ fontSize:10.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:8 }}>{c.strength}</div>
+        )}
 
         <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
           style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"5px 8px", fontSize:11.5, fontWeight:800, color:"var(--text)", background:"#fff", marginBottom:7, outline:"none" }}>

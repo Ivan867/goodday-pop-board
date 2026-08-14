@@ -2094,14 +2094,49 @@ function CatalogTab() {
         color: g.color,
         flexShrink: 0
       }
-    }, "✓")), c.area && /*#__PURE__*/React.createElement("div", {
+    }, "✓")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        flexWrap: "wrap",
+        marginBottom: 6
+      }
+    }, c.area && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 9.5,
         color: "var(--faint)",
-        fontWeight: 800,
-        marginBottom: 7
+        fontWeight: 800
       }
-    }, c.area), /*#__PURE__*/React.createElement("select", {
+    }, c.area), c.stores_count ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9.5,
+        fontWeight: 800,
+        color: g.color,
+        background: g.color + "12",
+        borderRadius: 5,
+        padding: "1px 6px"
+      }
+    }, c.stores_count, "店") : null, c.revenue ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9.5,
+        fontWeight: 800,
+        color: g.color,
+        background: g.color + "12",
+        borderRadius: 5,
+        padding: "1px 6px"
+      }
+    }, c.revenue) : null), c.strength && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10.5,
+        color: "var(--text)",
+        lineHeight: 1.6,
+        background: "var(--bg)",
+        borderRadius: 8,
+        padding: "7px 9px",
+        marginBottom: 8
+      }
+    }, c.strength), /*#__PURE__*/React.createElement("select", {
       value: y,
       onChange: e => setCardYear(v => ({
         ...v,
