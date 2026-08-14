@@ -2134,9 +2134,48 @@ function CatalogTab() {
         background: "var(--bg)",
         borderRadius: 8,
         padding: "7px 9px",
+        marginBottom: 6
+      }
+    }, c.strength), (c.store_scale || c.systems) && /*#__PURE__*/React.createElement("div", {
+      style: {
         marginBottom: 8
       }
-    }, c.strength), /*#__PURE__*/React.createElement("select", {
+    }, c.store_scale && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 5,
+        fontSize: 10,
+        lineHeight: 1.55,
+        marginBottom: 3
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontWeight: 900,
+        color: g.color,
+        flexShrink: 0
+      }
+    }, "規模"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "var(--sub)"
+      }
+    }, c.store_scale)), c.systems && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 5,
+        fontSize: 10,
+        lineHeight: 1.55
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontWeight: 900,
+        color: g.color,
+        flexShrink: 0
+      }
+    }, "仕組み"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "var(--sub)"
+      }
+    }, c.systems))), /*#__PURE__*/React.createElement("select", {
       value: y,
       onChange: e => setCardYear(v => ({
         ...v,

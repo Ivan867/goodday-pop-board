@@ -803,7 +803,23 @@ function CatalogTab() {
           {c.revenue ? <span style={{ fontSize:9.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.revenue}</span> : null}
         </div>
         {c.strength && (
-          <div style={{ fontSize:10.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:8 }}>{c.strength}</div>
+          <div style={{ fontSize:10.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:6 }}>{c.strength}</div>
+        )}
+        {(c.store_scale || c.systems) && (
+          <div style={{ marginBottom:8 }}>
+            {c.store_scale && (
+              <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55, marginBottom:3 }}>
+                <span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>規模</span>
+                <span style={{ color:"var(--sub)" }}>{c.store_scale}</span>
+              </div>
+            )}
+            {c.systems && (
+              <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55 }}>
+                <span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>仕組み</span>
+                <span style={{ color:"var(--sub)" }}>{c.systems}</span>
+              </div>
+            )}
+          </div>
         )}
 
         <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
