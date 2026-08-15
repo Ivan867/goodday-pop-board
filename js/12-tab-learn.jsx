@@ -777,9 +777,6 @@ function CatalogTab() {
     { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
   ];
   const gInfo = (k) => GROUPS.find(g => g.key === (k || "local")) || GROUPS[1];
-  // 開いたお店を覚えておく（巡回の進み具合が見える）
-  const [seen, setSeen] = useState(() => { try { return JSON.parse(localStorage.getItem("catSeen") || "{}"); } catch(e) { return {}; } });
-  const markSeen = (id) => setSeen(v => { const n = { ...v, [id]: Date.now() }; try { localStorage.setItem("catSeen", JSON.stringify(n)); } catch(e) {} return n; });
   // 今の季節に近い時期を濃く見せる
   const NOW_M = new Date().getMonth() + 1;
   const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
@@ -792,13 +789,12 @@ function CatalogTab() {
   const Card = ({ c }) => {
     const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
-    const visited = !!seen[c.id];
     const seasonBtns = (size) => (
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap: size === "sm" ? 4 : 5 }}>
         {SEASON_OPTS.map(sn => {
           const hot = sn === hotSeason;
           return (
-            <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer" onClick={() => markSeen(c.id)}
+            <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
               style={{ textAlign:"center", textDecoration:"none", fontSize: size === "sm" ? 9.5 : 10.5, fontWeight:900,
                 color: hot ? "#fff" : g.color, background: hot ? g.color : g.color + "14",
                 border: hot ? "none" : `1px solid ${g.color}33`, borderRadius:6, padding: size === "sm" ? "5px 0" : "6px 0" }}>{sn}</a>
@@ -810,16 +806,16 @@ function CatalogTab() {
     // リスト：店名と時期ボタンを横一列に
     if (cview === "list") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}`, display:"flex", alignItems:"center", gap:10 }}>
+        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
           <div style={{ minWidth:0, flex:"0 0 34%" }}>
-            <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}{visited && <span style={{ color:g.color, fontSize:9 }}> ✓</span>}</div>
+            <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}</div>
             {c.area && <div style={{ fontSize:9, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
           </div>
           <div style={{ display:"flex", gap:4, flex:1, minWidth:0 }}>
             {SEASON_OPTS.map(sn => {
               const hot = sn === hotSeason;
               return (
-                <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer" onClick={() => markSeen(c.id)}
+                <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
                   style={{ flex:1, textAlign:"center", textDecoration:"none", fontSize:9.5, fontWeight:900, whiteSpace:"nowrap",
                     color: hot ? "#fff" : g.color, background: hot ? g.color : g.color + "14",
                     border: hot ? "none" : `1px solid ${g.color}33`, borderRadius:6, padding:"5px 2px" }}>{sn}</a>
@@ -833,9 +829,9 @@ function CatalogTab() {
     // 小：店名＋時期ボタンのみ（年は今年固定）
     if (cview === "sm") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
+        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>
-            {c.store}{visited && <span style={{ color:g.color, fontSize:9 }}> ✓</span>}
+            {c.store}
           </div>
           {seasonBtns("sm")}
         </div>
@@ -844,10 +840,9 @@ function CatalogTab() {
 
     // 中・大：これまで通り（大は企業情報も全部出す）
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
+      <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${g.color}` }}>
         <div style={{ display:"flex", alignItems:"baseline", gap:6, marginBottom:6 }}>
           <span style={{ fontSize: cview === "lg" ? 16 : 15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
-          {visited && <span title="見ました" style={{ fontSize:9, fontWeight:900, color:g.color, flexShrink:0 }}>✓</span>}
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:6 }}>
           {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</span>}
@@ -947,14 +942,12 @@ function CatalogTab() {
             ) : (
               GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
                 const rows = cats.filter(c => (c.group_type || "local") === g.key);
-                const done = rows.filter(c => seen[c.id]).length;
                 return (
                   <div key={g.key} style={{ marginBottom:20 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
                       <span style={{ fontSize:15 }}>{g.emoji}</span>
                       <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
                       <span style={{ fontSize:10.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
-                      {done > 0 && <span style={{ fontSize:10, fontWeight:800, color:"var(--faint)", marginLeft:"auto" }}>{done}/{rows.length} 見ました</span>}
                     </div>
                     <div className={"cat-grid c-" + cview}>
                       {rows.map(c => <Card key={c.id} c={c} />)}

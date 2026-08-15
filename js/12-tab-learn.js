@@ -2039,24 +2039,6 @@ function CatalogTab() {
     emoji: "🤝"
   }];
   const gInfo = k => GROUPS.find(g => g.key === (k || "local")) || GROUPS[1];
-  // 開いたお店を覚えておく（巡回の進み具合が見える）
-  const [seen, setSeen] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("catSeen") || "{}");
-    } catch (e) {
-      return {};
-    }
-  });
-  const markSeen = id => setSeen(v => {
-    const n = {
-      ...v,
-      [id]: Date.now()
-    };
-    try {
-      localStorage.setItem("catSeen", JSON.stringify(n));
-    } catch (e) {}
-    return n;
-  });
   // 今の季節に近い時期を濃く見せる
   const NOW_M = new Date().getMonth() + 1;
   const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
@@ -2070,7 +2052,6 @@ function CatalogTab() {
   }) => {
     const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
-    const visited = !!seen[c.id];
     const seasonBtns = size => /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
@@ -2084,7 +2065,6 @@ function CatalogTab() {
         href: imgSearchUrl(c, sn, y),
         target: "_blank",
         rel: "noopener noreferrer",
-        onClick: () => markSeen(c.id),
         style: {
           textAlign: "center",
           textDecoration: "none",
@@ -2107,7 +2087,7 @@ function CatalogTab() {
           background: "#fff",
           borderRadius: 9,
           padding: "8px 10px 8px 12px",
-          borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`,
+          borderLeft: `4px solid ${g.color}`,
           display: "flex",
           alignItems: "center",
           gap: 10
@@ -2126,12 +2106,7 @@ function CatalogTab() {
           overflow: "hidden",
           textOverflow: "ellipsis"
         }
-      }, c.store, visited && /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: g.color,
-          fontSize: 9
-        }
-      }, " ✓")), c.area && /*#__PURE__*/React.createElement("div", {
+      }, c.store), c.area && /*#__PURE__*/React.createElement("div", {
         style: {
           fontSize: 9,
           color: "var(--faint)",
@@ -2151,7 +2126,6 @@ function CatalogTab() {
           href: imgSearchUrl(c, sn, y),
           target: "_blank",
           rel: "noopener noreferrer",
-          onClick: () => markSeen(c.id),
           style: {
             flex: 1,
             textAlign: "center",
@@ -2177,7 +2151,7 @@ function CatalogTab() {
           background: "#fff",
           borderRadius: 9,
           padding: "9px 10px 9px 12px",
-          borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
+          borderLeft: `4px solid ${g.color}`
         }
       }, /*#__PURE__*/React.createElement("div", {
         style: {
@@ -2189,12 +2163,7 @@ function CatalogTab() {
           textOverflow: "ellipsis",
           marginBottom: 6
         }
-      }, c.store, visited && /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: g.color,
-          fontSize: 9
-        }
-      }, " ✓")), seasonBtns("sm"));
+      }, c.store), seasonBtns("sm"));
     }
 
     // 中・大：これまで通り（大は企業情報も全部出す）
@@ -2204,7 +2173,7 @@ function CatalogTab() {
         background: "#fff",
         borderRadius: 10,
         padding: "10px 11px 10px 13px",
-        borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
+        borderLeft: `4px solid ${g.color}`
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2225,15 +2194,7 @@ function CatalogTab() {
         flex: 1,
         minWidth: 0
       }
-    }, c.store), visited && /*#__PURE__*/React.createElement("span", {
-      title: "見ました",
-      style: {
-        fontSize: 9,
-        fontWeight: 900,
-        color: g.color,
-        flexShrink: 0
-      }
-    }, "✓")), /*#__PURE__*/React.createElement("div", {
+    }, c.store)), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         alignItems: "center",
@@ -2651,7 +2612,6 @@ function CatalogTab() {
     c: c
   }))) : GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
     const rows = cats.filter(c => (c.group_type || "local") === g.key);
-    const done = rows.filter(c => seen[c.id]).length;
     return /*#__PURE__*/React.createElement("div", {
       key: g.key,
       style: {
@@ -2684,14 +2644,7 @@ function CatalogTab() {
         borderRadius: 999,
         padding: "2px 9px"
       }
-    }, rows.length), done > 0 && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 10,
-        fontWeight: 800,
-        color: "var(--faint)",
-        marginLeft: "auto"
-      }
-    }, done, "/", rows.length, " 見ました")), /*#__PURE__*/React.createElement("div", {
+    }, rows.length)), /*#__PURE__*/React.createElement("div", {
       className: "cat-grid c-" + cview
     }, rows.map(c => /*#__PURE__*/React.createElement(Card, {
       key: c.id,
