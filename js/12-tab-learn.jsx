@@ -808,7 +808,13 @@ function CatalogTab() {
       return (
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
           <div style={{ minWidth:0, flex:"0 0 34%" }}>
-            <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}</div>
+            <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+              <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>{c.store}</span>
+              <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
+                style={{ flexShrink:0, border:"none", borderRadius:6, padding:"2px 3px", fontSize:10, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
+                {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}</option>)}
+              </select>
+            </div>
             {c.area && <div style={{ fontSize:9, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
           </div>
           <div style={{ display:"flex", gap:4, flex:1, minWidth:0 }}>
@@ -826,12 +832,16 @@ function CatalogTab() {
       );
     }
 
-    // 小：店名＋時期ボタンのみ（年は今年固定）
+    // 小：店名＋年の選択＋時期ボタン
     if (cview === "sm") {
       return (
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
-          <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>
-            {c.store}
+          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+            <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
+            <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
+              style={{ flexShrink:0, border:"none", borderRadius:6, padding:"3px 4px", fontSize:10.5, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
+              {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}</option>)}
+            </select>
           </div>
           {seasonBtns("sm")}
         </div>
