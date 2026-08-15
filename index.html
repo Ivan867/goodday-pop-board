@@ -97,6 +97,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 .pop-grid.v-list .pc-img img { width: 100%; height: 100%; object-fit: cover; }
 .pop-grid.v-list .pc-body { flex: 1; min-width: 0; padding: 8px 12px; }
 .pop-grid.v-list .pc-name { font-size: 13.5px; }
+/* 予約カタログ：表示サイズを4段階で切り替え */
+.cat-grid { display: grid; gap: 11px; align-items: start; }
+.cat-grid.c-md { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 620px)  { .cat-grid.c-md { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .cat-grid.c-md { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1300px) { .cat-grid.c-md { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.cat-grid.c-lg { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 760px)  { .cat-grid.c-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .cat-grid.c-lg { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.cat-grid.c-sm { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 620px)  { .cat-grid.c-sm { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .cat-grid.c-sm { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1300px) { .cat-grid.c-sm { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+.cat-grid.c-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
 /* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
 @media (min-width: 900px) {
   .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
@@ -165,21 +182,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260813d"></script>
-<script src="js/02-api.js?v=20260813d"></script>
-<script src="js/03-utils.js?v=20260813d"></script>
-<script src="js/04-shared.js?v=20260813d"></script>
-<script src="js/05-tab-board.js?v=20260813d"></script>
-<script src="js/06-tab-create.js?v=20260813d"></script>
-<script src="js/07-tab-floor.js?v=20260813d"></script>
-<script src="js/09-tab-info.js?v=20260813d"></script>
-<script src="js/11-tab-check-fish.js?v=20260813d"></script>
-<script src="js/12-tab-learn.js?v=20260813d"></script>
-<script src="js/14-app.js?v=20260813d"></script>
+<script src="js/01-config.js?v=20260813e"></script>
+<script src="js/02-api.js?v=20260813e"></script>
+<script src="js/03-utils.js?v=20260813e"></script>
+<script src="js/04-shared.js?v=20260813e"></script>
+<script src="js/05-tab-board.js?v=20260813e"></script>
+<script src="js/06-tab-create.js?v=20260813e"></script>
+<script src="js/07-tab-floor.js?v=20260813e"></script>
+<script src="js/09-tab-info.js?v=20260813e"></script>
+<script src="js/11-tab-check-fish.js?v=20260813e"></script>
+<script src="js/12-tab-learn.js?v=20260813e"></script>
+<script src="js/14-app.js?v=20260813e"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260813d";
+window.APP_VER = "20260813e";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

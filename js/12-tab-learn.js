@@ -1948,6 +1948,19 @@ function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [grp, setGrp] = useState("");
+  const [cview, setCview] = useState(() => {
+    try {
+      return localStorage.getItem("catView") || "md";
+    } catch (e) {
+      return "md";
+    }
+  });
+  const setCviewSave = v => {
+    setCview(v);
+    try {
+      localStorage.setItem("catView", v);
+    } catch (e) {}
+  };
   const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月"];
   const NOW_YEAR = new Date().getFullYear();
   const YEAR_OPTS = [];
@@ -2058,14 +2071,140 @@ function CatalogTab() {
     const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
     const visited = !!seen[c.id];
+    const seasonBtns = size => /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: "repeat(2, 1fr)",
+        gap: size === "sm" ? 4 : 5
+      }
+    }, SEASON_OPTS.map(sn => {
+      const hot = sn === hotSeason;
+      return /*#__PURE__*/React.createElement("a", {
+        key: sn,
+        href: imgSearchUrl(c, sn, y),
+        target: "_blank",
+        rel: "noopener noreferrer",
+        onClick: () => markSeen(c.id),
+        style: {
+          textAlign: "center",
+          textDecoration: "none",
+          fontSize: size === "sm" ? 9.5 : 10.5,
+          fontWeight: 900,
+          color: hot ? "#fff" : g.color,
+          background: hot ? g.color : g.color + "14",
+          border: hot ? "none" : `1px solid ${g.color}33`,
+          borderRadius: 6,
+          padding: size === "sm" ? "5px 0" : "6px 0"
+        }
+      }, sn);
+    }));
+
+    // リスト：店名と時期ボタンを横一列に
+    if (cview === "list") {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "ucard",
+        style: {
+          background: "#fff",
+          borderRadius: 11,
+          padding: "8px 10px 8px 12px",
+          borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 10
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          minWidth: 0,
+          flex: "0 0 34%"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 13,
+          fontWeight: 900,
+          color: "var(--ink)",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }
+      }, c.store, visited && /*#__PURE__*/React.createElement("span", {
+        style: {
+          color: g.color,
+          fontSize: 9
+        }
+      }, " ✓")), c.area && /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 9,
+          color: "var(--faint)",
+          fontWeight: 800
+        }
+      }, c.area)), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 4,
+          flex: 1,
+          minWidth: 0
+        }
+      }, SEASON_OPTS.map(sn => {
+        const hot = sn === hotSeason;
+        return /*#__PURE__*/React.createElement("a", {
+          key: sn,
+          href: imgSearchUrl(c, sn, y),
+          target: "_blank",
+          rel: "noopener noreferrer",
+          onClick: () => markSeen(c.id),
+          style: {
+            flex: 1,
+            textAlign: "center",
+            textDecoration: "none",
+            fontSize: 9.5,
+            fontWeight: 900,
+            whiteSpace: "nowrap",
+            color: hot ? "#fff" : g.color,
+            background: hot ? g.color : g.color + "14",
+            border: hot ? "none" : `1px solid ${g.color}33`,
+            borderRadius: 6,
+            padding: "5px 2px"
+          }
+        }, sn);
+      })));
+    }
+
+    // 小：店名＋時期ボタンのみ（年は今年固定）
+    if (cview === "sm") {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "ucard",
+        style: {
+          background: "#fff",
+          borderRadius: 11,
+          padding: "9px 10px 9px 12px",
+          borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          fontWeight: 900,
+          color: "var(--ink)",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          marginBottom: 6
+        }
+      }, c.store, visited && /*#__PURE__*/React.createElement("span", {
+        style: {
+          color: g.color,
+          fontSize: 9
+        }
+      }, " ✓")), seasonBtns("sm"));
+    }
+
+    // 中・大：これまで通り（大は企業情報も全部出す）
     return /*#__PURE__*/React.createElement("div", {
       className: "ucard",
       style: {
         background: "#fff",
         borderRadius: 13,
         padding: "10px 11px 10px 13px",
-        borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`,
-        position: "relative"
+        borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2076,7 +2215,7 @@ function CatalogTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 15,
+        fontSize: cview === "lg" ? 16 : 15,
         fontWeight: 900,
         color: "var(--ink)",
         letterSpacing: "-0.3px",
@@ -2136,7 +2275,7 @@ function CatalogTab() {
         padding: "7px 9px",
         marginBottom: 6
       }
-    }, c.strength), (c.store_scale || c.systems) && /*#__PURE__*/React.createElement("div", {
+    }, c.strength), cview === "lg" && (c.store_scale || c.systems) && /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 8
       }
@@ -2197,33 +2336,7 @@ function CatalogTab() {
     }, YEAR_OPTS.map(yy => /*#__PURE__*/React.createElement("option", {
       key: yy,
       value: yy
-    }, yy, "年"))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gap: 5
-      }
-    }, SEASON_OPTS.map(sn => {
-      const hot = sn === hotSeason;
-      return /*#__PURE__*/React.createElement("a", {
-        key: sn,
-        href: imgSearchUrl(c, sn, y),
-        target: "_blank",
-        rel: "noopener noreferrer",
-        onClick: () => markSeen(c.id),
-        style: {
-          textAlign: "center",
-          textDecoration: "none",
-          fontSize: 10.5,
-          fontWeight: 900,
-          color: hot ? "#fff" : g.color,
-          background: hot ? g.color : g.color + "14",
-          border: hot ? "none" : `1px solid ${g.color}33`,
-          borderRadius: 7,
-          padding: "6px 0"
-        }
-      }, sn);
-    })));
+    }, yy, "年"))), seasonBtns("md"));
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2343,6 +2456,148 @@ function CatalogTab() {
   }, "何を調べますか？"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 7
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, "表示"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 3,
+      background: "var(--chip)",
+      borderRadius: 9,
+      padding: 3
+    }
+  }, [["list", "リスト", /*#__PURE__*/React.createElement("svg", {
+    key: "1",
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 6h16M4 12h16M4 18h16"
+  }))], ["sm", "小", /*#__PURE__*/React.createElement("svg", {
+    key: "2",
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "5",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "10",
+    y: "3",
+    width: "5",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "17",
+    y: "3",
+    width: "4",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "10",
+    width: "5",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "10",
+    y: "10",
+    width: "5",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "17",
+    y: "10",
+    width: "4",
+    height: "5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "17",
+    width: "5",
+    height: "4"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "10",
+    y: "17",
+    width: "5",
+    height: "4"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "17",
+    y: "17",
+    width: "4",
+    height: "4"
+  }))], ["md", "中", /*#__PURE__*/React.createElement("svg", {
+    key: "3",
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13",
+    y: "3",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "13",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13",
+    y: "13",
+    width: "8",
+    height: "8"
+  }))], ["lg", "大", /*#__PURE__*/React.createElement("svg", {
+    key: "4",
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "18",
+    height: "18",
+    rx: "1.5"
+  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setCviewSave(k),
+    title: label,
+    style: {
+      border: "none",
+      background: cview === k ? "#fff" : "transparent",
+      color: cview === k ? "var(--primary)" : "var(--sub)",
+      borderRadius: 7,
+      padding: "4px 7px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      boxShadow: cview === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+    }
+  }, icon)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
       gap: 6,
       flexWrap: "wrap"
     }
@@ -2401,7 +2656,7 @@ function CatalogTab() {
       fontSize: 12
     }
   }, g.emoji), g.label))), grp ? /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid"
+    className: "cat-grid c-" + cview
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
     c: c
@@ -2448,7 +2703,7 @@ function CatalogTab() {
         marginLeft: "auto"
       }
     }, done, "/", rows.length, " 見ました")), /*#__PURE__*/React.createElement("div", {
-      className: "pop-grid"
+      className: "cat-grid c-" + cview
     }, rows.map(c => /*#__PURE__*/React.createElement(Card, {
       key: c.id,
       c: c
@@ -2468,7 +2723,7 @@ function CatalogTab() {
       lineHeight: 1.6
     }
   }, "当日に何を前面に出して売るかを見る用"), /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid"
+    className: "cat-grid c-" + cview
   }, flyers.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
     c: c
