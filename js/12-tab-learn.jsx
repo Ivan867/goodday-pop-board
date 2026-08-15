@@ -810,7 +810,7 @@ function CatalogTab() {
     // リスト：店名と時期ボタンを横一列に
     if (cview === "list") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:11, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}`, display:"flex", alignItems:"center", gap:10 }}>
+        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}`, display:"flex", alignItems:"center", gap:10 }}>
           <div style={{ minWidth:0, flex:"0 0 34%" }}>
             <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}{visited && <span style={{ color:g.color, fontSize:9 }}> ✓</span>}</div>
             {c.area && <div style={{ fontSize:9, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
@@ -833,7 +833,7 @@ function CatalogTab() {
     // 小：店名＋時期ボタンのみ（年は今年固定）
     if (cview === "sm") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:11, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
+        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>
             {c.store}{visited && <span style={{ color:g.color, fontSize:9 }}> ✓</span>}
           </div>
@@ -844,7 +844,7 @@ function CatalogTab() {
 
     // 中・大：これまで通り（大は企業情報も全部出す）
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:13, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
+      <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${visited ? g.color : g.color + "55"}` }}>
         <div style={{ display:"flex", alignItems:"baseline", gap:6, marginBottom:6 }}>
           <span style={{ fontSize: cview === "lg" ? 16 : 15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
           {visited && <span title="見ました" style={{ fontSize:9, fontWeight:900, color:g.color, flexShrink:0 }}>✓</span>}
@@ -872,7 +872,7 @@ function CatalogTab() {
           </div>
         )}
         <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
-          style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"5px 8px", fontSize:11.5, fontWeight:800, color:"var(--text)", background:"#fff", marginBottom:7, outline:"none" }}>
+          style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"6px 9px", fontSize:11.5, fontWeight:600, color:"var(--text)", background:"rgba(120,120,128,0.08)", border:"none", marginBottom:7, outline:"none" }}>
           {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}年</option>)}
         </select>
         {seasonBtns("md")}
@@ -882,9 +882,8 @@ function CatalogTab() {
 
   return (
     <div>
-      <div style={{ background:"var(--primary)", padding:"14px 16px", color:"#fff" }}>
-        <div style={{ fontSize:18, fontWeight:900 }}>予約カタログ</div>
-        <div style={{ fontSize:11.5, opacity:0.78, marginTop:2, lineHeight:1.5 }}>各社の寿司・刺身の商品構成を研究する用。過去の年の分も残しています</div>
+      <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>予約カタログ</div>
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
@@ -907,11 +906,10 @@ function CatalogTab() {
                 ))}
               </div>
             )}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"10px 12px", marginBottom:12 }}>
-              <div style={{ fontSize:11.5, fontWeight:900, color:"var(--ink)", marginBottom:7 }}>何を調べますか？</div>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:7 }}>
-                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)" }}>表示</span>
-                <div style={{ display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
+            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", marginBottom:10 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+                <span style={{ fontSize:12, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>何を調べますか？</span>
+                <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2 }}>
                   {[
                     ["list", "リスト", <svg key="1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
                     ["sm", "小", <svg key="2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
@@ -919,24 +917,24 @@ function CatalogTab() {
                     ["lg", "大", <svg key="4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
                   ].map(([k, label, icon]) => (
                     <button key={k} onClick={() => setCviewSave(k)} title={label}
-                      style={{ border:"none", background: cview===k ? "#fff" : "transparent", color: cview===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 7px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
+                      style={{ border:"none", background: cview===k ? "#fff" : "transparent", color: cview===k ? "var(--ink)" : "var(--sub)", borderRadius:6, padding:"4px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{icon}</button>
                   ))}
                 </div>
               </div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                 {GENRE_OPTS.map(g => (
                   <button key={g.key} onClick={() => setGenre(g.key)}
-                    style={{ flex:"1 1 auto", border: genre===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: genre===g.key ? "var(--soft)" : "#fff", color: genre===g.key ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"8px 10px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>{g.label}</button>
+                    style={{ flex:"1 1 auto", border: genre===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: genre===g.key ? "var(--soft)" : "#fff", color: genre===g.key ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"7px 12px", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>{g.label}</button>
                 ))}
               </div>
             </div>
 
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
               <button onClick={() => setGrp("")}
-                style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべて</button>
+                style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (
                 <button key={g.key} onClick={() => setGrp(g.key)}
-                  style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"6px 13px", fontSize:12.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
+                  style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                   <span style={{ fontSize:12 }}>{g.emoji}</span>{g.label}
                 </button>
               ))}

@@ -2105,7 +2105,7 @@ function CatalogTab() {
         className: "ucard",
         style: {
           background: "#fff",
-          borderRadius: 11,
+          borderRadius: 9,
           padding: "8px 10px 8px 12px",
           borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`,
           display: "flex",
@@ -2175,7 +2175,7 @@ function CatalogTab() {
         className: "ucard",
         style: {
           background: "#fff",
-          borderRadius: 11,
+          borderRadius: 9,
           padding: "9px 10px 9px 12px",
           borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
         }
@@ -2202,7 +2202,7 @@ function CatalogTab() {
       className: "ucard",
       style: {
         background: "#fff",
-        borderRadius: 13,
+        borderRadius: 10,
         padding: "10px 11px 10px 13px",
         borderLeft: `4px solid ${visited ? g.color : g.color + "55"}`
       }
@@ -2325,11 +2325,12 @@ function CatalogTab() {
         boxSizing: "border-box",
         border: "1px solid var(--line)",
         borderRadius: 8,
-        padding: "5px 8px",
+        padding: "6px 9px",
         fontSize: 11.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--text)",
-        background: "#fff",
+        background: "rgba(120,120,128,0.08)",
+        border: "none",
         marginBottom: 7,
         outline: "none"
       }
@@ -2341,22 +2342,16 @@ function CatalogTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
-      padding: "14px 16px",
+      padding: "9px 16px",
       color: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 18,
-      fontWeight: 900
+      fontSize: 16.5,
+      fontWeight: 800,
+      letterSpacing: "-0.3px"
     }
-  }, "予約カタログ"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      opacity: 0.78,
-      marginTop: 2,
-      lineHeight: 1.5
-    }
-  }, "各社の寿司・刺身の商品構成を研究する用。過去の年の分も残しています")), /*#__PURE__*/React.createElement("div", {
+  }, "予約カタログ")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -2442,37 +2437,31 @@ function CatalogTab() {
     style: {
       background: "#fff",
       border: "1px solid var(--line)",
-      borderRadius: 12,
+      borderRadius: 10,
       padding: "10px 12px",
-      marginBottom: 12
+      marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 7
-    }
-  }, "何を調べますか？"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 7
+      marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
-      color: "var(--sub)"
+      color: "var(--ink)",
+      letterSpacing: "-0.2px"
     }
-  }, "表示"), /*#__PURE__*/React.createElement("div", {
+  }, "何を調べますか？"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 3,
-      background: "var(--chip)",
-      borderRadius: 9,
-      padding: 3
+      gap: 2,
+      background: "rgba(120,120,128,0.12)",
+      borderRadius: 8,
+      padding: 2
     }
   }, [["list", "リスト", /*#__PURE__*/React.createElement("svg", {
     key: "1",
@@ -2587,13 +2576,13 @@ function CatalogTab() {
     style: {
       border: "none",
       background: cview === k ? "#fff" : "transparent",
-      color: cview === k ? "var(--primary)" : "var(--sub)",
-      borderRadius: 7,
-      padding: "4px 7px",
+      color: cview === k ? "var(--ink)" : "var(--sub)",
+      borderRadius: 6,
+      padding: "4px 8px",
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
-      boxShadow: cview === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+      boxShadow: cview === k ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
     }
   }, icon)))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2609,10 +2598,10 @@ function CatalogTab() {
       border: genre === g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
       background: genre === g.key ? "var(--soft)" : "#fff",
       color: genre === g.key ? "var(--primary)" : "var(--sub)",
-      borderRadius: 9,
-      padding: "8px 10px",
+      borderRadius: 8,
+      padding: "7px 12px",
       fontSize: 12,
-      fontWeight: 800,
+      fontWeight: 700,
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
@@ -2630,9 +2619,9 @@ function CatalogTab() {
       background: !grp ? "var(--soft)" : "#fff",
       color: !grp ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
-      padding: "6px 14px",
+      padding: "5px 13px",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "すべて"), groupsIn.map(g => /*#__PURE__*/React.createElement("button", {
@@ -2643,9 +2632,9 @@ function CatalogTab() {
       background: grp === g.key ? g.color + "14" : "#fff",
       color: grp === g.key ? g.color : "var(--sub)",
       borderRadius: 999,
-      padding: "6px 13px",
+      padding: "5px 12px",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
