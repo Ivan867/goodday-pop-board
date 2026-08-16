@@ -726,6 +726,14 @@ function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [grp, setGrp] = useState("");
+  const [fav, setFav] = useState(() => { try { return JSON.parse(localStorage.getItem("catFav") || "{}"); } catch(e) { return {}; } });
+  const toggleFav = (id) => setFav(v => {
+    const n = { ...v };
+    if (n[id]) delete n[id]; else n[id] = true;
+    try { localStorage.setItem("catFav", JSON.stringify(n)); } catch(e) {}
+    return n;
+  });
+  const [favOnly, setFavOnly] = useState(false);
   const [cview, setCview] = useState(() => { try { return localStorage.getItem("catView") || "md"; } catch(e) { return "md"; } });
   const setCviewSave = (v) => { setCview(v); try { localStorage.setItem("catView", v); } catch(e) {} };
   const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月"];
@@ -782,13 +790,26 @@ function CatalogTab() {
   const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
   const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
-  const shown = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
+  const filtByGrp = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
+  const shown = favOnly ? filtByGrp.filter(c => fav[c.id]) : filtByGrp;
+  const favCount = byYear.filter(c => fav[c.id]).length;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
   const flyers = shown.filter(c => c.purpose === "flyer");
 
   const Card = ({ c }) => {
     const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
+    const isFav = !!fav[c.id];
+    const FavBtn = ({ size }) => (
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav(c.id); }}
+        title={isFav ? "お気に入りから外す" : "お気に入りに追加"}
+        style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", lineHeight:1 }}>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={isFav ? "#e0a020" : "none"} stroke={isFav ? "#e0a020" : "var(--faint)"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 17.5l-6.2 3.5 1.3-7.2L2 8.7l7.3-.9L12 1.5l2.7 6.3 7.3.9-5.1 5.1 1.3 7.2z"/>
+        </svg>
+      </button>
+    );
+
     const seasonBtns = (size) => (
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap: size === "sm" ? 4 : 5 }}>
         {SEASON_OPTS.map(sn => {
@@ -809,6 +830,7 @@ function CatalogTab() {
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
           <div style={{ minWidth:0, flex:"0 0 34%" }}>
             <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+              <FavBtn size={13} />
               <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>{c.store}</span>
               <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
                 style={{ flexShrink:0, border:"none", borderRadius:6, padding:"2px 3px", fontSize:10, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
@@ -837,6 +859,7 @@ function CatalogTab() {
       return (
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+            <FavBtn size={14} />
             <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
             <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
               style={{ flexShrink:0, border:"none", borderRadius:6, padding:"3px 4px", fontSize:10.5, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
@@ -851,8 +874,9 @@ function CatalogTab() {
     // 中・大：これまで通り（大は企業情報も全部出す）
     return (
       <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${g.color}` }}>
-        <div style={{ display:"flex", alignItems:"baseline", gap:6, marginBottom:6 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
           <span style={{ fontSize: cview === "lg" ? 16 : 15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
+          <FavBtn size={16} />
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:6 }}>
           {c.area && <span style={{ fontSize:9.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</span>}
@@ -935,6 +959,12 @@ function CatalogTab() {
             </div>
 
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              {favCount > 0 && (
+                <button onClick={() => setFavOnly(v => !v)}
+                  style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                  ⭐ お気に入り {favCount}
+                </button>
+              )}
               <button onClick={() => setGrp("")}
                 style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (

@@ -1948,6 +1948,24 @@ function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [grp, setGrp] = useState("");
+  const [fav, setFav] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("catFav") || "{}");
+    } catch (e) {
+      return {};
+    }
+  });
+  const toggleFav = id => setFav(v => {
+    const n = {
+      ...v
+    };
+    if (n[id]) delete n[id];else n[id] = true;
+    try {
+      localStorage.setItem("catFav", JSON.stringify(n));
+    } catch (e) {}
+    return n;
+  });
+  const [favOnly, setFavOnly] = useState(false);
   const [cview, setCview] = useState(() => {
     try {
       return localStorage.getItem("catView") || "md";
@@ -2044,7 +2062,9 @@ function CatalogTab() {
   const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
   const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
   const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
-  const shown = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
+  const filtByGrp = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
+  const shown = favOnly ? filtByGrp.filter(c => fav[c.id]) : filtByGrp;
+  const favCount = byYear.filter(c => fav[c.id]).length;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
   const flyers = shown.filter(c => c.purpose === "flyer");
   const Card = ({
@@ -2052,6 +2072,38 @@ function CatalogTab() {
   }) => {
     const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
+    const isFav = !!fav[c.id];
+    const FavBtn = ({
+      size
+    }) => /*#__PURE__*/React.createElement("button", {
+      onClick: e => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFav(c.id);
+      },
+      title: isFav ? "お気に入りから外す" : "お気に入りに追加",
+      style: {
+        border: "none",
+        background: "transparent",
+        padding: 0,
+        cursor: "pointer",
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        lineHeight: 1
+      }
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: size,
+      height: size,
+      viewBox: "0 0 24 24",
+      fill: isFav ? "#e0a020" : "none",
+      stroke: isFav ? "#e0a020" : "var(--faint)",
+      strokeWidth: "1.8",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M12 17.5l-6.2 3.5 1.3-7.2L2 8.7l7.3-.9L12 1.5l2.7 6.3 7.3.9-5.1 5.1 1.3 7.2z"
+    })));
     const seasonBtns = size => /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
@@ -2103,7 +2155,9 @@ function CatalogTab() {
           alignItems: "center",
           gap: 5
         }
-      }, /*#__PURE__*/React.createElement("span", {
+      }, /*#__PURE__*/React.createElement(FavBtn, {
+        size: 13
+      }), /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 13,
           fontWeight: 900,
@@ -2187,7 +2241,9 @@ function CatalogTab() {
           gap: 6,
           marginBottom: 6
         }
-      }, /*#__PURE__*/React.createElement("span", {
+      }, /*#__PURE__*/React.createElement(FavBtn, {
+        size: 14
+      }), /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 12.5,
           fontWeight: 900,
@@ -2233,7 +2289,7 @@ function CatalogTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
-        alignItems: "baseline",
+        alignItems: "center",
         gap: 6,
         marginBottom: 6
       }
@@ -2249,7 +2305,9 @@ function CatalogTab() {
         flex: 1,
         minWidth: 0
       }
-    }, c.store)), /*#__PURE__*/React.createElement("div", {
+    }, c.store), /*#__PURE__*/React.createElement(FavBtn, {
+      size: 16
+    })), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         alignItems: "center",
@@ -2628,7 +2686,22 @@ function CatalogTab() {
       flexWrap: "wrap",
       marginBottom: 14
     }
-  }, /*#__PURE__*/React.createElement("button", {
+  }, favCount > 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setFavOnly(v => !v),
+    style: {
+      border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)",
+      background: favOnly ? "#fdf3e0" : "#fff",
+      color: favOnly ? "#b8860b" : "var(--sub)",
+      borderRadius: 999,
+      padding: "5px 13px",
+      fontSize: 12.5,
+      fontWeight: 700,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: 4
+    }
+  }, "⭐ お気に入り ", favCount), /*#__PURE__*/React.createElement("button", {
     onClick: () => setGrp(""),
     style: {
       border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
