@@ -2042,7 +2042,7 @@ function CatalogTab() {
     emoji: "🏘"
   }, {
     key: "pro",
-    label: "専門店・魚屋",
+    label: "専門店",
     color: "#d1554f",
     emoji: "🐟"
   }, {
@@ -2686,22 +2686,7 @@ function CatalogTab() {
       flexWrap: "wrap",
       marginBottom: 14
     }
-  }, favCount > 0 && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setFavOnly(v => !v),
-    style: {
-      border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)",
-      background: favOnly ? "#fdf3e0" : "#fff",
-      color: favOnly ? "#b8860b" : "var(--sub)",
-      borderRadius: 999,
-      padding: "5px 13px",
-      fontSize: 12.5,
-      fontWeight: 700,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      gap: 4
-    }
-  }, "⭐ お気に入り ", favCount), /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setGrp(""),
     style: {
       border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
@@ -2733,7 +2718,22 @@ function CatalogTab() {
     style: {
       fontSize: 12
     }
-  }, g.emoji), g.label))), grp ? /*#__PURE__*/React.createElement("div", {
+  }, g.emoji), g.label)), favCount > 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setFavOnly(v => !v),
+    style: {
+      border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)",
+      background: favOnly ? "#fdf3e0" : "#fff",
+      color: favOnly ? "#b8860b" : "var(--sub)",
+      borderRadius: 999,
+      padding: "5px 13px",
+      fontSize: 12.5,
+      fontWeight: 700,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: 4
+    }
+  }, "⭐ お気に入り ", favCount)), grp ? /*#__PURE__*/React.createElement("div", {
     className: "cat-grid c-" + cview
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,

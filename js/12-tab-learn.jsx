@@ -780,7 +780,7 @@ function CatalogTab() {
   const GROUPS = [
     { key:"major",   label:"大手スーパー",     color:"#3b7dd8", emoji:"🛒" },
     { key:"local",   label:"ローカルスーパー", color:"#3f9e63", emoji:"🏘" },
-    { key:"pro",     label:"専門店・魚屋",     color:"#d1554f", emoji:"🐟" },
+    { key:"pro",     label:"専門店",           color:"#d1554f", emoji:"🐟" },
     { key:"premium", label:"高質スーパー",     color:"#c39a3c", emoji:"✨" },
     { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
   ];
@@ -959,12 +959,6 @@ function CatalogTab() {
             </div>
 
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-              {favCount > 0 && (
-                <button onClick={() => setFavOnly(v => !v)}
-                  style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-                  ⭐ お気に入り {favCount}
-                </button>
-              )}
               <button onClick={() => setGrp("")}
                 style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (
@@ -973,6 +967,12 @@ function CatalogTab() {
                   <span style={{ fontSize:12 }}>{g.emoji}</span>{g.label}
                 </button>
               ))}
+              {favCount > 0 && (
+                <button onClick={() => setFavOnly(v => !v)}
+                  style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                  ⭐ お気に入り {favCount}
+                </button>
+              )}
             </div>
 
             {grp ? (
