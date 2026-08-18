@@ -216,13 +216,12 @@ function App() {
     feat_message: "",
     feat_tab: "",
     feat_ver: "",
-    popup_enabled: false,
-    popup_title: "",
-    popup_message: "",
-    popup_tab: "",
-    popup_ver: ""
+    badge_tab: "",
+    badge_text: "",
+    badge_ver: "",
+    badge_until: null
   });
-  const [popupShow, setPopupShow] = useState(false);
+  const [badgeOn, setBadgeOn] = useState(false);
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -308,19 +307,21 @@ function App() {
   useEffect(() => {
     api.getNotice().then(n => {
       setNotice(n);
-      if (n && n.popup_enabled && n.popup_message) {
-        let seenVer = "";
+      // ナビの赤バッジ：期間内で、まだ見ていないお知らせだけ光らせる
+      if (n && n.badge_tab && n.badge_ver) {
+        const alive = !n.badge_until || new Date(n.badge_until).getTime() > Date.now();
+        let seen = "";
         try {
-          seenVer = localStorage.getItem("popupSeenVer") || "";
+          seen = localStorage.getItem("badgeSeenVer") || "";
         } catch (e) {}
-        if ((n.popup_ver || "") !== seenVer) setPopupShow(true);
+        if (alive && n.badge_ver !== seen) setBadgeOn(true);
       }
     }).catch(() => {});
   }, []);
-  const closePopup = () => {
-    setPopupShow(false);
+  const clearBadge = () => {
+    setBadgeOn(false);
     try {
-      localStorage.setItem("popupSeenVer", notice.popup_ver || "");
+      localStorage.setItem("badgeSeenVer", notice.badge_ver || "");
     } catch (e) {}
   };
   useEffect(() => {
@@ -424,104 +425,7 @@ function App() {
       paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)"
     }
-  }), popupShow && /*#__PURE__*/React.createElement("div", {
-    onClick: closePopup,
-    style: {
-      position: "fixed",
-      inset: 0,
-      zIndex: 900,
-      background: "rgba(15,25,38,0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 24
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    onClick: e => e.stopPropagation(),
-    style: {
-      background: "#fff",
-      borderRadius: 18,
-      padding: "22px 20px 18px",
-      width: "100%",
-      maxWidth: 340,
-      boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
-      animation: "fadeUp .25s ease"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 46,
-      height: 46,
-      borderRadius: 13,
-      background: "var(--soft)",
-      color: "var(--primary-soft, #4a7ab0)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "24",
-    height: "24",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M10.5 20a2 2 0 003 0"
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 16.5,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 6
-    }
-  }, notice.popup_title || "お知らせ"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13.5,
-      color: "var(--text)",
-      lineHeight: 1.7,
-      marginBottom: 18,
-      whiteSpace: "pre-wrap"
-    }
-  }, notice.popup_message), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: closePopup,
-    style: {
-      flex: 1,
-      border: "none",
-      background: "var(--chip)",
-      color: "var(--text)",
-      borderRadius: 11,
-      padding: "11px",
-      fontSize: 13.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "閉じる"), notice.popup_tab && /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      closePopup();
-      setTab(notice.popup_tab);
-    },
-    style: {
-      flex: 1,
-      border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
-      color: "#fff",
-      borderRadius: 11,
-      padding: "11px",
-      fontSize: 13.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "見に行く")))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
+  }), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -806,9 +710,13 @@ function App() {
     };
     const navIcon = key === "board" ? NAV_SVG.board : key === "catalog" ? NAV_SVG.catalog : key === "search" ? NAV_SVG.search : NAV_SVG.more;
     const navLabel = more ? moreOpen ? "閉じる" : "メニュー" : label;
+    const showBadge = badgeOn && key === notice.badge_tab;
     return /*#__PURE__*/React.createElement("button", {
       key: key,
-      onClick: onClick,
+      onClick: () => {
+        if (showBadge) clearBadge();
+        onClick();
+      },
       className: "hig-pill",
       style: {
         position: "relative",
@@ -836,7 +744,47 @@ function App() {
         fontWeight: 800,
         whiteSpace: "nowrap"
       }
-    }, navLabel));
+    }, navLabel), showBadge && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "absolute",
+        top: 6,
+        right: 12,
+        width: 9,
+        height: 9,
+        borderRadius: "50%",
+        background: "#e0555f",
+        boxShadow: "0 0 0 2px var(--primary-soft)"
+      }
+    }), notice.badge_text && /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "absolute",
+        bottom: "calc(100% + 9px)",
+        left: "50%",
+        transform: "translateX(-50%)",
+        background: "#e0555f",
+        color: "#fff",
+        fontSize: 11,
+        fontWeight: 800,
+        borderRadius: 9,
+        padding: "6px 11px",
+        whiteSpace: "nowrap",
+        boxShadow: "0 3px 10px rgba(0,0,0,0.22)",
+        animation: "fadeUp .3s ease",
+        pointerEvents: "none"
+      }
+    }, notice.badge_text, /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "absolute",
+        top: "100%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: 0,
+        height: 0,
+        borderLeft: "5px solid transparent",
+        borderRight: "5px solid transparent",
+        borderTop: "5px solid #e0555f"
+      }
+    }))));
   }))), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     onClick: () => setMoreOpen(false),
     style: {

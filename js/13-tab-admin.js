@@ -1549,10 +1549,9 @@ function NoticeAdmin({
   const [featEnabled, setFeatEnabled] = useState(false);
   const [featMessage, setFeatMessage] = useState("");
   const [featTab, setFeatTab] = useState("");
-  const [popupEnabled, setPopupEnabled] = useState(false);
-  const [popupTitle, setPopupTitle] = useState("");
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupTab, setPopupTab] = useState("");
+  const [badgeTab, setBadgeTab] = useState("");
+  const [badgeText, setBadgeText] = useState("");
+  const [badgeDays, setBadgeDays] = useState(3);
   useEffect(() => {
     api.getNotice().then(n => {
       setEnabled(!!n.enabled);
@@ -1562,10 +1561,8 @@ function NoticeAdmin({
       setFeatEnabled(!!n.feat_enabled);
       setFeatMessage(n.feat_message || "");
       setFeatTab(n.feat_tab || "");
-      setPopupEnabled(!!n.popup_enabled);
-      setPopupTitle(n.popup_title || "");
-      setPopupMessage(n.popup_message || "");
-      setPopupTab(n.popup_tab || "");
+      setBadgeTab(n.badge_tab || "");
+      setBadgeText(n.badge_text || "");
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -1574,7 +1571,9 @@ function NoticeAdmin({
     setSaved(false);
     try {
       const featVer = featEnabled && featMessage.trim() ? featMessage.trim().slice(0, 40) + "|" + Date.now() : "";
-      const popupVer = popupEnabled && popupMessage.trim() ? popupMessage.trim().slice(0, 40) + "|" + Date.now() : "";
+      const on = !!(badgeTab && badgeText.trim());
+      const badgeVer = on ? badgeText.trim().slice(0, 40) + "|" + Date.now() : "";
+      const badgeUntil = on ? new Date(Date.now() + (Number(badgeDays) || 3) * 86400000).toISOString() : null;
       const row = await api.updateNotice({
         enabled,
         message: message.trim(),
@@ -1584,11 +1583,10 @@ function NoticeAdmin({
         feat_message: featMessage.trim(),
         feat_tab: featTab,
         feat_ver: featVer,
-        popup_enabled: popupEnabled,
-        popup_title: popupTitle.trim(),
-        popup_message: popupMessage.trim(),
-        popup_tab: popupTab,
-        popup_ver: popupVer
+        badge_tab: badgeTab,
+        badge_text: badgeText.trim(),
+        badge_ver: badgeVer,
+        badge_until: badgeUntil
       });
       const next = {
         enabled: row ? !!row.enabled : enabled,
@@ -1985,66 +1983,58 @@ function NoticeAdmin({
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: 4
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
       fontSize: 15,
       fontWeight: 900,
-      color: "var(--ink)"
+      color: "var(--ink)",
+      marginBottom: 4
     }
-  }, "④ 開いた瞬間のポップアップ"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setPopupEnabled(v => !v),
-    style: {
-      width: 58,
-      height: 32,
-      borderRadius: 16,
-      border: "none",
-      cursor: "pointer",
-      position: "relative",
-      background: popupEnabled ? "#2f6fb0" : "#d4d4d8",
-      transition: "background .2s"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "absolute",
-      top: 3,
-      left: popupEnabled ? 29 : 3,
-      width: 26,
-      height: 26,
-      borderRadius: "50%",
-      background: "#fff",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
-      transition: "left .2s"
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: popupEnabled ? "#2f6fb0" : "#999",
-      fontWeight: 700,
-      marginBottom: 6
-    }
-  }, popupEnabled ? "● 表示中（アプリを開いた瞬間に出ます）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
+  }, "④ 下のボタンに赤い印をつける"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "アプリを開いた瞬間に、真ん中に案内が出ます。「カタログにハローデイを追加しました」のような、対応したことをすぐ伝えたい時に使います。一度閉じると、その内容ではもう出ません（文面を変えて保存すると、また全員に出ます）。"), /*#__PURE__*/React.createElement("div", {
+  }, "下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "見出し"), /*#__PURE__*/React.createElement("input", {
-    value: popupTitle,
-    onChange: e => setPopupTitle(e.target.value),
-    placeholder: "例：対応しました！",
+  }, "どのボタンに付けるか"), /*#__PURE__*/React.createElement("select", {
+    value: badgeTab,
+    onChange: e => setBadgeTab(e.target.value),
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "11px 13px",
+      border: "1px solid #e2e2e6",
+      borderRadius: 10,
+      fontSize: 14,
+      background: "#fff",
+      fontFamily: "inherit",
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "（付けない）"), /*#__PURE__*/React.createElement("option", {
+    value: "board"
+  }, "一覧"), /*#__PURE__*/React.createElement("option", {
+    value: "catalog"
+  }, "カタログ"), /*#__PURE__*/React.createElement("option", {
+    value: "__more"
+  }, "メニュー")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "var(--text)",
+      marginBottom: 6
+    }
+  }, "吹き出しの文言"), /*#__PURE__*/React.createElement("input", {
+    value: badgeText,
+    onChange: e => setBadgeText(e.target.value),
+    placeholder: "例：ハローデイ追加しました！",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -2063,83 +2053,55 @@ function NoticeAdmin({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "本文"), /*#__PURE__*/React.createElement("textarea", {
-    value: popupMessage,
-    onChange: e => setPopupMessage(e.target.value),
-    rows: 3,
-    placeholder: "例：予約カタログにハローデイを追加しました。ご確認ください！",
+  }, "表示する日数"), /*#__PURE__*/React.createElement("div", {
     style: {
-      width: "100%",
-      boxSizing: "border-box",
-      padding: "11px 13px",
-      border: "1px solid #e2e2e6",
-      borderRadius: 10,
-      fontSize: 14,
-      outline: "none",
-      resize: "vertical",
-      fontFamily: "inherit",
-      lineHeight: 1.6
+      display: "flex",
+      gap: 6,
+      marginBottom: 14
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }, [3, 5, 7].map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    onClick: () => setBadgeDays(d),
     style: {
+      flex: 1,
+      border: badgeDays === d ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: badgeDays === d ? "var(--soft)" : "#fff",
+      color: badgeDays === d ? "var(--primary)" : "var(--sub)",
+      borderRadius: 9,
+      padding: "9px 0",
       fontSize: 13,
       fontWeight: 800,
-      color: "var(--text)",
-      margin: "14px 0 6px"
+      cursor: "pointer"
     }
-  }, "タップで開く機能（任意）"), /*#__PURE__*/React.createElement("select", {
-    value: popupTab,
-    onChange: e => setPopupTab(e.target.value),
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      padding: "11px 13px",
-      border: "1px solid #e2e2e6",
-      borderRadius: 10,
-      fontSize: 14,
-      background: "#fff",
-      fontFamily: "inherit"
-    }
-  }, /*#__PURE__*/React.createElement("option", {
-    value: ""
-  }, "（ボタンを出さない）"), TAB_REGISTRY.filter(t => t.key !== "admin").map(t => /*#__PURE__*/React.createElement("option", {
-    key: t.key,
-    value: t.key
-  }, t.label))), /*#__PURE__*/React.createElement("div", {
+  }, d, "日間"))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
-      margin: "14px 0 6px",
+      marginBottom: 6,
       fontWeight: 700
     }
   }, "プレビュー"), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#f4f6f8",
+      background: "var(--primary-soft)",
       borderRadius: 14,
-      padding: "18px 16px"
+      padding: "22px 14px 12px",
+      display: "flex",
+      justifyContent: "center"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
-      borderRadius: 16,
-      padding: "16px 14px 12px",
-      boxShadow: "0 4px 16px rgba(0,0,0,0.1)"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 38,
-      height: 38,
-      borderRadius: 11,
-      background: "var(--soft)",
-      color: "var(--primary-soft)",
+      position: "relative",
       display: "flex",
       alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 9
+      gap: 7,
+      background: "#fff",
+      color: "var(--primary-soft)",
+      borderRadius: 24,
+      padding: "9px 18px"
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -2147,23 +2109,40 @@ function NoticeAdmin({
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
-    d: "M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"
+    d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M10.5 20a2 2 0 003 0"
-  }))), /*#__PURE__*/React.createElement("div", {
+    d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
+  })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 14,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 4
+      fontSize: 13,
+      fontWeight: 800
     }
-  }, popupTitle.trim() || "（見出し）"), /*#__PURE__*/React.createElement("div", {
+  }, "カタログ"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
-      color: "var(--text)",
-      lineHeight: 1.6
+      position: "absolute",
+      top: 2,
+      right: 10,
+      width: 9,
+      height: 9,
+      borderRadius: "50%",
+      background: "#e0555f",
+      boxShadow: "0 0 0 2px #fff"
     }
-  }, popupMessage.trim() || "（ここに本文が表示されます）")))), /*#__PURE__*/React.createElement("button", {
+  }), badgeText.trim() && /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      bottom: "calc(100% + 8px)",
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "#e0555f",
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: 800,
+      borderRadius: 9,
+      padding: "6px 11px",
+      whiteSpace: "nowrap"
+    }
+  }, badgeText.trim())))), /*#__PURE__*/React.createElement("button", {
     onClick: save,
     disabled: saving,
     style: {

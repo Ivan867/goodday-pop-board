@@ -107,8 +107,8 @@ function App() {
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
-  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"", popup_enabled:false, popup_title:"", popup_message:"", popup_tab:"", popup_ver:"" });
-  const [popupShow, setPopupShow] = useState(false);
+  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"", badge_tab:"", badge_text:"", badge_ver:"", badge_until:null });
+  const [badgeOn, setBadgeOn] = useState(false);
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -175,16 +175,18 @@ function App() {
   useEffect(() => {
     api.getNotice().then(n => {
       setNotice(n);
-      if (n && n.popup_enabled && n.popup_message) {
-        let seenVer = "";
-        try { seenVer = localStorage.getItem("popupSeenVer") || ""; } catch(e) {}
-        if ((n.popup_ver || "") !== seenVer) setPopupShow(true);
+      // ナビの赤バッジ：期間内で、まだ見ていないお知らせだけ光らせる
+      if (n && n.badge_tab && n.badge_ver) {
+        const alive = !n.badge_until || new Date(n.badge_until).getTime() > Date.now();
+        let seen = "";
+        try { seen = localStorage.getItem("badgeSeenVer") || ""; } catch(e) {}
+        if (alive && n.badge_ver !== seen) setBadgeOn(true);
       }
     }).catch(()=>{});
   }, []);
-  const closePopup = () => {
-    setPopupShow(false);
-    try { localStorage.setItem("popupSeenVer", notice.popup_ver || ""); } catch(e) {}
+  const clearBadge = () => {
+    setBadgeOn(false);
+    try { localStorage.setItem("badgeSeenVer", notice.badge_ver || ""); } catch(e) {}
   };
 
   useEffect(() => {
@@ -225,26 +227,6 @@ function App() {
         </div>
       )}
       <div style={{ paddingTop:"env(safe-area-inset-top)", background:"var(--bg)" }} />
-
-      {popupShow && (
-        <div onClick={closePopup} style={{ position:"fixed", inset:0, zIndex:900, background:"rgba(15,25,38,0.5)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background:"#fff", borderRadius:18, padding:"22px 20px 18px", width:"100%", maxWidth:340, boxShadow:"0 12px 40px rgba(0,0,0,0.25)", animation:"fadeUp .25s ease" }}>
-            <div style={{ width:46, height:46, borderRadius:13, background:"var(--soft)", color:"var(--primary-soft, #4a7ab0)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:12 }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"/><path d="M10.5 20a2 2 0 003 0"/></svg>
-            </div>
-            <div style={{ fontSize:16.5, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>{notice.popup_title || "お知らせ"}</div>
-            <div style={{ fontSize:13.5, color:"var(--text)", lineHeight:1.7, marginBottom:18, whiteSpace:"pre-wrap" }}>{notice.popup_message}</div>
-            <div style={{ display:"flex", gap:8 }}>
-              <button onClick={closePopup}
-                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:11, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>閉じる</button>
-              {notice.popup_tab && (
-                <button onClick={() => { closePopup(); setTab(notice.popup_tab); }}
-                  style={{ flex:1, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:11, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>見に行く</button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {notice.enabled && notice.message && (
         <div style={{ maxWidth:1600, margin:"0 auto", padding:"10px 16px 0" }}>
@@ -306,11 +288,23 @@ function App() {
           };
           const navIcon = key==="board" ? NAV_SVG.board : key==="catalog" ? NAV_SVG.catalog : key==="search" ? NAV_SVG.search : NAV_SVG.more;
           const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
-          return (
-            <button key={key} onClick={onClick} className="hig-pill"
+          const showBadge = badgeOn && key === notice.badge_tab;
+            return (
+            <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill"
               style={{ position:"relative", border:"none", cursor:"pointer", padding:"10px 20px", display:"flex", flexDirection:"row", alignItems:"center", gap:7, borderRadius:24, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
               <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
               <span style={{ fontSize:13.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>
+              {showBadge && (
+                <>
+                  <span style={{ position:"absolute", top:6, right:12, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px var(--primary-soft)" }} />
+                  {notice.badge_text && (
+                    <span style={{ position:"absolute", bottom:"calc(100% + 9px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:11, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap", boxShadow:"0 3px 10px rgba(0,0,0,0.22)", animation:"fadeUp .3s ease", pointerEvents:"none" }}>
+                      {notice.badge_text}
+                      <span style={{ position:"absolute", top:"100%", left:"50%", transform:"translateX(-50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:"5px solid #e0555f" }} />
+                    </span>
+                  )}
+                </>
+              )}
             </button>
           );
         })}
