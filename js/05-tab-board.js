@@ -983,137 +983,7 @@ function SearchTab({
       borderRadius: 999,
       padding: "2px 10px"
     }
-  }, allPops.length), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginLeft: "auto",
-      display: "flex",
-      gap: 3,
-      background: "var(--chip)",
-      borderRadius: 9,
-      padding: 3
-    }
-  }, [["list", "リスト", /*#__PURE__*/React.createElement("svg", {
-    key: "1",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 6h16M4 12h16M4 18h16"
-  }))], ["sm", "小", /*#__PURE__*/React.createElement("svg", {
-    key: "2",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "3",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "3",
-    width: "4",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "10",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "10",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "10",
-    width: "4",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "17",
-    width: "5",
-    height: "4"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "17",
-    width: "5",
-    height: "4"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "17",
-    width: "4",
-    height: "4"
-  }))], ["md", "中", /*#__PURE__*/React.createElement("svg", {
-    key: "3",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "3",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "13",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "13",
-    width: "8",
-    height: "8"
-  }))], ["lg", "大", /*#__PURE__*/React.createElement("svg", {
-    key: "4",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "18",
-    height: "18",
-    rx: "1.5"
-  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => setViewSave(k),
-    title: label,
-    style: {
-      border: "none",
-      background: view === k ? "#fff" : "transparent",
-      color: view === k ? "var(--primary)" : "var(--sub)",
-      borderRadius: 7,
-      padding: "5px 8px",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
-    }
-  }, icon)))), /*#__PURE__*/React.createElement("div", {
+  }, allPops.length)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(118px, 1fr))",
@@ -1213,7 +1083,7 @@ function SearchTab({
       color: "var(--ink)"
     }
   }, results.length, "件")), /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-" + view
+    className: "pop-grid v-md"
   }, results.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
     pop: pop,

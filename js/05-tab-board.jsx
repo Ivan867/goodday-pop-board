@@ -350,17 +350,6 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12, paddingLeft:2 }}>
               <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px" }}>みんなのポップ</span>
               <span style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft, #4a7ab0)", background:"var(--soft)", borderRadius:999, padding:"2px 10px" }}>{allPops.length}</span>
-              <div style={{ marginLeft:"auto", display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
-                {[
-                  ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
-                  ["sm", "小", <svg key="2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
-                  ["md", "中", <svg key="3" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
-                  ["lg", "大", <svg key="4" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
-                ].map(([k, label, icon]) => (
-                  <button key={k} onClick={() => setViewSave(k)} title={label}
-                    style={{ border:"none", background: view===k ? "#fff" : "transparent", color: view===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
-                ))}
-              </div>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
               {allPops.map(pop=>(
@@ -389,7 +378,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             {(fGenre||fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fGenre,fStore,fCat].filter(Boolean).join(" · ")} </span>}
             の検索結果：<span style={{ color:"var(--ink)" }}>{results.length}件</span>
           </div>
-          <div className={"pop-grid v-" + view}>
+          <div className="pop-grid v-md">
             {results.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
           </div>
         </>
