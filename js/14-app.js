@@ -215,8 +215,14 @@ function App() {
     feat_enabled: false,
     feat_message: "",
     feat_tab: "",
-    feat_ver: ""
+    feat_ver: "",
+    popup_enabled: false,
+    popup_title: "",
+    popup_message: "",
+    popup_tab: "",
+    popup_ver: ""
   });
+  const [popupShow, setPopupShow] = useState(false);
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -300,8 +306,23 @@ function App() {
     };
   }, [refreshing, moreOpen, radialOpen, doRefresh]);
   useEffect(() => {
-    api.getNotice().then(setNotice).catch(() => {});
+    api.getNotice().then(n => {
+      setNotice(n);
+      if (n && n.popup_enabled && n.popup_message) {
+        let seenVer = "";
+        try {
+          seenVer = localStorage.getItem("popupSeenVer") || "";
+        } catch (e) {}
+        if ((n.popup_ver || "") !== seenVer) setPopupShow(true);
+      }
+    }).catch(() => {});
   }, []);
+  const closePopup = () => {
+    setPopupShow(false);
+    try {
+      localStorage.setItem("popupSeenVer", notice.popup_ver || "");
+    } catch (e) {}
+  };
   useEffect(() => {
     const sp = document.getElementById("splash");
     if (!sp) return;
@@ -403,7 +424,104 @@ function App() {
       paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)"
     }
-  }), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
+  }), popupShow && /*#__PURE__*/React.createElement("div", {
+    onClick: closePopup,
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 900,
+      background: "rgba(15,25,38,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "#fff",
+      borderRadius: 18,
+      padding: "22px 20px 18px",
+      width: "100%",
+      maxWidth: 340,
+      boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+      animation: "fadeUp .25s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 46,
+      height: 46,
+      borderRadius: 13,
+      background: "var(--soft)",
+      color: "var(--primary-soft, #4a7ab0)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "24",
+    height: "24",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M10.5 20a2 2 0 003 0"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 6
+    }
+  }, notice.popup_title || "お知らせ"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: "var(--text)",
+      lineHeight: 1.7,
+      marginBottom: 18,
+      whiteSpace: "pre-wrap"
+    }
+  }, notice.popup_message), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: closePopup,
+    style: {
+      flex: 1,
+      border: "none",
+      background: "var(--chip)",
+      color: "var(--text)",
+      borderRadius: 11,
+      padding: "11px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "閉じる"), notice.popup_tab && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      closePopup();
+      setTab(notice.popup_tab);
+    },
+    style: {
+      flex: 1,
+      border: "none",
+      background: "var(--primary-soft, #4a7ab0)",
+      color: "#fff",
+      borderRadius: 11,
+      padding: "11px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "見に行く")))), notice.enabled && notice.message && /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",

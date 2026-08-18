@@ -614,11 +614,16 @@ function NoticeAdmin({ onNoticeChange }) {
   const [featEnabled, setFeatEnabled] = useState(false);
   const [featMessage, setFeatMessage] = useState("");
   const [featTab, setFeatTab] = useState("");
+  const [popupEnabled, setPopupEnabled] = useState(false);
+  const [popupTitle, setPopupTitle] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupTab, setPopupTab] = useState("");
   useEffect(() => {
     api.getNotice().then(n => {
       setEnabled(!!n.enabled); setMessage(n.message || "");
       setTipEnabled(n.tip_enabled !== false); setTipMessage(n.tip_message || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。");
       setFeatEnabled(!!n.feat_enabled); setFeatMessage(n.feat_message || ""); setFeatTab(n.feat_tab || "");
+      setPopupEnabled(!!n.popup_enabled); setPopupTitle(n.popup_title || ""); setPopupMessage(n.popup_message || ""); setPopupTab(n.popup_tab || "");
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -626,7 +631,8 @@ function NoticeAdmin({ onNoticeChange }) {
     setSaving(true); setSaved(false);
     try {
       const featVer = featEnabled && featMessage.trim() ? (featMessage.trim().slice(0,40) + "|" + Date.now()) : "";
-      const row = await api.updateNotice({ enabled, message: message.trim(), tip_enabled: tipEnabled, tip_message: tipMessage.trim(), feat_enabled: featEnabled, feat_message: featMessage.trim(), feat_tab: featTab, feat_ver: featVer });
+      const popupVer = popupEnabled && popupMessage.trim() ? (popupMessage.trim().slice(0,40) + "|" + Date.now()) : "";
+      const row = await api.updateNotice({ enabled, message: message.trim(), tip_enabled: tipEnabled, tip_message: tipMessage.trim(), feat_enabled: featEnabled, feat_message: featMessage.trim(), feat_tab: featTab, feat_ver: featVer, popup_enabled: popupEnabled, popup_title: popupTitle.trim(), popup_message: popupMessage.trim(), popup_tab: popupTab, popup_ver: popupVer });
       const next = {
         enabled: row ? !!row.enabled : enabled, message: row ? (row.message || "") : message.trim(),
         tip_enabled: row ? row.tip_enabled !== false : tipEnabled, tip_message: row ? (row.tip_message || "") : tipMessage.trim(),
@@ -721,6 +727,46 @@ function NoticeAdmin({ onNoticeChange }) {
             <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{featMessage.trim() || "（ここにお知らせ文が表示されます）"}</div>
           </div>
           {featTab && <span style={{ fontSize:11, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
+        </div>
+      </div>
+
+      <div style={card}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+          <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>④ 開いた瞬間のポップアップ</div>
+          <button onClick={() => setPopupEnabled(v => !v)}
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: popupEnabled?"#2f6fb0":"#d4d4d8", transition:"background .2s" }}>
+            <span style={{ position:"absolute", top:3, left: popupEnabled?29:3, width:26, height:26, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
+          </button>
+        </div>
+        <div style={{ fontSize:12, color: popupEnabled?"#2f6fb0":"#999", fontWeight:700, marginBottom:6 }}>{popupEnabled ? "● 表示中（アプリを開いた瞬間に出ます）" : "○ 非表示"}</div>
+        <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>アプリを開いた瞬間に、真ん中に案内が出ます。「カタログにハローデイを追加しました」のような、対応したことをすぐ伝えたい時に使います。一度閉じると、その内容ではもう出ません（文面を変えて保存すると、また全員に出ます）。</div>
+
+        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>見出し</div>
+        <input value={popupTitle} onChange={e => setPopupTitle(e.target.value)}
+          placeholder="例：対応しました！"
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
+
+        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>本文</div>
+        <textarea value={popupMessage} onChange={e => setPopupMessage(e.target.value)} rows={3}
+          placeholder="例：予約カタログにハローデイを追加しました。ご確認ください！"
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+
+        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", margin:"14px 0 6px" }}>タップで開く機能（任意）</div>
+        <select value={popupTab} onChange={e => setPopupTab(e.target.value)}
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, background:"#fff", fontFamily:"inherit" }}>
+          <option value="">（ボタンを出さない）</option>
+          {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
+        </select>
+
+        <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
+        <div style={{ background:"#f4f6f8", borderRadius:14, padding:"18px 16px" }}>
+          <div style={{ background:"#fff", borderRadius:16, padding:"16px 14px 12px", boxShadow:"0 4px 16px rgba(0,0,0,0.1)" }}>
+            <div style={{ width:38, height:38, borderRadius:11, background:"var(--soft)", color:"var(--primary-soft)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:9 }}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8.5a6 6 0 10-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"/><path d="M10.5 20a2 2 0 003 0"/></svg>
+            </div>
+            <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>{popupTitle.trim() || "（見出し）"}</div>
+            <div style={{ fontSize:12, color:"var(--text)", lineHeight:1.6 }}>{popupMessage.trim() || "（ここに本文が表示されます）"}</div>
+          </div>
         </div>
       </div>
 
