@@ -222,6 +222,7 @@ function App() {
     badge_until: null
   });
   const [badgeOn, setBadgeOn] = useState(false);
+  const [bubbleShow, setBubbleShow] = useState(false); // 開いた瞬間だけ出る吹き出し
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -314,12 +315,17 @@ function App() {
         try {
           seen = localStorage.getItem("badgeSeenVer") || "";
         } catch (e) {}
-        if (alive && n.badge_ver !== seen) setBadgeOn(true);
+        if (alive && n.badge_ver !== seen) {
+          setBadgeOn(true);
+          setBubbleShow(true);
+          setTimeout(() => setBubbleShow(false), 4000); // 4秒でふわっと消える（赤丸は残る）
+        }
       }
     }).catch(() => {});
   }, []);
   const clearBadge = () => {
     setBadgeOn(false);
+    setBubbleShow(false);
     try {
       localStorage.setItem("badgeSeenVer", notice.badge_ver || "");
     } catch (e) {}
@@ -760,7 +766,7 @@ function App() {
         position: "absolute",
         bottom: "calc(100% + 9px)",
         left: "50%",
-        transform: "translateX(-50%)",
+        transform: bubbleShow ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(6px)",
         background: "#e0555f",
         color: "#fff",
         fontSize: 11,
@@ -769,8 +775,10 @@ function App() {
         padding: "6px 11px",
         whiteSpace: "nowrap",
         boxShadow: "0 3px 10px rgba(0,0,0,0.22)",
-        animation: "fadeUp .3s ease",
-        pointerEvents: "none"
+        pointerEvents: "none",
+        opacity: bubbleShow ? 1 : 0,
+        visibility: bubbleShow ? "visible" : "hidden",
+        transition: "opacity .5s ease, transform .5s ease, visibility 0s linear .5s"
       }
     }, notice.badge_text, /*#__PURE__*/React.createElement("span", {
       style: {

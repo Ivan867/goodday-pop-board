@@ -109,6 +109,7 @@ function App() {
   const [dataVer, setDataVer] = useState(0);
   const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"", badge_tab:"", badge_text:"", badge_ver:"", badge_until:null });
   const [badgeOn, setBadgeOn] = useState(false);
+  const [bubbleShow, setBubbleShow] = useState(false);   // 開いた瞬間だけ出る吹き出し
   const pullActive = React.useRef(false);
   const pullStart = React.useRef(0);
   const pullDist = React.useRef(0);
@@ -180,12 +181,17 @@ function App() {
         const alive = !n.badge_until || new Date(n.badge_until).getTime() > Date.now();
         let seen = "";
         try { seen = localStorage.getItem("badgeSeenVer") || ""; } catch(e) {}
-        if (alive && n.badge_ver !== seen) setBadgeOn(true);
+        if (alive && n.badge_ver !== seen) {
+          setBadgeOn(true);
+          setBubbleShow(true);
+          setTimeout(() => setBubbleShow(false), 4000);   // 4秒でふわっと消える（赤丸は残る）
+        }
       }
     }).catch(()=>{});
   }, []);
   const clearBadge = () => {
     setBadgeOn(false);
+    setBubbleShow(false);
     try { localStorage.setItem("badgeSeenVer", notice.badge_ver || ""); } catch(e) {}
   };
 
@@ -298,7 +304,7 @@ function App() {
                 <>
                   <span style={{ position:"absolute", top:6, right:12, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px var(--primary-soft)" }} />
                   {notice.badge_text && (
-                    <span style={{ position:"absolute", bottom:"calc(100% + 9px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:11, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap", boxShadow:"0 3px 10px rgba(0,0,0,0.22)", animation:"fadeUp .3s ease", pointerEvents:"none" }}>
+                    <span style={{ position:"absolute", bottom:"calc(100% + 9px)", left:"50%", transform: bubbleShow ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(6px)", background:"#e0555f", color:"#fff", fontSize:11, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap", boxShadow:"0 3px 10px rgba(0,0,0,0.22)", pointerEvents:"none", opacity: bubbleShow ? 1 : 0, visibility: bubbleShow ? "visible" : "hidden", transition:"opacity .5s ease, transform .5s ease, visibility 0s linear .5s" }}>
                       {notice.badge_text}
                       <span style={{ position:"absolute", top:"100%", left:"50%", transform:"translateX(-50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:"5px solid #e0555f" }} />
                     </span>
