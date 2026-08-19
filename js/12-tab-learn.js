@@ -1956,11 +1956,29 @@ const CAT_GENRE_OPTS = [{
   label: "お寿司盛り合わせ"
 }];
 
-// Google検索式：ORは大文字。刺身か寿司の「どちらか」が出るようにする
+// 検索のしかた（ゆるい / しっかり）
+const CAT_MODE_OPTS = [{
+  key: "easy",
+  label: "かんたん",
+  help: "言葉をそのまま並べて、雰囲気で幅広く探します"
+}, {
+  key: "strict",
+  label: "しっかり",
+  help: "言い回しを指定して、狙った商品にしぼって探します"
+}];
+
+// しっかり：ORは大文字。刺身か寿司の「どちらか」が出るようにする
 const CAT_GENRE_QUERY = {
-  both: '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット" OR "舟盛り" OR "寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット" OR "にぎり寿司")',
-  sashimi: '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット" OR "舟盛り")',
-  sushi: '("寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット" OR "にぎり寿司")'
+  both: '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット" OR "寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット")',
+  sashimi: '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット")',
+  sushi: '("寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット")'
+};
+
+// かんたん：引用符もORも使わず、素直な言葉だけ
+const CAT_GENRE_EASY = {
+  both: "刺身 寿司 盛り合わせ",
+  sashimi: "刺身 盛り合わせ",
+  sushi: "寿司 盛り合わせ"
 };
 const CAT_SEASON_QUERY = {
   "お盆": '("お盆" OR "盆")',
@@ -2012,6 +2030,19 @@ function CatalogTab() {
   const [searchYear, setSearchYear] = useState(NOW_YEAR);
   const [season, setSeason] = useState("お盆");
   const [genre, setGenre] = useState("both");
+  const [mode, setMode] = useState(() => {
+    try {
+      return localStorage.getItem("catMode") || "easy";
+    } catch (e) {
+      return "easy";
+    }
+  });
+  const setModeSave = v => {
+    setMode(v);
+    try {
+      localStorage.setItem("catMode", v);
+    } catch (e) {}
+  };
   const [storeQuery, setStoreQuery] = useState("");
 
   // ── 絞り込み ──
@@ -2071,9 +2102,15 @@ function CatalogTab() {
   // ── 画像検索のURLを組み立てる（ORを含む式を作ってから一度だけエンコード）──
   const buildImageSearchUrl = c => {
     const storeName = c.search_name || c.store;
-    const genreTerm = CAT_GENRE_QUERY[genre] || CAT_GENRE_QUERY.both;
-    const seasonTerm = CAT_SEASON_QUERY[season] || `"${season}"`;
-    const query = [`"${storeName}"`, seasonTerm, CAT_RESERVATION_QUERY, genreTerm, String(searchYear)].filter(Boolean).join(" ");
+    let query;
+    if (mode === "easy") {
+      // かんたん：引用符もORも使わず、そのまま並べる（雰囲気で幅広く）
+      query = [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, String(searchYear)].filter(Boolean).join(" ");
+    } else {
+      const genreTerm = CAT_GENRE_QUERY[genre] || CAT_GENRE_QUERY.both;
+      const seasonTerm = CAT_SEASON_QUERY[season] || `"${season}"`;
+      query = [`"${storeName}"`, seasonTerm, CAT_RESERVATION_QUERY, genreTerm, String(searchYear)].filter(Boolean).join(" ");
+    }
     return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(query);
   };
 
@@ -2600,6 +2637,25 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
+  }, "検索のしかた"), /*#__PURE__*/React.createElement("select", {
+    value: mode,
+    onChange: e => setModeSave(e.target.value),
+    style: selBase
+  }, CAT_MODE_OPTS.map(o => /*#__PURE__*/React.createElement("option", {
+    key: o.key,
+    value: o.key
+  }, o.label)))), /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 10.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 4
+    }
   }, "店舗名を検索"), /*#__PURE__*/React.createElement("span", {
     style: {
       position: "relative",
@@ -2645,7 +2701,7 @@ function CatalogTab() {
       color: "var(--sub)",
       lineHeight: 1.5
     }
-  }, "選んだ条件で各社をすばやく比較できます")), loading ? /*#__PURE__*/React.createElement("div", {
+  }, (CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help)), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
