@@ -136,6 +136,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
   // ---- 依頼 ----
   const openReqs = reqs.filter(r => r.status !== "対応済み").length;
+  const [replyDraft, setReplyDraft] = useState({});   // {id: 入力中の文字}
+  const saveReply = async (r) => {
+    const text = (replyDraft[r.id] ?? r.reply ?? "").trim();
+    try {
+      await api.updateRequest(r.id, { reply: text, replied_at: new Date().toISOString(), status: "対応済み" });
+      setReqs(rs => rs.map(x => x.id === r.id ? { ...x, reply: text, replied_at: new Date().toISOString(), status: "対応済み" } : x));
+    } catch(e) {}
+  };
   const setReqStatus = async (r, status) => {
     try { await api.updateRequest(r.id, { status }); setReqs(rs => rs.map(x => x.id === r.id ? { ...x, status } : x)); }
     catch (e) { alert("更新に失敗しました"); }
@@ -145,7 +153,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     try { await api.delRequest(r.id); setReqs(rs => rs.filter(x => x.id !== r.id)); }
     catch (e) { alert("削除に失敗しました"); }
   };
-  const fmtDate = (s) => { try { const d = new Date(s); return `${d.getMonth()+1}/${d.getDate()}`; } catch(e){ return ""; } };
+  const fmtDate = (s) => { try { const d = new Date(s); const p2 = (n) => String(n).padStart(2,"0"); return `${d.getMonth()+1}/${d.getDate()} ${p2(d.getHours())}:${p2(d.getMinutes())}`; } catch(e){ return ""; } };
 
   const SEG_ICON = {
     req:     <><path d="M20 11.5a7.5 7.5 0 01-10.9 6.7L4 19.5l1.4-4.4A7.5 7.5 0 1120 11.5z"/></>,
@@ -225,20 +233,37 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               const done = r.status === "対応済み";
               const urgent = r.priority === "急ぎ";
               return (
-                <div key={r.id} style={{ background:"#fff", borderRadius:14, border:"1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#bbb":urgent?"#e01010":"var(--primary)"}`, opacity:done?0.6:1 }}>
+                <div key={r.id} style={{ background: done ? "#f6faf7" : "#fff", borderRadius:14, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
                     {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
-                    {done && <span style={{ background:"#bbb", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>対応済み</span>}
+                    {done && (
+                      <span style={{ display:"flex", alignItems:"center", gap:3, background:"#3f9e63", color:"#fff", fontSize:10.5, fontWeight:900, padding:"3px 9px", borderRadius:7 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+                        対応済み
+                      </span>
+                    )}
                     {r.kind && r.kind !== "POP作成依頼" && <span style={{ fontSize:10, fontWeight:800, color:"#2f6fb0", background:"#eaf2fb", borderRadius:6, padding:"2px 7px", marginRight:6, flexShrink:0 }}>{r.kind}</span>}
                     <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>{r.product_name}</span>
-                    <span style={{ marginLeft:"auto", fontSize:11, color:"var(--faint)" }}>{fmtDate(r.created_at)}</span>
+                    <span style={{ marginLeft:"auto", fontSize:11, color:"var(--faint)", whiteSpace:"nowrap" }}>{fmtDate(r.created_at)} 受付</span>
                   </div>
                   <div style={{ fontSize:12, color:"var(--sub)", marginBottom: r.reason ? 8 : 10 }}>{r.store_name}</div>
                   {r.reason && <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.5, background:"var(--bg)", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
+
+                  {done && r.reply && (
+                    <div style={{ fontSize:12.5, color:"#2c6b45", lineHeight:1.6, background:"#eaf6ee", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>
+                      <span style={{ fontWeight:900 }}>返答：</span>{r.reply}
+                      {r.replied_at && <span style={{ marginLeft:8, fontSize:10.5, color:"#6a9a7c" }}>（{fmtDate(r.replied_at)}）</span>}
+                    </div>
+                  )}
+
+                  <input value={replyDraft[r.id] ?? r.reply ?? ""} onChange={e => setReplyDraft(v => ({ ...v, [r.id]: e.target.value }))}
+                    placeholder="返答メモ（例：来週作ります／すでに投稿済みです）"
+                    style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"8px 10px", fontSize:12.5, outline:"none", marginBottom:8, fontFamily:"inherit" }} />
+
                   <div style={{ display:"flex", gap:8 }}>
-                    <button onClick={()=>setReqStatus(r, done?"未対応":"対応済み")}
-                      style={{ flex:1, border:"none", background:done?"#eee":"#2f6fb0", color:done?"#888":"#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
-                      {done?"未対応に戻す":"対応済みにする"}
+                    <button onClick={()=> done ? setReqStatus(r, "未対応") : saveReply(r)}
+                      style={{ flex:1, border:"none", background: done ? "#eee" : "#3f9e63", color: done ? "#888" : "#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
+                      {done ? "未対応に戻す" : "返答して対応済みにする"}
                     </button>
                     <button onClick={()=>delReq(r)}
                       style={{ border:"1px solid #f0d0d0", background:"#fff", color:"#d33", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px 14px", cursor:"pointer" }}>削除</button>

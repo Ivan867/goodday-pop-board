@@ -242,6 +242,23 @@ function AdminTab({
 
   // ---- 依頼 ----
   const openReqs = reqs.filter(r => r.status !== "対応済み").length;
+  const [replyDraft, setReplyDraft] = useState({}); // {id: 入力中の文字}
+  const saveReply = async r => {
+    const text = (replyDraft[r.id] ?? r.reply ?? "").trim();
+    try {
+      await api.updateRequest(r.id, {
+        reply: text,
+        replied_at: new Date().toISOString(),
+        status: "対応済み"
+      });
+      setReqs(rs => rs.map(x => x.id === r.id ? {
+        ...x,
+        reply: text,
+        replied_at: new Date().toISOString(),
+        status: "対応済み"
+      } : x));
+    } catch (e) {}
+  };
   const setReqStatus = async (r, status) => {
     try {
       await api.updateRequest(r.id, {
@@ -267,7 +284,8 @@ function AdminTab({
   const fmtDate = s => {
     try {
       const d = new Date(s);
-      return `${d.getMonth() + 1}/${d.getDate()}`;
+      const p2 = n => String(n).padStart(2, "0");
+      return `${d.getMonth() + 1}/${d.getDate()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
     } catch (e) {
       return "";
     }
@@ -469,12 +487,11 @@ function AdminTab({
     return /*#__PURE__*/React.createElement("div", {
       key: r.id,
       style: {
-        background: "#fff",
+        background: done ? "#f6faf7" : "#fff",
         borderRadius: 14,
-        border: "1px solid var(--line)",
+        border: done ? "1px solid #cfe8d8" : "1px solid var(--line)",
         padding: 14,
-        borderLeft: `5px solid ${done ? "#bbb" : urgent ? "#e01010" : "var(--primary)"}`,
-        opacity: done ? 0.6 : 1
+        borderLeft: `5px solid ${done ? "#3f9e63" : urgent ? "#e01010" : "var(--primary)"}`
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -495,14 +512,28 @@ function AdminTab({
       }
     }, "急ぎ"), done && /*#__PURE__*/React.createElement("span", {
       style: {
-        background: "#bbb",
+        display: "flex",
+        alignItems: "center",
+        gap: 3,
+        background: "#3f9e63",
         color: "#fff",
-        fontSize: 10,
+        fontSize: 10.5,
         fontWeight: 900,
-        padding: "2px 7px",
+        padding: "3px 9px",
         borderRadius: 7
       }
-    }, "対応済み"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: "11",
+      height: "11",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "3",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M4 12.5l5 5L20 6.5"
+    })), "対応済み"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 10,
         fontWeight: 800,
@@ -523,9 +554,10 @@ function AdminTab({
       style: {
         marginLeft: "auto",
         fontSize: 11,
-        color: "var(--faint)"
+        color: "var(--faint)",
+        whiteSpace: "nowrap"
       }
-    }, fmtDate(r.created_at))), /*#__PURE__*/React.createElement("div", {
+    }, fmtDate(r.created_at), " 受付")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
@@ -542,17 +574,56 @@ function AdminTab({
         marginBottom: 10,
         whiteSpace: "pre-wrap"
       }
-    }, r.reason), /*#__PURE__*/React.createElement("div", {
+    }, r.reason), done && r.reply && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "#2c6b45",
+        lineHeight: 1.6,
+        background: "#eaf6ee",
+        borderRadius: 8,
+        padding: "8px 10px",
+        marginBottom: 10,
+        whiteSpace: "pre-wrap"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontWeight: 900
+      }
+    }, "返答："), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
+      style: {
+        marginLeft: 8,
+        fontSize: 10.5,
+        color: "#6a9a7c"
+      }
+    }, "（", fmtDate(r.replied_at), "）")), /*#__PURE__*/React.createElement("input", {
+      value: replyDraft[r.id] ?? r.reply ?? "",
+      onChange: e => setReplyDraft(v => ({
+        ...v,
+        [r.id]: e.target.value
+      })),
+      placeholder: "返答メモ（例：来週作ります／すでに投稿済みです）",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "8px 10px",
+        fontSize: 12.5,
+        outline: "none",
+        marginBottom: 8,
+        fontFamily: "inherit"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 8
       }
     }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => setReqStatus(r, done ? "未対応" : "対応済み"),
+      onClick: () => done ? setReqStatus(r, "未対応") : saveReply(r),
       style: {
         flex: 1,
         border: "none",
-        background: done ? "#eee" : "#2f6fb0",
+        background: done ? "#eee" : "#3f9e63",
         color: done ? "#888" : "#fff",
         fontWeight: 800,
         fontSize: 13,
@@ -560,7 +631,7 @@ function AdminTab({
         padding: "9px",
         cursor: "pointer"
       }
-    }, done ? "未対応に戻す" : "対応済みにする"), /*#__PURE__*/React.createElement("button", {
+    }, done ? "未対応に戻す" : "返答して対応済みにする"), /*#__PURE__*/React.createElement("button", {
       onClick: () => delReq(r),
       style: {
         border: "1px solid #f0d0d0",
