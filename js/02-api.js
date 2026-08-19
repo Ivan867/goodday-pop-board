@@ -428,7 +428,7 @@ const api = {
   },
   // ── site_notice：一時お知らせ／機能停止バナー（全店共有） ──
   async getNotice() {
-    const rows = await sbJson(`/rest/v1/site_notice?id=eq.1&select=enabled,message,tip_enabled,tip_message,feat_enabled,feat_message,feat_tab,feat_ver,updated_at`);
+    const rows = await sbJson(`/rest/v1/site_notice?id=eq.1&select=enabled,message,tip_enabled,tip_message,feat_enabled,feat_message,feat_tab,feat_ver,badge_tab,badge_text,badge_ver,badge_until,updated_at`);
     return rows[0] || {
       enabled: false,
       message: "",
@@ -437,7 +437,11 @@ const api = {
       feat_enabled: false,
       feat_message: "",
       feat_tab: "",
-      feat_ver: ""
+      feat_ver: "",
+      badge_tab: "",
+      badge_text: "",
+      badge_ver: "",
+      badge_until: null
     };
   },
   async updateNotice(patch) {
