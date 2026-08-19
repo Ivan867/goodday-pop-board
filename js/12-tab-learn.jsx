@@ -721,11 +721,60 @@ function SoubaTab({ onCreatePop }) {
 
 
 
-// ═══════════ CatalogTab：予約カタログ（年・シーズン別に蓄積） ═══════════
+// ═══════════ 予約カタログ：定数 ═══════════
+const CAT_SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月"];
+
+const CAT_GENRE_OPTS = [
+  { key:"both",    label:"両方" },
+  { key:"sashimi", label:"お刺身盛り合わせ" },
+  { key:"sushi",   label:"お寿司盛り合わせ" },
+];
+
+// Google検索式：ORは大文字。刺身か寿司の「どちらか」が出るようにする
+const CAT_GENRE_QUERY = {
+  both:    '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット" OR "舟盛り" OR "寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット" OR "にぎり寿司")',
+  sashimi: '("刺身盛り合わせ" OR "お造り盛り合わせ" OR "刺身セット" OR "舟盛り")',
+  sushi:   '("寿司盛り合わせ" OR "にぎり盛り合わせ" OR "寿司セット" OR "にぎり寿司")',
+};
+
+const CAT_SEASON_QUERY = {
+  "お盆":       '("お盆" OR "盆")',
+  "年末":       '("年末" OR "歳末" OR "年末年始")',
+  "クリスマス": '"クリスマス"',
+  "正月":       '("正月" OR "年末年始" OR "新春")',
+};
+
+const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
+
+const CAT_GROUPS = [
+  { key:"major",   label:"大手スーパー",     color:"#3b7dd8", emoji:"🛒" },
+  { key:"local",   label:"ローカルスーパー", color:"#3f9e63", emoji:"🏘" },
+  { key:"pro",     label:"専門店",           color:"#d1554f", emoji:"🐟" },
+  { key:"premium", label:"高質スーパー",     color:"#c39a3c", emoji:"✨" },
+  { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
+];
+
+// 全角・半角・大文字小文字・空白の揺れを吸収して比べる
+const catNormalize = (value) => String(value == null ? "" : value)
+  .normalize("NFKC").toLocaleLowerCase("ja").replace(/\s+/g, "").trim();
+
+// ═══════════ CatalogTab：予約カタログ ═══════════
 function CatalogTab() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+
+  // ── 上部の共通検索条件 ──
+  const NOW_YEAR = new Date().getFullYear();
+  const YEAR_OPTS = []; for (let y = NOW_YEAR + 1; y >= 2020; y--) YEAR_OPTS.push(y);
+  const [searchYear, setSearchYear] = useState(NOW_YEAR);
+  const [season, setSeason] = useState("お盆");
+  const [genre, setGenre] = useState("both");
+  const [storeQuery, setStoreQuery] = useState("");
+
+  // ── 絞り込み ──
   const [grp, setGrp] = useState("");
+  const [favOnly, setFavOnly] = useState(false);
   const [fav, setFav] = useState(() => { try { return JSON.parse(localStorage.getItem("catFav") || "{}"); } catch(e) { return {}; } });
   const toggleFav = (id) => setFav(v => {
     const n = { ...v };
@@ -733,145 +782,91 @@ function CatalogTab() {
     try { localStorage.setItem("catFav", JSON.stringify(n)); } catch(e) {}
     return n;
   });
-  const [favOnly, setFavOnly] = useState(false);
+
   const [cview, setCview] = useState(() => { try { return localStorage.getItem("catView") || "md"; } catch(e) { return "md"; } });
   const setCviewSave = (v) => { setCview(v); try { localStorage.setItem("catView", v); } catch(e) {} };
-  const SEASON_OPTS = ["お盆", "年末", "クリスマス", "正月"];
-  const NOW_YEAR = new Date().getFullYear();
-  const YEAR_OPTS = []; for (let y = NOW_YEAR; y >= 2020; y--) YEAR_OPTS.push(y);
-  const [cardYear, setCardYear] = useState({});   // カードごとに選んだ年
-  const GENRE_OPTS = [
-    { key:"both",    label:"両方",           q:"寿司盛り合わせ 刺身盛り合わせ" },
-    { key:"sashimi", label:"お刺身盛り合わせ", q:"刺身盛り合わせ" },
-    { key:"sushi",   label:"お寿司盛り合わせ", q:"寿司盛り合わせ" },
-  ];
-  const [genre, setGenre] = useState("both");
-  const [year, setYear] = useState("");
 
   useEffect(() => {
     let alive = true;
     (async () => {
-      try { const d = await api.listCatalogs(true); if (alive) setList(d || []); }
-      catch(e) {}
+      try { const d = await api.listCatalogs(true); if (alive) { setList(d || []); setLoadError(false); } }
+      catch(e) { if (alive) setLoadError(true); }
       finally { if (alive) setLoading(false); }
     })();
     return () => { alive = false; };
   }, []);
 
-  const mark = (v) => v >= 2 ? "🟦" : v === 1 ? "🟩" : "⬜";
-  // 店名＋時期＋年で検索。リンクが切れていても最新のページにたどり着ける
-  const NOW_Y = new Date().getFullYear();
-  const searchUrl = (c, mode) => {
-    const y = c.year || NOW_Y;
-    const se = c.season && c.season !== "通年" ? c.season : "";
-    const q = [c.store, se, "予約", "寿司 刺身", String(y)].filter(Boolean).join(" ");
-    const base = mode === "img"
-      ? "https://www.google.com/search?tbm=isch&q="
-      : "https://www.google.com/search?q=";
-    return base + encodeURIComponent(q);
-  };
-  const imgSearchUrl = (c, season, y) => {
-    const g = GENRE_OPTS.find(x => x.key === genre) || GENRE_OPTS[0];
-    const q = [c.store, season, "予約", g.q, String(y)].filter(Boolean).join(" ");
-    return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q);
-  };
-  const stars = (p) => p >= 3 ? "★★★" : p === 2 ? "★★☆" : "★☆☆";
-  const years = [...new Set(list.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
-  const GROUPS = [
-    { key:"major",   label:"大手スーパー",     color:"#3b7dd8", emoji:"🛒" },
-    { key:"local",   label:"ローカルスーパー", color:"#3f9e63", emoji:"🏘" },
-    { key:"pro",     label:"専門店",           color:"#d1554f", emoji:"🐟" },
-    { key:"premium", label:"高質スーパー",     color:"#c39a3c", emoji:"✨" },
-    { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
-  ];
-  const gInfo = (k) => GROUPS.find(g => g.key === (k || "local")) || GROUPS[1];
-  // 今の季節に近い時期を濃く見せる
-  const NOW_M = new Date().getMonth() + 1;
-  const hotSeason = NOW_M >= 7 && NOW_M <= 8 ? "お盆" : NOW_M >= 11 || NOW_M === 12 ? "年末" : NOW_M === 12 ? "クリスマス" : NOW_M === 1 ? "正月" : "お盆";
-  const byYear = year ? list.filter(c => String(c.year) === String(year)) : list;
-  const groupsIn = GROUPS.filter(g => byYear.some(c => (c.group_type || "local") === g.key));
-  const filtByGrp = grp ? byYear.filter(c => (c.group_type || "local") === grp) : byYear;
-  const shown = favOnly ? filtByGrp.filter(c => fav[c.id]) : filtByGrp;
-  const favCount = byYear.filter(c => fav[c.id]).length;
-  const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
-  const flyers = shown.filter(c => c.purpose === "flyer");
+  const gInfo = (k) => CAT_GROUPS.find(g => g.key === (k || "local")) || CAT_GROUPS[1];
 
+  // ── 画像検索のURLを組み立てる（ORを含む式を作ってから一度だけエンコード）──
+  const buildImageSearchUrl = (c) => {
+    const storeName = c.search_name || c.store;
+    const genreTerm  = CAT_GENRE_QUERY[genre] || CAT_GENRE_QUERY.both;
+    const seasonTerm = CAT_SEASON_QUERY[season] || `"${season}"`;
+    const query = [`"${storeName}"`, seasonTerm, CAT_RESERVATION_QUERY, genreTerm, String(searchYear)]
+      .filter(Boolean).join(" ");
+    return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(query);
+  };
+
+  // ── 表示対象の絞り込み（visible → 店名 → グループ → 重点調査 → purpose）──
+  const nq = catNormalize(storeQuery);
+  const matchesStore = (c) => {
+    if (!nq) return true;
+    const cands = [c.store, c.search_name, ...(Array.isArray(c.aliases) ? c.aliases : [])];
+    return cands.some(v => v && catNormalize(v).includes(nq));
+  };
+  const base    = list.filter(c => c.visible !== false).filter(matchesStore);
+  const byGroup = grp ? base.filter(c => (c.group_type || "local") === grp) : base;
+  const shown   = favOnly ? byGroup.filter(c => fav[c.id]) : byGroup;
+  const cats    = shown.filter(c => (c.purpose || "catalog") === "catalog");
+  const flyers  = shown.filter(c => c.purpose === "flyer");
+  const favCount  = base.filter(c => fav[c.id]).length;
+  const groupsIn  = CAT_GROUPS.filter(g => base.some(c => (c.group_type || "local") === g.key));
+
+  // ── カード ──
   const Card = ({ c }) => {
-    const y = cardYear[c.id] || NOW_YEAR;
     const g = gInfo(c.group_type);
     const isFav = !!fav[c.id];
     const FavBtn = ({ size }) => (
       <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav(c.id); }}
-        title={isFav ? "お気に入りから外す" : "お気に入りに追加"}
+        aria-label={isFav ? "重点調査から外す" : "重点調査に追加"} aria-pressed={isFav} title={isFav ? "重点調査から外す" : "重点調査に追加"}
         style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", lineHeight:1 }}>
         <svg width={size} height={size} viewBox="0 0 24 24" fill={isFav ? "#e0a020" : "none"} stroke={isFav ? "#e0a020" : "var(--faint)"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 17.5l-6.2 3.5 1.3-7.2L2 8.7l7.3-.9L12 1.5l2.7 6.3 7.3.9-5.1 5.1 1.3 7.2z"/>
         </svg>
       </button>
     );
-
-    const seasonBtns = (size) => (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap: size === "sm" ? 4 : 5 }}>
-        {SEASON_OPTS.map(sn => {
-          const hot = sn === hotSeason;
-          return (
-            <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
-              style={{ textAlign:"center", textDecoration:"none", fontSize: size === "sm" ? 9.5 : 10.5, fontWeight:900,
-                color: hot ? "#fff" : g.color, background: hot ? g.color : g.color + "14",
-                border: hot ? "none" : `1px solid ${g.color}33`, borderRadius:6, padding: size === "sm" ? "5px 0" : "6px 0" }}>{sn}</a>
-          );
-        })}
-      </div>
+    const SearchBtn = ({ compact }) => (
+      <a href={buildImageSearchUrl(c)} target="_blank" rel="noopener noreferrer"
+        style={{ display:"block", textAlign:"center", textDecoration:"none", fontSize: compact ? 10.5 : 11.5, fontWeight:900,
+          color:"#fff", background:g.color, borderRadius:8, padding: compact ? "7px 0" : "9px 0", whiteSpace:"nowrap" }}>画像で探す</a>
     );
 
-    // リスト：店名と時期ボタンを横一列に
     if (cview === "list") {
       return (
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ minWidth:0, flex:"0 0 34%" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-              <FavBtn size={13} />
-              <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0 }}>{c.store}</span>
-              <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
-                style={{ flexShrink:0, border:"none", borderRadius:6, padding:"2px 3px", fontSize:10, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
-                {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}</option>)}
-              </select>
-            </div>
+          <FavBtn size={14} />
+          <div style={{ minWidth:0, flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}</div>
             {c.area && <div style={{ fontSize:9, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
           </div>
-          <div style={{ display:"flex", gap:4, flex:1, minWidth:0 }}>
-            {SEASON_OPTS.map(sn => {
-              const hot = sn === hotSeason;
-              return (
-                <a key={sn} href={imgSearchUrl(c, sn, y)} target="_blank" rel="noopener noreferrer"
-                  style={{ flex:1, textAlign:"center", textDecoration:"none", fontSize:9.5, fontWeight:900, whiteSpace:"nowrap",
-                    color: hot ? "#fff" : g.color, background: hot ? g.color : g.color + "14",
-                    border: hot ? "none" : `1px solid ${g.color}33`, borderRadius:6, padding:"5px 2px" }}>{sn}</a>
-              );
-            })}
-          </div>
+          <div style={{ width:96, flexShrink:0 }}><SearchBtn compact /></div>
         </div>
       );
     }
 
-    // 小：店名＋年の選択＋時期ボタン
     if (cview === "sm") {
       return (
         <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
-          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:7 }}>
             <FavBtn size={14} />
             <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
-            <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
-              style={{ flexShrink:0, border:"none", borderRadius:6, padding:"3px 4px", fontSize:10.5, fontWeight:700, color:"var(--text)", background:"rgba(120,120,128,0.1)", outline:"none" }}>
-              {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}</option>)}
-            </select>
           </div>
-          {seasonBtns("sm")}
+          <SearchBtn compact />
         </div>
       );
     }
 
-    // 中・大：これまで通り（大は企業情報も全部出す）
     return (
       <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${g.color}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
@@ -883,31 +878,19 @@ function CatalogTab() {
           {c.stores_count ? <span style={{ fontSize:9.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.stores_count}店</span> : null}
           {c.revenue ? <span style={{ fontSize:9.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.revenue}</span> : null}
         </div>
-        {c.strength && (
-          <div style={{ fontSize:10.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:6 }}>{c.strength}</div>
-        )}
+        {c.strength && <div style={{ fontSize:10.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:6 }}>{c.strength}</div>}
         {cview === "lg" && (c.store_scale || c.systems) && (
           <div style={{ marginBottom:8 }}>
-            {c.store_scale && (
-              <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55, marginBottom:3 }}>
-                <span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>規模</span><span style={{ color:"var(--sub)" }}>{c.store_scale}</span>
-              </div>
-            )}
-            {c.systems && (
-              <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55 }}>
-                <span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>仕組み</span><span style={{ color:"var(--sub)" }}>{c.systems}</span>
-              </div>
-            )}
+            {c.store_scale && <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55, marginBottom:3 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>規模</span><span style={{ color:"var(--sub)" }}>{c.store_scale}</span></div>}
+            {c.systems && <div style={{ display:"flex", gap:5, fontSize:10, lineHeight:1.55 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>仕組み</span><span style={{ color:"var(--sub)" }}>{c.systems}</span></div>}
           </div>
         )}
-        <select value={y} onChange={(e) => setCardYear(v => ({ ...v, [c.id]: Number(e.target.value) }))}
-          style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"6px 9px", fontSize:11.5, fontWeight:600, color:"var(--text)", background:"rgba(120,120,128,0.08)", border:"none", marginBottom:7, outline:"none" }}>
-          {YEAR_OPTS.map(yy => <option key={yy} value={yy}>{yy}年</option>)}
-        </select>
-        {seasonBtns("md")}
+        <SearchBtn />
       </div>
     );
   };
+
+  const selBase = { border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, fontWeight:700, color:"var(--text)", background:"#fff", outline:"none", width:"100%", boxSizing:"border-box", minHeight:40 };
 
   return (
     <div>
@@ -916,104 +899,136 @@ function CatalogTab() {
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
+
+        {/* ── 共通の検索条件 ── */}
+        <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"12px 13px", marginBottom:12 }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:9, gap:8 }}>
+            <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>検索条件をまとめて指定</span>
+            <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2, flexShrink:0 }}>
+              {[
+                ["list", "リスト", <svg key="1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
+                ["sm", "小", <svg key="2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
+                ["md", "中", <svg key="3" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
+                ["lg", "大", <svg key="4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
+              ].map(([k, label, icon]) => (
+                <button key={k} onClick={() => setCviewSave(k)} title={label} aria-label={"表示を" + label + "にする"} aria-pressed={cview===k}
+                  style={{ border:"none", background: cview===k ? "#fff" : "transparent", color: cview===k ? "var(--ink)" : "var(--sub)", borderRadius:6, padding:"4px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{icon}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:8, marginBottom:8 }}>
+            <label style={{ display:"block" }}>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索対象年</span>
+              <select value={searchYear} onChange={e => setSearchYear(Number(e.target.value))} style={selBase}>
+                {YEAR_OPTS.map(y => <option key={y} value={y}>{y}年</option>)}
+              </select>
+            </label>
+            <label style={{ display:"block" }}>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</span>
+              <select value={season} onChange={e => setSeason(e.target.value)} style={selBase}>
+                {CAT_SEASON_OPTS.map(sn => <option key={sn} value={sn}>{sn}</option>)}
+              </select>
+            </label>
+            <label style={{ display:"block" }}>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>商品ジャンル</span>
+              <select value={genre} onChange={e => setGenre(e.target.value)} style={selBase}>
+                {CAT_GENRE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+              </select>
+            </label>
+            <label style={{ display:"block" }}>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>店舗名を検索</span>
+              <span style={{ position:"relative", display:"block" }}>
+                <input value={storeQuery} onChange={e => setStoreQuery(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
+                  placeholder="例：角上" aria-label="店舗名を検索"
+                  style={{ ...selBase, paddingRight: storeQuery ? 34 : 10 }} />
+                {storeQuery && (
+                  <button onClick={() => setStoreQuery("")} aria-label="店舗名の検索条件を消す"
+                    style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", border:"none", background:"rgba(120,120,128,0.18)", color:"var(--sub)", borderRadius:"50%", width:22, height:22, fontSize:13, fontWeight:900, cursor:"pointer", lineHeight:1, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+                )}
+              </span>
+            </label>
+          </div>
+
+          <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5 }}>選んだ条件で各社をすばやく比較できます</div>
+        </div>
+
         {loading ? (
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
+        ) : loadError ? (
+          <div style={{ textAlign:"center", color:"var(--faint)", padding:"48px 20px", fontSize:13, lineHeight:1.8 }}>
+            <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>読み込めませんでした</div>
+            <div style={{ marginTop:6 }}>電波の良いところで開き直してください</div>
+          </div>
         ) : list.length === 0 ? (
-          <div style={{ textAlign:"center", color:"var(--faint)", padding:"56px 20px", fontSize:13, lineHeight:1.8 }}>
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.5, marginBottom:12 }}><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg>
+          <div style={{ textAlign:"center", color:"var(--faint)", padding:"48px 20px", fontSize:13 }}>
             <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>まだカタログがありません</div>
           </div>
         ) : (
           <>
-            {years.length > 1 && (
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:9 }}>
-                <button onClick={() => { setYear(""); setGrp(""); }}
-                  style={{ border: !year ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !year ? "var(--soft)" : "#fff", color: !year ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>すべての年</button>
-                {years.map(y => (
-                  <button key={y} onClick={() => { setYear(String(y)); setGrp(""); }}
-                    style={{ border: String(year)===String(y) ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: String(year)===String(y) ? "var(--soft)" : "#fff", color: String(year)===String(y) ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"6px 14px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{y}年</button>
-                ))}
-              </div>
-            )}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", marginBottom:10 }}>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-                <span style={{ fontSize:12, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>何を調べますか？</span>
-                <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2 }}>
-                  {[
-                    ["list", "リスト", <svg key="1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
-                    ["sm", "小", <svg key="2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
-                    ["md", "中", <svg key="3" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
-                    ["lg", "大", <svg key="4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
-                  ].map(([k, label, icon]) => (
-                    <button key={k} onClick={() => setCviewSave(k)} title={label}
-                      style={{ border:"none", background: cview===k ? "#fff" : "transparent", color: cview===k ? "var(--ink)" : "var(--sub)", borderRadius:6, padding:"4px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{icon}</button>
-                  ))}
-                </div>
-              </div>
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                {GENRE_OPTS.map(g => (
-                  <button key={g.key} onClick={() => setGenre(g.key)}
-                    style={{ flex:"1 1 auto", border: genre===g.key ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: genre===g.key ? "var(--soft)" : "#fff", color: genre===g.key ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"7px 12px", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>{g.label}</button>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-              <button onClick={() => setGrp("")}
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
+              <button onClick={() => setGrp("")} aria-pressed={!grp}
                 style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (
-                <button key={g.key} onClick={() => setGrp(g.key)}
+                <button key={g.key} onClick={() => setGrp(g.key)} aria-pressed={grp===g.key}
                   style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                   <span style={{ fontSize:12 }}>{g.emoji}</span>{g.label}
                 </button>
               ))}
               {favCount > 0 && (
-                <button onClick={() => setFavOnly(v => !v)}
+                <button onClick={() => setFavOnly(v => !v)} aria-pressed={favOnly}
                   style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-                  ⭐ お気に入り {favCount}
+                  ⭐ 重点調査 {favCount}
                 </button>
               )}
             </div>
 
-            {grp ? (
-              <div className={"cat-grid c-" + cview}>
-                {cats.map(c => <Card key={c.id} c={c} />)}
+            <div style={{ fontSize:11, fontWeight:700, color:"var(--sub)", marginBottom:10 }}>{shown.length}社を表示中</div>
+
+            {shown.length === 0 ? (
+              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13, lineHeight:1.8 }}>
+                <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>該当するお店がありません</div>
+                <div style={{ marginTop:6 }}>{storeQuery ? "店舗名の検索条件を変えてみてください" : "絞り込みを外してみてください"}</div>
+                <button onClick={() => { setStoreQuery(""); setGrp(""); setFavOnly(false); }}
+                  style={{ marginTop:16, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer" }}>絞り込みを外す</button>
               </div>
             ) : (
-              GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
-                const rows = cats.filter(c => (c.group_type || "local") === g.key);
-                return (
-                  <div key={g.key} style={{ marginBottom:20 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
-                      <span style={{ fontSize:15 }}>{g.emoji}</span>
-                      <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
-                      <span style={{ fontSize:10.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
-                    </div>
-                    <div className={"cat-grid c-" + cview}>
-                      {rows.map(c => <Card key={c.id} c={c} />)}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-
-            {flyers.length > 0 && (
               <>
-                <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
-                <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
-                <div className={"cat-grid c-" + cview}>
-                  {flyers.map(c => <Card key={c.id} c={c} />)}
-                </div>
+                {grp || favOnly || storeQuery ? (
+                  <div className={"cat-grid c-" + cview}>{cats.map(c => <Card key={c.id} c={c} />)}</div>
+                ) : (
+                  CAT_GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
+                    const rows = cats.filter(c => (c.group_type || "local") === g.key);
+                    return (
+                      <div key={g.key} style={{ marginBottom:20 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
+                          <span style={{ fontSize:15 }}>{g.emoji}</span>
+                          <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
+                          <span style={{ fontSize:10.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
+                        </div>
+                        <div className={"cat-grid c-" + cview}>{rows.map(c => <Card key={c.id} c={c} />)}</div>
+                      </div>
+                    );
+                  })
+                )}
+
+                {flyers.length > 0 && (
+                  <>
+                    <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
+                    <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
+                    <div className={"cat-grid c-" + cview}>{flyers.map(c => <Card key={c.id} c={c} />)}</div>
+                  </>
+                )}
               </>
             )}
 
             <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
-              各社の予約ページは時期が終わると消えることがあります。リンクが切れていても「画像で探す」から、選んだ時期・年の商品画像を探せます。
+              各社の予約ページは時期が終わると消えることがあります。「画像で探す」から、選んだ条件でその年の商品画像を探せます。
             </div>
           </>
         )}
       </div>
-
     </div>
   );
 }
