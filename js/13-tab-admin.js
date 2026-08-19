@@ -10,6 +10,7 @@ function AdminTab({
   onCreateFromPop
 }) {
   const [unlocked, setUnlocked] = useState(false);
+  const [replyDraft, setReplyDraft] = useState({}); // 依頼の返答メモ（{id: 入力中の文字}）
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
   const [gChecking, setGChecking] = useState(false);
@@ -242,7 +243,6 @@ function AdminTab({
 
   // ---- 依頼 ----
   const openReqs = reqs.filter(r => r.status !== "対応済み").length;
-  const [replyDraft, setReplyDraft] = useState({}); // {id: 入力中の文字}
   const saveReply = async r => {
     const text = (replyDraft[r.id] ?? r.reply ?? "").trim();
     try {
