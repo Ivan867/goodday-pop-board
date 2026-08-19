@@ -896,7 +896,108 @@ function App() {
     }
   }));
 }
-ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById("root"));
+
+// 画面が真っ白になるのを防ぎ、原因をその場に表示する安全網
+class ErrBoundary extends React.Component {
+  constructor(p) {
+    super(p);
+    this.state = {
+      err: null
+    };
+  }
+  static getDerivedStateFromError(err) {
+    return {
+      err
+    };
+  }
+  componentDidCatch(err, info) {
+    try {
+      console.error("画面エラー:", err, info);
+    } catch (e) {}
+  }
+  render() {
+    if (!this.state.err) return this.props.children;
+    const msg = String(this.state.err && (this.state.err.stack || this.state.err.message || this.state.err));
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "28px 20px",
+        maxWidth: 640,
+        margin: "0 auto",
+        fontFamily: "inherit"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 17,
+        fontWeight: 900,
+        color: "#b3261e",
+        marginBottom: 8
+      }
+    }, "表示できませんでした"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "var(--sub)",
+        lineHeight: 1.7,
+        marginBottom: 14
+      }
+    }, "下の内容をそのままコピーして開発担当に送ってください。アプリの他の画面は使えます。"), /*#__PURE__*/React.createElement("textarea", {
+      readOnly: true,
+      value: msg,
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        height: 180,
+        fontSize: 11,
+        lineHeight: 1.6,
+        border: "1px solid var(--line)",
+        borderRadius: 10,
+        padding: "10px 12px",
+        background: "#fff",
+        fontFamily: "monospace"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8,
+        marginTop: 12
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        try {
+          navigator.clipboard.writeText(msg);
+        } catch (e) {}
+      },
+      style: {
+        flex: 1,
+        border: "none",
+        background: "var(--primary-soft, #4a7ab0)",
+        color: "#fff",
+        borderRadius: 10,
+        padding: "12px",
+        fontSize: 14,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "コピーする"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        this.setState({
+          err: null
+        });
+      },
+      style: {
+        flex: 1,
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--text)",
+        borderRadius: 10,
+        padding: "12px",
+        fontSize: 14,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "戻る")));
+  }
+}
+ReactDOM.render(/*#__PURE__*/React.createElement(ErrBoundary, null, /*#__PURE__*/React.createElement(App, null)), document.getElementById("root"));
 ;
 Object.assign(window, {
   App
