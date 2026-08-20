@@ -2059,7 +2059,7 @@ function CatalogTab() {
   const YEAR_OPTS = [];
   for (let y = NOW_YEAR + 1; y >= 2020; y--) YEAR_OPTS.push(y);
   const [searchYear, setSearchYear] = useState(NOW_YEAR);
-  const [season, setSeason] = useState("お盆");
+  const [season, setSeason] = useState("年末");
   const [genre, setGenre] = useState("both");
   const [mode, setMode] = useState(() => {
     try {
