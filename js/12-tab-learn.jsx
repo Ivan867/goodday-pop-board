@@ -786,6 +786,7 @@ function CatalogTab() {
   const [mode, setMode] = useState(() => { try { return localStorage.getItem("catMode") || "easy"; } catch(e) { return "easy"; } });
   const setModeSave = (v) => { setMode(v); try { localStorage.setItem("catMode", v); } catch(e) {} };
   const [storeQuery, setStoreQuery] = useState("");
+  const [extraWords, setExtraWords] = useState("");   // Google検索に足す言葉
 
   // ── 絞り込み ──
   const [grp, setGrp] = useState("");
@@ -816,15 +817,16 @@ function CatalogTab() {
   // ── 画像検索のURLを組み立てる（ORを含む式を作ってから一度だけエンコード）──
   const buildImageSearchUrl = (c) => {
     const storeName = c.search_name || c.store;
+    const extra = extraWords.trim();
     let query;
     if (mode === "easy") {
       // かんたん：引用符もORも使わず、そのまま並べる（雰囲気で幅広く）
-      query = [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, String(searchYear)]
+      query = [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, extra, String(searchYear)]
         .filter(Boolean).join(" ");
     } else {
       const genreTerm  = CAT_GENRE_QUERY[genre] || CAT_GENRE_QUERY.both;
       const seasonTerm = CAT_SEASON_QUERY[season] || `"${season}"`;
-      query = [`"${storeName}"`, seasonTerm, CAT_RESERVATION_QUERY, genreTerm, String(searchYear)]
+      query = [`"${storeName}"`, seasonTerm, CAT_RESERVATION_QUERY, genreTerm, extra, String(searchYear)]
         .filter(Boolean).join(" ");
     }
     return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(query);
@@ -965,7 +967,20 @@ function CatalogTab() {
               </select>
             </label>
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>店舗名を検索</span>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>追加検索ワード</span>
+              <span style={{ position:"relative", display:"block" }}>
+                <input value={extraWords} onChange={e => setExtraWords(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
+                  placeholder="例：うなぎ / オードブル / 3人前" aria-label="Google検索に足す言葉"
+                  style={{ ...selBase, paddingRight: extraWords ? 34 : 10 }} />
+                {extraWords && (
+                  <button onClick={() => setExtraWords("")} aria-label="追加検索ワードを消す"
+                    style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", border:"none", background:"rgba(120,120,128,0.18)", color:"var(--sub)", borderRadius:"50%", width:22, height:22, fontSize:13, fontWeight:900, cursor:"pointer", lineHeight:1, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+                )}
+              </span>
+            </label>
+            <label style={{ display:"block" }}>
+              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>店舗名でしぼる</span>
               <span style={{ position:"relative", display:"block" }}>
                 <input value={storeQuery} onChange={e => setStoreQuery(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
@@ -979,7 +994,11 @@ function CatalogTab() {
             </label>
           </div>
 
-          <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.5 }}>{(CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}</div>
+          <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.7 }}>
+            {(CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
+            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）<br/>
+            <b style={{ color:"var(--text)" }}>店舗名でしぼる</b>：下に並ぶお店を絞り込みます（検索には使いません）
+          </div>
         </div>
 
         {loading ? (
