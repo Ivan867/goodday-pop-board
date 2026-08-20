@@ -8,6 +8,55 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [fStore, setFStore] = useState("");
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
+
+  // ── これからの販促予定 ──
+  const [plans, setPlans] = useState([]);
+  const [planOpen, setPlanOpen] = useState(false);      // 追加フォームの開閉
+  const [planTitle, setPlanTitle] = useState("");
+  const [planDate, setPlanDate] = useState("");
+  const [planNote, setPlanNote] = useState("");
+  const [planBusy, setPlanBusy] = useState(false);
+  const [planEdit, setPlanEdit] = useState(null);       // 編集中のid
+  const [planVer, setPlanVer] = useState(0);
+  const [planAllOpen, setPlanAllOpen] = useState(false); // 済んだものも見るか
+
+  useEffect(() => {
+    let alive = true;
+    (async () => { try { const d = await api.listPlans(); if (alive) setPlans(d || []); } catch(e) {} })();
+    return () => { alive = false; };
+  }, [planVer]);
+
+  const daysLeftOf = (d) => {
+    if (!d) return null;
+    const t = new Date(d + "T00:00:00").getTime();
+    const now = new Date(); now.setHours(0,0,0,0);
+    return Math.round((t - now.getTime()) / 86400000);
+  };
+  const savePlan = async () => {
+    if (!planTitle.trim()) return;
+    setPlanBusy(true);
+    try {
+      const body = { title: planTitle.trim(), start_date: planDate || null, note: planNote.trim() || null, author: localStorage.getItem("lastAuthor") || null };
+      if (planEdit) await api.updatePlan(planEdit, body);
+      else await api.addPlan({ ...body, status:"todo" });
+      setPlanTitle(""); setPlanDate(""); setPlanNote(""); setPlanOpen(false); setPlanEdit(null);
+      setPlanVer(v => v + 1);
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail: planEdit ? "直しました" : "予定を登録しました" })); } catch(e) {}
+    } catch(e) {
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail: "保存できませんでした" })); } catch(x) {}
+    } finally { setPlanBusy(false); }
+  };
+  const cyclePlanStatus = async (p) => {
+    const next = p.status === "todo" ? "doing" : p.status === "doing" ? "done" : "todo";
+    try { await api.updatePlan(p.id, { status: next }); setPlans(ps => ps.map(x => x.id === p.id ? { ...x, status: next } : x)); } catch(e) {}
+  };
+  const startEditPlan = (p) => {
+    setPlanEdit(p.id); setPlanTitle(p.title || ""); setPlanDate(p.start_date || ""); setPlanNote(p.note || ""); setPlanOpen(true);
+  };
+  const removePlan = async (p) => {
+    if (!window.confirm(`「${p.title}」を消しますか？`)) return;
+    try { await api.deletePlan(p.id); setPlanVer(v => v + 1); } catch(e) {}
+  };
   const [view, setView] = useState(() => { try { return localStorage.getItem("popView") || "md"; } catch(e) { return "md"; } });
   const setViewSave = (v) => { setView(v); try { localStorage.setItem("popView", v); } catch(e) {} };
   const [sel, setSel] = useState(null);
@@ -90,6 +139,85 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             </button>
           ))}
         </div>
+
+        {/* ── これからの販促予定 ── */}
+        {(() => {
+          const STATUS = { todo:{ label:"これから", color:"#8a939c", bg:"#f0f2f4" }, doing:{ label:"準備中", color:"#c07a1a", bg:"#fdf3e2" }, done:{ label:"できた", color:"#3f9e63", bg:"#eaf6ee" } };
+          const active = plans.filter(p => p.status !== "done");
+          const doneOnes = plans.filter(p => p.status === "done");
+          const shownPlans = planAllOpen ? plans : active;
+          return (
+            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"11px 12px", marginBottom:10 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom: shownPlans.length || planOpen ? 9 : 0 }}>
+                <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)" }}>これからの販促</span>
+                {active.length > 0 && <span style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:999, padding:"1px 8px" }}>{active.length}</span>}
+                <button onClick={() => { setPlanOpen(v => !v); setPlanEdit(null); setPlanTitle(""); setPlanDate(""); setPlanNote(""); }}
+                  style={{ marginLeft:"auto", border:"none", background: planOpen ? "var(--chip)" : "var(--primary-soft)", color: planOpen ? "var(--text)" : "#fff", borderRadius:8, padding:"5px 12px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>
+                  {planOpen ? "とじる" : "＋ 追加"}
+                </button>
+              </div>
+
+              {planOpen && (
+                <div style={{ background:"var(--bg)", borderRadius:9, padding:"10px 11px", marginBottom:9 }}>
+                  <input value={planTitle} onChange={e => setPlanTitle(e.target.value)} placeholder="何が来る？（例：新サンマ）"
+                    style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13.5, outline:"none", marginBottom:7, fontFamily:"inherit" }} />
+                  <div style={{ display:"flex", gap:7, marginBottom:7 }}>
+                    <input type="date" value={planDate} onChange={e => setPlanDate(e.target.value)}
+                      style={{ flex:1, minWidth:0, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, outline:"none", fontFamily:"inherit", color:"var(--text)" }} />
+                    <button onClick={savePlan} disabled={planBusy || !planTitle.trim()}
+                      style={{ border:"none", background: (planBusy || !planTitle.trim()) ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:8, padding:"9px 18px", fontSize:13, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
+                      {planEdit ? "直す" : "登録"}
+                    </button>
+                  </div>
+                  <input value={planNote} onChange={e => setPlanNote(e.target.value)} placeholder="ひとこと（例：298円予定・初物で打つ）"
+                    style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"8px 10px", fontSize:12.5, outline:"none", fontFamily:"inherit" }} />
+                </div>
+              )}
+
+              {shownPlans.length === 0 && !planOpen ? (
+                <div style={{ fontSize:11.5, color:"var(--faint)", lineHeight:1.6, marginTop:6 }}>
+                  会議で聞いた「来月これが入る」を登録しておくと、全店で共有できます
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {shownPlans.map(p => {
+                    const st = STATUS[p.status] || STATUS.todo;
+                    const dl = daysLeftOf(p.start_date);
+                    const soon = dl !== null && dl >= 0 && dl <= 7;
+                    return (
+                      <div key={p.id} style={{ border:"1px solid var(--line)", borderRadius:9, padding:"8px 10px", background: p.status === "done" ? "#fafbfa" : "#fff", opacity: p.status === "done" ? 0.75 : 1 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
+                          <button onClick={() => cyclePlanStatus(p)} title="状態を変える"
+                            style={{ border:"none", background:st.bg, color:st.color, borderRadius:6, padding:"2px 8px", fontSize:10, fontWeight:900, cursor:"pointer", flexShrink:0 }}>{st.label}</button>
+                          <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.title}</span>
+                          {dl !== null && (
+                            <span style={{ fontSize:10.5, fontWeight:800, color: soon ? "#e0555f" : "var(--faint)", flexShrink:0 }}>
+                              {dl > 0 ? `あと${dl}日` : dl === 0 ? "今日から" : `${-dl}日前から`}
+                            </span>
+                          )}
+                          <span style={{ marginLeft:"auto", display:"flex", gap:4, flexShrink:0 }}>
+                            <button onClick={() => startEditPlan(p)} aria-label="直す"
+                              style={{ border:"none", background:"transparent", color:"var(--sub)", fontSize:11, fontWeight:800, cursor:"pointer", padding:"2px 4px" }}>直す</button>
+                            <button onClick={() => removePlan(p)} aria-label="消す"
+                              style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:11, fontWeight:800, cursor:"pointer", padding:"2px 4px" }}>消す</button>
+                          </span>
+                        </div>
+                        {p.note && <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.55, marginTop:4 }}>{p.note}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {doneOnes.length > 0 && (
+                <button onClick={() => setPlanAllOpen(v => !v)}
+                  style={{ border:"none", background:"transparent", color:"var(--sub)", fontSize:11, fontWeight:800, cursor:"pointer", marginTop:7, padding:0 }}>
+                  {planAllOpen ? "済んだものを隠す" : `済んだもの ${doneOnes.length} 件を見る`}
+                </button>
+              )}
+            </div>
+          );
+        })()}
 
         <TodayInfoCard />
         {feat && feat.enabled && feat.message && featShow && (

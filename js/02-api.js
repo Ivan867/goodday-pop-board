@@ -491,6 +491,34 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── promo_plans：これからの販促予定 ──
+  async listPlans() {
+    return sbJson(`/rest/v1/promo_plans?select=*&order=start_date.asc.nullslast,created_at.desc`);
+  },
+  async addPlan(p) {
+    return sbOne(`/rest/v1/promo_plans`, {
+      method: "POST",
+      body: p,
+      prefer: "return=representation"
+    });
+  },
+  async updatePlan(id, patch) {
+    return sbOne(`/rest/v1/promo_plans?id=eq.${id}`, {
+      method: "PATCH",
+      body: {
+        ...patch,
+        updated_at: new Date().toISOString()
+      },
+      prefer: "return=representation"
+    });
+  },
+  async deletePlan(id) {
+    const r = await sbFetch(`/rest/v1/promo_plans?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   // ── catalogs：予約カタログ（スーパー別）──
   async listCatalogs(onlyVisible) {
     const q = onlyVisible ? "&visible=eq.true" : "";
