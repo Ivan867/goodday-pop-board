@@ -491,6 +491,34 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── order_items：週間の発注記録（塩干など）──
+  async listOrderItems() {
+    return sbJson(`/rest/v1/order_items?select=*&order=sort_order.asc,created_at.asc`);
+  },
+  async addOrderItem(o) {
+    return sbOne(`/rest/v1/order_items`, {
+      method: "POST",
+      body: o,
+      prefer: "return=representation"
+    });
+  },
+  async updateOrderItem(id, patch) {
+    return sbOne(`/rest/v1/order_items?id=eq.${id}`, {
+      method: "PATCH",
+      body: {
+        ...patch,
+        updated_at: new Date().toISOString()
+      },
+      prefer: "return=representation"
+    });
+  },
+  async deleteOrderItem(id) {
+    const r = await sbFetch(`/rest/v1/order_items?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   // ── promo_plans：これからの販促予定 ──
   async listPlans() {
     return sbJson(`/rest/v1/promo_plans?select=*&order=start_date.asc.nullslast,created_at.desc`);

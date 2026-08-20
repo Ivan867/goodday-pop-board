@@ -247,6 +247,7 @@ function App() {
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="catalog" && <CatalogTab />}
+      {tab==="order"   && <OrderTab />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <LazyTab tabKey="gne" />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}

@@ -283,7 +283,7 @@ function BoardTab({
     d: "M4 4.5h13v15H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"
-  }))], ["request", "問い合せ", false, /*#__PURE__*/React.createElement("svg", {
+  }))], ["order", "発注", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
     height: "18",
@@ -294,13 +294,13 @@ function BoardTab({
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "2.5",
-    y: "5",
-    width: "19",
-    height: "14",
-    rx: "2.5"
+    x: "4",
+    y: "3",
+    width: "16",
+    height: "18",
+    rx: "2"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M3 7l9 6 9-6"
+    d: "M8.5 8h7M8.5 12h7M8.5 16h4"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {

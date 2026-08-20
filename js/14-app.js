@@ -483,7 +483,7 @@ function App() {
   }), tab === "tool" && /*#__PURE__*/React.createElement(PopToolTab, {
     seed: toolSeed,
     onSeedConsumed: () => setToolSeed(null)
-  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
+  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
     key: "search" + dataVer,
     onCreateFromPop: handleCreateFromPop,
     radialOpen: radialOpen,

@@ -3039,8 +3039,598 @@ function CatalogTab() {
     }
   }, "各社の予約ページは時期が終わると消えることがあります。「画像で探す」から、選んだ条件でその年の商品画像を探せます。"))));
 }
+
+// ═══════════ OrderTab：週間の発注記録 ═══════════
+const OI_WDAY = ["日", "月", "火", "水", "木", "金", "土"];
+function OrderTab() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ver, setVer] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [tab, setTab] = useState("today"); // today = 今日の発注 / all = 品目一覧
+  const [editId, setEditId] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    maker: "",
+    unit: "ケース",
+    qty: "",
+    weekdays: [],
+    note: ""
+  });
+  const [checked, setChecked] = useState(() => {
+    // 今日の発注チェックは端末に日付つきで保存（日が変われば消える）
+    try {
+      const raw = JSON.parse(localStorage.getItem("orderChecked") || "{}");
+      const today = new Date().toDateString();
+      return raw.d === today ? raw.v || {} : {};
+    } catch (e) {
+      return {};
+    }
+  });
+  const saveChecked = next => {
+    setChecked(next);
+    try {
+      localStorage.setItem("orderChecked", JSON.stringify({
+        d: new Date().toDateString(),
+        v: next
+      }));
+    } catch (e) {}
+  };
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const d = await api.listOrderItems();
+        if (alive) setItems(d || []);
+      } catch (e) {
+        if (alive) setMsg("読み込めませんでした");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [ver]);
+  const todayIdx = new Date().getDay();
+  const active = items.filter(i => i.active !== false);
+  const todayItems = active.filter(i => Array.isArray(i.weekdays) && i.weekdays.includes(todayIdx));
+  const doneCount = todayItems.filter(i => checked[i.id]).length;
+  const setF = (k, v) => setForm(o => ({
+    ...o,
+    [k]: v
+  }));
+  const toggleWday = d => setForm(o => ({
+    ...o,
+    weekdays: o.weekdays.includes(d) ? o.weekdays.filter(x => x !== d) : o.weekdays.concat(d).sort()
+  }));
+  const openNew = () => {
+    setEditId(null);
+    setForm({
+      name: "",
+      maker: "",
+      unit: "ケース",
+      qty: "",
+      weekdays: [],
+      note: ""
+    });
+    setFormOpen(true);
+    setMsg("");
+  };
+  const openEdit = it => {
+    setEditId(it.id);
+    setForm({
+      name: it.name || "",
+      maker: it.maker || "",
+      unit: it.unit || "ケース",
+      qty: it.qty == null ? "" : String(it.qty),
+      weekdays: Array.isArray(it.weekdays) ? it.weekdays : [],
+      note: it.note || ""
+    });
+    setFormOpen(true);
+    setMsg("");
+  };
+  const save = async () => {
+    if (!form.name.trim()) {
+      setMsg("品名を入れてください");
+      return;
+    }
+    setBusy(true);
+    setMsg("");
+    try {
+      const body = {
+        name: form.name.trim(),
+        maker: form.maker.trim() || null,
+        unit: form.unit.trim() || "ケース",
+        qty: form.qty === "" ? null : Number(form.qty),
+        weekdays: form.weekdays,
+        note: form.note.trim() || null
+      };
+      if (editId) await api.updateOrderItem(editId, body);else await api.addOrderItem({
+        ...body,
+        sort_order: items.length
+      });
+      setFormOpen(false);
+      setEditId(null);
+      setVer(v => v + 1);
+      try {
+        window.dispatchEvent(new CustomEvent("appToast", {
+          detail: editId ? "直しました" : "登録しました"
+        }));
+      } catch (e) {}
+    } catch (e) {
+      setMsg("保存できませんでした");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const remove = async it => {
+    if (!window.confirm(`「${it.name}」を消しますか？`)) return;
+    try {
+      await api.deleteOrderItem(it.id);
+      setVer(v => v + 1);
+    } catch (e) {
+      setMsg("削除できませんでした");
+    }
+  };
+  const inp = {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "1px solid var(--line)",
+    borderRadius: 8,
+    padding: "9px 10px",
+    fontSize: 13.5,
+    outline: "none",
+    fontFamily: "inherit"
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--primary)",
+      padding: "9px 16px",
+      color: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16.5,
+      fontWeight: 800,
+      letterSpacing: "-0.3px"
+    }
+  }, "発注（塩干）")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 1600,
+      margin: "0 auto",
+      padding: "14px 16px 140px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 14
+    }
+  }, [["today", `今日の発注（${OI_WDAY[todayIdx]}）`], ["all", `品目一覧（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setTab(k),
+    style: {
+      flex: 1,
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "10px 6px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      background: tab === k ? "var(--primary)" : "#fff",
+      color: tab === k ? "#fff" : "var(--text)"
+    }
+  }, l))), loading ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13
+    }
+  }, "読み込み中…") : tab === "today" ? /*#__PURE__*/React.createElement(React.Fragment, null, todayItems.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "44px 20px",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, "今日（", OI_WDAY[todayIdx], "曜）の発注はありません"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6
+    }
+  }, "「品目一覧」から曜日を登録できます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, doneCount, " / ", todayItems.length, " 済み"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 5,
+      background: "var(--chip)",
+      borderRadius: 99,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: `${todayItems.length ? doneCount / todayItems.length * 100 : 0}%`,
+      height: "100%",
+      background: "#3f9e63",
+      transition: "width .3s"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 7
+    }
+  }, todayItems.map(it => {
+    const on = !!checked[it.id];
+    return /*#__PURE__*/React.createElement("button", {
+      key: it.id,
+      onClick: () => {
+        const n = {
+          ...checked
+        };
+        if (on) delete n[it.id];else n[it.id] = true;
+        saveChecked(n);
+      },
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 11,
+        textAlign: "left",
+        width: "100%",
+        border: "1px solid " + (on ? "#cfe8d8" : "var(--line)"),
+        background: on ? "#f4faf6" : "#fff",
+        borderRadius: 11,
+        padding: "12px 13px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 24,
+        height: 24,
+        borderRadius: 7,
+        flexShrink: 0,
+        border: on ? "none" : "2px solid var(--line)",
+        background: on ? "#3f9e63" : "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, on && /*#__PURE__*/React.createElement("svg", {
+      width: "14",
+      height: "14",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "#fff",
+      strokeWidth: "3.4",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M4 12.5l5 5L20 6.5"
+    }))), /*#__PURE__*/React.createElement("span", {
+      style: {
+        minWidth: 0,
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 14.5,
+        fontWeight: 900,
+        color: "var(--ink)",
+        textDecoration: on ? "line-through" : "none",
+        opacity: on ? 0.6 : 1
+      }
+    }, it.name), (it.maker || it.note) && /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 11,
+        color: "var(--sub)",
+        marginTop: 2
+      }
+    }, [it.maker, it.note].filter(Boolean).join(" / "))), it.qty != null && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 900,
+        color: "var(--primary-soft)",
+        flexShrink: 0,
+        whiteSpace: "nowrap"
+      }
+    }, it.qty, it.unit || ""));
+  })))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    onClick: openNew,
+    style: {
+      width: "100%",
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
+      borderRadius: 10,
+      padding: "11px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      cursor: "pointer",
+      marginBottom: 12
+    }
+  }, "＋ 品目を追加"), formOpen && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "13px",
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 10
+    }
+  }, editId ? "品目を直す" : "品目を追加"), /*#__PURE__*/React.createElement("input", {
+    value: form.name,
+    onChange: e => setF("name", e.target.value),
+    placeholder: "品名（例：もずく）",
+    style: {
+      ...inp,
+      marginBottom: 8
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    value: form.maker,
+    onChange: e => setF("maker", e.target.value),
+    placeholder: "メーカー・仕入先（例：CGC）",
+    style: {
+      ...inp,
+      marginBottom: 8,
+      fontSize: 12.5
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: form.qty,
+    onChange: e => setF("qty", e.target.value.replace(/[^0-9.]/g, "")),
+    inputMode: "decimal",
+    placeholder: "数量",
+    style: {
+      ...inp,
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    value: form.unit,
+    onChange: e => setF("unit", e.target.value),
+    placeholder: "単位",
+    style: {
+      ...inp,
+      width: 96,
+      flexShrink: 0
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 6
+    }
+  }, "発注する曜日（複数えらべます）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      marginBottom: 10
+    }
+  }, OI_WDAY.map((w, i) => {
+    const on = form.weekdays.includes(i);
+    return /*#__PURE__*/React.createElement("button", {
+      key: i,
+      onClick: () => toggleWday(i),
+      style: {
+        flex: 1,
+        border: on ? "none" : "1px solid var(--line)",
+        background: on ? "var(--primary-soft)" : "#fff",
+        color: on ? "#fff" : i === 0 ? "#d1554f" : i === 6 ? "#3b7dd8" : "var(--sub)",
+        borderRadius: 8,
+        padding: "9px 0",
+        fontSize: 13,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, w);
+  })), /*#__PURE__*/React.createElement("input", {
+    value: form.note,
+    onChange: e => setF("note", e.target.value),
+    placeholder: "メモ（例：連休前は多め）",
+    style: {
+      ...inp,
+      marginBottom: 11,
+      fontSize: 12.5
+    }
+  }), msg && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#b3261e",
+      fontWeight: 800,
+      marginBottom: 9
+    }
+  }, msg), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setFormOpen(false);
+      setEditId(null);
+      setMsg("");
+    },
+    style: {
+      flex: 1,
+      border: "none",
+      background: "var(--chip)",
+      color: "var(--text)",
+      borderRadius: 9,
+      padding: "11px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+    onClick: save,
+    disabled: busy,
+    style: {
+      flex: 2,
+      border: "none",
+      background: busy ? "#ccc" : "var(--primary-soft)",
+      color: "#fff",
+      borderRadius: 9,
+      padding: "11px",
+      fontSize: 13,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, busy ? "保存中…" : editId ? "直す" : "登録する"))), active.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 20px",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, "まだ品目がありません"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6
+    }
+  }, "よく発注するものから登録してみてください")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 7
+    }
+  }, active.map(it => /*#__PURE__*/React.createElement("div", {
+    key: it.id,
+    style: {
+      border: "1px solid var(--line)",
+      borderRadius: 11,
+      padding: "11px 12px",
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 7
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      flex: 1
+    }
+  }, it.name), it.qty != null && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--primary-soft)",
+      flexShrink: 0
+    }
+  }, it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 4,
+      marginBottom: 7
+    }
+  }, OI_WDAY.map((w, i) => {
+    const on = Array.isArray(it.weekdays) && it.weekdays.includes(i);
+    return /*#__PURE__*/React.createElement("span", {
+      key: i,
+      style: {
+        flex: 1,
+        textAlign: "center",
+        borderRadius: 6,
+        padding: "4px 0",
+        fontSize: 11,
+        fontWeight: 900,
+        background: on ? "var(--primary-soft)" : "var(--bg)",
+        color: on ? "#fff" : "var(--faint)"
+      }
+    }, w);
+  })), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      lineHeight: 1.5,
+      marginBottom: 7
+    }
+  }, [it.maker, it.note].filter(Boolean).join(" / ")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => openEdit(it),
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--text)",
+      borderRadius: 7,
+      padding: "5px 13px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "直す"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => remove(it),
+    style: {
+      marginLeft: "auto",
+      border: "1px solid #f0c8c4",
+      background: "#fff",
+      color: "#b3261e",
+      borderRadius: 7,
+      padding: "5px 13px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "消す"))))))));
+}
 ;
 Object.assign(window, {
+  OrderTab,
   CatalogTab,
   CalendarTab,
   CompetitorTab,
