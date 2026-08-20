@@ -2059,7 +2059,14 @@ function CatalogTab() {
   const YEAR_OPTS = [];
   for (let y = NOW_YEAR + 1; y >= 2020; y--) YEAR_OPTS.push(y);
   const [searchYear, setSearchYear] = useState(NOW_YEAR);
-  const [season, setSeason] = useState("年末");
+  // 今の月から「次に準備する時期」を選ぶ（12月に年末を出しても遅いので前倒し）
+  const seasonForMonth = m => {
+    if (m >= 7 && m <= 10) return "年末"; // 夏〜秋：年末の準備
+    if (m === 11) return "クリスマス"; // 11月：クリスマス直前
+    if (m === 12) return "正月"; // 12月：正月直前
+    return "お盆"; // 1〜6月：夏の準備
+  };
+  const [season, setSeason] = useState(() => seasonForMonth(new Date().getMonth() + 1));
   const [genre, setGenre] = useState("both");
   const [mode, setMode] = useState(() => {
     try {
