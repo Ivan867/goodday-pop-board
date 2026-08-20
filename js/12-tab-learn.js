@@ -2662,7 +2662,7 @@ function CatalogTab() {
     onKeyDown: e => {
       if (e.key === "Enter") e.preventDefault();
     },
-    placeholder: "例：うなぎ / オードブル / 3人前",
+    placeholder: "例：まぐろ / 特上 / 4人前",
     "aria-label": "Google検索に足す言葉",
     style: {
       ...selBase,
@@ -2700,7 +2700,7 @@ function CatalogTab() {
     style: {
       color: "var(--text)"
     }
-  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）")), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）")), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",

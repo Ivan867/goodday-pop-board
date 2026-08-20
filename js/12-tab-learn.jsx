@@ -964,7 +964,7 @@ function CatalogTab() {
               <span style={{ position:"relative", display:"block" }}>
                 <input value={extraWords} onChange={e => setExtraWords(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
-                  placeholder="例：うなぎ / オードブル / 3人前" aria-label="Google検索に足す言葉"
+                  placeholder="例：まぐろ / 特上 / 4人前" aria-label="Google検索に足す言葉"
                   style={{ ...selBase, paddingRight: extraWords ? 34 : 10 }} />
                 {extraWords && (
                   <button onClick={() => setExtraWords("")} aria-label="追加検索ワードを消す"
@@ -976,7 +976,7 @@ function CatalogTab() {
 
           <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.7 }}>
             {(CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
-            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）
+            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）
           </div>
         </div>
 
