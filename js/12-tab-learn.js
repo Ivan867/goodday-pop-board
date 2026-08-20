@@ -1987,6 +1987,37 @@ const CAT_SEASON_QUERY = {
   "正月": '("正月" OR "年末年始" OR "新春")'
 };
 const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
+
+// 追加検索ワードの候補（タップで足せる）
+const CAT_WORD_SETS = [{
+  key: "grade",
+  label: "グレード",
+  words: ["特上", "松", "竹", "梅", "上", "並", "極", "プレミアム", "超特選"]
+}, {
+  key: "neta",
+  label: "ネタ",
+  words: ["本まぐろ", "大とろ", "中とろ", "赤身", "うに", "いくら", "のどぐろ", "甘えび", "ずわいがに", "帆立", "穴子", "サーモン"]
+}, {
+  key: "utsuwa",
+  label: "器・盛り方",
+  words: ["桶", "舟", "重箱", "オードブル", "姿造り", "大漁盛り", "海賊盛り", "一段", "二段"]
+}, {
+  key: "ninzu",
+  label: "人数・量",
+  words: ["2人前", "3人前", "4人前", "5人前", "6人前", "10貫", "20貫", "40貫", "50貫", "少人数", "大人数"]
+}, {
+  key: "gyoji",
+  label: "行事",
+  words: ["祝い鯛", "尾頭付き", "おせち", "かに", "うなぎ", "恵方巻", "年越し", "海鮮丼", "ちらし"]
+}, {
+  key: "sanchi",
+  label: "産地・状態",
+  words: ["天然", "養殖", "国産", "地魚", "朝獲れ", "活〆", "解凍", "刺身用"]
+}, {
+  key: "combo",
+  label: "組み合わせ",
+  words: ["特上 本まぐろ", "松竹梅", "桶盛り", "祝い鯛 尾頭付き", "4人前 盛り合わせ", "のどぐろ 地魚", "2人前 少人数"]
+}];
 const CAT_GROUPS = [{
   key: "major",
   label: "大手スーパー",
@@ -2044,6 +2075,21 @@ function CatalogTab() {
     } catch (e) {}
   };
   const [extraWords, setExtraWords] = useState(""); // Google検索に足す言葉
+  const [openWordSet, setOpenWordSet] = useState(""); // 開いているワード集の分類
+
+  // ワードをタップで足す／外す（同じ語をもう一度押すと消える）
+  const toggleWord = w => setExtraWords(prev => {
+    const cur = prev.trim().split(/\s+/).filter(Boolean);
+    const parts = w.trim().split(/\s+/).filter(Boolean);
+    const has = parts.every(x => cur.includes(x));
+    const next = has ? cur.filter(x => !parts.includes(x)) : cur.concat(parts.filter(x => !cur.includes(x)));
+    return next.join(" ");
+  });
+  const hasWord = w => {
+    const cur = extraWords.trim().split(/\s+/).filter(Boolean);
+    const parts = w.trim().split(/\s+/).filter(Boolean);
+    return parts.length > 0 && parts.every(x => cur.includes(x));
+  };
 
   // ── 絞り込み ──
   const [grp, setGrp] = useState("");
@@ -2692,6 +2738,83 @@ function CatalogTab() {
     }
   }, "×")))), /*#__PURE__*/React.createElement("div", {
     style: {
+      marginBottom: 9
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      flexWrap: "wrap"
+    }
+  }, CAT_WORD_SETS.map(ws => {
+    const on = openWordSet === ws.key;
+    const used = ws.words.filter(hasWord).length;
+    return /*#__PURE__*/React.createElement("button", {
+      key: ws.key,
+      onClick: () => setOpenWordSet(on ? "" : ws.key),
+      "aria-expanded": on,
+      style: {
+        border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
+        background: on ? "var(--soft)" : "#fff",
+        color: on ? "var(--primary)" : "var(--sub)",
+        borderRadius: 999,
+        padding: "4px 11px",
+        fontSize: 11.5,
+        fontWeight: 700,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: 4
+      }
+    }, ws.label, used > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        background: "var(--primary-soft)",
+        color: "#fff",
+        borderRadius: 999,
+        fontSize: 9,
+        fontWeight: 900,
+        padding: "0 5px",
+        lineHeight: 1.6
+      }
+    }, used), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 8,
+        transform: on ? "rotate(180deg)" : "none",
+        display: "inline-block",
+        transition: "transform .2s"
+      }
+    }, "▼"));
+  })), openWordSet && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 7,
+      padding: "9px 10px",
+      background: "var(--bg)",
+      borderRadius: 9,
+      display: "flex",
+      gap: 5,
+      flexWrap: "wrap",
+      animation: "fadeUp .2s ease"
+    }
+  }, (CAT_WORD_SETS.find(w => w.key === openWordSet) || {}).words.map(w => {
+    const on = hasWord(w);
+    return /*#__PURE__*/React.createElement("button", {
+      key: w,
+      onClick: () => toggleWord(w),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        background: on ? "var(--primary-soft)" : "#fff",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 7,
+        padding: "5px 10px",
+        fontSize: 12,
+        fontWeight: 700,
+        cursor: "pointer",
+        whiteSpace: "nowrap"
+      }
+    }, w);
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
       fontSize: 10.5,
       color: "var(--sub)",
       lineHeight: 1.7
@@ -2700,7 +2823,7 @@ function CatalogTab() {
     style: {
       color: "var(--text)"
     }
-  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）")), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）。上のボタンから選んでも足せます")), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
