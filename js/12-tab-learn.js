@@ -2043,7 +2043,6 @@ function CatalogTab() {
       localStorage.setItem("catMode", v);
     } catch (e) {}
   };
-  const [storeQuery, setStoreQuery] = useState("");
   const [extraWords, setExtraWords] = useState(""); // Google検索に足す言葉
 
   // ── 絞り込み ──
@@ -2117,13 +2116,7 @@ function CatalogTab() {
   };
 
   // ── 表示対象の絞り込み（visible → 店名 → グループ → 重点調査 → purpose）──
-  const nq = catNormalize(storeQuery);
-  const matchesStore = c => {
-    if (!nq) return true;
-    const cands = [c.store, c.search_name, ...(Array.isArray(c.aliases) ? c.aliases : [])];
-    return cands.some(v => v && catNormalize(v).includes(nq));
-  };
-  const base = list.filter(c => c.visible !== false).filter(matchesStore);
+  const base = list.filter(c => c.visible !== false);
   const byGroup = grp ? base.filter(c => (c.group_type || "local") === grp) : base;
   const shown = favOnly ? byGroup.filter(c => fav[c.id]) : byGroup;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
@@ -2697,57 +2690,6 @@ function CatalogTab() {
       alignItems: "center",
       justifyContent: "center"
     }
-  }, "×"))), /*#__PURE__*/React.createElement("label", {
-    style: {
-      display: "block"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      display: "block",
-      fontSize: 10.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 4
-    }
-  }, "店舗名でしぼる"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "relative",
-      display: "block"
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    value: storeQuery,
-    onChange: e => setStoreQuery(e.target.value),
-    onKeyDown: e => {
-      if (e.key === "Enter") e.preventDefault();
-    },
-    placeholder: "例：角上",
-    "aria-label": "店舗名を検索",
-    style: {
-      ...selBase,
-      paddingRight: storeQuery ? 34 : 10
-    }
-  }), storeQuery && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setStoreQuery(""),
-    "aria-label": "店舗名の検索条件を消す",
-    style: {
-      position: "absolute",
-      right: 6,
-      top: "50%",
-      transform: "translateY(-50%)",
-      border: "none",
-      background: "rgba(120,120,128,0.18)",
-      color: "var(--sub)",
-      borderRadius: "50%",
-      width: 22,
-      height: 22,
-      fontSize: 13,
-      fontWeight: 900,
-      cursor: "pointer",
-      lineHeight: 1,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
   }, "×")))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10.5,
@@ -2758,11 +2700,7 @@ function CatalogTab() {
     style: {
       color: "var(--text)"
     }
-  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
-    style: {
-      color: "var(--text)"
-    }
-  }, "店舗名でしぼる"), "：下に並ぶお店を絞り込みます（検索には使いません）")), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）")), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -2882,9 +2820,8 @@ function CatalogTab() {
     style: {
       marginTop: 6
     }
-  }, storeQuery ? "店舗名の検索条件を変えてみてください" : "絞り込みを外してみてください"), /*#__PURE__*/React.createElement("button", {
+  }, "絞り込みを外してみてください"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
-      setStoreQuery("");
       setGrp("");
       setFavOnly(false);
     },
@@ -2899,7 +2836,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "絞り込みを外す")) : /*#__PURE__*/React.createElement(React.Fragment, null, grp || favOnly || storeQuery ? /*#__PURE__*/React.createElement("div", {
+  }, "絞り込みを外す")) : /*#__PURE__*/React.createElement(React.Fragment, null, grp || favOnly ? /*#__PURE__*/React.createElement("div", {
     className: "cat-grid c-" + cview
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,

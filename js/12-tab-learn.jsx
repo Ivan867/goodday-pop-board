@@ -785,7 +785,6 @@ function CatalogTab() {
   const [genre, setGenre] = useState("both");
   const [mode, setMode] = useState(() => { try { return localStorage.getItem("catMode") || "easy"; } catch(e) { return "easy"; } });
   const setModeSave = (v) => { setMode(v); try { localStorage.setItem("catMode", v); } catch(e) {} };
-  const [storeQuery, setStoreQuery] = useState("");
   const [extraWords, setExtraWords] = useState("");   // Google検索に足す言葉
 
   // ── 絞り込み ──
@@ -833,13 +832,7 @@ function CatalogTab() {
   };
 
   // ── 表示対象の絞り込み（visible → 店名 → グループ → 重点調査 → purpose）──
-  const nq = catNormalize(storeQuery);
-  const matchesStore = (c) => {
-    if (!nq) return true;
-    const cands = [c.store, c.search_name, ...(Array.isArray(c.aliases) ? c.aliases : [])];
-    return cands.some(v => v && catNormalize(v).includes(nq));
-  };
-  const base    = list.filter(c => c.visible !== false).filter(matchesStore);
+  const base    = list.filter(c => c.visible !== false);
   const byGroup = grp ? base.filter(c => (c.group_type || "local") === grp) : base;
   const shown   = favOnly ? byGroup.filter(c => fav[c.id]) : byGroup;
   const cats    = shown.filter(c => (c.purpose || "catalog") === "catalog");
@@ -979,25 +972,11 @@ function CatalogTab() {
                 )}
               </span>
             </label>
-            <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>店舗名でしぼる</span>
-              <span style={{ position:"relative", display:"block" }}>
-                <input value={storeQuery} onChange={e => setStoreQuery(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
-                  placeholder="例：角上" aria-label="店舗名を検索"
-                  style={{ ...selBase, paddingRight: storeQuery ? 34 : 10 }} />
-                {storeQuery && (
-                  <button onClick={() => setStoreQuery("")} aria-label="店舗名の検索条件を消す"
-                    style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", border:"none", background:"rgba(120,120,128,0.18)", color:"var(--sub)", borderRadius:"50%", width:22, height:22, fontSize:13, fontWeight:900, cursor:"pointer", lineHeight:1, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
-                )}
-              </span>
-            </label>
           </div>
 
           <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.7 }}>
             {(CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
-            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）<br/>
-            <b style={{ color:"var(--text)" }}>店舗名でしぼる</b>：下に並ぶお店を絞り込みます（検索には使いません）
+            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：うなぎ → その店のうなぎ商品を探す）
           </div>
         </div>
 
@@ -1036,13 +1015,13 @@ function CatalogTab() {
             {shown.length === 0 ? (
               <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13, lineHeight:1.8 }}>
                 <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>該当するお店がありません</div>
-                <div style={{ marginTop:6 }}>{storeQuery ? "店舗名の検索条件を変えてみてください" : "絞り込みを外してみてください"}</div>
-                <button onClick={() => { setStoreQuery(""); setGrp(""); setFavOnly(false); }}
+                <div style={{ marginTop:6 }}>絞り込みを外してみてください</div>
+                <button onClick={() => { setGrp(""); setFavOnly(false); }}
                   style={{ marginTop:16, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer" }}>絞り込みを外す</button>
               </div>
             ) : (
               <>
-                {grp || favOnly || storeQuery ? (
+                {grp || favOnly ? (
                   <div className={"cat-grid c-" + cview}>{cats.map(c => <Card key={c.id} c={c} />)}</div>
                 ) : (
                   CAT_GROUPS.filter(g => cats.some(c => (c.group_type || "local") === g.key)).map(g => {
