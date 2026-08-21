@@ -759,6 +759,24 @@ const CAT_SEASON_QUERY = {
 
 const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 
+// ── 普段づかい：日常のPOP・売場を見るための語 ──
+const DAILY_TARGET_OPTS = [
+  { key:"pop",    label:"POP・値札",   q:"POP 値札" },
+  { key:"uriba",  label:"売場",        q:"鮮魚売場 売場" },
+  { key:"sashimi",label:"刺身",        q:"刺身 パック" },
+  { key:"sushi",  label:"寿司",        q:"寿司 パック" },
+  { key:"kirimi", label:"切身・干物",  q:"切身 干物" },
+  { key:"souzai", label:"惣菜",        q:"惣菜 揚げ物" },
+];
+
+const DAILY_WORD_SETS = [
+  { key:"uriba",  label:"売場のつくり", words:["平台","冷ケース","対面","エンド","島陳列","レイアウト","什器"] },
+  { key:"pop",    label:"POPの見せ方", words:["手書きPOP","プライスカード","産地表示","のぼり","黒板","シズル","キャッチコピー"] },
+  { key:"uri",    label:"売り方",     words:["特売","日替わり","タイムセール","詰め放題","量り売り","半額","おつとめ品"] },
+  { key:"shohin", label:"商品",       words:["刺身盛り","切身","干物","西京漬け","フライ","漬け丼","柵"] },
+  { key:"kisetsu",label:"季節・鮮度", words:["旬","朝獲れ","天然","地魚","解凍","産地直送","入荷"] },
+];
+
 // 追加検索ワードの候補（タップで足せる）
 const CAT_WORD_SETS = [
   { key:"grade",  label:"グレード", words:["特上","松","竹","梅","上","並","極","プレミアム","超特選"] },
@@ -805,6 +823,10 @@ function CatalogTab() {
   const setModeSave = (v) => { setMode(v); try { localStorage.setItem("catMode", v); } catch(e) {} };
   const [extraWords, setExtraWords] = useState("");   // Google検索に足す言葉
   const [openWordSet, setOpenWordSet] = useState("");  // 開いているワード集の分類
+  // 企画（行事の予約）／普段（日常のPOP・売場）の切り替え
+  const [pageMode, setPageMode] = useState(() => { try { return localStorage.getItem("catPageMode") || "event"; } catch(e) { return "event"; } });
+  const setPageModeSave = (v) => { setPageMode(v); setOpenWordSet(""); try { localStorage.setItem("catPageMode", v); } catch(e) {} };
+  const [dailyTarget, setDailyTarget] = useState("pop");
 
   // ワードをタップで足す／外す（同じ語をもう一度押すと消える）
   const toggleWord = (w) => setExtraWords(prev => {
@@ -851,6 +873,12 @@ function CatalogTab() {
     const storeName = c.search_name || c.store;
     const extra = extraWords.trim();
     let query;
+    if (pageMode === "daily") {
+      // 普段づかい：時期や予約を入れず、日常の売場・POPを探す
+      const t = DAILY_TARGET_OPTS.find(o => o.key === dailyTarget) || DAILY_TARGET_OPTS[0];
+      query = [storeName, "鮮魚", t.q, extra].filter(Boolean).join(" ");
+      return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(query);
+    }
     if (mode === "easy") {
       // かんたん：引用符もORも使わず、そのまま並べる（雰囲気で幅広く）
       query = [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, extra, String(searchYear)]
@@ -950,10 +978,19 @@ function CatalogTab() {
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
 
+        {/* ── 企画／普段の切り替え ── */}
+        <div style={{ display:"flex", gap:7, marginBottom:12 }}>
+          {[["event","🎏 企画・行事"],["daily","🐟 普段の売場"]].map(([k,l]) => (
+            <button key={k} onClick={() => setPageModeSave(k)}
+              style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+                background: pageMode===k ? "var(--primary)" : "#fff", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
+          ))}
+        </div>
+
         {/* ── 共通の検索条件 ── */}
         <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"12px 13px", marginBottom:12 }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:9, gap:8 }}>
-            <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>検索条件をまとめて指定</span>
+            <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>{pageMode === "daily" ? "何を見たいですか？" : "検索条件をまとめて指定"}</span>
             <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2, flexShrink:0 }}>
               {[
                 ["list", "リスト", <svg key="1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
@@ -968,6 +1005,15 @@ function CatalogTab() {
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:8, marginBottom:8 }}>
+            {pageMode === "daily" ? (
+              <label style={{ display:"block" }}>
+                <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>見たいもの</span>
+                <select value={dailyTarget} onChange={e => setDailyTarget(e.target.value)} style={selBase}>
+                  {DAILY_TARGET_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                </select>
+              </label>
+            ) : (
+            <>
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索対象年</span>
               <select value={searchYear} onChange={e => setSearchYear(Number(e.target.value))} style={selBase}>
@@ -992,6 +1038,8 @@ function CatalogTab() {
                 {CAT_MODE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
             </label>
+            </>
+            )}
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:10.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>追加検索ワード</span>
               <span style={{ position:"relative", display:"block" }}>
@@ -1010,7 +1058,7 @@ function CatalogTab() {
           {/* ワード集：分類を押すと候補が開く */}
           <div style={{ marginBottom:9 }}>
             <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
-              {CAT_WORD_SETS.map(ws => {
+              {(pageMode === "daily" ? DAILY_WORD_SETS : CAT_WORD_SETS).map(ws => {
                 const on = openWordSet === ws.key;
                 const used = ws.words.filter(hasWord).length;
                 return (
@@ -1026,7 +1074,7 @@ function CatalogTab() {
 
             {openWordSet && (
               <div style={{ marginTop:7, padding:"9px 10px", background:"var(--bg)", borderRadius:9, display:"flex", gap:5, flexWrap:"wrap", animation:"fadeUp .2s ease" }}>
-                {(CAT_WORD_SETS.find(w => w.key === openWordSet) || {}).words.map(w => {
+                {((pageMode === "daily" ? DAILY_WORD_SETS : CAT_WORD_SETS).find(w => w.key === openWordSet) || {words:[]}).words.map(w => {
                   const on = hasWord(w);
                   return (
                     <button key={w} onClick={() => toggleWord(w)} aria-pressed={on}
@@ -1040,7 +1088,9 @@ function CatalogTab() {
           </div>
 
           <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.7 }}>
-            {(CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
+            {pageMode === "daily"
+              ? "予約や時期をつけず、その店の普段の売場やPOPを探します"
+              : (CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
             <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）。上のボタンから選んでも足せます
           </div>
         </div>
