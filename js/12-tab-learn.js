@@ -3040,51 +3040,48 @@ function CatalogTab() {
   }, "各社の予約ページは時期が終わると消えることがあります。「画像で探す」から、選んだ条件でその年の商品画像を探せます。"))));
 }
 
-// ═══════════ OrderTab：週間の発注記録 ═══════════
+// ═══════════ OrderTab：発注記録（カレンダーで見る） ═══════════
 const OI_WDAY = ["日", "月", "火", "水", "木", "金", "土"];
+const oiYmd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 function OrderTab() {
   const [items, setItems] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
+  const [tab, setTab] = useState("cal"); // cal=カレンダー / items=品目
+  const [cursor, setCursor] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
+  const [pickDate, setPickDate] = useState(oiYmd(new Date())); // 記録を入れる日
+  const [focusItem, setFocusItem] = useState(""); // 絞り込む品目（空=すべて）
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
-  const [tab, setTab] = useState("today"); // today = 今日の発注 / all = 品目一覧
-  const [editId, setEditId] = useState(null);
+
+  // 品目フォーム
   const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({
     name: "",
     maker: "",
     unit: "ケース",
     qty: "",
-    weekdays: [],
     note: ""
   });
-  const [checked, setChecked] = useState(() => {
-    // 今日の発注チェックは端末に日付つきで保存（日が変われば消える）
-    try {
-      const raw = JSON.parse(localStorage.getItem("orderChecked") || "{}");
-      const today = new Date().toDateString();
-      return raw.d === today ? raw.v || {} : {};
-    } catch (e) {
-      return {};
-    }
-  });
-  const saveChecked = next => {
-    setChecked(next);
-    try {
-      localStorage.setItem("orderChecked", JSON.stringify({
-        d: new Date().toDateString(),
-        v: next
-      }));
-    } catch (e) {}
-  };
+  const y = cursor.getFullYear(),
+    mo = cursor.getMonth();
+  const monthFrom = oiYmd(new Date(y, mo, 1));
+  const monthTo = oiYmd(new Date(y, mo + 1, 0));
   useEffect(() => {
     let alive = true;
     setLoading(true);
     (async () => {
       try {
-        const d = await api.listOrderItems();
-        if (alive) setItems(d || []);
+        const [its, lgs] = await Promise.all([api.listOrderItems(), api.listOrderLogs(monthFrom, monthTo)]);
+        if (alive) {
+          setItems(its || []);
+          setLogs(lgs || []);
+        }
       } catch (e) {
         if (alive) setMsg("読み込めませんでした");
       } finally {
@@ -3094,18 +3091,89 @@ function OrderTab() {
     return () => {
       alive = false;
     };
-  }, [ver]);
-  const todayIdx = new Date().getDay();
+  }, [ver, monthFrom, monthTo]);
   const active = items.filter(i => i.active !== false);
-  const todayItems = active.filter(i => Array.isArray(i.weekdays) && i.weekdays.includes(todayIdx));
-  const doneCount = todayItems.filter(i => checked[i.id]).length;
+  const itemById = id => active.find(i => i.id === id);
+  const viewLogs = focusItem ? logs.filter(l => l.item_id === focusItem) : logs;
+
+  // ── カレンダーの升目を作る ──
+  const firstDow = new Date(y, mo, 1).getDay();
+  const lastDate = new Date(y, mo + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= lastDate; d++) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+  const logsOn = d => {
+    if (!d) return [];
+    const key = oiYmd(new Date(y, mo, d));
+    return viewLogs.filter(l => l.ordered_on === key);
+  };
+
+  // ── 週ごとの集計（回数と数量）──
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    const chunk = cells.slice(i, i + 7).filter(Boolean);
+    if (!chunk.length) continue;
+    let cnt = 0,
+      sum = 0;
+    chunk.forEach(d => {
+      logsOn(d).forEach(l => {
+        cnt++;
+        sum += Number(l.qty || 0);
+      });
+    });
+    weeks.push({
+      no: weeks.length + 1,
+      from: chunk[0],
+      to: chunk[chunk.length - 1],
+      count: cnt,
+      qty: sum
+    });
+  }
+  const maxW = Math.max(1, ...weeks.map(w => w.count));
+  const monthCount = weeks.reduce((a, w) => a + w.count, 0);
+  const monthQty = weeks.reduce((a, w) => a + w.qty, 0);
+
+  // ── 記録する ──
+  const [logQty, setLogQty] = useState({}); // {itemId: 数量}
+  const addLog = async it => {
+    const q = logQty[it.id] !== undefined && logQty[it.id] !== "" ? Number(logQty[it.id]) : it.qty != null ? Number(it.qty) : null;
+    setBusy(true);
+    try {
+      await api.addOrderLog({
+        item_id: it.id,
+        ordered_on: pickDate,
+        qty: q,
+        author: localStorage.getItem("lastAuthor") || null
+      });
+      setLogQty(v => ({
+        ...v,
+        [it.id]: ""
+      }));
+      setVer(v => v + 1);
+      try {
+        window.dispatchEvent(new CustomEvent("appToast", {
+          detail: `${it.name} を記録しました`
+        }));
+      } catch (e) {}
+    } catch (e) {
+      setMsg("記録できませんでした");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const delLog = async l => {
+    if (!window.confirm("この記録を消しますか？")) return;
+    try {
+      await api.deleteOrderLog(l.id);
+      setVer(v => v + 1);
+    } catch (e) {}
+  };
+
+  // ── 品目の登録・編集 ──
   const setF = (k, v) => setForm(o => ({
     ...o,
     [k]: v
-  }));
-  const toggleWday = d => setForm(o => ({
-    ...o,
-    weekdays: o.weekdays.includes(d) ? o.weekdays.filter(x => x !== d) : o.weekdays.concat(d).sort()
   }));
   const openNew = () => {
     setEditId(null);
@@ -3114,7 +3182,6 @@ function OrderTab() {
       maker: "",
       unit: "ケース",
       qty: "",
-      weekdays: [],
       note: ""
     });
     setFormOpen(true);
@@ -3127,13 +3194,12 @@ function OrderTab() {
       maker: it.maker || "",
       unit: it.unit || "ケース",
       qty: it.qty == null ? "" : String(it.qty),
-      weekdays: Array.isArray(it.weekdays) ? it.weekdays : [],
       note: it.note || ""
     });
     setFormOpen(true);
     setMsg("");
   };
-  const save = async () => {
+  const saveItem = async () => {
     if (!form.name.trim()) {
       setMsg("品名を入れてください");
       return;
@@ -3146,7 +3212,6 @@ function OrderTab() {
         maker: form.maker.trim() || null,
         unit: form.unit.trim() || "ケース",
         qty: form.qty === "" ? null : Number(form.qty),
-        weekdays: form.weekdays,
         note: form.note.trim() || null
       };
       if (editId) await api.updateOrderItem(editId, body);else await api.addOrderItem({
@@ -3156,25 +3221,18 @@ function OrderTab() {
       setFormOpen(false);
       setEditId(null);
       setVer(v => v + 1);
-      try {
-        window.dispatchEvent(new CustomEvent("appToast", {
-          detail: editId ? "直しました" : "登録しました"
-        }));
-      } catch (e) {}
     } catch (e) {
       setMsg("保存できませんでした");
     } finally {
       setBusy(false);
     }
   };
-  const remove = async it => {
-    if (!window.confirm(`「${it.name}」を消しますか？`)) return;
+  const removeItem = async it => {
+    if (!window.confirm(`「${it.name}」を消しますか？\n記録もまとめて消えます。`)) return;
     try {
       await api.deleteOrderItem(it.id);
       setVer(v => v + 1);
-    } catch (e) {
-      setMsg("削除できませんでした");
-    }
+    } catch (e) {}
   };
   const inp = {
     width: "100%",
@@ -3186,6 +3244,7 @@ function OrderTab() {
     outline: "none",
     fontFamily: "inherit"
   };
+  const todayKey = oiYmd(new Date());
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
@@ -3198,11 +3257,11 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "発注（塩干）")), /*#__PURE__*/React.createElement("div", {
+  }, "発注記録（塩干）")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
-      padding: "14px 16px 140px"
+      padding: "14px 16px 150px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3210,7 +3269,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", `今日の発注（${OI_WDAY[todayIdx]}）`], ["all", `品目一覧（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["cal", "📅 カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -3231,135 +3290,376 @@ function OrderTab() {
       padding: "40px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : tab === "today" ? /*#__PURE__*/React.createElement(React.Fragment, null, todayItems.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      color: "var(--faint)",
-      padding: "44px 20px",
-      fontSize: 13,
-      lineHeight: 1.8
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      color: "var(--sub)"
-    }
-  }, "今日（", OI_WDAY[todayIdx], "曜）の発注はありません"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 6
-    }
-  }, "「品目一覧」から曜日を登録できます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "読み込み中…") : tab === "cal" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
       gap: 8,
-      marginBottom: 10
+      marginBottom: 11
     }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setCursor(new Date(y, mo - 1, 1)),
+    "aria-label": "前の月",
     style: {
-      fontSize: 12,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      width: 34,
+      height: 34,
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
+    }
+  }, "‹"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, y, "年", mo + 1, "月"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setCursor(new Date(y, mo + 1, 1)),
+    "aria-label": "次の月",
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      width: 34,
+      height: 34,
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
+    }
+  }, "›"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: "auto",
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, doneCount, " / ", todayItems.length, " 済み"), /*#__PURE__*/React.createElement("div", {
+  }, monthCount, "回 / ", monthQty > 0 ? monthQty : 0)), active.length > 0 && /*#__PURE__*/React.createElement("select", {
+    value: focusItem,
+    onChange: e => setFocusItem(e.target.value),
     style: {
-      flex: 1,
-      height: 5,
-      background: "var(--chip)",
-      borderRadius: 99,
-      overflow: "hidden"
+      ...inp,
+      marginBottom: 11,
+      fontSize: 12.5,
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: ""
+  }, "すべての品目"), active.map(i => /*#__PURE__*/React.createElement("option", {
+    key: i.id,
+    value: i.id
+  }, i.name))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "10px",
+      marginBottom: 12
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: `${todayItems.length ? doneCount / todayItems.length * 100 : 0}%`,
+      display: "grid",
+      gridTemplateColumns: "repeat(7, 1fr)",
+      gap: 3,
+      marginBottom: 4
+    }
+  }, OI_WDAY.map((w, i) => /*#__PURE__*/React.createElement("div", {
+    key: w,
+    style: {
+      textAlign: "center",
+      fontSize: 10.5,
+      fontWeight: 900,
+      color: i === 0 ? "#d1554f" : i === 6 ? "#3b7dd8" : "var(--faint)",
+      padding: "3px 0"
+    }
+  }, w))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(7, 1fr)",
+      gap: 3
+    }
+  }, cells.map((d, i) => {
+    if (!d) return /*#__PURE__*/React.createElement("div", {
+      key: i
+    });
+    const key = oiYmd(new Date(y, mo, d));
+    const ls = logsOn(d);
+    const isToday = key === todayKey;
+    const isPicked = key === pickDate;
+    const n = ls.length;
+    const bg = n === 0 ? "#fff" : n === 1 ? "#e6f0e9" : n === 2 ? "#c3e0cd" : "#8fc9a6";
+    return /*#__PURE__*/React.createElement("button", {
+      key: i,
+      onClick: () => setPickDate(key),
+      style: {
+        aspectRatio: "1",
+        border: isPicked ? "2px solid var(--primary-soft)" : isToday ? "1.5px solid #e0a020" : "1px solid var(--line)",
+        background: bg,
+        borderRadius: 8,
+        padding: 2,
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11.5,
+        fontWeight: isToday ? 900 : 700,
+        color: "var(--ink)"
+      }
+    }, d), n > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        fontWeight: 900,
+        color: "#2c6b45"
+      }
+    }, n, "件"));
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "12px 13px",
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 9
+    }
+  }, "週ごとの推移"), weeks.map(w => /*#__PURE__*/React.createElement("div", {
+    key: w.no,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 7
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      width: 52,
+      flexShrink: 0
+    }
+  }, "第", w.no, "週"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 16,
+      background: "var(--bg)",
+      borderRadius: 5,
+      overflow: "hidden",
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: `${w.count / maxW * 100}%`,
       height: "100%",
-      background: "#3f9e63",
+      background: "var(--primary-soft)",
+      borderRadius: 5,
       transition: "width .3s"
     }
-  }))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      width: 34,
+      textAlign: "right",
+      flexShrink: 0
+    }
+  }, w.count, "回"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--primary-soft)",
+      width: 46,
+      textAlign: "right",
+      flexShrink: 0
+    }
+  }, w.qty > 0 ? w.qty : "—"))), weeks.every(w => w.count === 0) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--faint)",
+      lineHeight: 1.6
+    }
+  }, "この月の記録はまだありません")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "12px 13px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 3
+    }
+  }, Number(pickDate.slice(5, 7)), "月", Number(pickDate.slice(8, 10)), "日（", OI_WDAY[new Date(pickDate + "T00:00:00").getDay()], "）に発注したもの"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--sub)",
+      marginBottom: 10
+    }
+  }, "カレンダーの日を押すと切り替わります"), (() => {
+    const dayLogs = logs.filter(l => l.ordered_on === pickDate);
+    return dayLogs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--faint)",
+        marginBottom: 12
+      }
+    }, "まだ記録がありません") : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+        marginBottom: 12
+      }
+    }, dayLogs.map(l => {
+      const it = itemById(l.item_id);
+      return /*#__PURE__*/React.createElement("div", {
+        key: l.id,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          background: "var(--bg)",
+          borderRadius: 8,
+          padding: "7px 10px"
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 13,
+          fontWeight: 800,
+          color: "var(--ink)",
+          flex: 1,
+          minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }
+      }, it ? it.name : "（削除済み）"), l.qty != null && /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 12.5,
+          fontWeight: 900,
+          color: "var(--primary-soft)",
+          flexShrink: 0
+        }
+      }, l.qty, it ? it.unit || "" : ""), /*#__PURE__*/React.createElement("button", {
+        onClick: () => delLog(l),
+        "aria-label": "この記録を消す",
+        style: {
+          border: "none",
+          background: "transparent",
+          color: "var(--faint)",
+          fontSize: 15,
+          fontWeight: 900,
+          cursor: "pointer",
+          padding: "0 2px",
+          lineHeight: 1,
+          flexShrink: 0
+        }
+      }, "×"));
+    }));
+  })(), active.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--faint)",
+      lineHeight: 1.6
+    }
+  }, "先に「品目」から登録してください") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 7
+    }
+  }, "この日に発注したものを記録する"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
+      gap: 5
+    }
+  }, active.map(it => /*#__PURE__*/React.createElement("div", {
+    key: it.id,
+    style: {
+      display: "flex",
+      alignItems: "center",
       gap: 7
     }
-  }, todayItems.map(it => {
-    const on = !!checked[it.id];
-    return /*#__PURE__*/React.createElement("button", {
-      key: it.id,
-      onClick: () => {
-        const n = {
-          ...checked
-        };
-        if (on) delete n[it.id];else n[it.id] = true;
-        saveChecked(n);
-      },
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 11,
-        textAlign: "left",
-        width: "100%",
-        border: "1px solid " + (on ? "#cfe8d8" : "var(--line)"),
-        background: on ? "#f4faf6" : "#fff",
-        borderRadius: 11,
-        padding: "12px 13px",
-        cursor: "pointer"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        width: 24,
-        height: 24,
-        borderRadius: 7,
-        flexShrink: 0,
-        border: on ? "none" : "2px solid var(--line)",
-        background: on ? "#3f9e63" : "#fff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }
-    }, on && /*#__PURE__*/React.createElement("svg", {
-      width: "14",
-      height: "14",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "#fff",
-      strokeWidth: "3.4",
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }, /*#__PURE__*/React.createElement("path", {
-      d: "M4 12.5l5 5L20 6.5"
-    }))), /*#__PURE__*/React.createElement("span", {
-      style: {
-        minWidth: 0,
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "block",
-        fontSize: 14.5,
-        fontWeight: 900,
-        color: "var(--ink)",
-        textDecoration: on ? "line-through" : "none",
-        opacity: on ? 0.6 : 1
-      }
-    }, it.name), (it.maker || it.note) && /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "block",
-        fontSize: 11,
-        color: "var(--sub)",
-        marginTop: 2
-      }
-    }, [it.maker, it.note].filter(Boolean).join(" / "))), it.qty != null && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 13.5,
-        fontWeight: 900,
-        color: "var(--primary-soft)",
-        flexShrink: 0,
-        whiteSpace: "nowrap"
-      }
-    }, it.qty, it.unit || ""));
-  })))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 700,
+      color: "var(--text)",
+      flex: 1,
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, it.name), /*#__PURE__*/React.createElement("input", {
+    value: logQty[it.id] ?? "",
+    onChange: e => setLogQty(v => ({
+      ...v,
+      [it.id]: e.target.value.replace(/[^0-9.]/g, "")
+    })),
+    inputMode: "decimal",
+    placeholder: it.qty != null ? String(it.qty) : "数量",
+    style: {
+      width: 64,
+      flexShrink: 0,
+      boxSizing: "border-box",
+      border: "1px solid var(--line)",
+      borderRadius: 7,
+      padding: "6px 8px",
+      fontSize: 12.5,
+      outline: "none",
+      textAlign: "right",
+      fontFamily: "inherit"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "var(--faint)",
+      width: 32,
+      flexShrink: 0
+    }
+  }, it.unit || ""), /*#__PURE__*/React.createElement("button", {
+    onClick: () => addLog(it),
+    disabled: busy,
+    style: {
+      border: "none",
+      background: "var(--primary-soft)",
+      color: "#fff",
+      borderRadius: 7,
+      padding: "6px 13px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer",
+      flexShrink: 0
+    }
+  }, "記録"))))), msg && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#b3261e",
+      fontWeight: 800,
+      marginTop: 9
+    }
+  }, msg))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     onClick: openNew,
     style: {
       width: "100%",
@@ -3409,13 +3709,13 @@ function OrderTab() {
     style: {
       display: "flex",
       gap: 8,
-      marginBottom: 10
+      marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("input", {
     value: form.qty,
     onChange: e => setF("qty", e.target.value.replace(/[^0-9.]/g, "")),
     inputMode: "decimal",
-    placeholder: "数量",
+    placeholder: "いつもの数量",
     style: {
       ...inp,
       flex: 1
@@ -3429,36 +3729,6 @@ function OrderTab() {
       width: 96,
       flexShrink: 0
     }
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 6
-    }
-  }, "発注する曜日（複数えらべます）"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 5,
-      marginBottom: 10
-    }
-  }, OI_WDAY.map((w, i) => {
-    const on = form.weekdays.includes(i);
-    return /*#__PURE__*/React.createElement("button", {
-      key: i,
-      onClick: () => toggleWday(i),
-      style: {
-        flex: 1,
-        border: on ? "none" : "1px solid var(--line)",
-        background: on ? "var(--primary-soft)" : "#fff",
-        color: on ? "#fff" : i === 0 ? "#d1554f" : i === 6 ? "#3b7dd8" : "var(--sub)",
-        borderRadius: 8,
-        padding: "9px 0",
-        fontSize: 13,
-        fontWeight: 900,
-        cursor: "pointer"
-      }
-    }, w);
   })), /*#__PURE__*/React.createElement("input", {
     value: form.note,
     onChange: e => setF("note", e.target.value),
@@ -3498,7 +3768,7 @@ function OrderTab() {
       cursor: "pointer"
     }
   }, "やめる"), /*#__PURE__*/React.createElement("button", {
-    onClick: save,
+    onClick: saveItem,
     disabled: busy,
     style: {
       flex: 2,
@@ -3535,98 +3805,88 @@ function OrderTab() {
       flexDirection: "column",
       gap: 7
     }
-  }, active.map(it => /*#__PURE__*/React.createElement("div", {
-    key: it.id,
-    style: {
-      border: "1px solid var(--line)",
-      borderRadius: 11,
-      padding: "11px 12px",
-      background: "#fff"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginBottom: 7
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 14.5,
-      fontWeight: 900,
-      color: "var(--ink)",
-      minWidth: 0,
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-      flex: 1
-    }
-  }, it.name), it.qty != null && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 900,
-      color: "var(--primary-soft)",
-      flexShrink: 0
-    }
-  }, it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 4,
-      marginBottom: 7
-    }
-  }, OI_WDAY.map((w, i) => {
-    const on = Array.isArray(it.weekdays) && it.weekdays.includes(i);
-    return /*#__PURE__*/React.createElement("span", {
-      key: i,
+  }, active.map(it => {
+    const n = logs.filter(l => l.item_id === it.id).length;
+    const q = logs.filter(l => l.item_id === it.id).reduce((a, l) => a + Number(l.qty || 0), 0);
+    return /*#__PURE__*/React.createElement("div", {
+      key: it.id,
       style: {
-        flex: 1,
-        textAlign: "center",
-        borderRadius: 6,
-        padding: "4px 0",
-        fontSize: 11,
-        fontWeight: 900,
-        background: on ? "var(--primary-soft)" : "var(--bg)",
-        color: on ? "#fff" : "var(--faint)"
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "11px 12px",
+        background: "#fff"
       }
-    }, w);
-  })), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      color: "var(--sub)",
-      lineHeight: 1.5,
-      marginBottom: 7
-    }
-  }, [it.maker, it.note].filter(Boolean).join(" / ")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => openEdit(it),
-    style: {
-      border: "1px solid var(--line)",
-      background: "#fff",
-      color: "var(--text)",
-      borderRadius: 7,
-      padding: "5px 13px",
-      fontSize: 11.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "直す"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => remove(it),
-    style: {
-      marginLeft: "auto",
-      border: "1px solid #f0c8c4",
-      background: "#fff",
-      color: "#b3261e",
-      borderRadius: 7,
-      padding: "5px 13px",
-      fontSize: 11.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "消す"))))))));
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 5
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14.5,
+        fontWeight: 900,
+        color: "var(--ink)",
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        flex: 1
+      }
+    }, it.name), it.qty != null && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 800,
+        color: "var(--faint)",
+        flexShrink: 0
+      }
+    }, "いつも ", it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        fontWeight: 800,
+        color: "var(--primary-soft)",
+        marginBottom: 6
+      }
+    }, mo + 1, "月：", n, "回 / ", q > 0 ? q + (it.unit || "") : "—"), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--sub)",
+        lineHeight: 1.5,
+        marginBottom: 7
+      }
+    }, [it.maker, it.note].filter(Boolean).join(" / ")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => openEdit(it),
+      style: {
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--text)",
+        borderRadius: 7,
+        padding: "5px 13px",
+        fontSize: 11.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "直す"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => removeItem(it),
+      style: {
+        marginLeft: "auto",
+        border: "1px solid #f0c8c4",
+        background: "#fff",
+        color: "#b3261e",
+        borderRadius: 7,
+        padding: "5px 13px",
+        fontSize: 11.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "消す")));
+  })))));
 }
 ;
 Object.assign(window, {

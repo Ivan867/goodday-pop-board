@@ -519,6 +519,27 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── order_logs：実際に発注した記録 ──
+  async listOrderLogs(fromDate, toDate) {
+    let q = `/rest/v1/order_logs?select=*&order=ordered_on.desc`;
+    if (fromDate) q += `&ordered_on=gte.${fromDate}`;
+    if (toDate) q += `&ordered_on=lte.${toDate}`;
+    return sbJson(q);
+  },
+  async addOrderLog(o) {
+    return sbOne(`/rest/v1/order_logs`, {
+      method: "POST",
+      body: o,
+      prefer: "return=representation"
+    });
+  },
+  async deleteOrderLog(id) {
+    const r = await sbFetch(`/rest/v1/order_logs?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   // ── promo_plans：これからの販促予定 ──
   async listPlans() {
     return sbJson(`/rest/v1/promo_plans?select=*&order=start_date.asc.nullslast,created_at.desc`);
