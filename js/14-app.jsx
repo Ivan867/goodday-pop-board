@@ -222,7 +222,7 @@ function App() {
   ];
 
   return (
-    <div id="app-scroll" style={{ background:"var(--bg)", paddingBottom:"calc(62px + env(safe-area-inset-bottom))" }}>
+    <div id="app-scroll" style={{ background:"var(--bg)", paddingBottom:"calc(70px + env(safe-area-inset-bottom))" }}>
       {(pullY > 0 || refreshing) && (
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
@@ -277,8 +277,8 @@ function App() {
         </div>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 18px), 2px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 8px", pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"9px 10px", pointerEvents:"auto" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 22px), 0px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 6px", pointerEvents:"none" }}>
+       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"12px 10px", pointerEvents:"auto" }}>
         {[tabs[0], { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
@@ -298,9 +298,9 @@ function App() {
           const showBadge = badgeOn && key === notice.badge_tab;
             return (
             <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill"
-              style={{ position:"relative", border:"none", cursor:"pointer", padding:"10px 20px", display:"flex", flexDirection:"row", alignItems:"center", gap:7, borderRadius:24, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
+              style={{ position:"relative", border:"none", cursor:"pointer", padding:"12px 24px", display:"flex", flexDirection:"row", alignItems:"center", gap:8, borderRadius:26, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
               <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
-              <span style={{ fontSize:13.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>
+              <span style={{ fontSize:14.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>
               {showBadge && (
                 <>
                   <span style={{ position:"absolute", top:6, right:12, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px var(--primary-soft)" }} />

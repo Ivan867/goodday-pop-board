@@ -397,7 +397,7 @@ function App() {
     id: "app-scroll",
     style: {
       background: "var(--bg)",
-      paddingBottom: "calc(62px + env(safe-area-inset-bottom))"
+      paddingBottom: "calc(70px + env(safe-area-inset-bottom))"
     }
   }, (pullY > 0 || refreshing) && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -581,11 +581,11 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "max(calc(env(safe-area-inset-bottom) - 18px), 2px)",
+      bottom: "max(calc(env(safe-area-inset-bottom) - 22px), 0px)",
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
-      padding: "0 8px",
+      padding: "0 6px",
       pointerEvents: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -600,7 +600,7 @@ function App() {
       border: "none",
       borderRadius: 18,
       boxShadow: "0 2px 12px rgba(74,122,176,0.35)",
-      padding: "9px 10px",
+      padding: "12px 10px",
       pointerEvents: "auto"
     }
   }, [tabs[0], {
@@ -728,12 +728,12 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "10px 20px",
+        padding: "12px 24px",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: 7,
-        borderRadius: 24,
+        gap: 8,
+        borderRadius: 26,
         background: active ? "#fff" : "transparent",
         color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)",
         transition: "background .2s"
@@ -746,7 +746,7 @@ function App() {
       }
     }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13.5,
+        fontSize: 14.5,
         fontWeight: 800,
         whiteSpace: "nowrap"
       }
