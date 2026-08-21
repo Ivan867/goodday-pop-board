@@ -187,6 +187,39 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     a.click();
   };
 
+  // ── 印刷：余白なしで用紙いっぱいに出す（1枚／2枚／4枚）──
+  const [showPrint, setShowPrint] = useState(false);
+  const doPrint = (perPage) => {
+    setShowPrint(false);
+    const url = pop.image_url;
+    // 1枚=A4全面、2枚=A4を上下半分、4枚=A4を4分割
+    const layout = perPage === 1
+      ? `.sheet{display:block}.cell{width:210mm;height:297mm}`
+      : perPage === 2
+      ? `.sheet{display:flex;flex-direction:column}.cell{width:210mm;height:148.5mm}`
+      : `.sheet{display:flex;flex-wrap:wrap}.cell{width:105mm;height:148.5mm}`;
+    const cells = Array.from({ length: perPage }, () => `<div class="cell"><img src="${url}"></div>`).join("");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${pop.product_name}</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  html,body { margin:0; padding:0; }
+  .sheet { width:210mm; height:297mm; }
+  .cell { box-sizing:border-box; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .cell img { width:100%; height:100%; object-fit:contain; display:block; }
+  ${layout}
+  @media print { html,body { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style></head><body><div class="sheet">${cells}</div>
+<script>
+  var im = document.images[0];
+  function go(){ setTimeout(function(){ window.focus(); window.print(); }, 250); }
+  if (im && !im.complete) { im.onload = go; im.onerror = go; } else { go(); }
+<\/script></body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) { alert("ポップアップがブロックされました。ブラウザの設定で許可してください。"); return; }
+    w.document.write(html);
+    w.document.close();
+  };
+
   const handleArchiveConfirm = async () => {
     if (!pwInput.trim()) { setPwError("パスワードを入力してください"); return; }
     setArcBusy(true); setPwError("");
@@ -261,6 +294,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     hand: <path d="M9 11V5.5a1.5 1.5 0 013 0V11m0-1V4.5a1.5 1.5 0 013 0V11m0-.5V6.5a1.5 1.5 0 013 0V15a6 6 0 01-6 6h-1.5a5 5 0 01-3.6-1.5L4 15.8a1.6 1.6 0 012.3-2.2L8 15V6a1.5 1.5 0 013 0" />,
     chat: <path d="M20 11.5a7.5 7.5 0 01-10.9 6.7L4 19.5l1.4-4.4A7.5 7.5 0 1120 11.5z" />,
     save: <><path d="M12 3.5v11m0 0l-4-4m4 4l4-4" /><path d="M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2" /></>,
+    print: <><path d="M6.5 9V3.5h11V9" /><rect x="3.5" y="9" width="17" height="7.5" rx="1.5" /><path d="M6.5 14h11v6.5h-11z" /></>,
     edit: <><path d="M4 20h4L18.5 9.5a2 2 0 00-2.8-2.8L5 17.2 4 20z" /><path d="M14 6.5l3.5 3.5" /></>,
     trash: <><path d="M4 7h16M9 7V5a1.5 1.5 0 013 0v0a1.5 1.5 0 013 0v2M6 7l1 12.5A1.5 1.5 0 008.5 21h7A1.5 1.5 0 0017 19.5L18 7" /></>,
     box: <><path d="M3 8.5h18v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5z" /><path d="M2.5 4.5h19v4h-19zM9.5 12.5h5" /></>,
@@ -296,6 +330,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <ActionBtn onClick={handleUsed} active={used} activeColor="#2f6fb0" icon={used ? "check" : "hand"} label={used ? `使った ${usedCount}` : "使った"} />
             <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} icon="chat" label={String(comments.length)} />
             <ActionBtn onClick={handleDownload} icon="save" label="保存" />
+            <ActionBtn onClick={() => setShowPrint(true)} icon="print" label="印刷" />
             {onCreateFromPop && <ActionBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
             <ActionBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管" />
             <ActionBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="削除" />
@@ -327,7 +362,39 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               </div>
             </div>
           )}
-          {showDelConfirm && (
+          {showPrint && (
+        <div onClick={() => setShowPrint(false)}
+          style={{ position:"fixed", inset:0, zIndex:1200, background:"rgba(15,25,38,0.55)", display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background:"#fff", borderRadius:"20px 20px 0 0", width:"100%", maxWidth:460, padding:"20px 18px calc(22px + env(safe-area-inset-bottom))", animation:"sheetUp .3s cubic-bezier(.16,1,.3,1)" }}>
+            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>印刷する</div>
+            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.6, marginBottom:16 }}>
+              余白なしでA4に印刷します。印刷画面が開いたら、用紙をA4・余白を「なし」にして印刷してください。
+            </div>
+            {[
+              [1, "A4に1枚", "1ページいっぱいに大きく"],
+              [2, "A4に2枚", "上下に半分ずつ（A5サイズ）"],
+              [4, "A4に4枚", "4分割（A6サイズ）"],
+            ].map(([n, title, desc]) => (
+              <button key={n} onClick={() => doPrint(n)}
+                style={{ display:"flex", alignItems:"center", gap:12, width:"100%", textAlign:"left", border:"1px solid var(--line)", background:"#fff", borderRadius:12, padding:"13px 14px", marginBottom:8, cursor:"pointer" }}>
+                <span style={{ width:32, height:44, flexShrink:0, border:"1.5px solid var(--primary-soft)", borderRadius:3, display:"grid",
+                  gridTemplateColumns: n === 4 ? "1fr 1fr" : "1fr", gridTemplateRows: n === 1 ? "1fr" : "1fr 1fr", gap:1.5, padding:1.5 }}>
+                  {Array.from({ length: n }, (_, i) => <span key={i} style={{ background:"var(--primary-soft)", opacity:0.35, borderRadius:1 }} />)}
+                </span>
+                <span style={{ minWidth:0 }}>
+                  <span style={{ display:"block", fontSize:14, fontWeight:900, color:"var(--ink)" }}>{title}</span>
+                  <span style={{ display:"block", fontSize:11, color:"var(--sub)", marginTop:2 }}>{desc}</span>
+                </span>
+              </button>
+            ))}
+            <button onClick={() => setShowPrint(false)}
+              style={{ width:"100%", border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:11, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer", marginTop:6 }}>やめる</button>
+          </div>
+        </div>
+      )}
+
+      {showDelConfirm && (
             <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10, padding:20 }} onClick={()=>{ setShowDelConfirm(false); setPwInput(""); setPwError(""); }}>
               <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
                 <div style={{ fontSize:14, fontWeight:800, color:"#d05050", marginBottom:8 }}>本当に削除しますか？</div>
