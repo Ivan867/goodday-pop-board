@@ -900,7 +900,6 @@ function CatalogTab() {
   const byGroup = grp ? base.filter(c => (c.group_type || "local") === grp) : base;
   const shown   = favOnly ? byGroup.filter(c => fav[c.id]) : byGroup;
   const cats    = shown.filter(c => (c.purpose || "catalog") === "catalog");
-  const flyers  = shown.filter(c => c.purpose === "flyer");
   const favCount  = base.filter(c => fav[c.id]).length;
   const groupsIn  = CAT_GROUPS.filter(g => base.some(c => (c.group_type || "local") === g.key));
 
@@ -976,7 +975,7 @@ function CatalogTab() {
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
-        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>予約カタログ</div>
+        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
@@ -1090,12 +1089,6 @@ function CatalogTab() {
             )}
           </div>
 
-          <div style={{ fontSize:10.5, color:"var(--sub)", lineHeight:1.7 }}>
-            {pageMode === "daily"
-              ? "予約や時期をつけず、その店の普段の売場やPOPを探します"
-              : (CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help}<br/>
-            <b style={{ color:"var(--text)" }}>追加検索ワード</b>：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）。上のボタンから選んでも足せます
-          </div>
         </div>
 
         {loading ? (
@@ -1157,19 +1150,9 @@ function CatalogTab() {
                   })
                 )}
 
-                {flyers.length > 0 && (
-                  <>
-                    <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", margin:"22px 0 4px" }}>店売りチラシ</div>
-                    <div style={{ fontSize:11, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>当日に何を前面に出して売るかを見る用</div>
-                    <div className={"cat-grid c-" + cview}>{flyers.map(c => <Card key={c.id} c={c} />)}</div>
-                  </>
-                )}
               </>
             )}
 
-            <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
-              各社の予約ページは時期が終わると消えることがあります。「画像で探す」から、選んだ条件でその年の商品画像を探せます。
-            </div>
           </>
         )}
       </div>

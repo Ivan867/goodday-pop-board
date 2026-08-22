@@ -2250,7 +2250,6 @@ function CatalogTab() {
   const byGroup = grp ? base.filter(c => (c.group_type || "local") === grp) : base;
   const shown = favOnly ? byGroup.filter(c => fav[c.id]) : byGroup;
   const cats = shown.filter(c => (c.purpose || "catalog") === "catalog");
-  const flyers = shown.filter(c => c.purpose === "flyer");
   const favCount = base.filter(c => fav[c.id]).length;
   const groupsIn = CAT_GROUPS.filter(g => base.some(c => (c.group_type || "local") === g.key));
 
@@ -2525,7 +2524,7 @@ function CatalogTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "予約カタログ")), /*#__PURE__*/React.createElement("div", {
+  }, "カタログ")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -2938,17 +2937,7 @@ function CatalogTab() {
         whiteSpace: "nowrap"
       }
     }, w);
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10.5,
-      color: "var(--sub)",
-      lineHeight: 1.7
-    }
-  }, pageMode === "daily" ? "予約や時期をつけず、その店の普段の売場やPOPを探します" : (CAT_MODE_OPTS.find(o => o.key === mode) || CAT_MODE_OPTS[0]).help, /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", {
-    style: {
-      color: "var(--text)"
-    }
-  }, "追加検索ワード"), "：入れた言葉がGoogle検索に足されます（例：まぐろ → その店のまぐろ商品を探す）。上のボタンから選んでも足せます")), loading ? /*#__PURE__*/React.createElement("div", {
+  })))), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -3129,33 +3118,7 @@ function CatalogTab() {
       key: c.id,
       c: c
     }))));
-  }), flyers.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13.5,
-      fontWeight: 900,
-      color: "var(--ink)",
-      margin: "22px 0 4px"
-    }
-  }, "店売りチラシ"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: "var(--sub)",
-      marginBottom: 10,
-      lineHeight: 1.6
-    }
-  }, "当日に何を前面に出して売るかを見る用"), /*#__PURE__*/React.createElement("div", {
-    className: "cat-grid c-" + cview
-  }, flyers.map(c => /*#__PURE__*/React.createElement(Card, {
-    key: c.id,
-    c: c
-  }))))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10.5,
-      color: "var(--faint)",
-      lineHeight: 1.7,
-      marginTop: 18
-    }
-  }, "各社の予約ページは時期が終わると消えることがあります。「画像で探す」から、選んだ条件でその年の商品画像を探せます。"))));
+  })))));
 }
 
 // ═══════════ OrderTab：発注記録（カレンダーで見る） ═══════════
