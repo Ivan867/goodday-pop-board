@@ -3125,6 +3125,28 @@ function CatalogTab() {
 const OI_WDAY = ["日", "月", "火", "水", "木", "金", "土"];
 const oiYmd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 function OrderTab() {
+  // 簡易ロック（他の人が誤って開かないように）
+  const [unlocked, setUnlocked] = useState(() => {
+    try {
+      return sessionStorage.getItem("orderUnlocked") === "1";
+    } catch (e) {
+      return false;
+    }
+  });
+  const [pw, setPw] = useState("");
+  const [pwErr, setPwErr] = useState("");
+  const tryUnlock = () => {
+    if (pw.trim() === "5555") {
+      setUnlocked(true);
+      setPwErr("");
+      try {
+        sessionStorage.setItem("orderUnlocked", "1");
+      } catch (e) {}
+    } else {
+      setPwErr("番号が違います");
+      setPw("");
+    }
+  };
   const [items, setItems] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -3326,6 +3348,120 @@ function OrderTab() {
     fontFamily: "inherit"
   };
   const todayKey = oiYmd(new Date());
+  if (!unlocked) {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "var(--primary)",
+        padding: "9px 16px",
+        color: "#fff"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16.5,
+        fontWeight: 800,
+        letterSpacing: "-0.3px"
+      }
+    }, "管理")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 420,
+        margin: "0 auto",
+        padding: "56px 24px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        marginBottom: 22
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 52,
+        height: 52,
+        margin: "0 auto 14px",
+        borderRadius: 15,
+        background: "var(--soft)",
+        color: "var(--primary-soft)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: "26",
+      height: "26",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "1.9",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("rect", {
+      x: "4.5",
+      y: "10.5",
+      width: "15",
+      height: "10",
+      rx: "2"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M8 10.5V7a4 4 0 018 0v3.5"
+    }))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 900,
+        color: "var(--ink)",
+        marginBottom: 5
+      }
+    }, "番号を入れてください"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "var(--sub)"
+      }
+    }, "4けたの番号でひらきます")), /*#__PURE__*/React.createElement("input", {
+      type: "password",
+      inputMode: "numeric",
+      value: pw,
+      maxLength: 8,
+      onChange: e => {
+        setPw(e.target.value.replace(/[^0-9]/g, ""));
+        setPwErr("");
+      },
+      onKeyDown: e => {
+        if (e.key === "Enter") tryUnlock();
+      },
+      placeholder: "••••",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "2px solid var(--line)",
+        borderRadius: 11,
+        padding: "14px",
+        fontSize: 22,
+        textAlign: "center",
+        letterSpacing: "0.5em",
+        outline: "none",
+        fontFamily: "inherit",
+        marginBottom: pwErr ? 8 : 16
+      }
+    }), pwErr && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "#b3261e",
+        fontWeight: 800,
+        textAlign: "center",
+        marginBottom: 12
+      }
+    }, pwErr), /*#__PURE__*/React.createElement("button", {
+      onClick: tryUnlock,
+      style: {
+        width: "100%",
+        border: "none",
+        background: "var(--primary)",
+        color: "#fff",
+        borderRadius: 11,
+        padding: "14px",
+        fontSize: 15,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "ひらく")));
+  }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
