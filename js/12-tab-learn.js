@@ -1991,12 +1991,20 @@ const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 // ── 普段づかい：日常のPOP・売場を見るための語 ──
 const DAILY_TARGET_OPTS = [{
   key: "pop",
-  label: "POP・値札",
-  q: "POP 値札"
+  label: "POP",
+  q: "POP 手書きPOP"
+}, {
+  key: "fuda",
+  label: "値札",
+  q: "値札 プライスカード"
+}, {
+  key: "taimen",
+  label: "対面",
+  q: "対面販売 対面ケース"
 }, {
   key: "uriba",
   label: "売場",
-  q: "鮮魚売場 売場"
+  q: "鮮魚売場 陳列"
 }, {
   key: "sashimi",
   label: "刺身",
@@ -2007,8 +2015,12 @@ const DAILY_TARGET_OPTS = [{
   q: "寿司 パック"
 }, {
   key: "kirimi",
-  label: "切身・干物",
-  q: "切身 干物"
+  label: "切身",
+  q: "切身 パック"
+}, {
+  key: "himono",
+  label: "干物",
+  q: "干物 塩干"
 }, {
   key: "souzai",
   label: "惣菜",
@@ -2069,28 +2081,23 @@ const CAT_WORD_SETS = [{
 const CAT_GROUPS = [{
   key: "major",
   label: "大手スーパー",
-  color: "#3b7dd8",
-  emoji: "🛒"
+  color: "#3b7dd8"
 }, {
   key: "local",
   label: "ローカルスーパー",
-  color: "#3f9e63",
-  emoji: "🏘"
+  color: "#3f9e63"
 }, {
   key: "pro",
   label: "専門店",
-  color: "#d1554f",
-  emoji: "🐟"
+  color: "#d1554f"
 }, {
   key: "premium",
   label: "高質スーパー",
-  color: "#c39a3c",
-  emoji: "✨"
+  color: "#c39a3c"
 }, {
   key: "coop",
   label: "生協",
-  color: "#e08a1e",
-  emoji: "🤝"
+  color: "#e08a1e"
 }];
 
 // 全角・半角・大文字小文字・空白の揺れを吸収して比べる
@@ -2530,7 +2537,7 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "🎏 企画・行事"], ["daily", "🐟 普段の売場"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", "企画・行事"], ["daily", "普段の売場"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
@@ -3016,11 +3023,7 @@ function CatalogTab() {
       alignItems: "center",
       gap: 5
     }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12
-    }
-  }, g.emoji), g.label)), favCount > 0 && /*#__PURE__*/React.createElement("button", {
+  }, g.label)), favCount > 0 && /*#__PURE__*/React.createElement("button", {
     onClick: () => setFavOnly(v => !v),
     "aria-pressed": favOnly,
     style: {
@@ -3036,7 +3039,7 @@ function CatalogTab() {
       alignItems: "center",
       gap: 4
     }
-  }, "⭐ 重点調査 ", favCount)), /*#__PURE__*/React.createElement("div", {
+  }, "重点調査 ", favCount)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       fontWeight: 700,
@@ -3099,9 +3102,13 @@ function CatalogTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 15
+        width: 4,
+        height: 15,
+        borderRadius: 2,
+        background: g.color,
+        flexShrink: 0
       }
-    }, g.emoji), /*#__PURE__*/React.createElement("span", {
+    }), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 14,
         fontWeight: 900,
@@ -3380,7 +3387,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["cal", "📅 カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {

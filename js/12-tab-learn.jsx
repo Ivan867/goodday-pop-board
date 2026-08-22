@@ -761,12 +761,15 @@ const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 
 // ── 普段づかい：日常のPOP・売場を見るための語 ──
 const DAILY_TARGET_OPTS = [
-  { key:"pop",    label:"POP・値札",   q:"POP 値札" },
-  { key:"uriba",  label:"売場",        q:"鮮魚売場 売場" },
-  { key:"sashimi",label:"刺身",        q:"刺身 パック" },
-  { key:"sushi",  label:"寿司",        q:"寿司 パック" },
-  { key:"kirimi", label:"切身・干物",  q:"切身 干物" },
-  { key:"souzai", label:"惣菜",        q:"惣菜 揚げ物" },
+  { key:"pop",     label:"POP",     q:"POP 手書きPOP" },
+  { key:"fuda",    label:"値札",    q:"値札 プライスカード" },
+  { key:"taimen",  label:"対面",    q:"対面販売 対面ケース" },
+  { key:"uriba",   label:"売場",    q:"鮮魚売場 陳列" },
+  { key:"sashimi", label:"刺身",    q:"刺身 パック" },
+  { key:"sushi",   label:"寿司",    q:"寿司 パック" },
+  { key:"kirimi",  label:"切身",    q:"切身 パック" },
+  { key:"himono",  label:"干物",    q:"干物 塩干" },
+  { key:"souzai",  label:"惣菜",    q:"惣菜 揚げ物" },
 ];
 
 const DAILY_WORD_SETS = [
@@ -789,11 +792,11 @@ const CAT_WORD_SETS = [
 ];
 
 const CAT_GROUPS = [
-  { key:"major",   label:"大手スーパー",     color:"#3b7dd8", emoji:"🛒" },
-  { key:"local",   label:"ローカルスーパー", color:"#3f9e63", emoji:"🏘" },
-  { key:"pro",     label:"専門店",           color:"#d1554f", emoji:"🐟" },
-  { key:"premium", label:"高質スーパー",     color:"#c39a3c", emoji:"✨" },
-  { key:"coop",    label:"生協",             color:"#e08a1e", emoji:"🤝" },
+  { key:"major",   label:"大手スーパー",     color:"#3b7dd8" },
+  { key:"local",   label:"ローカルスーパー", color:"#3f9e63" },
+  { key:"pro",     label:"専門店",           color:"#d1554f" },
+  { key:"premium", label:"高質スーパー",     color:"#c39a3c" },
+  { key:"coop",    label:"生協",             color:"#e08a1e" },
 ];
 
 // 全角・半角・大文字小文字・空白の揺れを吸収して比べる
@@ -980,7 +983,7 @@ function CatalogTab() {
 
         {/* ── 企画／普段の切り替え ── */}
         <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-          {[["event","🎏 企画・行事"],["daily","🐟 普段の売場"]].map(([k,l]) => (
+          {[["event","企画・行事"],["daily","普段の売場"]].map(([k,l]) => (
             <button key={k} onClick={() => setPageModeSave(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
                 background: pageMode===k ? "var(--primary)" : "#fff", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
@@ -1114,13 +1117,13 @@ function CatalogTab() {
               {groupsIn.map(g => (
                 <button key={g.key} onClick={() => setGrp(g.key)} aria-pressed={grp===g.key}
                   style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
-                  <span style={{ fontSize:12 }}>{g.emoji}</span>{g.label}
+                  {g.label}
                 </button>
               ))}
               {favCount > 0 && (
                 <button onClick={() => setFavOnly(v => !v)} aria-pressed={favOnly}
                   style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-                  ⭐ 重点調査 {favCount}
+                  重点調査 {favCount}
                 </button>
               )}
             </div>
@@ -1144,7 +1147,7 @@ function CatalogTab() {
                     return (
                       <div key={g.key} style={{ marginBottom:20 }}>
                         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
-                          <span style={{ fontSize:15 }}>{g.emoji}</span>
+                          <span style={{ width:4, height:15, borderRadius:2, background:g.color, flexShrink:0 }} />
                           <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
                           <span style={{ fontSize:10.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
                         </div>
@@ -1293,7 +1296,7 @@ function OrderTab() {
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
         <div style={{ display:"flex", gap:7, marginBottom:14 }}>
-          {[["cal","📅 カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
+          {[["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
             <button key={k} onClick={() => setTab(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
                 background: tab===k ? "var(--primary)" : "#fff", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
