@@ -884,6 +884,7 @@ function CatalogTab() {
   };
   const buildPinterestUrl = (c) => "https://www.pinterest.jp/search/pins/?q=" + encodeURIComponent(buildQueryText(c));
   const buildYahooUrl = (c) => "https://search.yahoo.co.jp/image/search?p=" + encodeURIComponent(buildQueryText(c));
+  const buildBingUrl  = (c) => "https://www.bing.com/images/search?q=" + encodeURIComponent(buildQueryText(c));
 
   const buildImageSearchUrl = (c) => {
     const storeName = c.search_name || c.store;
@@ -937,6 +938,9 @@ function CatalogTab() {
         <a href={buildYahooUrl(c)} target="_blank" rel="noopener noreferrer" title="Yahoo!画像検索で探す" aria-label="Yahoo!画像検索で探す"
           style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
             color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>Y!</a>
+        <a href={buildBingUrl(c)} target="_blank" rel="noopener noreferrer" title="Bing画像検索で探す" aria-label="Bing画像検索で探す"
+          style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
+            color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>B</a>
         {pageMode === "daily" && (
           <a href={buildPinterestUrl(c)} target="_blank" rel="noopener noreferrer" title="Pinterestで探す" aria-label="Pinterestで探す"
             style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",

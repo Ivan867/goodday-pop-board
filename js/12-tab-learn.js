@@ -2236,6 +2236,7 @@ function CatalogTab() {
   };
   const buildPinterestUrl = c => "https://www.pinterest.jp/search/pins/?q=" + encodeURIComponent(buildQueryText(c));
   const buildYahooUrl = c => "https://search.yahoo.co.jp/image/search?p=" + encodeURIComponent(buildQueryText(c));
+  const buildBingUrl = c => "https://www.bing.com/images/search?q=" + encodeURIComponent(buildQueryText(c));
   const buildImageSearchUrl = c => {
     const storeName = c.search_name || c.store;
     const extra = extraWords.trim();
@@ -2349,7 +2350,28 @@ function CatalogTab() {
         fontWeight: 900,
         letterSpacing: "-0.2px"
       }
-    }, "Y!"), pageMode === "daily" && /*#__PURE__*/React.createElement("a", {
+    }, "Y!"), /*#__PURE__*/React.createElement("a", {
+      href: buildBingUrl(c),
+      target: "_blank",
+      rel: "noopener noreferrer",
+      title: "Bing画像検索で探す",
+      "aria-label": "Bing画像検索で探す",
+      style: {
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textDecoration: "none",
+        color: "var(--sub)",
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: compact ? "0 9px" : "0 11px",
+        fontSize: compact ? 10 : 11,
+        fontWeight: 900,
+        letterSpacing: "-0.2px"
+      }
+    }, "B"), pageMode === "daily" && /*#__PURE__*/React.createElement("a", {
       href: buildPinterestUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
