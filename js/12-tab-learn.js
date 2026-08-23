@@ -2022,6 +2022,10 @@ const DAILY_TARGET_OPTS = [{
   label: "干物",
   q: "干物 塩干"
 }, {
+  key: "kaisendon",
+  label: "海鮮丼",
+  q: "海鮮丼 丼"
+}, {
   key: "souzai",
   label: "惣菜",
   q: "惣菜 揚げ物"

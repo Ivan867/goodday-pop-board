@@ -769,6 +769,7 @@ const DAILY_TARGET_OPTS = [
   { key:"sushi",   label:"寿司",    q:"寿司 パック" },
   { key:"kirimi",  label:"切身",    q:"切身 パック" },
   { key:"himono",  label:"干物",    q:"干物 塩干" },
+  { key:"kaisendon", label:"海鮮丼",  q:"海鮮丼 丼" },
   { key:"souzai",  label:"惣菜",    q:"惣菜 揚げ物" },
 ];
 
