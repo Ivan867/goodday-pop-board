@@ -883,6 +883,7 @@ function CatalogTab() {
     return [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, extra, String(searchYear)].filter(Boolean).join(" ");
   };
   const buildPinterestUrl = (c) => "https://www.pinterest.jp/search/pins/?q=" + encodeURIComponent(buildQueryText(c));
+  const buildYahooUrl = (c) => "https://search.yahoo.co.jp/image/search?p=" + encodeURIComponent(buildQueryText(c));
 
   const buildImageSearchUrl = (c) => {
     const storeName = c.search_name || c.store;
@@ -933,8 +934,11 @@ function CatalogTab() {
         <a href={buildImageSearchUrl(c)} target="_blank" rel="noopener noreferrer"
           style={{ flex:1, display:"block", textAlign:"center", textDecoration:"none", fontSize: compact ? 10.5 : 11.5, fontWeight:900,
             color:"#fff", background:g.color, borderRadius:8, padding: compact ? "7px 0" : "9px 0", whiteSpace:"nowrap" }}>画像で探す</a>
+        <a href={buildYahooUrl(c)} target="_blank" rel="noopener noreferrer" title="Yahoo!画像検索で探す" aria-label="Yahoo!画像検索で探す"
+          style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
+            color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>Y!</a>
         {pageMode === "daily" && (
-          <a href={buildPinterestUrl(c)} target="_blank" rel="noopener noreferrer" title="Pinterestで探す"
+          <a href={buildPinterestUrl(c)} target="_blank" rel="noopener noreferrer" title="Pinterestで探す" aria-label="Pinterestで探す"
             style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
               color:"#fff", background:"#bd081c", borderRadius:8, padding: compact ? "0 10px" : "0 12px" }}>
             <svg width={compact ? 13 : 15} height={compact ? 13 : 15} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.64 7.86 6.36 9.31-.09-.79-.17-2 .03-2.87.18-.78 1.17-4.97 1.17-4.97s-.3-.6-.3-1.48c0-1.39.8-2.43 1.8-2.43.85 0 1.26.64 1.26 1.4 0 .85-.54 2.13-.83 3.31-.24.99.5 1.8 1.47 1.8 1.77 0 3.13-1.87 3.13-4.56 0-2.39-1.71-4.05-4.16-4.05-2.83 0-4.5 2.12-4.5 4.32 0 .86.33 1.78.74 2.28.08.1.09.19.07.29-.08.32-.25 1-.28 1.14-.05.19-.15.23-.35.14-1.3-.61-2.11-2.5-2.11-4.03 0-3.28 2.38-6.29 6.87-6.29 3.6 0 6.4 2.57 6.4 6 0 3.58-2.26 6.46-5.39 6.46-1.05 0-2.04-.55-2.38-1.2l-.65 2.47c-.23.9-.86 2.03-1.29 2.72.97.3 2 .46 3.07.46 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>

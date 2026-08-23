@@ -2235,6 +2235,7 @@ function CatalogTab() {
     return [storeName, season, "予約", CAT_GENRE_EASY[genre] || CAT_GENRE_EASY.both, extra, String(searchYear)].filter(Boolean).join(" ");
   };
   const buildPinterestUrl = c => "https://www.pinterest.jp/search/pins/?q=" + encodeURIComponent(buildQueryText(c));
+  const buildYahooUrl = c => "https://search.yahoo.co.jp/image/search?p=" + encodeURIComponent(buildQueryText(c));
   const buildImageSearchUrl = c => {
     const storeName = c.search_name || c.store;
     const extra = extraWords.trim();
@@ -2327,11 +2328,33 @@ function CatalogTab() {
         padding: compact ? "7px 0" : "9px 0",
         whiteSpace: "nowrap"
       }
-    }, "画像で探す"), pageMode === "daily" && /*#__PURE__*/React.createElement("a", {
+    }, "画像で探す"), /*#__PURE__*/React.createElement("a", {
+      href: buildYahooUrl(c),
+      target: "_blank",
+      rel: "noopener noreferrer",
+      title: "Yahoo!画像検索で探す",
+      "aria-label": "Yahoo!画像検索で探す",
+      style: {
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textDecoration: "none",
+        color: "var(--sub)",
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: compact ? "0 9px" : "0 11px",
+        fontSize: compact ? 10 : 11,
+        fontWeight: 900,
+        letterSpacing: "-0.2px"
+      }
+    }, "Y!"), pageMode === "daily" && /*#__PURE__*/React.createElement("a", {
       href: buildPinterestUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
       title: "Pinterestで探す",
+      "aria-label": "Pinterestで探す",
       style: {
         flexShrink: 0,
         display: "flex",
