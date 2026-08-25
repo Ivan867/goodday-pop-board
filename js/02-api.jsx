@@ -248,6 +248,28 @@ const api = {
     return true;
   },
 
+  // ── order_sheets：週間の発注指示書（紙で渡す用）──
+  async getSheet(weekStart) {
+    const rows = await sbJson(`/rest/v1/order_sheets?week_start=eq.${weekStart}&select=*`);
+    return rows[0] || null;
+  },
+  async listSheetRows(sheetId) {
+    return sbJson(`/rest/v1/order_sheet_rows?sheet_id=eq.${sheetId}&select=*&order=sort_order.asc`);
+  },
+  async createSheet(o) { return sbOne(`/rest/v1/order_sheets`, { method:"POST", body:o, prefer:"return=representation" }); },
+  async updateSheet(id, patch) {
+    return sbOne(`/rest/v1/order_sheets?id=eq.${id}`, { method:"PATCH", body:{ ...patch, updated_at:new Date().toISOString() }, prefer:"return=representation" });
+  },
+  async addSheetRow(o) { return sbOne(`/rest/v1/order_sheet_rows`, { method:"POST", body:o, prefer:"return=representation" }); },
+  async updateSheetRow(id, patch) {
+    return sbOne(`/rest/v1/order_sheet_rows?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=representation" });
+  },
+  async deleteSheetRow(id) {
+    const r = await sbFetch(`/rest/v1/order_sheet_rows?id=eq.${id}`, { method:"DELETE" });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
+
   // ── order_logs：実際に発注した記録 ──
   async listOrderLogs(fromDate, toDate) {
     let q = `/rest/v1/order_logs?select=*&order=ordered_on.desc`;
