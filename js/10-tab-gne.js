@@ -562,7 +562,7 @@ function GeneratorTab() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "GNE｜POP画像ジェネレーター"), /*#__PURE__*/React.createElement("div", {
+  }, "入力支援"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",

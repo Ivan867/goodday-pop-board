@@ -159,7 +159,7 @@ function BoardTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  }))], ["gne", "入力ジェネ", false, /*#__PURE__*/React.createElement("svg", {
+  }))], ["gne", "入力支援", false, /*#__PURE__*/React.createElement("svg", {
     key: "b",
     width: "18",
     height: "18",
