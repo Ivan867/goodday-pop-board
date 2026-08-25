@@ -1992,7 +1992,7 @@ const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 const DAILY_TARGET_OPTS = [{
   key: "pop",
   label: "POP",
-  q: "POP 手書きPOP"
+  q: "POP"
 }, {
   key: "fuda",
   label: "値札",

@@ -761,7 +761,7 @@ const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 
 // ── 普段づかい：日常のPOP・売場を見るための語 ──
 const DAILY_TARGET_OPTS = [
-  { key:"pop",     label:"POP",     q:"POP 手書きPOP" },
+  { key:"pop",     label:"POP",     q:"POP" },
   { key:"fuda",    label:"値札",    q:"値札 プライスカード" },
   { key:"taimen",  label:"対面",    q:"対面販売 対面ケース" },
   { key:"uriba",   label:"売場",    q:"鮮魚売場 陳列" },
