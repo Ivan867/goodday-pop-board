@@ -1996,39 +1996,39 @@ const DAILY_TARGET_OPTS = [{
 }, {
   key: "fuda",
   label: "値札",
-  q: "値札 プライスカード"
+  q: "値札"
 }, {
   key: "taimen",
   label: "対面",
-  q: "対面販売 対面ケース"
+  q: "対面"
 }, {
   key: "uriba",
   label: "売場",
-  q: "鮮魚売場 陳列"
+  q: "売場"
 }, {
   key: "sashimi",
   label: "刺身",
-  q: "刺身 パック"
+  q: "刺身"
 }, {
   key: "sushi",
   label: "寿司",
-  q: "寿司 パック"
+  q: "寿司"
 }, {
   key: "kirimi",
   label: "切身",
-  q: "切身 パック"
+  q: "切身"
 }, {
   key: "himono",
   label: "干物",
-  q: "干物 塩干"
+  q: "干物"
 }, {
   key: "kaisendon",
   label: "海鮮丼",
-  q: "海鮮丼 丼"
+  q: "海鮮丼"
 }, {
   key: "souzai",
   label: "惣菜",
-  q: "惣菜 揚げ物"
+  q: "惣菜"
 }];
 const DAILY_WORD_SETS = [{
   key: "uriba",

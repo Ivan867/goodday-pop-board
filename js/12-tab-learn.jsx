@@ -761,16 +761,16 @@ const CAT_RESERVATION_QUERY = '("予約" OR "ご予約" OR "予約承り")';
 
 // ── 普段づかい：日常のPOP・売場を見るための語 ──
 const DAILY_TARGET_OPTS = [
-  { key:"pop",     label:"POP",     q:"POP" },
-  { key:"fuda",    label:"値札",    q:"値札 プライスカード" },
-  { key:"taimen",  label:"対面",    q:"対面販売 対面ケース" },
-  { key:"uriba",   label:"売場",    q:"鮮魚売場 陳列" },
-  { key:"sashimi", label:"刺身",    q:"刺身 パック" },
-  { key:"sushi",   label:"寿司",    q:"寿司 パック" },
-  { key:"kirimi",  label:"切身",    q:"切身 パック" },
-  { key:"himono",  label:"干物",    q:"干物 塩干" },
-  { key:"kaisendon", label:"海鮮丼",  q:"海鮮丼 丼" },
-  { key:"souzai",  label:"惣菜",    q:"惣菜 揚げ物" },
+  { key:"pop",       label:"POP",     q:"POP" },
+  { key:"fuda",      label:"値札",    q:"値札" },
+  { key:"taimen",    label:"対面",    q:"対面" },
+  { key:"uriba",     label:"売場",    q:"売場" },
+  { key:"sashimi",   label:"刺身",    q:"刺身" },
+  { key:"sushi",     label:"寿司",    q:"寿司" },
+  { key:"kirimi",    label:"切身",    q:"切身" },
+  { key:"himono",    label:"干物",    q:"干物" },
+  { key:"kaisendon", label:"海鮮丼",  q:"海鮮丼" },
+  { key:"souzai",    label:"惣菜",    q:"惣菜" },
 ];
 
 const DAILY_WORD_SETS = [
