@@ -248,6 +248,35 @@ const api = {
     return true;
   },
 
+  // ── pop_bundles：行事ごとのPOPの束 ──
+  async listBundles() { return sbJson(`/rest/v1/pop_bundles?visible=eq.true&select=*&order=sort_order.asc,created_at.asc`); },
+  async getBundleItems(bundleId) {
+    return sbJson(`/rest/v1/pop_bundle_items?bundle_id=eq.${bundleId}&select=id,pop_id,sort_order&order=sort_order.asc`);
+  },
+  async getBundlePrompts(bundleId) {
+    return sbJson(`/rest/v1/pop_bundle_prompts?bundle_id=eq.${bundleId}&select=*&order=sort_order.asc`);
+  },
+  async addBundle(b) { return sbOne(`/rest/v1/pop_bundles`, { method:"POST", body:b, prefer:"return=representation" }); },
+  async updateBundle(id, patch) {
+    return sbOne(`/rest/v1/pop_bundles?id=eq.${id}`, { method:"PATCH", body:{ ...patch, updated_at:new Date().toISOString() }, prefer:"return=representation" });
+  },
+  async deleteBundle(id) {
+    const r = await sbFetch(`/rest/v1/pop_bundles?id=eq.${id}`, { method:"DELETE" });
+    if (!r.ok) throw new Error(await r.text()); return true;
+  },
+  async addToBundle(bundleId, popId, sortOrder) {
+    return sbOne(`/rest/v1/pop_bundle_items`, { method:"POST", body:{ bundle_id:bundleId, pop_id:popId, sort_order:sortOrder||0 }, prefer:"return=representation" });
+  },
+  async removeFromBundle(itemId) {
+    const r = await sbFetch(`/rest/v1/pop_bundle_items?id=eq.${itemId}`, { method:"DELETE" });
+    if (!r.ok) throw new Error(await r.text()); return true;
+  },
+  async addBundlePrompt(o) { return sbOne(`/rest/v1/pop_bundle_prompts`, { method:"POST", body:o, prefer:"return=representation" }); },
+  async deleteBundlePrompt(id) {
+    const r = await sbFetch(`/rest/v1/pop_bundle_prompts?id=eq.${id}`, { method:"DELETE" });
+    if (!r.ok) throw new Error(await r.text()); return true;
+  },
+
   // ── order_sheets：週間の発注指示書（紙で渡す用）──
   async getSheet(weekStart) {
     const rows = await sbJson(`/rest/v1/order_sheets?week_start=eq.${weekStart}&select=*`);

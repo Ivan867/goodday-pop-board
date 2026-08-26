@@ -4667,8 +4667,676 @@ function OrderTab() {
     }, "消す")));
   })))));
 }
+
+// ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
+function BundleTab() {
+  const [sel, setSel] = useState(null); // 開いているPOP詳細
+  const [bundles, setBundles] = useState([]);
+  const [pops, setPops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState(""); // 開いている束
+  const [items, setItems] = useState([]); // 開いた束の中身
+  const [prompts, setPrompts] = useState([]);
+  const [inner, setInner] = useState(false);
+  const [ver, setVer] = useState(0);
+  const [addOpen, setAddOpen] = useState(false); // POPを足すシート
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [tab, setTab] = useState("pop"); // pop / prompt
+  const [pForm, setPForm] = useState({
+    title: "",
+    prompt: ""
+  });
+  const [pOpen, setPOpen] = useState(false);
+  const [copied, setCopied] = useState("");
+  const NOW_M = new Date().getMonth() + 1;
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const [bs, ps] = await Promise.all([api.listBundles(), api.listAll()]);
+        if (alive) {
+          setBundles(bs || []);
+          setPops(ps || []);
+        }
+      } catch (e) {} finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [ver]);
+
+  // 束を開く
+  const openBundle = async b => {
+    setOpenId(b.id);
+    setInner(true);
+    setTab("pop");
+    try {
+      const [its, prs] = await Promise.all([api.getBundleItems(b.id), api.getBundlePrompts(b.id)]);
+      setItems(its || []);
+      setPrompts(prs || []);
+    } catch (e) {
+      setItems([]);
+      setPrompts([]);
+    }
+  };
+  const reloadInner = async () => {
+    if (!openId) return;
+    try {
+      const [its, prs] = await Promise.all([api.getBundleItems(openId), api.getBundlePrompts(openId)]);
+      setItems(its || []);
+      setPrompts(prs || []);
+    } catch (e) {}
+  };
+  const popById = id => pops.find(p => p.id === id);
+  const bundleNow = bundles.filter(b => Array.isArray(b.months) && b.months.includes(NOW_M) && b.months.length < 12);
+  const bundleAll = bundles.filter(b => !bundleNow.some(x => x.id === b.id));
+  const cur = bundles.find(b => b.id === openId);
+  const addPop = async p => {
+    setBusy(true);
+    try {
+      await api.addToBundle(openId, p.id, items.length);
+      await reloadInner();
+    } catch (e) {} finally {
+      setBusy(false);
+    }
+  };
+  const delItem = async it => {
+    try {
+      await api.removeFromBundle(it.id);
+      await reloadInner();
+    } catch (e) {}
+  };
+  const savePrompt = async () => {
+    if (!pForm.prompt.trim()) return;
+    setBusy(true);
+    try {
+      await api.addBundlePrompt({
+        bundle_id: openId,
+        title: pForm.title.trim() || null,
+        prompt: pForm.prompt.trim(),
+        sort_order: prompts.length
+      });
+      setPForm({
+        title: "",
+        prompt: ""
+      });
+      setPOpen(false);
+      await reloadInner();
+    } catch (e) {} finally {
+      setBusy(false);
+    }
+  };
+  const delPrompt = async pr => {
+    if (!window.confirm("このプロンプトを消しますか？")) return;
+    try {
+      await api.deleteBundlePrompt(pr.id);
+      await reloadInner();
+    } catch (e) {}
+  };
+  const copyPrompt = async pr => {
+    try {
+      await navigator.clipboard.writeText(pr.prompt);
+      setCopied(pr.id);
+      setTimeout(() => setCopied(""), 1600);
+    } catch (e) {}
+  };
+
+  // ── 束の中身 ──
+  if (inner && cur) {
+    const inIds = items.map(i => i.pop_id);
+    const cands = pops.filter(p => !inIds.includes(p.id)).filter(p => !q.trim() || (p.product_name || "").includes(q.trim()) || (p.store_name || "").includes(q.trim()));
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "var(--primary)",
+        padding: "9px 16px",
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        setInner(false);
+        setOpenId("");
+        setQ("");
+      },
+      "aria-label": "もどる",
+      style: {
+        border: "none",
+        background: "rgba(255,255,255,0.2)",
+        color: "#fff",
+        borderRadius: 8,
+        width: 30,
+        height: 30,
+        fontSize: 16,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, "‹"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 800,
+        letterSpacing: "-0.3px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, cur.name))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 1600,
+        margin: "0 auto",
+        padding: "14px 16px 150px"
+      }
+    }, cur.note && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "var(--sub)",
+        lineHeight: 1.6,
+        marginBottom: 12
+      }
+    }, cur.note), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 7,
+        marginBottom: 14
+      }
+    }, [["pop", `POP（${items.length}）`], ["prompt", `プロンプト（${prompts.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setTab(k),
+      style: {
+        flex: 1,
+        border: "1px solid var(--line)",
+        borderRadius: 10,
+        padding: "10px 6px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer",
+        background: tab === k ? "var(--primary)" : "#fff",
+        color: tab === k ? "#fff" : "var(--text)"
+      }
+    }, l))), tab === "pop" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+      onClick: () => setAddOpen(v => !v),
+      style: {
+        width: "100%",
+        border: "none",
+        background: addOpen ? "var(--chip)" : "var(--primary-soft)",
+        color: addOpen ? "var(--text)" : "#fff",
+        borderRadius: 10,
+        padding: "11px",
+        fontSize: 13.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        marginBottom: 12
+      }
+    }, addOpen ? "とじる" : "＋ POPを足す"), addOpen && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "11px 12px",
+        marginBottom: 14
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      value: q,
+      onChange: e => setQ(e.target.value),
+      placeholder: "品名でさがす",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "9px 10px",
+        fontSize: 13,
+        outline: "none",
+        marginBottom: 9,
+        fontFamily: "inherit"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxHeight: 260,
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: 5
+      }
+    }, cands.slice(0, 60).map(p => /*#__PURE__*/React.createElement("button", {
+      key: p.id,
+      onClick: () => addPop(p),
+      disabled: busy,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        textAlign: "left",
+        border: "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 8,
+        padding: "6px 8px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: p.image_url,
+      alt: "",
+      style: {
+        width: 32,
+        height: 44,
+        objectFit: "cover",
+        borderRadius: 4,
+        flexShrink: 0,
+        background: "var(--bg)"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        minWidth: 0,
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 12.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, p.product_name), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 10,
+        color: "var(--faint)"
+      }
+    }, p.store_name)), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 16,
+        fontWeight: 900,
+        color: "var(--primary-soft)",
+        flexShrink: 0
+      }
+    }, "＋"))), cands.length === 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--faint)",
+        padding: "8px 2px"
+      }
+    }, "足せるPOPがありません"))), items.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        color: "var(--faint)",
+        padding: "40px 20px",
+        fontSize: 13,
+        lineHeight: 1.8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 800,
+        color: "var(--sub)"
+      }
+    }, "まだPOPが入っていません"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 6
+      }
+    }, "「＋ POPを足す」から入れてください")) : /*#__PURE__*/React.createElement("div", {
+      className: "pop-grid v-sm"
+    }, items.map(it => {
+      const p = popById(it.pop_id);
+      if (!p) return null;
+      return /*#__PURE__*/React.createElement("div", {
+        key: it.id,
+        style: {
+          position: "relative"
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => setSel(p),
+        style: {
+          display: "block",
+          width: "100%",
+          border: "1px solid var(--line)",
+          background: "#fff",
+          borderRadius: 10,
+          overflow: "hidden",
+          cursor: "pointer",
+          padding: 0
+        }
+      }, /*#__PURE__*/React.createElement("img", {
+        src: p.image_url,
+        alt: p.product_name,
+        style: {
+          width: "100%",
+          aspectRatio: "1/1.414",
+          objectFit: "cover",
+          display: "block",
+          background: "var(--bg)"
+        }
+      }), /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 11,
+          fontWeight: 800,
+          color: "var(--ink)",
+          padding: "5px 6px",
+          textAlign: "left",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }
+      }, p.product_name)), /*#__PURE__*/React.createElement("button", {
+        onClick: () => delItem(it),
+        "aria-label": "この束から外す",
+        style: {
+          position: "absolute",
+          top: 4,
+          right: 4,
+          border: "none",
+          background: "rgba(20,20,25,0.6)",
+          color: "#fff",
+          borderRadius: "50%",
+          width: 22,
+          height: 22,
+          fontSize: 13,
+          fontWeight: 900,
+          cursor: "pointer",
+          lineHeight: 1
+        }
+      }, "×"));
+    }))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+      onClick: () => setPOpen(v => !v),
+      style: {
+        width: "100%",
+        border: "none",
+        background: pOpen ? "var(--chip)" : "var(--primary-soft)",
+        color: pOpen ? "var(--text)" : "#fff",
+        borderRadius: 10,
+        padding: "11px",
+        fontSize: 13.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        marginBottom: 12
+      }
+    }, pOpen ? "とじる" : "＋ プロンプトを足す"), pOpen && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "12px",
+        marginBottom: 14
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      value: pForm.title,
+      onChange: e => setPForm(o => ({
+        ...o,
+        title: e.target.value
+      })),
+      placeholder: "名前（例：うなぎ縦A4）",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "9px 10px",
+        fontSize: 13,
+        outline: "none",
+        marginBottom: 8,
+        fontFamily: "inherit"
+      }
+    }), /*#__PURE__*/React.createElement("textarea", {
+      value: pForm.prompt,
+      onChange: e => setPForm(o => ({
+        ...o,
+        prompt: e.target.value
+      })),
+      rows: 6,
+      placeholder: "プロンプトを貼り付け",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "9px 10px",
+        fontSize: 12.5,
+        outline: "none",
+        resize: "vertical",
+        fontFamily: "inherit",
+        lineHeight: 1.6,
+        marginBottom: 10
+      }
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: savePrompt,
+      disabled: busy || !pForm.prompt.trim(),
+      style: {
+        width: "100%",
+        border: "none",
+        background: busy || !pForm.prompt.trim() ? "#ccc" : "var(--primary-soft)",
+        color: "#fff",
+        borderRadius: 9,
+        padding: "11px",
+        fontSize: 13,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, "保存する")), prompts.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        color: "var(--faint)",
+        padding: "40px 20px",
+        fontSize: 13,
+        lineHeight: 1.8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 800,
+        color: "var(--sub)"
+      }
+    }, "まだプロンプトがありません"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 6
+      }
+    }, "うまくいったプロンプトを残しておくと、来年そのまま使えます")) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 9
+      }
+    }, prompts.map(pr => /*#__PURE__*/React.createElement("div", {
+      key: pr.id,
+      style: {
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "11px 12px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 7
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        fontWeight: 900,
+        color: "var(--ink)",
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, pr.title || "（名前なし）"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => copyPrompt(pr),
+      style: {
+        border: "none",
+        background: copied === pr.id ? "#3f9e63" : "var(--primary-soft)",
+        color: "#fff",
+        borderRadius: 7,
+        padding: "5px 12px",
+        fontSize: 11.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        flexShrink: 0
+      }
+    }, copied === pr.id ? "コピーした" : "コピー"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => delPrompt(pr),
+      "aria-label": "消す",
+      style: {
+        border: "none",
+        background: "transparent",
+        color: "var(--faint)",
+        fontSize: 15,
+        fontWeight: 900,
+        cursor: "pointer",
+        padding: "0 2px",
+        flexShrink: 0
+      }
+    }, "×")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--sub)",
+        lineHeight: 1.6,
+        whiteSpace: "pre-wrap",
+        maxHeight: 110,
+        overflow: "hidden"
+      }
+    }, pr.prompt)))))), sel && /*#__PURE__*/React.createElement(PopDetail, {
+      pop: sel,
+      onClose: () => setSel(null),
+      onDelete: () => {
+        setSel(null);
+        reloadInner();
+      },
+      navList: items.map(i => popById(i.pop_id)).filter(Boolean),
+      onNav: p => setSel(p)
+    }));
+  }
+
+  // ── 束の一覧 ──
+  const Card = ({
+    b,
+    hot
+  }) => /*#__PURE__*/React.createElement("button", {
+    onClick: () => openBundle(b),
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 11,
+      textAlign: "left",
+      width: "100%",
+      border: hot ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
+      background: hot ? "var(--soft)" : "#fff",
+      borderRadius: 12,
+      padding: "13px 14px",
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      minWidth: 0,
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 2
+    }
+  }, b.name), b.note && /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 11,
+      color: "var(--sub)",
+      lineHeight: 1.5
+    }
+  }, b.note)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 17,
+      fontWeight: 900,
+      color: "var(--faint)",
+      flexShrink: 0
+    }
+  }, "›"));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--primary)",
+      padding: "9px 16px",
+      color: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16.5,
+      fontWeight: 800,
+      letterSpacing: "-0.3px"
+    }
+  }, "まとめ")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 1600,
+      margin: "0 auto",
+      padding: "14px 16px 150px"
+    }
+  }, loading ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13
+    }
+  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, bundleNow.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 9
+    }
+  }, "いまの時期（", NOW_M, "月）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginBottom: 20
+    }
+  }, bundleNow.map(b => /*#__PURE__*/React.createElement(Card, {
+    key: b.id,
+    b: b,
+    hot: true
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 9
+    }
+  }, "すべて"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, bundleAll.map(b => /*#__PURE__*/React.createElement(Card, {
+    key: b.id,
+    b: b
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--faint)",
+      lineHeight: 1.7,
+      marginTop: 18
+    }
+  }, "行事ごとにPOPとプロンプトをまとめておく場所です。毎年その時期になったら、ここを開けば去年つくったものがそのまま出てきます。"))));
+}
 ;
 Object.assign(window, {
+  BundleTab,
   OrderTab,
   CatalogTab,
   CalendarTab,
