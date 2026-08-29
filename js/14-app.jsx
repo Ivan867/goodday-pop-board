@@ -280,7 +280,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 22px), 0px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 6px", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"12px 10px", pointerEvents:"auto" }}>
-        {[tabs[0], { key:"bundle", icon:"📅", label:"カレンダー", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+        {[tabs[0], { key:"bundle", icon:"📅", label:"カレンダー", color:"#3f7cb0" }, { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
@@ -300,7 +300,7 @@ function App() {
           const showBadge = badgeOn && key === notice.badge_tab;
             return (
             <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill" aria-label={navLabel} title={navLabel}
-              style={{ position:"relative", border:"none", cursor:"pointer", padding:"12px 22px", display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", borderRadius:26, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
+              style={{ position:"relative", border:"none", cursor:"pointer", padding:"12px 17px", display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", borderRadius:26, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
               <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
 
               {showBadge && (

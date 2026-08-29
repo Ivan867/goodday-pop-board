@@ -612,6 +612,11 @@ function App() {
     label: "カレンダー",
     color: "#3f7cb0"
   }, {
+    key: "catalog",
+    icon: "📖",
+    label: "カタログ",
+    color: "#b8860b"
+  }, {
     key: "__more",
     icon: "≡",
     label: "メニュー",
@@ -751,7 +756,7 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "12px 22px",
+        padding: "12px 17px",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
