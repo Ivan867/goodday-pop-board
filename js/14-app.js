@@ -604,10 +604,10 @@ function App() {
       pointerEvents: "auto"
     }
   }, [tabs[0], {
-    key: "catalog",
-    icon: "📖",
-    label: "カタログ",
-    color: "#b8860b"
+    key: "bundle",
+    icon: "📅",
+    label: "カレンダー",
+    color: "#3f7cb0"
   }, {
     key: "__more",
     icon: "≡",
@@ -712,9 +712,27 @@ function App() {
         strokeLinejoin: "round"
       }, /*#__PURE__*/React.createElement("path", {
         d: "M6 6l12 12M18 6L6 18"
+      })),
+      bundle: /*#__PURE__*/React.createElement("svg", {
+        width: "18",
+        height: "18",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("rect", {
+        x: "3.5",
+        y: "5",
+        width: "17",
+        height: "16",
+        rx: "2"
+      }), /*#__PURE__*/React.createElement("path", {
+        d: "M3.5 10h17M8 3v4M16 3v4"
       }))
     };
-    const navIcon = key === "board" ? NAV_SVG.board : key === "catalog" ? NAV_SVG.catalog : key === "search" ? NAV_SVG.search : NAV_SVG.more;
+    const navIcon = key === "board" ? NAV_SVG.board : key === "bundle" ? NAV_SVG.bundle : key === "catalog" ? NAV_SVG.catalog : key === "search" ? NAV_SVG.search : NAV_SVG.more;
     const navLabel = more ? moreOpen ? "閉じる" : "メニュー" : label;
     const showBadge = badgeOn && key === notice.badge_tab;
     return /*#__PURE__*/React.createElement("button", {
@@ -724,15 +742,17 @@ function App() {
         onClick();
       },
       className: "hig-pill",
+      "aria-label": navLabel,
+      title: navLabel,
       style: {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "12px 24px",
+        padding: "12px 22px",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
+        justifyContent: "center",
         borderRadius: 26,
         background: active ? "#fff" : "transparent",
         color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)",
@@ -744,13 +764,7 @@ function App() {
         lineHeight: 1,
         opacity: active ? 1 : 0.95
       }
-    }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 14.5,
-        fontWeight: 800,
-        whiteSpace: "nowrap"
-      }
-    }, navLabel), showBadge && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    }, moreOpen && more ? NAV_SVG.close : navIcon), showBadge && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
       style: {
         position: "absolute",
         top: 6,

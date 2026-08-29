@@ -16,8 +16,8 @@ const TAB_REGISTRY = [{
   section: "毎日つかう"
 }, {
   key: "bundle",
-  icon: "📦",
-  label: "まとめ",
+  icon: "📅",
+  label: "カレンダー",
   section: "毎日つかう"
 }, {
   key: "tool",
@@ -34,16 +34,6 @@ const TAB_REGISTRY = [{
   icon: "🔒",
   label: "管理",
   section: "毎日つかう"
-}, {
-  key: "souba",
-  icon: "🧮",
-  label: "便利機能",
-  section: "ツール"
-}, {
-  key: "industry",
-  icon: "📰",
-  label: "業界情報",
-  section: "しらべる"
 }, {
   key: "barcode",
   icon: "🏷",
@@ -115,6 +105,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-08-25",
+  type: "改善",
+  title: "下のバーとメニューを整理しました",
+  body: "下のバーを「一覧・カレンダー・メニュー」の3つにし、文字をなくしてアイコンだけにしました（カタログはメニューから開けます）。「まとめ」は「カレンダー」に名前を変えています。メニューからは「便利機能」と「業界情報」を外しました（業界情報は一覧の上のボタンから開けます）。"
+}, {
   date: "2026-08-25",
   type: "改善",
   title: "週間発注指示書のレイアウトを一新",

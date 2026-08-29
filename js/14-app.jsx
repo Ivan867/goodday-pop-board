@@ -280,7 +280,7 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 22px), 0px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 6px", pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"12px 10px", pointerEvents:"auto" }}>
-        {[tabs[0], { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+        {[tabs[0], { key:"bundle", icon:"📅", label:"カレンダー", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
@@ -293,15 +293,16 @@ function App() {
             more: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>,
             catalog: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>,
             close: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>,
+            bundle: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>,
           };
-          const navIcon = key==="board" ? NAV_SVG.board : key==="catalog" ? NAV_SVG.catalog : key==="search" ? NAV_SVG.search : NAV_SVG.more;
+          const navIcon = key==="board" ? NAV_SVG.board : key==="bundle" ? NAV_SVG.bundle : key==="catalog" ? NAV_SVG.catalog : key==="search" ? NAV_SVG.search : NAV_SVG.more;
           const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
           const showBadge = badgeOn && key === notice.badge_tab;
             return (
-            <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill"
-              style={{ position:"relative", border:"none", cursor:"pointer", padding:"12px 24px", display:"flex", flexDirection:"row", alignItems:"center", gap:8, borderRadius:26, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
+            <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill" aria-label={navLabel} title={navLabel}
+              style={{ position:"relative", border:"none", cursor:"pointer", padding:"12px 22px", display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", borderRadius:26, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)", transition:"background .2s" }}>
               <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
-              <span style={{ fontSize:14.5, fontWeight:800, whiteSpace:"nowrap" }}>{navLabel}</span>
+
               {showBadge && (
                 <>
                   <span style={{ position:"absolute", top:6, right:12, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px var(--primary-soft)" }} />
