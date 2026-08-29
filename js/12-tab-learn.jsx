@@ -1191,6 +1191,7 @@ function CatalogTab() {
 
 // ═══════════ OrderTab：発注記録（カレンダーで見る） ═══════════
 const OI_WDAY = ["日","月","火","水","木","金","土"];
+const SHEET_DAYS = [["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"],["sun","日"]];
 const oiYmd = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 
 function OrderTab() {
@@ -1519,41 +1520,84 @@ function OrderTab() {
 
             {/* 印刷される中身（画面には出ない） */}
             <div id="sheetPrint">
-              <div style={{ fontSize:"15pt", fontWeight:700, marginBottom:"2mm" }}>塩干　発注指示書</div>
-              <div style={{ fontSize:"11pt", marginBottom:"4mm" }}>
-                {wkStart.getFullYear()}年 {wkStart.getMonth()+1}月{wkStart.getDate()}日（月）〜 {(() => { const e = new Date(wkStart); e.setDate(e.getDate()+6); return `${e.getMonth()+1}月${e.getDate()}日`; })()}（日）
+              {/* 見出し＋承認欄 */}
+              <div style={{ display:"flex", alignItems:"flex-start", marginBottom:"3mm" }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:"15pt", fontWeight:700, letterSpacing:"1pt" }}>塩干　週間発注指示書</div>
+                  <div style={{ fontSize:"10pt", marginTop:"1mm" }}>
+                    {wkStart.getFullYear()}年 {wkStart.getMonth()+1}月{wkStart.getDate()}日（月）〜 {(() => { const e = new Date(wkStart); e.setDate(e.getDate()+6); return `${e.getMonth()+1}月${e.getDate()}日`; })()}（日）
+                  </div>
+                  <div style={{ fontSize:"9pt", marginTop:"1mm", color:"#444" }}>総アイテム数 {rows.length}</div>
+                </div>
+                <table style={{ borderCollapse:"collapse", fontSize:"7pt" }}>
+                  <tbody>
+                    <tr>{["作成","確認","チーフ"].map(t => (
+                      <td key={t} style={{ border:"1px solid #333", padding:"1mm 3mm", textAlign:"center", background:"#f2f2f2" }}>{t}</td>
+                    ))}</tr>
+                    <tr>{[0,1,2].map(i => (
+                      <td key={i} style={{ border:"1px solid #333", height:"9mm", minWidth:"14mm" }} />
+                    ))}</tr>
+                  </tbody>
+                </table>
               </div>
+
+              {/* 曜日ごとの色分けブロック */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(7, 1fr)", gap:"1.5mm", marginBottom:"4mm" }}>
+                {SHEET_DAYS.map(([k, l], i) => {
+                  const day = rows.filter(r => r[k] != null && r[k] !== "");
+                  const bg = i === 6 ? "#ffe0e0" : i === 5 ? "#dfeaff" : "#fff9d6";
+                  const bd = i === 6 ? "#d15a5a" : i === 5 ? "#5a86d1" : "#c9b23c";
+                  return (
+                    <div key={k} style={{ border:`1px solid ${bd}`, borderRadius:"1mm", overflow:"hidden", minHeight:"32mm" }}>
+                      <div style={{ background:bd, color:"#fff", fontSize:"9pt", fontWeight:700, textAlign:"center", padding:"0.8mm 0" }}>{l}</div>
+                      <div style={{ background:bg, padding:"1mm", minHeight:"28mm" }}>
+                        {day.length === 0 ? (
+                          <div style={{ fontSize:"7pt", color:"#999", textAlign:"center", paddingTop:"3mm" }}>—</div>
+                        ) : day.map(r => (
+                          <div key={r.id} style={{ background:"#fff", border:"0.3mm solid rgba(0,0,0,0.18)", borderRadius:"0.8mm", padding:"0.8mm 1mm", marginBottom:"1mm" }}>
+                            <div style={{ fontSize:"7.5pt", fontWeight:700, lineHeight:1.25, wordBreak:"break-all" }}>{r.item_name}</div>
+                            <div style={{ fontSize:"8.5pt", fontWeight:700, textAlign:"right", lineHeight:1.2 }}>{r[k]}<span style={{ fontSize:"6pt", fontWeight:400 }}>{r.unit || ""}</span></div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ background:"#fff", borderTop:`0.3mm solid ${bd}`, fontSize:"7pt", textAlign:"center", padding:"0.6mm 0", fontWeight:700 }}>
+                        {day.length}件
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 品目一覧表 */}
               <table className="sheet-tbl">
                 <thead>
                   <tr>
-                    <th style={{ width:"26%" }}>品目</th>
-                    {[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"],["sun","日"]].map(([k, l], i) => (
+                    <th style={{ width:"22%" }}>品目</th>
+                    <th style={{ width:"16%" }}>仕入先</th>
+                    {SHEET_DAYS.map(([k, l], i) => (
                       <th key={k} className={i===6?"sun":i===5?"sat":""}>{l}</th>
                     ))}
-                    <th style={{ width:"12%" }}>単位</th>
+                    <th style={{ width:"9%" }}>単位</th>
+                    <th style={{ width:"18%" }}>備考</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map(r => (
                     <tr key={r.id}>
-                      <td className="nm">{r.item_name}{r.memo ? " ※" : ""}</td>
-                      {[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"],["sun","日"]].map(([k], i) => (
+                      <td className="nm">{r.item_name}</td>
+                      <td style={{ fontSize:"8pt" }}>{r.maker || ""}</td>
+                      {SHEET_DAYS.map(([k], i) => (
                         <td key={k} className={i===6?"sun":i===5?"sat":""}>{r[k] == null ? "" : r[k]}</td>
                       ))}
                       <td>{r.unit || ""}</td>
+                      <td style={{ fontSize:"7.5pt", textAlign:"left", paddingLeft:"1.5mm" }}>{r.memo || ""}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {rows.some(r => r.memo) && (
-                <div style={{ marginTop:"4mm", fontSize:"10pt", lineHeight:1.7 }}>
-                  {rows.filter(r => r.memo).map(r => (
-                    <div key={r.id}>※ {r.item_name}：{r.memo}</div>
-                  ))}
-                </div>
-              )}
+
               {sheetNote.trim() && (
-                <div style={{ marginTop:"5mm", paddingTop:"3mm", borderTop:"1px solid #999", fontSize:"10pt", lineHeight:1.7, whiteSpace:"pre-wrap" }}>{sheetNote}</div>
+                <div style={{ marginTop:"4mm", padding:"2mm 3mm", border:"0.3mm solid #999", background:"#fafafa", fontSize:"9pt", lineHeight:1.7, whiteSpace:"pre-wrap" }}>{sheetNote}</div>
               )}
             </div>
           </>

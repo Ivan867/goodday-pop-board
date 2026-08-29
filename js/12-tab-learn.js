@@ -3209,6 +3209,7 @@ function CatalogTab() {
 
 // ═══════════ OrderTab：発注記録（カレンダーで見る） ═══════════
 const OI_WDAY = ["日", "月", "火", "水", "木", "金", "土"];
+const SHEET_DAYS = [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]];
 const oiYmd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 function OrderTab() {
   // 簡易ロック（他の人が誤って開かないように）
@@ -4019,53 +4020,179 @@ function OrderTab() {
     id: "sheetPrint"
   }, /*#__PURE__*/React.createElement("div", {
     style: {
+      display: "flex",
+      alignItems: "flex-start",
+      marginBottom: "3mm"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
       fontSize: "15pt",
       fontWeight: 700,
-      marginBottom: "2mm"
+      letterSpacing: "1pt"
     }
-  }, "塩干\u3000発注指示書"), /*#__PURE__*/React.createElement("div", {
+  }, "塩干\u3000週間発注指示書"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: "11pt",
-      marginBottom: "4mm"
+      fontSize: "10pt",
+      marginTop: "1mm"
     }
   }, wkStart.getFullYear(), "年 ", wkStart.getMonth() + 1, "月", wkStart.getDate(), "日（月）〜 ", (() => {
     const e = new Date(wkStart);
     e.setDate(e.getDate() + 6);
     return `${e.getMonth() + 1}月${e.getDate()}日`;
-  })(), "（日）"), /*#__PURE__*/React.createElement("table", {
+  })(), "（日）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "9pt",
+      marginTop: "1mm",
+      color: "#444"
+    }
+  }, "総アイテム数 ", rows.length)), /*#__PURE__*/React.createElement("table", {
+    style: {
+      borderCollapse: "collapse",
+      fontSize: "7pt"
+    }
+  }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, ["作成", "確認", "チーフ"].map(t => /*#__PURE__*/React.createElement("td", {
+    key: t,
+    style: {
+      border: "1px solid #333",
+      padding: "1mm 3mm",
+      textAlign: "center",
+      background: "#f2f2f2"
+    }
+  }, t))), /*#__PURE__*/React.createElement("tr", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("td", {
+    key: i,
+    style: {
+      border: "1px solid #333",
+      height: "9mm",
+      minWidth: "14mm"
+    }
+  })))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(7, 1fr)",
+      gap: "1.5mm",
+      marginBottom: "4mm"
+    }
+  }, SHEET_DAYS.map(([k, l], i) => {
+    const day = rows.filter(r => r[k] != null && r[k] !== "");
+    const bg = i === 6 ? "#ffe0e0" : i === 5 ? "#dfeaff" : "#fff9d6";
+    const bd = i === 6 ? "#d15a5a" : i === 5 ? "#5a86d1" : "#c9b23c";
+    return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        border: `1px solid ${bd}`,
+        borderRadius: "1mm",
+        overflow: "hidden",
+        minHeight: "32mm"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: bd,
+        color: "#fff",
+        fontSize: "9pt",
+        fontWeight: 700,
+        textAlign: "center",
+        padding: "0.8mm 0"
+      }
+    }, l), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: bg,
+        padding: "1mm",
+        minHeight: "28mm"
+      }
+    }, day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: "7pt",
+        color: "#999",
+        textAlign: "center",
+        paddingTop: "3mm"
+      }
+    }, "—") : day.map(r => /*#__PURE__*/React.createElement("div", {
+      key: r.id,
+      style: {
+        background: "#fff",
+        border: "0.3mm solid rgba(0,0,0,0.18)",
+        borderRadius: "0.8mm",
+        padding: "0.8mm 1mm",
+        marginBottom: "1mm"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: "7.5pt",
+        fontWeight: 700,
+        lineHeight: 1.25,
+        wordBreak: "break-all"
+      }
+    }, r.item_name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: "8.5pt",
+        fontWeight: 700,
+        textAlign: "right",
+        lineHeight: 1.2
+      }
+    }, r[k], /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "6pt",
+        fontWeight: 400
+      }
+    }, r.unit || ""))))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        borderTop: `0.3mm solid ${bd}`,
+        fontSize: "7pt",
+        textAlign: "center",
+        padding: "0.6mm 0",
+        fontWeight: 700
+      }
+    }, day.length, "件"));
+  })), /*#__PURE__*/React.createElement("table", {
     className: "sheet-tbl"
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     style: {
-      width: "26%"
+      width: "22%"
     }
-  }, "品目"), [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]].map(([k, l], i) => /*#__PURE__*/React.createElement("th", {
+  }, "品目"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: "16%"
+    }
+  }, "仕入先"), SHEET_DAYS.map(([k, l], i) => /*#__PURE__*/React.createElement("th", {
     key: k,
     className: i === 6 ? "sun" : i === 5 ? "sat" : ""
   }, l)), /*#__PURE__*/React.createElement("th", {
     style: {
-      width: "12%"
+      width: "9%"
     }
-  }, "単位"))), /*#__PURE__*/React.createElement("tbody", null, rows.map(r => /*#__PURE__*/React.createElement("tr", {
+  }, "単位"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: "18%"
+    }
+  }, "備考"))), /*#__PURE__*/React.createElement("tbody", null, rows.map(r => /*#__PURE__*/React.createElement("tr", {
     key: r.id
   }, /*#__PURE__*/React.createElement("td", {
     className: "nm"
-  }, r.item_name, r.memo ? " ※" : ""), [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]].map(([k], i) => /*#__PURE__*/React.createElement("td", {
+  }, r.item_name), /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontSize: "8pt"
+    }
+  }, r.maker || ""), SHEET_DAYS.map(([k], i) => /*#__PURE__*/React.createElement("td", {
     key: k,
     className: i === 6 ? "sun" : i === 5 ? "sat" : ""
-  }, r[k] == null ? "" : r[k])), /*#__PURE__*/React.createElement("td", null, r.unit || ""))))), rows.some(r => r.memo) && /*#__PURE__*/React.createElement("div", {
+  }, r[k] == null ? "" : r[k])), /*#__PURE__*/React.createElement("td", null, r.unit || ""), /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontSize: "7.5pt",
+      textAlign: "left",
+      paddingLeft: "1.5mm"
+    }
+  }, r.memo || ""))))), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: "4mm",
-      fontSize: "10pt",
-      lineHeight: 1.7
-    }
-  }, rows.filter(r => r.memo).map(r => /*#__PURE__*/React.createElement("div", {
-    key: r.id
-  }, "※ ", r.item_name, "：", r.memo))), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: "5mm",
-      paddingTop: "3mm",
-      borderTop: "1px solid #999",
-      fontSize: "10pt",
+      padding: "2mm 3mm",
+      border: "0.3mm solid #999",
+      background: "#fafafa",
+      fontSize: "9pt",
       lineHeight: 1.7,
       whiteSpace: "pre-wrap"
     }
