@@ -250,7 +250,7 @@ function App() {
       {tab==="order"   && <OrderTab />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
-      {tab==="gne"    && <LazyTab tabKey="gne" />}
+      {tab==="gne"    && <LazyTab tabKey="gne" compProps={{ onCreatePop: handleCreatePop }} />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
       {tab==="industry" && <IndustryTab />}
       {tab==="competitor" && <CompetitorTab />}

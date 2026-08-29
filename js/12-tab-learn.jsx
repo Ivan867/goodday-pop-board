@@ -1995,7 +1995,6 @@ function BundleTab() {
     );
   }
 
-  // ── 束の一覧 ──
   const Card = ({ b, hot }) => (
     <button onClick={() => openBundle(b)}
       style={{ display:"flex", alignItems:"center", gap:11, textAlign:"left", width:"100%", border: hot ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
@@ -2008,10 +2007,18 @@ function BundleTab() {
     </button>
   );
 
+  // ── 年間の図 ──
+  const MONTH_LABEL = ["1","2","3","4","5","6","7","8","9","10","11","12"];
+  const BAR_COLORS = ["#d1554f","#c39a3c","#3f9e63","#3b7dd8","#8a5fc4","#c4685f","#3f8f9e","#9e7b3f"];
+
+  // 通年のもの（12ヶ月）は下に分ける
+  const seasonal = bundles.filter(b => Array.isArray(b.months) && b.months.length > 0 && b.months.length < 12);
+  const always   = bundles.filter(b => !seasonal.some(x => x.id === b.id));
+
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
-        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>まとめ</div>
+        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カレンダー</div>
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
@@ -2019,6 +2026,54 @@ function BundleTab() {
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
         ) : (
           <>
+            {/* 年間の帯グラフ */}
+            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 10px 10px", marginBottom:14, overflowX:"auto" }}>
+              <div style={{ minWidth:520 }}>
+                {/* 月の目盛り */}
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6 }}>
+                  <div />
+                  {MONTH_LABEL.map((m, i) => (
+                    <div key={m} style={{ textAlign:"center", fontSize:10, fontWeight:900,
+                      color: (i+1) === NOW_M ? "var(--primary)" : "var(--faint)" }}>{m}</div>
+                  ))}
+                </div>
+
+                {/* 行事の帯 */}
+                {seasonal.map((b, bi) => {
+                  const col = BAR_COLORS[bi % BAR_COLORS.length];
+                  const on = b.months.includes(NOW_M);
+                  return (
+                    <button key={b.id} onClick={() => openBundle(b)}
+                      style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, width:"100%", alignItems:"center",
+                        border:"none", background: on ? "var(--soft)" : "transparent", borderRadius:7, padding:"4px 2px", marginBottom:3, cursor:"pointer" }}>
+                      <span style={{ fontSize:11, fontWeight:800, color:"var(--ink)", textAlign:"left", paddingLeft:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
+                      {MONTH_LABEL.map((m, i) => {
+                        const hit = b.months.includes(i + 1);
+                        return (
+                          <span key={m} style={{ height:16, borderRadius:3,
+                            background: hit ? col : "var(--bg)",
+                            opacity: hit ? ((i+1) === NOW_M ? 1 : 0.72) : 1,
+                            outline: (i+1) === NOW_M ? "1.5px solid var(--primary-soft)" : "none",
+                            outlineOffset: -1 }} />
+                        );
+                      })}
+                    </button>
+                  );
+                })}
+
+                {/* 今月の縦線の代わりに、下に案内 */}
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginTop:5 }}>
+                  <div />
+                  {MONTH_LABEL.map((m, i) => (
+                    <div key={m} style={{ textAlign:"center", fontSize:8, fontWeight:900, color:"var(--primary)" }}>
+                      {(i+1) === NOW_M ? "▲" : ""}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* いまの時期 */}
             {bundleNow.length > 0 && (
               <>
                 <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>いまの時期（{NOW_M}月）</div>
@@ -2028,13 +2083,18 @@ function BundleTab() {
               </>
             )}
 
-            <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>すべて</div>
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              {bundleAll.map(b => <Card key={b.id} b={b} />)}
-            </div>
+            {/* 通年 */}
+            {always.length > 0 && (
+              <>
+                <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>いつでも使うもの</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {always.map(b => <Card key={b.id} b={b} />)}
+                </div>
+              </>
+            )}
 
             <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
-              行事ごとにPOPとプロンプトをまとめておく場所です。毎年その時期になったら、ここを開けば去年つくったものがそのまま出てきます。
+              上の図は、どの行事がいつ来るかを一年で見たものです。帯を押すとその中身が開きます。毎年その時期になったら、去年つくったものがそのまま出てきます。
             </div>
           </>
         )}

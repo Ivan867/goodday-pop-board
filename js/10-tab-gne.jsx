@@ -89,7 +89,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
   gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
 }
 
-function GeneratorTab() {
+function GeneratorTab({ onCreatePop }) {
+  const [gTab, setGTab] = useState("gne");   // gne=POP画像 / souba=便利機能
   const previewRef = React.useRef(null);
   const tplInput = React.useRef(null);
   const xlsxInput = React.useRef(null);
@@ -277,7 +278,20 @@ function GeneratorTab() {
 
   return (
     <div style={{ maxWidth:1600, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>入力支援</div>
+      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>入力支援</div>
+
+      <div style={{ display:"flex", gap:7, marginBottom:16 }}>
+        {[["gne","POP画像をつくる"],["souba","便利機能"]].map(([k, l]) => (
+          <button key={k} onClick={() => setGTab(k)}
+            style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+              background: gTab===k ? "var(--primary)" : "#fff", color: gTab===k ? "#fff" : "var(--text)" }}>{l}</button>
+        ))}
+      </div>
+
+      {gTab === "souba" ? (
+        (window.SoubaTab ? React.createElement(window.SoubaTab, { onCreatePop }) : <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>)
+      ) : (
+      <>
       <div style={{ fontSize:13, color:"var(--sub)", marginBottom:16 }}>柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。</div>
 
       <div className="gne-grid" style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr)", gap:14 }}>
@@ -489,6 +503,8 @@ function GeneratorTab() {
         </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

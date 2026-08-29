@@ -188,7 +188,10 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
   gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
   gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
 }
-function GeneratorTab() {
+function GeneratorTab({
+  onCreatePop
+}) {
+  const [gTab, setGTab] = useState("gne"); // gne=POP画像 / souba=便利機能
   const previewRef = React.useRef(null);
   const tplInput = React.useRef(null);
   const xlsxInput = React.useRef(null);
@@ -560,9 +563,38 @@ function GeneratorTab() {
       fontSize: 22,
       fontWeight: 900,
       color: "var(--ink)",
-      marginBottom: 4
+      marginBottom: 12
     }
   }, "入力支援"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      marginBottom: 16
+    }
+  }, [["gne", "POP画像をつくる"], ["souba", "便利機能"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setGTab(k),
+    style: {
+      flex: 1,
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "10px 6px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      background: gTab === k ? "var(--primary)" : "#fff",
+      color: gTab === k ? "#fff" : "var(--text)"
+    }
+  }, l))), gTab === "souba" ? window.SoubaTab ? React.createElement(window.SoubaTab, {
+    onCreatePop
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13
+    }
+  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
@@ -1419,7 +1451,7 @@ function GeneratorTab() {
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, status)))));
+  }, status))))));
 }
 
 // ===== 相場タブ：先週比の「相場安」計算＋売価計算（プロトタイプ） =====

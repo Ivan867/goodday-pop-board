@@ -489,7 +489,10 @@ function App() {
     radialOpen: radialOpen,
     setRadialOpen: setRadialOpen
   }), tab === "gne" && /*#__PURE__*/React.createElement(LazyTab, {
-    tabKey: "gne"
+    tabKey: "gne",
+    compProps: {
+      onCreatePop: handleCreatePop
+    }
   }), tab === "souba" && /*#__PURE__*/React.createElement(SoubaTab, {
     onCreatePop: handleCreatePop
   }), tab === "industry" && /*#__PURE__*/React.createElement(IndustryTab, null), tab === "competitor" && /*#__PURE__*/React.createElement(CompetitorTab, null), tab === "calendar" && /*#__PURE__*/React.createElement(CalendarTab, null), tab === "fish" && /*#__PURE__*/React.createElement(LazyTab, {
