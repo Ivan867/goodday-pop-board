@@ -1272,7 +1272,7 @@ function OrderTab() {
     try {
       const sh = await ensureSheet();
       await api.addSheetRow({ sheet_id: sh.id, item_id: it.id, item_name: it.name, unit: it.unit || "ケース",
-        maker: it.maker || null, price: it.price ?? null, life_kind: it.life_kind || null, life_days: it.life_days ?? null,
+        maker: it.maker || null, price: it.price ?? null, life_kind: it.life_kind || null, life_days: it.life_days ?? null, thumb: it.thumb || null,
         sort_order: rows.length });
       setSheetVer(v => v + 1);
     } catch(e) {} finally { setSheetBusy(false); }
@@ -1361,6 +1361,114 @@ function OrderTab() {
   };
 
   // ── 品目の登録・編集 ──
+  // ── Excel（売価・期限早見表）を画像ごと取り込む ──
+  const xlsxRef = React.useRef(null);
+  const [impBusy, setImpBusy] = useState(false);
+  const [impMsg, setImpMsg] = useState("");
+
+  const importExcel = async (file) => {
+    if (!file) return;
+    setImpBusy(true); setImpMsg("読み込んでいます…");
+    try {
+      await loadScriptOnce(XLSX_SRC);
+      await loadScriptOnce(JSZIP_SRC);
+      const buf = await file.arrayBuffer();
+
+      // --- 表の中身（商品名・期限区分・D+・仕入先・売価）---
+      const wb = XLSX.read(buf, { type:"array" });
+      const found = [];
+      wb.SheetNames.forEach(sn => {
+        const grid = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, defval:null });
+        [0, 3, 6].forEach(base => {
+          for (let r = 0; r < grid.length; r++) {
+            const row = grid[r] || [];
+            if (String(row[base] || "").trim() !== "商品名" || !row[base+1]) continue;
+            const rec = { category: sn, name: String(row[base+1]).trim(), row: r, base };
+            for (let k = 1; k <= 4; k++) {
+              const rr = grid[r+k] || [];
+              const lab = String(rr[base] || "").trim(), val = rr[base+1];
+              if (lab === "期限区分") rec.life_kind = val ? String(val).trim() : null;
+              else if (lab === "D+") { const n = parseFloat(String(val).replace("５","5")); rec.life_days = isNaN(n) ? null : Math.round(n); }
+              else if (lab === "仕入先") rec.maker = val ? String(val).trim() : null;
+              else if (lab === "売価") { const n = parseFloat(val); rec.price = isNaN(n) ? null : Math.round(n); }
+            }
+            found.push(rec); r += 4;
+          }
+        });
+      });
+      if (found.length === 0) { setImpMsg("商品が見つかりませんでした"); setImpBusy(false); return; }
+
+      // --- 埋め込み画像を取り出して、位置から商品に割り当てる ---
+      setImpMsg(`${found.length}件を読みました。画像を取り出しています…`);
+      const thumbs = {};
+      try {
+        const zip = await JSZip.loadAsync(buf);
+        const txt = async (n) => zip.file(n) ? await zip.file(n).async("string") : "";
+        for (let si = 0; si < wb.SheetNames.length; si++) {
+          const sn = wb.SheetNames[si];
+          const wsRel = await txt(`xl/worksheets/_rels/sheet${si+1}.xml.rels`);
+          const dm = wsRel.match(/Target="\.\.\/(drawings\/drawing\d+\.xml)"/);
+          if (!dm) continue;
+          const dxml = await txt("xl/" + dm[1]);
+          const drel = await txt("xl/drawings/_rels/" + dm[1].split("/")[1] + ".rels");
+          const rid2img = {};
+          (drel.match(/Id="rId\d+"[^>]*Target="[^"]+"/g) || []).forEach(t => {
+            const a = t.match(/Id="(rId\d+)"/), b = t.match(/Target="\.\.\/media\/([^"]+)"/);
+            if (a && b) rid2img[a[1]] = b[1];
+          });
+          const anchors = dxml.split(/(?=<xdr:(?:twoCell|oneCell|absolute)Anchor)/);
+          for (const blk of anchors) {
+            const mid = blk.match(/r:embed="(rId\d+)"/);
+            const mc = blk.match(/<xdr:col>(\d+)<\/xdr:col>/);
+            const mr = blk.match(/<xdr:row>(\d+)<\/xdr:row>/);
+            if (!mid || !mc || !mr) continue;
+            const col = +mc[1], row = +mr[1];
+            const base = col < 3 ? 0 : col < 6 ? 3 : 6;
+            // 同じシート・同じ列ブロックで、行が一番近い商品
+            const cands = found.filter(f => f.category === sn && f.base === base);
+            if (!cands.length) continue;
+            let best = cands[0];
+            cands.forEach(c => { if (Math.abs(c.row - row) < Math.abs(best.row - row)) best = c; });
+            const fn = rid2img[mid[1]];
+            if (!fn || thumbs[best.name]) continue;
+            const blob = await zip.file("xl/media/" + fn).async("blob");
+            thumbs[best.name] = await new Promise(res => {
+              const img = new Image();
+              img.onload = () => {
+                const c = document.createElement("canvas");
+                const sc = Math.min(1, 130 / Math.max(img.width, img.height));
+                c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+                c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                res(c.toDataURL("image/jpeg", 0.62));
+                URL.revokeObjectURL(img.src);
+              };
+              img.onerror = () => res(null);
+              img.src = URL.createObjectURL(blob);
+            });
+          }
+        }
+      } catch(e) { /* 画像が取れなくても本体は登録する */ }
+
+      // --- 登録（同名は上書き）---
+      let add = 0, upd = 0;
+      for (let i = 0; i < found.length; i++) {
+        const f = found[i];
+        setImpMsg(`登録しています… ${i+1} / ${found.length}`);
+        const body = { name:f.name, maker:f.maker || null, category:f.category,
+          price: f.price ?? null, life_kind: f.life_kind || null, life_days: f.life_days ?? null,
+          thumb: thumbs[f.name] || null, unit:"ケース" };
+        const exist = items.find(x => x.name === f.name);
+        if (exist) { await api.updateOrderItem(exist.id, body); upd++; }
+        else { await api.addOrderItem({ ...body, sort_order: i }); add++; }
+      }
+      const withImg = Object.keys(thumbs).length;
+      setImpMsg(`取り込みました：新規 ${add}件 / 更新 ${upd}件（写真 ${withImg}枚）`);
+      setVer(v => v + 1);
+    } catch(e) {
+      setImpMsg("読み込めませんでした。ファイルを確認してください");
+    } finally { setImpBusy(false); }
+  };
+
   const setF = (k, v) => setForm(o => ({ ...o, [k]: v }));
   const openNew = () => { setEditId(null); setForm({ name:"", maker:"", unit:"ケース", qty:"", note:"" }); setFormOpen(true); setMsg(""); };
   const openEdit = (it) => { setEditId(it.id); setForm({ name:it.name||"", maker:it.maker||"", unit:it.unit||"ケース", qty:it.qty==null?"":String(it.qty), note:it.note||"" }); setFormOpen(true); setMsg(""); };
@@ -1534,6 +1642,7 @@ function OrderTab() {
                               background: on ? "#3f9e63" : "#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
                               {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
                             </span>
+                            {it.thumb && <img src={it.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--bg)" }} />}
                             <span style={{ minWidth:0, flex:1 }}>
                               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</span>
                               <span style={{ display:"block", fontSize:9.5, color:"var(--faint)", marginTop:1 }}>
@@ -1774,8 +1883,20 @@ function OrderTab() {
           </>
         ) : (
           <>
-            <button onClick={openNew}
-              style={{ width:"100%", border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:10, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer", marginBottom:12 }}>＋ 品目を追加</button>
+            <div style={{ display:"flex", gap:8, marginBottom:12 }}>
+              <button onClick={openNew}
+                style={{ flex:1, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:10, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>＋ 品目を追加</button>
+              <button onClick={() => xlsxRef.current && xlsxRef.current.click()} disabled={impBusy}
+                style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:10, padding:"11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>
+                {impBusy ? "読み込み中…" : "早見表を取り込む"}
+              </button>
+              <input ref={xlsxRef} type="file" accept=".xlsx" style={{ display:"none" }}
+                onChange={e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; importExcel(f); }} />
+            </div>
+            {impMsg && (
+              <div style={{ fontSize:11.5, fontWeight:700, color: impMsg.includes("できません") || impMsg.includes("見つかり") ? "#b3261e" : "var(--primary)",
+                background:"var(--soft)", borderRadius:8, padding:"8px 10px", marginBottom:12, lineHeight:1.6 }}>{impMsg}</div>
+            )}
 
             {formOpen && (
               <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"13px", marginBottom:14 }}>
@@ -1808,7 +1929,9 @@ function OrderTab() {
                   const n = logs.filter(l => l.item_id === it.id).length;
                   const q = logs.filter(l => l.item_id === it.id).reduce((a, l) => a + Number(l.qty || 0), 0);
                   return (
-                    <div key={it.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", background:"#fff" }}>
+                    <div key={it.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", background:"#fff", display:"flex", gap:11 }}>
+                      {it.thumb && <img src={it.thumb} alt="" style={{ width:52, height:52, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--bg)" }} />}
+                      <div style={{ minWidth:0, flex:1 }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
                         <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1 }}>{it.name}</span>
                         {it.qty != null && <span style={{ fontSize:12, fontWeight:800, color:"var(--faint)", flexShrink:0 }}>いつも {it.qty}{it.unit || ""}</span>}
@@ -1820,6 +1943,7 @@ function OrderTab() {
                           style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>直す</button>
                         <button onClick={() => removeItem(it)}
                           style={{ marginLeft:"auto", border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>消す</button>
+                      </div>
                       </div>
                     </div>
                   );
