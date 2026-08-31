@@ -1216,6 +1216,7 @@ function OrderTab() {
   const [sheetVer, setSheetVer] = useState(0);
   const [sheetBusy, setSheetBusy] = useState(false);
   const [sheetNote, setSheetNote] = useState("");
+  const [openCat, setOpenCat] = useState("");     // 開いている分類
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
   const [tab, setTab] = useState("sheet");            // cal=カレンダー / items=品目
@@ -1270,7 +1271,9 @@ function OrderTab() {
     setSheetBusy(true);
     try {
       const sh = await ensureSheet();
-      await api.addSheetRow({ sheet_id: sh.id, item_id: it.id, item_name: it.name, unit: it.unit || "ケース", sort_order: rows.length });
+      await api.addSheetRow({ sheet_id: sh.id, item_id: it.id, item_name: it.name, unit: it.unit || "ケース",
+        maker: it.maker || null, price: it.price ?? null, life_kind: it.life_kind || null, life_days: it.life_days ?? null,
+        sort_order: rows.length });
       setSheetVer(v => v + 1);
     } catch(e) {} finally { setSheetBusy(false); }
   };
@@ -1301,6 +1304,7 @@ function OrderTab() {
       for (let i = 0; i < prows.length; i++) {
         const r = prows[i];
         await api.addSheetRow({ sheet_id: sh.id, item_id: r.item_id, item_name: r.item_name, unit: r.unit,
+          maker: r.maker || null, price: r.price ?? null, life_kind: r.life_kind || null, life_days: r.life_days ?? null,
           mon:r.mon, tue:r.tue, wed:r.wed, thu:r.thu, fri:r.fri, sat:r.sat, sun:r.sun, memo:r.memo, sort_order: i });
       }
       setSheetVer(v => v + 1);
@@ -1489,21 +1493,64 @@ function OrderTab() {
               </div>
             )}
 
-            {/* 品目を足す */}
-            {active.length > 0 && (
-              <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
-                <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>品目を足す</div>
-                <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
-                  {active.filter(it => !rows.some(r => r.item_id === it.id)).map(it => (
-                    <button key={it.id} onClick={() => addRow(it)} disabled={sheetBusy}
-                      style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"6px 11px", fontSize:12, fontWeight:700, cursor:"pointer" }}>＋ {it.name}</button>
-                  ))}
-                  {active.filter(it => !rows.some(r => r.item_id === it.id)).length === 0 && (
-                    <span style={{ fontSize:11.5, color:"var(--faint)" }}>すべて追加済みです</span>
+            {/* 品目をえらぶ（チェックで指示書に入る） */}
+            {active.length > 0 && (() => {
+              const cats = [];
+              active.forEach(it => { const c = it.category || "その他"; if (!cats.includes(c)) cats.push(c); });
+              return (
+                <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:9 }}>
+                    <span style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)" }}>品目をえらぶ</span>
+                    <span style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:999, padding:"1px 8px" }}>{rows.length} 件</span>
+                  </div>
+
+                  <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:9 }}>
+                    {cats.map(c => {
+                      const on = openCat === c;
+                      const n = active.filter(it => (it.category || "その他") === c && rows.some(r => r.item_id === it.id)).length;
+                      return (
+                        <button key={c} onClick={() => setOpenCat(on ? "" : c)} aria-expanded={on}
+                          style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff",
+                            color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:11.5, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
+                          {c}
+                          {n > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:9, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{n}</span>}
+                          <span style={{ fontSize:8, transform: on ? "rotate(180deg)" : "none", display:"inline-block", transition:"transform .2s" }}>▼</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {openCat && (
+                    <div style={{ background:"var(--bg)", borderRadius:9, padding:"8px", display:"flex", flexDirection:"column", gap:4, animation:"fadeUp .2s ease" }}>
+                      {active.filter(it => (it.category || "その他") === openCat).map(it => {
+                        const row = rows.find(r => r.item_id === it.id);
+                        const on = !!row;
+                        return (
+                          <button key={it.id} onClick={() => on ? delRow(row) : addRow(it)} disabled={sheetBusy} aria-pressed={on}
+                            style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
+                              border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fff",
+                              borderRadius:8, padding:"8px 9px", cursor:"pointer" }}>
+                            <span style={{ width:20, height:20, borderRadius:6, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
+                              background: on ? "#3f9e63" : "#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                              {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
+                            </span>
+                            <span style={{ minWidth:0, flex:1 }}>
+                              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</span>
+                              <span style={{ display:"block", fontSize:9.5, color:"var(--faint)", marginTop:1 }}>
+                                {[it.maker, it.life_kind && it.life_days ? `${it.life_kind.replace("冷凍平台","")} D+${it.life_days}` : null].filter(Boolean).join(" ／ ")}
+                              </span>
+                            </span>
+                            {it.price != null && (
+                              <span style={{ fontSize:12, fontWeight:900, color: on ? "#2c6b45" : "var(--sub)", flexShrink:0, whiteSpace:"nowrap" }}>¥{it.price}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* 全体の補足 */}
             <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
@@ -1572,20 +1619,24 @@ function OrderTab() {
               <table className="sheet-tbl">
                 <thead>
                   <tr>
-                    <th style={{ width:"22%" }}>品目</th>
-                    <th style={{ width:"16%" }}>仕入先</th>
+                    <th style={{ width:"24%" }}>品目</th>
+                    <th style={{ width:"12%" }}>仕入先</th>
+                    <th style={{ width:"8%" }}>売価</th>
+                    <th style={{ width:"9%" }}>期限</th>
                     {SHEET_DAYS.map(([k, l], i) => (
                       <th key={k} className={i===6?"sun":i===5?"sat":""}>{l}</th>
                     ))}
                     <th style={{ width:"9%" }}>単位</th>
-                    <th style={{ width:"18%" }}>備考</th>
+                    <th style={{ width:"14%" }}>備考</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map(r => (
                     <tr key={r.id}>
                       <td className="nm">{r.item_name}</td>
-                      <td style={{ fontSize:"8pt" }}>{r.maker || ""}</td>
+                      <td style={{ fontSize:"7.5pt" }}>{r.maker || ""}</td>
+                      <td style={{ fontSize:"8pt" }}>{r.price != null ? `¥${r.price}` : ""}</td>
+                      <td style={{ fontSize:"7.5pt" }}>{r.life_days != null ? `D+${r.life_days}` : ""}</td>
                       {SHEET_DAYS.map(([k], i) => (
                         <td key={k} className={i===6?"sun":i===5?"sat":""}>{r[k] == null ? "" : r[k]}</td>
                       ))}
