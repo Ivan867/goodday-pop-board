@@ -523,6 +523,10 @@ const api = {
   async listBundles() {
     return sbJson(`/rest/v1/pop_bundles?visible=eq.true&select=*&order=sort_order.asc,created_at.asc`);
   },
+  // 各まとめの中身の件数をまとめて取る（枚数バッジ用）
+  async listAllBundleItems() {
+    return sbJson(`/rest/v1/pop_bundle_items?select=bundle_id,pop_id`);
+  },
   async getBundleItems(bundleId) {
     return sbJson(`/rest/v1/pop_bundle_items?bundle_id=eq.${bundleId}&select=id,pop_id,sort_order&order=sort_order.asc`);
   },

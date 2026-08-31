@@ -4801,6 +4801,8 @@ function BundleTab() {
   const [bundles, setBundles] = useState([]);
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [counts, setCounts] = useState({}); // 束ごとのPOP枚数
+  const [viewM, setViewM] = useState(new Date().getMonth() + 1); // 見ている月
   const [openId, setOpenId] = useState(""); // 開いている束
   const [items, setItems] = useState([]); // 開いた束の中身
   const [prompts, setPrompts] = useState([]);
@@ -4822,10 +4824,15 @@ function BundleTab() {
     setLoading(true);
     (async () => {
       try {
-        const [bs, ps] = await Promise.all([api.listBundles(), api.listAll()]);
+        const [bs, ps, cnt] = await Promise.all([api.listBundles(), api.listAll(), api.listAllBundleItems()]);
         if (alive) {
           setBundles(bs || []);
           setPops(ps || []);
+          const map = {};
+          (cnt || []).forEach(r => {
+            map[r.bundle_id] = (map[r.bundle_id] || 0) + 1;
+          });
+          setCounts(map);
         }
       } catch (e) {} finally {
         if (alive) setLoading(false);
@@ -5346,59 +5353,108 @@ function BundleTab() {
       onNav: p => setSel(p)
     }));
   }
-  const Card = ({
-    b,
-    hot
-  }) => /*#__PURE__*/React.createElement("button", {
-    onClick: () => openBundle(b),
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 11,
-      textAlign: "left",
-      width: "100%",
-      border: hot ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: hot ? "var(--soft)" : "#fff",
-      borderRadius: 12,
-      padding: "13px 14px",
-      cursor: "pointer"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      minWidth: 0,
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      display: "block",
-      fontSize: 15,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 2
-    }
-  }, b.name), b.note && /*#__PURE__*/React.createElement("span", {
-    style: {
-      display: "block",
-      fontSize: 11,
-      color: "var(--sub)",
-      lineHeight: 1.5
-    }
-  }, b.note)), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 17,
-      fontWeight: 900,
-      color: "var(--faint)",
-      flexShrink: 0
-    }
-  }, "›"));
 
   // ── 年間の図 ──
   const MONTH_LABEL = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
   const BAR_COLORS = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
-
-  // 通年のもの（12ヶ月）は下に分ける
   const seasonal = bundles.filter(b => Array.isArray(b.months) && b.months.length > 0 && b.months.length < 12);
   const always = bundles.filter(b => !seasonal.some(x => x.id === b.id));
+  const colorOf = b => BAR_COLORS[seasonal.findIndex(x => x.id === b.id) % BAR_COLORS.length] || "#3f9e63";
+
+  // 見ている月の行事／来月の予告
+  const nextM = viewM === 12 ? 1 : viewM + 1;
+  const inMonth = m => seasonal.filter(b => b.months.includes(m));
+  const viewList = inMonth(viewM);
+  const soonList = inMonth(nextM).filter(b => !b.months.includes(viewM)); // 来月から始まるもの
+
+  const Card = ({
+    b,
+    hot,
+    soon
+  }) => {
+    const n = counts[b.id] || 0;
+    const col = colorOf(b);
+    return /*#__PURE__*/React.createElement("button", {
+      onClick: () => openBundle(b),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 11,
+        textAlign: "left",
+        width: "100%",
+        border: hot ? `1.5px solid ${col}` : "1px solid var(--line)",
+        background: hot ? col + "0f" : "#fff",
+        borderRadius: 12,
+        padding: "12px 13px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 4,
+        alignSelf: "stretch",
+        borderRadius: 2,
+        background: col,
+        flexShrink: 0
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        minWidth: 0,
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        marginBottom: 2
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14.5,
+        fontWeight: 900,
+        color: "var(--ink)",
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, b.name), soon && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        fontWeight: 900,
+        color: "#fff",
+        background: "#e0855f",
+        borderRadius: 999,
+        padding: "1px 7px",
+        flexShrink: 0
+      }
+    }, "来月")), b.note && /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 10.5,
+        color: "var(--sub)",
+        lineHeight: 1.5,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, b.note)), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        fontWeight: 900,
+        color: n > 0 ? col : "var(--faint)",
+        flexShrink: 0,
+        whiteSpace: "nowrap"
+      }
+    }, n > 0 ? `${n}枚` : "—"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 16,
+        fontWeight: 900,
+        color: "var(--faint)",
+        flexShrink: 0
+      }
+    }, "›"));
+  };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
@@ -5429,8 +5485,8 @@ function BundleTab() {
       background: "#fff",
       border: "1px solid var(--line)",
       borderRadius: 12,
-      padding: "12px 10px 10px",
-      marginBottom: 14,
+      padding: "12px 10px 8px",
+      marginBottom: 12,
       overflowX: "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -5444,17 +5500,30 @@ function BundleTab() {
       gap: 2,
       marginBottom: 6
     }
-  }, /*#__PURE__*/React.createElement("div", null), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
-    key: m,
-    style: {
-      textAlign: "center",
-      fontSize: 10,
-      fontWeight: 900,
-      color: i + 1 === NOW_M ? "var(--primary)" : "var(--faint)"
-    }
-  }, m))), seasonal.map((b, bi) => {
-    const col = BAR_COLORS[bi % BAR_COLORS.length];
-    const on = b.months.includes(NOW_M);
+  }, /*#__PURE__*/React.createElement("div", null), MONTH_LABEL.map((m, i) => {
+    const mm = i + 1;
+    const isNow = mm === NOW_M,
+      isView = mm === viewM;
+    return /*#__PURE__*/React.createElement("button", {
+      key: m,
+      onClick: () => setViewM(mm),
+      "aria-label": `${mm}月を見る`,
+      style: {
+        border: "none",
+        background: isView ? "var(--primary)" : "transparent",
+        color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--faint)",
+        borderRadius: 5,
+        padding: "3px 0",
+        fontSize: 10,
+        fontWeight: 900,
+        cursor: "pointer",
+        lineHeight: 1.3
+      }
+    }, m);
+  })), seasonal.map(b => {
+    const col = colorOf(b);
+    const on = b.months.includes(viewM);
+    const n = counts[b.id] || 0;
     return /*#__PURE__*/React.createElement("button", {
       key: b.id,
       onClick: () => openBundle(b),
@@ -5473,25 +5542,39 @@ function BundleTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        minWidth: 0,
+        paddingLeft: 4
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10.5,
         fontWeight: 800,
-        color: "var(--ink)",
-        textAlign: "left",
-        paddingLeft: 4,
+        color: on ? "var(--ink)" : "var(--sub)",
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
       }
-    }, b.name), MONTH_LABEL.map((m, i) => {
-      const hit = b.months.includes(i + 1);
+    }, b.name), n > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 8,
+        fontWeight: 900,
+        color: col,
+        flexShrink: 0
+      }
+    }, n)), MONTH_LABEL.map((m, i) => {
+      const mm = i + 1,
+        hit = b.months.includes(mm);
       return /*#__PURE__*/React.createElement("span", {
         key: m,
         style: {
-          height: 16,
+          height: 15,
           borderRadius: 3,
           background: hit ? col : "var(--bg)",
-          opacity: hit ? i + 1 === NOW_M ? 1 : 0.72 : 1,
-          outline: i + 1 === NOW_M ? "1.5px solid var(--primary-soft)" : "none",
+          opacity: hit ? mm === viewM ? 1 : 0.6 : mm === viewM ? 0.55 : 1,
+          outline: mm === NOW_M ? "1.5px solid var(--primary-soft)" : "none",
           outlineOffset: -1
         }
       });
@@ -5501,40 +5584,129 @@ function BundleTab() {
       display: "grid",
       gridTemplateColumns: "84px repeat(12, 1fr)",
       gap: 2,
-      marginTop: 5
+      marginTop: 3
     }
-  }, /*#__PURE__*/React.createElement("div", null), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 8,
+      fontWeight: 800,
+      color: "var(--faint)",
+      textAlign: "right",
+      paddingRight: 4
+    }
+  }, "今月"), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
     key: m,
     style: {
       textAlign: "center",
       fontSize: 8,
       fontWeight: 900,
-      color: "var(--primary)"
+      color: "var(--primary-soft)"
     }
-  }, i + 1 === NOW_M ? "▲" : ""))))), bundleNow.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, i + 1 === NOW_M ? "▲" : ""))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12.5,
-      fontWeight: 900,
-      color: "var(--ink)",
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
       marginBottom: 9
     }
-  }, "いまの時期（", NOW_M, "月）"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setViewM(viewM === 1 ? 12 : viewM - 1),
+    "aria-label": "前の月",
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 7,
+      width: 28,
+      height: 28,
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
+    }
+  }, "‹"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13.5,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, viewM, "月", viewM === NOW_M ? "（今月）" : ""), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setViewM(viewM === 12 ? 1 : viewM + 1),
+    "aria-label": "次の月",
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 7,
+      width: 28,
+      height: 28,
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
+    }
+  }, "›"), viewM !== NOW_M && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setViewM(NOW_M),
+    style: {
+      marginLeft: "auto",
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 7,
+      padding: "6px 12px",
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--primary)",
+      cursor: "pointer"
+    }
+  }, "今月にもどる")), viewList.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "26px 20px",
+      fontSize: 12.5,
+      lineHeight: 1.7,
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 11,
+      marginBottom: 14
+    }
+  }, viewM, "月に決まった行事はありません", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11
+    }
+  }, "下の「いつでも使うもの」から選べます")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginBottom: 14
+    }
+  }, viewList.map(b => /*#__PURE__*/React.createElement(Card, {
+    key: b.id,
+    b: b,
+    hot: true
+  }))), soonList.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 900,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "そろそろ準備（", nextM, "月）"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
       gap: 8,
       marginBottom: 20
     }
-  }, bundleNow.map(b => /*#__PURE__*/React.createElement(Card, {
+  }, soonList.map(b => /*#__PURE__*/React.createElement(Card, {
     key: b.id,
     b: b,
-    hot: true
+    soon: true
   })))), always.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12.5,
+      fontSize: 12,
       fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 9
+      color: "var(--sub)",
+      marginBottom: 8
     }
   }, "いつでも使うもの"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5552,7 +5724,7 @@ function BundleTab() {
       lineHeight: 1.7,
       marginTop: 18
     }
-  }, "上の図は、どの行事がいつ来るかを一年で見たものです。帯を押すとその中身が開きます。毎年その時期になったら、去年つくったものがそのまま出てきます。"))));
+  }, "上の図の月を押すと、その月の行事に切り替わります。右の数字はPOPの枚数です。"))));
 }
 ;
 Object.assign(window, {
