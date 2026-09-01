@@ -1540,12 +1540,12 @@ function OrderTab() {
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
-        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>発注記録（塩干）</div>
+        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>塩干発注</div>
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
         <div style={{ display:"flex", gap:7, marginBottom:14 }}>
-          {[["today","今日"],["sheet","指示書"],["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
+          {[["today","本日の発注"],["sheet","管理"],["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
             <button key={k} onClick={() => setTab(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
                 background: tab===k ? "var(--primary)" : "#fff", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
@@ -1611,7 +1611,7 @@ function OrderTab() {
                   {mine.length === 0 ? (
                     <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13, lineHeight:1.9 }}>
                       <div style={{ fontSize:16, fontWeight:800, color:"var(--sub)" }}>{wd}曜の発注はありません</div>
-                      <div style={{ marginTop:6 }}>「指示書」で曜日に数量を入れると、ここに出ます</div>
+                      <div style={{ marginTop:6 }}>「管理」で曜日に品目を入れると、ここに出ます</div>
                     </div>
                   ) : (
                     <>
@@ -1661,7 +1661,7 @@ function OrderTab() {
                       </div>
 
                       <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:16 }}>
-                        上の日付を押すと、その日の発注が出ます。数量はその場で直せます（指示書にも反映されます）。
+                        上の日付を押すと、その日の発注が出ます。数量はその場で直せます。
                       </div>
                     </>
                   )}

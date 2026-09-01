@@ -3887,7 +3887,7 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "発注記録（塩干）")), /*#__PURE__*/React.createElement("div", {
+  }, "塩干発注")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -3899,7 +3899,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "今日"], ["sheet", "指示書"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["today", "本日の発注"], ["sheet", "管理"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -4071,7 +4071,7 @@ function OrderTab() {
       style: {
         marginTop: 6
       }
-    }, "「指示書」で曜日に数量を入れると、ここに出ます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    }, "「管理」で曜日に品目を入れると、ここに出ます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: {
         height: 6,
         background: "var(--chip)",
@@ -4232,7 +4232,7 @@ function OrderTab() {
         lineHeight: 1.7,
         marginTop: 16
       }
-    }, "上の日付を押すと、その日の発注が出ます。数量はその場で直せます（指示書にも反映されます）。")));
+    }, "上の日付を押すと、その日の発注が出ます。数量はその場で直せます。")));
   })()) : tab === "sheet" ? /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
     const DK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     const dk = DK[sheetDay]; // いま編集している曜日
