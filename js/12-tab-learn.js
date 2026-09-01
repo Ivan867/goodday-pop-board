@@ -5241,33 +5241,42 @@ function OrderTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "＋ 品目を追加"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => xlsxRef.current && xlsxRef.current.click(),
-    disabled: impBusy,
+  }, "＋ 品目を追加"), /*#__PURE__*/React.createElement("label", {
     style: {
       flex: 1,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: impBusy ? "#f0f0f0" : "#fff",
       color: "var(--text)",
       borderRadius: 10,
       padding: "11px",
       fontSize: 13,
       fontWeight: 800,
-      cursor: "pointer"
+      cursor: impBusy ? "default" : "pointer",
+      textAlign: "center",
+      display: "block",
+      boxSizing: "border-box",
+      position: "relative",
+      overflow: "hidden"
     }
-  }, impBusy ? "読み込み中…" : "早見表を取り込む"), /*#__PURE__*/React.createElement("input", {
+  }, impBusy ? "読み込み中…" : "早見表を取り込む", /*#__PURE__*/React.createElement("input", {
     ref: xlsxRef,
     type: "file",
-    accept: ".xlsx",
+    accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    disabled: impBusy,
     style: {
-      display: "none"
+      position: "absolute",
+      inset: 0,
+      opacity: 0,
+      width: "100%",
+      height: "100%",
+      cursor: "pointer"
     },
     onChange: e => {
       const f = e.target.files && e.target.files[0];
       e.target.value = "";
       importExcel(f);
     }
-  })), impMsg && /*#__PURE__*/React.createElement("div", {
+  }))), impMsg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       fontWeight: 700,

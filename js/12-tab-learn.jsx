@@ -2018,12 +2018,12 @@ function OrderTab() {
             <div style={{ display:"flex", gap:8, marginBottom:12 }}>
               <button onClick={openNew}
                 style={{ flex:1, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:10, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>＋ 品目を追加</button>
-              <button onClick={() => xlsxRef.current && xlsxRef.current.click()} disabled={impBusy}
-                style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:10, padding:"11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>
+              <label style={{ flex:1, border:"1px solid var(--line)", background: impBusy ? "#f0f0f0" : "#fff", color:"var(--text)", borderRadius:10, padding:"11px", fontSize:13, fontWeight:800, cursor: impBusy ? "default" : "pointer", textAlign:"center", display:"block", boxSizing:"border-box", position:"relative", overflow:"hidden" }}>
                 {impBusy ? "読み込み中…" : "早見表を取り込む"}
-              </button>
-              <input ref={xlsxRef} type="file" accept=".xlsx" style={{ display:"none" }}
-                onChange={e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; importExcel(f); }} />
+                <input ref={xlsxRef} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" disabled={impBusy}
+                  style={{ position:"absolute", inset:0, opacity:0, width:"100%", height:"100%", cursor:"pointer" }}
+                  onChange={e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; importExcel(f); }} />
+              </label>
             </div>
             {impMsg && (
               <div style={{ fontSize:11.5, fontWeight:700, color: impMsg.includes("できません") || impMsg.includes("見つかり") ? "#b3261e" : "var(--primary)",
