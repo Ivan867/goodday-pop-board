@@ -858,7 +858,7 @@ function App() {
       gridTemplateColumns: "repeat(3, 1fr)",
       gap: "14px 8px"
     }
-  }, TAB_REGISTRY.map(o => /*#__PURE__*/React.createElement("button", {
+  }, TAB_REGISTRY.filter(o => o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)).map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
     onClick: () => {
       setTab(o.key);

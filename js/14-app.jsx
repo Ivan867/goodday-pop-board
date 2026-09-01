@@ -328,7 +328,7 @@ function App() {
             <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 12px" }} />
             <div style={{ fontSize:13, fontWeight:900, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>メニュー</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
-              {TAB_REGISTRY.map(o=>(
+              {TAB_REGISTRY.filter(o => o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)).map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
                   <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(120,100,70,0.06)" }}>

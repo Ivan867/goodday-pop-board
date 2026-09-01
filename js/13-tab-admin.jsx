@@ -629,6 +629,7 @@ function RequestTab() {
 }
 
 function NoticeAdmin({ onNoticeChange }) {
+  const [menuHidden, setMenuHidden] = useState([]);   // メニューで隠すタブ
   const [enabled, setEnabled] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -648,6 +649,7 @@ function NoticeAdmin({ onNoticeChange }) {
       setTipEnabled(n.tip_enabled !== false); setTipMessage(n.tip_message || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。");
       setFeatEnabled(!!n.feat_enabled); setFeatMessage(n.feat_message || ""); setFeatTab(n.feat_tab || "");
       setBadgeTab(n.badge_tab || ""); setBadgeText(n.badge_text || "");
+      setMenuHidden(Array.isArray(n.menu_hidden) ? n.menu_hidden : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -658,7 +660,7 @@ function NoticeAdmin({ onNoticeChange }) {
       const on = !!(badgeTab && badgeText.trim());
       const badgeVer = on ? (badgeText.trim().slice(0,40) + "|" + Date.now()) : "";
       const badgeUntil = on ? new Date(Date.now() + (Number(badgeDays) || 3) * 86400000).toISOString() : null;
-      const row = await api.updateNotice({ enabled, message: message.trim(), tip_enabled: tipEnabled, tip_message: tipMessage.trim(), feat_enabled: featEnabled, feat_message: featMessage.trim(), feat_tab: featTab, feat_ver: featVer, badge_tab: badgeTab, badge_text: badgeText.trim(), badge_ver: badgeVer, badge_until: badgeUntil });
+      const row = await api.updateNotice({ enabled, message: message.trim(), tip_enabled: tipEnabled, tip_message: tipMessage.trim(), feat_enabled: featEnabled, feat_message: featMessage.trim(), feat_tab: featTab, feat_ver: featVer, badge_tab: badgeTab, badge_text: badgeText.trim(), badge_ver: badgeVer, badge_until: badgeUntil, menu_hidden: menuHidden });
       const next = {
         enabled: row ? !!row.enabled : enabled, message: row ? (row.message || "") : message.trim(),
         tip_enabled: row ? row.tip_enabled !== false : tipEnabled, tip_message: row ? (row.tip_message || "") : tipMessage.trim(),
@@ -757,6 +759,31 @@ function NoticeAdmin({ onNoticeChange }) {
       </div>
 
       <div style={card}>
+        <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>メニューに出すものをえらぶ</div>
+        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:11, lineHeight:1.6 }}>
+          チェックを外すと、メニューから消えます（「管理画面」は常に出ます）
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:5, marginBottom:22 }}>
+          {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => {
+            const on = !menuHidden.includes(t.key);
+            return (
+              <button key={t.key} onClick={() => setMenuHidden(v => on ? v.concat(t.key) : v.filter(x => x !== t.key))}
+                aria-pressed={on}
+                style={{ display:"flex", alignItems:"center", gap:10, textAlign:"left", width:"100%",
+                  border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fafafa",
+                  borderRadius:9, padding:"9px 11px", cursor:"pointer" }}>
+                <span style={{ width:20, height:20, borderRadius:6, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
+                  background: on ? "#3f9e63" : "#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
+                </span>
+                <span style={{ fontSize:17, width:24, textAlign:"center", flexShrink:0, opacity: on ? 1 : 0.4 }}>{t.icon}</span>
+                <span style={{ fontSize:13.5, fontWeight:800, color: on ? "var(--ink)" : "var(--faint)", flex:1 }}>{t.label}</span>
+                <span style={{ fontSize:10.5, color:"var(--faint)", flexShrink:0 }}>{t.section}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>④ 下のボタンに赤い印をつける</div>
         <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
 

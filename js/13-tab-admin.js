@@ -1610,6 +1610,7 @@ function RequestTab() {
 function NoticeAdmin({
   onNoticeChange
 }) {
+  const [menuHidden, setMenuHidden] = useState([]); // メニューで隠すタブ
   const [enabled, setEnabled] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -1634,6 +1635,7 @@ function NoticeAdmin({
       setFeatTab(n.feat_tab || "");
       setBadgeTab(n.badge_tab || "");
       setBadgeText(n.badge_text || "");
+      setMenuHidden(Array.isArray(n.menu_hidden) ? n.menu_hidden : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -1657,7 +1659,8 @@ function NoticeAdmin({
         badge_tab: badgeTab,
         badge_text: badgeText.trim(),
         badge_ver: badgeVer,
-        badge_until: badgeUntil
+        badge_until: badgeUntil,
+        menu_hidden: menuHidden
       });
       const next = {
         enabled: row ? !!row.enabled : enabled,
@@ -2053,6 +2056,90 @@ function NoticeAdmin({
   }, "ひらく"))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 4
+    }
+  }, "メニューに出すものをえらぶ"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      marginBottom: 11,
+      lineHeight: 1.6
+    }
+  }, "チェックを外すと、メニューから消えます（「管理画面」は常に出ます）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 5,
+      marginBottom: 22
+    }
+  }, TAB_REGISTRY.filter(t => t.key !== "admin").map(t => {
+    const on = !menuHidden.includes(t.key);
+    return /*#__PURE__*/React.createElement("button", {
+      key: t.key,
+      onClick: () => setMenuHidden(v => on ? v.concat(t.key) : v.filter(x => x !== t.key)),
+      "aria-pressed": on,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        textAlign: "left",
+        width: "100%",
+        border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
+        background: on ? "#f4faf6" : "#fafafa",
+        borderRadius: 9,
+        padding: "9px 11px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 20,
+        height: 20,
+        borderRadius: 6,
+        flexShrink: 0,
+        border: on ? "none" : "1.5px solid var(--line)",
+        background: on ? "#3f9e63" : "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, on && /*#__PURE__*/React.createElement("svg", {
+      width: "12",
+      height: "12",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "#fff",
+      strokeWidth: "3.6",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M4 12.5l5 5L20 6.5"
+    }))), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 17,
+        width: 24,
+        textAlign: "center",
+        flexShrink: 0,
+        opacity: on ? 1 : 0.4
+      }
+    }, t.icon), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 800,
+        color: on ? "var(--ink)" : "var(--faint)",
+        flex: 1
+      }
+    }, t.label), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10.5,
+        color: "var(--faint)",
+        flexShrink: 0
+      }
+    }, t.section));
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
       fontWeight: 900,
