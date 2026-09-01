@@ -1749,10 +1749,16 @@ function OrderTab() {
                           <div key={r.id} style={{ display:"flex", alignItems:"center", gap:9, background:"var(--bg)", borderRadius:9, padding:"7px 9px" }}>
                             {r.thumb && <img src={r.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0 }} />}
                             <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.item_name}</span>
+                            <button onClick={() => { const v = Number(r[dk] || 0) - 1; setCell(r, dk, v <= 0 ? "" : String(v)); }}
+                              aria-label={`${r.item_name}を1へらす`}
+                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
                             <input value={r[dk] == null ? "" : String(r[dk])} onChange={e => setCell(r, dk, e.target.value.replace(/[^0-9.]/g, ""))}
                               inputMode="decimal" aria-label={`${r.item_name}の数量`}
-                              style={{ width:46, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:7, padding:"6px 2px", fontSize:13.5, fontWeight:900, textAlign:"center", outline:"none", fontFamily:"inherit" }} />
-                            <span style={{ fontSize:9.5, color:"var(--faint)", width:24, flexShrink:0 }}>{r.unit || ""}</span>
+                              style={{ width:42, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:7, padding:"6px 2px", fontSize:14, fontWeight:900, textAlign:"center", outline:"none", fontFamily:"inherit" }} />
+                            <button onClick={() => setCell(r, dk, String(Number(r[dk] || 0) + 1))}
+                              aria-label={`${r.item_name}を1ふやす`}
+                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>＋</button>
+                            <span style={{ fontSize:9.5, color:"var(--faint)", width:22, flexShrink:0 }}>{r.unit || ""}</span>
                             <button onClick={() => setCell(r, dk, "")} aria-label="この曜日から外す"
                               style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:15, fontWeight:900, cursor:"pointer", padding:"0 2px", flexShrink:0 }}>×</button>
                           </div>

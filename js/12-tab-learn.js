@@ -4457,28 +4457,71 @@ function OrderTab() {
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
       }
-    }, r.item_name), /*#__PURE__*/React.createElement("input", {
+    }, r.item_name), /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        const v = Number(r[dk] || 0) - 1;
+        setCell(r, dk, v <= 0 ? "" : String(v));
+      },
+      "aria-label": `${r.item_name}を1へらす`,
+      style: {
+        width: 28,
+        height: 28,
+        flexShrink: 0,
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--sub)",
+        borderRadius: 7,
+        fontSize: 16,
+        fontWeight: 900,
+        cursor: "pointer",
+        lineHeight: 1,
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, "−"), /*#__PURE__*/React.createElement("input", {
       value: r[dk] == null ? "" : String(r[dk]),
       onChange: e => setCell(r, dk, e.target.value.replace(/[^0-9.]/g, "")),
       inputMode: "decimal",
       "aria-label": `${r.item_name}の数量`,
       style: {
-        width: 46,
+        width: 42,
         boxSizing: "border-box",
         border: "1px solid var(--line)",
         borderRadius: 7,
         padding: "6px 2px",
-        fontSize: 13.5,
+        fontSize: 14,
         fontWeight: 900,
         textAlign: "center",
         outline: "none",
         fontFamily: "inherit"
       }
-    }), /*#__PURE__*/React.createElement("span", {
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setCell(r, dk, String(Number(r[dk] || 0) + 1)),
+      "aria-label": `${r.item_name}を1ふやす`,
+      style: {
+        width: 28,
+        height: 28,
+        flexShrink: 0,
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--primary)",
+        borderRadius: 7,
+        fontSize: 16,
+        fontWeight: 900,
+        cursor: "pointer",
+        lineHeight: 1,
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, "＋"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 9.5,
         color: "var(--faint)",
-        width: 24,
+        width: 22,
         flexShrink: 0
       }
     }, r.unit || ""), /*#__PURE__*/React.createElement("button", {
