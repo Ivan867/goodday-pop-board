@@ -3251,6 +3251,10 @@ function OrderTab() {
   const [sheetBusy, setSheetBusy] = useState(false);
   const [sheetNote, setSheetNote] = useState("");
   const [openCat, setOpenCat] = useState(""); // 開いている分類
+  const [sheetDay, setSheetDay] = useState(() => {
+    const d = new Date().getDay();
+    return d;
+  }); // 指示書で編集中の曜日
   // 今日のチェック（日付が変わると消える）
   const [pickDay, setPickDay] = useState(() => new Date());
   // 日付ごとのチェック（{ "2026-08-25": {rowId:true} }）
@@ -4229,218 +4233,166 @@ function OrderTab() {
         marginTop: 16
       }
     }, "上の日付を押すと、その日の発注が出ます。数量はその場で直せます（指示書にも反映されます）。")));
-  })()) : tab === "sheet" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      const d = new Date(wkStart);
-      d.setDate(d.getDate() - 7);
-      setWkStart(d);
-    },
-    "aria-label": "前の週",
-    style: {
-      border: "1px solid var(--line)",
-      background: "#fff",
-      borderRadius: 8,
-      width: 34,
-      height: 34,
-      fontSize: 15,
-      fontWeight: 900,
-      color: "var(--sub)",
-      cursor: "pointer"
-    }
-  }, "‹"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 14,
-      fontWeight: 900,
-      color: "var(--ink)"
-    }
-  }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "（月）〜", (() => {
-    const e = new Date(wkStart);
-    e.setDate(e.getDate() + 6);
-    return `${e.getMonth() + 1}/${e.getDate()}`;
-  })(), "（日）"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      const d = new Date(wkStart);
-      d.setDate(d.getDate() + 7);
-      setWkStart(d);
-    },
-    "aria-label": "次の週",
-    style: {
-      border: "1px solid var(--line)",
-      background: "#fff",
-      borderRadius: 8,
-      width: 34,
-      height: 34,
-      fontSize: 15,
-      fontWeight: 900,
-      color: "var(--sub)",
-      cursor: "pointer"
-    }
-  }, "›"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setWkStart(mondayOf(new Date())),
-    style: {
-      marginLeft: "auto",
-      border: "1px solid var(--line)",
-      background: "#fff",
-      borderRadius: 8,
-      padding: "7px 12px",
-      fontSize: 11.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      cursor: "pointer"
-    }
-  }, "今週")), rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      color: "var(--faint)",
-      padding: "32px 20px",
-      fontSize: 13,
-      lineHeight: 1.8,
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      color: "var(--sub)"
-    }
-  }, "この週の指示書はまだ空です"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 6
-    }
-  }, "下から品目を足してください"), /*#__PURE__*/React.createElement("button", {
-    onClick: copyPrevWeek,
-    disabled: sheetBusy,
-    style: {
-      marginTop: 14,
-      border: "1px solid var(--line)",
-      background: "#fff",
-      color: "var(--primary)",
-      borderRadius: 9,
-      padding: "9px 18px",
-      fontSize: 12.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "前の週をコピーする")) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff",
-      border: "1px solid var(--line)",
-      borderRadius: 11,
-      padding: "10px 8px",
-      marginBottom: 12,
-      overflowX: "auto"
-    }
-  }, /*#__PURE__*/React.createElement("table", {
-    style: {
-      width: "100%",
-      borderCollapse: "collapse",
-      minWidth: 400
-    }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    style: {
-      fontSize: 10.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      textAlign: "left",
-      padding: "4px 6px",
-      whiteSpace: "nowrap"
-    }
-  }, "品目"), [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]].map(([k, l], i) => /*#__PURE__*/React.createElement("th", {
-    key: k,
-    style: {
-      fontSize: 10.5,
-      fontWeight: 900,
-      color: i === 6 ? "#c00" : i === 5 ? "#06c" : "var(--sub)",
-      padding: "4px 2px",
-      width: 34
-    }
-  }, l)), /*#__PURE__*/React.createElement("th", {
-    style: {
-      width: 26
-    }
-  }))), /*#__PURE__*/React.createElement("tbody", null, rows.map(r => /*#__PURE__*/React.createElement(React.Fragment, {
-    key: r.id
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
-      color: "var(--ink)",
-      padding: "5px 6px",
-      whiteSpace: "nowrap",
-      maxWidth: 110,
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, r.item_name), [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]].map(([k]) => /*#__PURE__*/React.createElement("td", {
-    key: k,
-    style: {
-      padding: 2
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    value: r[k] == null ? "" : String(r[k]),
-    onChange: e => setCell(r, k, e.target.value.replace(/[^0-9.]/g, "")),
-    inputMode: "decimal",
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      border: "1px solid var(--line)",
-      borderRadius: 5,
-      padding: "5px 1px",
-      fontSize: 12.5,
-      textAlign: "center",
-      outline: "none",
-      fontFamily: "inherit"
-    }
-  }))), /*#__PURE__*/React.createElement("td", {
-    style: {
-      padding: 0
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => delRow(r),
-    "aria-label": "この行を消す",
-    style: {
-      border: "none",
-      background: "transparent",
-      color: "var(--faint)",
-      fontSize: 14,
-      fontWeight: 900,
-      cursor: "pointer",
-      padding: "0 3px"
-    }
-  }, "×"))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-    colSpan: 9,
-    style: {
-      padding: "0 6px 6px"
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    value: r.memo || "",
-    onChange: e => setRowMemo(r, e.target.value),
-    placeholder: "この品目への指示（例：木曜は特売、増量）",
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      border: "none",
-      borderBottom: "1px dashed var(--line)",
-      padding: "3px 2px",
-      fontSize: 11,
-      outline: "none",
-      fontFamily: "inherit",
-      color: "var(--sub)"
-    }
-  })))))))), active.length > 0 && (() => {
+  })()) : tab === "sheet" ? /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
+    const DK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const dk = DK[sheetDay]; // いま編集している曜日
+    const wd = OI_WDAY[sheetDay];
+    const onDay = rows.filter(r => r[dk] != null && r[dk] !== "");
     const cats = [];
     active.forEach(it => {
       const c = it.category || "その他";
       if (!cats.includes(c)) cats.push(c);
     });
-    return /*#__PURE__*/React.createElement("div", {
+
+    // その曜日に品目を入れる／外す（1タップ）
+    const tapItem = async it => {
+      const row = rows.find(r => r.item_id === it.id);
+      if (row && row[dk] != null && row[dk] !== "") {
+        // すでに入っている → その曜日だけ外す
+        await setCell(row, dk, "");
+        return;
+      }
+      if (row) {
+        await setCell(row, dk, it.qty != null ? String(it.qty) : "1");
+        return;
+      }
+      // 行がなければ作ってから入れる
+      setSheetBusy(true);
+      try {
+        const sh = await ensureSheet();
+        const body = {
+          sheet_id: sh.id,
+          item_id: it.id,
+          item_name: it.name,
+          unit: it.unit || "ケース",
+          maker: it.maker || null,
+          price: it.price ?? null,
+          life_kind: it.life_kind || null,
+          life_days: it.life_days ?? null,
+          thumb: it.thumb || null,
+          sort_order: rows.length
+        };
+        body[dk] = it.qty != null ? it.qty : 1;
+        await api.addSheetRow(body);
+        setSheetVer(v => v + 1);
+      } catch (e) {} finally {
+        setSheetBusy(false);
+      }
+    };
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        const d = new Date(wkStart);
+        d.setDate(d.getDate() - 7);
+        setWkStart(d);
+      },
+      "aria-label": "前の週",
+      style: {
+        border: "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 8,
+        width: 30,
+        height: 30,
+        fontSize: 14,
+        fontWeight: 900,
+        color: "var(--sub)",
+        cursor: "pointer"
+      }
+    }, "‹"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        fontWeight: 900,
+        color: "var(--ink)"
+      }
+    }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "〜", (() => {
+      const e = new Date(wkStart);
+      e.setDate(e.getDate() + 6);
+      return `${e.getMonth() + 1}/${e.getDate()}`;
+    })()), /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        const d = new Date(wkStart);
+        d.setDate(d.getDate() + 7);
+        setWkStart(d);
+      },
+      "aria-label": "次の週",
+      style: {
+        border: "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 8,
+        width: 30,
+        height: 30,
+        fontSize: 14,
+        fontWeight: 900,
+        color: "var(--sub)",
+        cursor: "pointer"
+      }
+    }, "›"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setWkStart(mondayOf(new Date())),
+      style: {
+        marginLeft: "auto",
+        border: "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 8,
+        padding: "6px 11px",
+        fontSize: 11,
+        fontWeight: 800,
+        color: "var(--sub)",
+        cursor: "pointer"
+      }
+    }, "今週")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 4,
+        marginBottom: 12
+      }
+    }, [1, 2, 3, 4, 5, 6, 0].map(dnum => {
+      const k = DK[dnum],
+        sel = dnum === sheetDay;
+      const n = rows.filter(r => r[k] != null && r[k] !== "").length;
+      const d = new Date(wkStart);
+      d.setDate(d.getDate() + (dnum === 0 ? 6 : dnum - 1));
+      return /*#__PURE__*/React.createElement("button", {
+        key: dnum,
+        onClick: () => setSheetDay(dnum),
+        style: {
+          flex: 1,
+          border: sel ? "none" : "1px solid var(--line)",
+          background: sel ? "var(--primary)" : "#fff",
+          color: sel ? "#fff" : dnum === 0 ? "#d1554f" : dnum === 6 ? "#3b7dd8" : "var(--text)",
+          borderRadius: 10,
+          padding: "7px 0 6px",
+          cursor: "pointer"
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 11,
+          fontWeight: 900
+        }
+      }, OI_WDAY[dnum]), /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 9,
+          fontWeight: 800,
+          opacity: 0.75,
+          marginTop: 1
+        }
+      }, d.getDate()), n > 0 && /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 9.5,
+          fontWeight: 900,
+          marginTop: 2,
+          color: sel ? "#fff" : "var(--primary-soft)"
+        }
+      }, n));
+    })), /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#fff",
         border: "1px solid var(--line)",
@@ -4450,27 +4402,114 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        marginBottom: 9
+        fontSize: 12,
+        fontWeight: 900,
+        color: "var(--ink)",
+        marginBottom: onDay.length ? 9 : 0
       }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11.5,
-        fontWeight: 800,
-        color: "var(--sub)"
-      }
-    }, "品目をえらぶ"), /*#__PURE__*/React.createElement("span", {
+    }, wd, "曜に発注するもの ", onDay.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 10,
         fontWeight: 900,
-        color: "var(--primary-soft)",
-        background: "var(--soft)",
-        borderRadius: 999,
-        padding: "1px 8px"
+        color: "var(--primary-soft)"
       }
-    }, rows.length, " 件")), /*#__PURE__*/React.createElement("div", {
+    }, onDay.length, "件")), onDay.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--faint)",
+        lineHeight: 1.6,
+        marginTop: 6
+      }
+    }, "下から品目を押すと、この曜日に入ります") : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 6
+      }
+    }, onDay.map(r => /*#__PURE__*/React.createElement("div", {
+      key: r.id,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        background: "var(--bg)",
+        borderRadius: 9,
+        padding: "7px 9px"
+      }
+    }, r.thumb && /*#__PURE__*/React.createElement("img", {
+      src: r.thumb,
+      alt: "",
+      style: {
+        width: 34,
+        height: 34,
+        objectFit: "cover",
+        borderRadius: 6,
+        flexShrink: 0
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, r.item_name), /*#__PURE__*/React.createElement("input", {
+      value: r[dk] == null ? "" : String(r[dk]),
+      onChange: e => setCell(r, dk, e.target.value.replace(/[^0-9.]/g, "")),
+      inputMode: "decimal",
+      "aria-label": `${r.item_name}の数量`,
+      style: {
+        width: 46,
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 7,
+        padding: "6px 2px",
+        fontSize: 13.5,
+        fontWeight: 900,
+        textAlign: "center",
+        outline: "none",
+        fontFamily: "inherit"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9.5,
+        color: "var(--faint)",
+        width: 24,
+        flexShrink: 0
+      }
+    }, r.unit || ""), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setCell(r, dk, ""),
+      "aria-label": "この曜日から外す",
+      style: {
+        border: "none",
+        background: "transparent",
+        color: "var(--faint)",
+        fontSize: 15,
+        fontWeight: 900,
+        cursor: "pointer",
+        padding: "0 2px",
+        flexShrink: 0
+      }
+    }, "×"))))), active.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "11px 12px",
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        fontWeight: 800,
+        color: "var(--sub)",
+        marginBottom: 9
+      }
+    }, "押すと", wd, "曜に入ります"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 5,
@@ -4479,7 +4518,7 @@ function OrderTab() {
       }
     }, cats.map(c => {
       const on = openCat === c;
-      const n = active.filter(it => (it.category || "その他") === c && rows.some(r => r.item_id === it.id)).length;
+      const n = active.filter(it => (it.category || "その他") === c && rows.some(r => r.item_id === it.id && r[dk] != null && r[dk] !== "")).length;
       return /*#__PURE__*/React.createElement("button", {
         key: c,
         onClick: () => setOpenCat(on ? "" : c),
@@ -4511,8 +4550,7 @@ function OrderTab() {
         style: {
           fontSize: 8,
           transform: on ? "rotate(180deg)" : "none",
-          display: "inline-block",
-          transition: "transform .2s"
+          display: "inline-block"
         }
       }, "▼"));
     })), openCat && /*#__PURE__*/React.createElement("div", {
@@ -4522,15 +4560,14 @@ function OrderTab() {
         padding: "8px",
         display: "flex",
         flexDirection: "column",
-        gap: 4,
-        animation: "fadeUp .2s ease"
+        gap: 4
       }
     }, active.filter(it => (it.category || "その他") === openCat).map(it => {
       const row = rows.find(r => r.item_id === it.id);
-      const on = !!row;
+      const on = !!(row && row[dk] != null && row[dk] !== "");
       return /*#__PURE__*/React.createElement("button", {
         key: it.id,
-        onClick: () => on ? delRow(row) : addRow(it),
+        onClick: () => tapItem(it),
         disabled: sheetBusy,
         "aria-pressed": on,
         style: {
@@ -4576,8 +4613,7 @@ function OrderTab() {
           height: 34,
           objectFit: "cover",
           borderRadius: 6,
-          flexShrink: 0,
-          background: "var(--bg)"
+          flexShrink: 0
         }
       }), /*#__PURE__*/React.createElement("span", {
         style: {
@@ -4601,63 +4637,81 @@ function OrderTab() {
           color: "var(--faint)",
           marginTop: 1
         }
-      }, [it.maker, it.life_kind && it.life_days ? `${it.life_kind.replace("冷凍平台", "")} D+${it.life_days}` : null].filter(Boolean).join(" ／ "))), it.price != null && /*#__PURE__*/React.createElement("span", {
+      }, [it.maker, it.life_days != null ? `D+${it.life_days}` : null].filter(Boolean).join(" ／ "))), it.price != null && /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 12,
           fontWeight: 900,
           color: on ? "#2c6b45" : "var(--sub)",
-          flexShrink: 0,
-          whiteSpace: "nowrap"
+          flexShrink: 0
         }
       }, "¥", it.price));
-    })));
+    }))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 11,
+        padding: "11px 12px",
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        fontWeight: 800,
+        color: "var(--sub)",
+        marginBottom: 7
+      }
+    }, "全体の補足（紙に出ます）"), /*#__PURE__*/React.createElement("textarea", {
+      value: sheetNote,
+      onChange: e => setSheetNote(e.target.value),
+      onBlur: saveNote,
+      rows: 2,
+      placeholder: "例：数量は目安です。売れ行きを見て調整してください。",
+      style: {
+        width: "100%",
+        boxSizing: "border-box",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "8px 10px",
+        fontSize: 12.5,
+        outline: "none",
+        resize: "vertical",
+        fontFamily: "inherit",
+        lineHeight: 1.6
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8
+      }
+    }, rows.length === 0 && /*#__PURE__*/React.createElement("button", {
+      onClick: copyPrevWeek,
+      disabled: sheetBusy,
+      style: {
+        flex: 1,
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--primary)",
+        borderRadius: 11,
+        padding: "13px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "前の週をコピー"), rows.length > 0 && /*#__PURE__*/React.createElement("button", {
+      onClick: () => window.print(),
+      style: {
+        flex: 1,
+        border: "none",
+        background: "var(--primary)",
+        color: "#fff",
+        borderRadius: 11,
+        padding: "13px",
+        fontSize: 14,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, "印刷する（A4）")));
   })(), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff",
-      border: "1px solid var(--line)",
-      borderRadius: 11,
-      padding: "11px 12px",
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 7
-    }
-  }, "全体の補足（紙の下に入ります）"), /*#__PURE__*/React.createElement("textarea", {
-    value: sheetNote,
-    onChange: e => setSheetNote(e.target.value),
-    onBlur: saveNote,
-    rows: 2,
-    placeholder: "例：数量は目安です。売れ行きを見て調整してください。迷ったら勝部まで。",
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      border: "1px solid var(--line)",
-      borderRadius: 8,
-      padding: "8px 10px",
-      fontSize: 12.5,
-      outline: "none",
-      resize: "vertical",
-      fontFamily: "inherit",
-      lineHeight: 1.6
-    }
-  })), rows.length > 0 && /*#__PURE__*/React.createElement("button", {
-    onClick: () => window.print(),
-    style: {
-      width: "100%",
-      border: "none",
-      background: "var(--primary)",
-      color: "#fff",
-      borderRadius: 11,
-      padding: "14px",
-      fontSize: 15,
-      fontWeight: 900,
-      cursor: "pointer"
-    }
-  }, "この指示書を印刷する（A4）"), /*#__PURE__*/React.createElement("div", {
     id: "sheetPrint"
   }, /*#__PURE__*/React.createElement("div", {
     style: {
