@@ -1217,9 +1217,20 @@ function OrderTab() {
   const [sheetBusy, setSheetBusy] = useState(false);
   const [sheetNote, setSheetNote] = useState("");
   const [openCat, setOpenCat] = useState("");     // 開いている分類
+  // 今日のチェック（日付が変わると消える）
+  const [pickDay, setPickDay] = useState(() => new Date());
+  // 日付ごとのチェック（{ "2026-08-25": {rowId:true} }）
+  const [todayChecked, setTodayChecked] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("orderDayChecked") || "{}"); } catch(e) { return {}; }
+  });
+  const saveTodayChecked = (dayKey, v) => {
+    const next = { ...todayChecked, [dayKey]: v };
+    setTodayChecked(next);
+    try { localStorage.setItem("orderDayChecked", JSON.stringify(next)); } catch(e) {}
+  };
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
-  const [tab, setTab] = useState("sheet");            // cal=カレンダー / items=品目
+  const [tab, setTab] = useState("today");            // cal=カレンダー / items=品目
   const [cursor, setCursor] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [pickDate, setPickDate] = useState(oiYmd(new Date()));  // 記録を入れる日
   const [focusItem, setFocusItem] = useState("");   // 絞り込む品目（空=すべて）
@@ -1484,8 +1495,14 @@ function OrderTab() {
     } catch(e) { setMsg("保存できませんでした"); }
     finally { setBusy(false); }
   };
+  // すぐ消さず「使わない」に切り替える（戻せる）
+  const [confirmOff, setConfirmOff] = useState(null);   // 確認中の品目
+  const [showOff, setShowOff] = useState(false);        // 使わないものを表示するか
+  const toggleActive = async (it, next) => {
+    try { await api.updateOrderItem(it.id, { active: next }); setVer(v => v + 1); setConfirmOff(null); } catch(e) {}
+  };
   const removeItem = async (it) => {
-    if (!window.confirm(`「${it.name}」を消しますか？\n記録もまとめて消えます。`)) return;
+    if (!window.confirm(`「${it.name}」を完全に消しますか？\nこの操作は戻せません。`)) return;
     try { await api.deleteOrderItem(it.id); setVer(v => v + 1); } catch(e) {}
   };
 
@@ -1527,7 +1544,7 @@ function OrderTab() {
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
         <div style={{ display:"flex", gap:7, marginBottom:14 }}>
-          {[["sheet","指示書"],["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
+          {[["today","今日"],["sheet","指示書"],["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
             <button key={k} onClick={() => setTab(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
                 background: tab===k ? "var(--primary)" : "#fff", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
@@ -1536,6 +1553,121 @@ function OrderTab() {
 
         {loading ? (
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
+        ) : tab === "today" ? (
+          <>
+            {(() => {
+              const keyOf = ["sun","mon","tue","wed","thu","fri","sat"][pickDay.getDay()];
+              const wd = OI_WDAY[pickDay.getDay()];
+              const mine = rows.filter(r => r[keyOf] != null && r[keyOf] !== "");
+              const dayKey = oiYmd(pickDay);
+              const chk = todayChecked[dayKey] || {};
+              const doneN = mine.filter(r => chk[r.id]).length;
+              const isToday = dayKey === oiYmd(new Date());
+              // その週の月〜日
+              const mon = new Date(pickDay); mon.setDate(mon.getDate() - (mon.getDay() === 0 ? 6 : mon.getDay() - 1));
+              const week = Array.from({ length: 7 }, (_, i) => { const d = new Date(mon); d.setDate(d.getDate() + i); return d; });
+
+              return (
+                <>
+                  {/* 日付を選ぶ */}
+                  <div style={{ display:"flex", gap:4, marginBottom:12 }}>
+                    {week.map((d, i) => {
+                      const k = oiYmd(d), sel = k === dayKey, tod = k === oiYmd(new Date());
+                      const dk = ["sun","mon","tue","wed","thu","fri","sat"][d.getDay()];
+                      const n = rows.filter(r => r[dk] != null && r[dk] !== "").length;
+                      return (
+                        <button key={k} onClick={() => setPickDay(d)}
+                          style={{ flex:1, border: sel ? "none" : "1px solid var(--line)",
+                            background: sel ? "var(--primary)" : "#fff", color: sel ? "#fff" : (i===6 ? "#d1554f" : i===5 ? "#3b7dd8" : "var(--text)"),
+                            borderRadius:10, padding:"7px 0 6px", cursor:"pointer", position:"relative" }}>
+                          <span style={{ display:"block", fontSize:9.5, fontWeight:800, opacity: sel ? 0.85 : 0.7 }}>{OI_WDAY[d.getDay()]}</span>
+                          <span style={{ display:"block", fontSize:16, fontWeight:900, lineHeight:1.25 }}>{d.getDate()}</span>
+                          {n > 0 && (
+                            <span style={{ display:"block", fontSize:8.5, fontWeight:900, marginTop:1,
+                              color: sel ? "#fff" : "var(--primary-soft)", opacity: sel ? 0.9 : 1 }}>{n}</span>
+                          )}
+                          {tod && !sel && <span style={{ position:"absolute", top:3, right:4, width:5, height:5, borderRadius:"50%", background:"#e0a020" }} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+                    <button onClick={() => { const d = new Date(pickDay); d.setDate(d.getDate() - 7); setPickDay(d); }} aria-label="前の週"
+                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                    <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>
+                      {pickDay.getMonth()+1}月{pickDay.getDate()}日（{wd}）{isToday ? "・今日" : ""}
+                    </span>
+                    <button onClick={() => { const d = new Date(pickDay); d.setDate(d.getDate() + 7); setPickDay(d); }} aria-label="次の週"
+                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                    {mine.length > 0 && (
+                      <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color: doneN === mine.length ? "#3f9e63" : "var(--sub)" }}>
+                        {doneN} / {mine.length} 済み
+                      </span>
+                    )}
+                  </div>
+
+                  {mine.length === 0 ? (
+                    <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13, lineHeight:1.9 }}>
+                      <div style={{ fontSize:16, fontWeight:800, color:"var(--sub)" }}>{wd}曜の発注はありません</div>
+                      <div style={{ marginTop:6 }}>「指示書」で曜日に数量を入れると、ここに出ます</div>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ height:6, background:"var(--chip)", borderRadius:99, overflow:"hidden", marginBottom:14 }}>
+                        <div style={{ width:`${(doneN / mine.length) * 100}%`, height:"100%", background:"#3f9e63", transition:"width .3s" }} />
+                      </div>
+
+                      <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                        {mine.map(r => {
+                          const on = !!chk[r.id];
+                          return (
+                            <div key={r.id} style={{ display:"flex", alignItems:"center", gap:11,
+                              border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fff",
+                              borderRadius:12, padding:"11px 12px" }}>
+                              <button onClick={() => { const n = { ...chk }; if (on) delete n[r.id]; else n[r.id] = true; saveTodayChecked(dayKey, n); }}
+                                aria-label={on ? "まだにする" : "済みにする"} aria-pressed={on}
+                                style={{ width:28, height:28, borderRadius:9, flexShrink:0, cursor:"pointer",
+                                  border: on ? "none" : "2px solid var(--line)", background: on ? "#3f9e63" : "#fff",
+                                  display:"flex", alignItems:"center", justifyContent:"center", padding:0 }}>
+                                {on && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
+                              </button>
+
+                              {r.thumb
+                                ? <img src={r.thumb} alt="" style={{ width:48, height:48, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--bg)", opacity: on ? 0.55 : 1 }} />
+                                : <span style={{ width:48, height:48, borderRadius:8, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"var(--faint)" }}>写真なし</span>}
+
+                              <div style={{ minWidth:0, flex:1 }}>
+                                <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                                  textDecoration: on ? "line-through" : "none", opacity: on ? 0.6 : 1 }}>{r.item_name}</div>
+                                <div style={{ fontSize:10, color:"var(--faint)", marginTop:2 }}>
+                                  {[r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")}
+                                </div>
+                                {r.memo && <div style={{ fontSize:10.5, color:"#c07a1a", fontWeight:700, marginTop:3 }}>{r.memo}</div>}
+                              </div>
+
+                              <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                                <input value={r[keyOf] == null ? "" : String(r[keyOf])}
+                                  onChange={e => setCell(r, keyOf, e.target.value.replace(/[^0-9.]/g, ""))}
+                                  inputMode="decimal" aria-label={`${r.item_name}の数量`}
+                                  style={{ width:52, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"8px 4px",
+                                    fontSize:15, fontWeight:900, textAlign:"center", outline:"none", fontFamily:"inherit", color:"var(--ink)" }} />
+                                <span style={{ fontSize:10, color:"var(--faint)", width:26 }}>{r.unit || ""}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div style={{ fontSize:10.5, color:"var(--faint)", lineHeight:1.7, marginTop:16 }}>
+                        上の日付を押すと、その日の発注が出ます。数量はその場で直せます（指示書にも反映されます）。
+                      </div>
+                    </>
+                  )}
+                </>
+              );
+            })()}
+          </>
         ) : tab === "sheet" ? (
           <>
             {/* 週の切り替え */}
@@ -1918,6 +2050,32 @@ function OrderTab() {
               </div>
             )}
 
+            {(() => {
+              const off = items.filter(i => i.active === false);
+              return off.length > 0 ? (
+                <div style={{ marginBottom:12 }}>
+                  <button onClick={() => setShowOff(v => !v)}
+                    style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:8, padding:"7px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>
+                    使わないもの {off.length}件 {showOff ? "を隠す" : "を見る"}
+                  </button>
+                  {showOff && (
+                    <div style={{ marginTop:8, display:"flex", flexDirection:"column", gap:6 }}>
+                      {off.map(it => (
+                        <div key={it.id} style={{ display:"flex", alignItems:"center", gap:9, border:"1px solid var(--line)", borderRadius:9, padding:"8px 10px", background:"#fafafa" }}>
+                          {it.thumb && <img src={it.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0, opacity:0.5 }} />}
+                          <span style={{ fontSize:12.5, fontWeight:700, color:"var(--sub)", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</span>
+                          <button onClick={() => toggleActive(it, true)}
+                            style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:7, padding:"5px 12px", fontSize:11.5, fontWeight:800, cursor:"pointer", flexShrink:0 }}>もどす</button>
+                          <button onClick={() => removeItem(it)} aria-label="完全に消す"
+                            style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:14, fontWeight:900, cursor:"pointer", padding:"0 3px", flexShrink:0 }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : null;
+            })()}
+
             {active.length === 0 ? (
               <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 20px", fontSize:13, lineHeight:1.8 }}>
                 <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>まだ品目がありません</div>
@@ -1941,8 +2099,18 @@ function OrderTab() {
                       <div style={{ display:"flex", gap:6 }}>
                         <button onClick={() => openEdit(it)}
                           style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>直す</button>
-                        <button onClick={() => removeItem(it)}
-                          style={{ marginLeft:"auto", border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>消す</button>
+                        {confirmOff === it.id ? (
+                          <span style={{ marginLeft:"auto", display:"flex", gap:5, alignItems:"center" }}>
+                            <span style={{ fontSize:10.5, color:"var(--sub)", fontWeight:700 }}>使わない？</span>
+                            <button onClick={() => setConfirmOff(null)}
+                              style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>やめる</button>
+                            <button onClick={() => toggleActive(it, false)}
+                              style={{ border:"none", background:"#c07a1a", color:"#fff", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>はい</button>
+                          </span>
+                        ) : (
+                          <button onClick={() => setConfirmOff(it.id)}
+                            style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, padding:"5px 13px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>使わない</button>
+                        )}
                       </div>
                       </div>
                     </div>
