@@ -3223,7 +3223,7 @@ function OrderTab() {
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
-    if (pw.trim() === "5555") {
+    if (pw.trim() === "5") {
       setUnlocked(true);
       setPwErr("");
       try {
@@ -3826,11 +3826,11 @@ function OrderTab() {
         fontSize: 12,
         color: "var(--sub)"
       }
-    }, "4けたの番号でひらきます")), /*#__PURE__*/React.createElement("input", {
+    }, "番号を入れるとひらきます")), /*#__PURE__*/React.createElement("input", {
       type: "password",
       inputMode: "numeric",
       value: pw,
-      maxLength: 8,
+      maxLength: 4,
       onChange: e => {
         setPw(e.target.value.replace(/[^0-9]/g, ""));
         setPwErr("");
@@ -3838,7 +3838,7 @@ function OrderTab() {
       onKeyDown: e => {
         if (e.key === "Enter") tryUnlock();
       },
-      placeholder: "••••",
+      placeholder: "•",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -3847,7 +3847,7 @@ function OrderTab() {
         padding: "14px",
         fontSize: 22,
         textAlign: "center",
-        letterSpacing: "0.5em",
+        letterSpacing: "0.3em",
         outline: "none",
         fontFamily: "inherit",
         marginBottom: pwErr ? 8 : 16

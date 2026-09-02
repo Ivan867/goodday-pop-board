@@ -1200,7 +1200,7 @@ function OrderTab() {
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
-    if (pw.trim() === "5555") {
+    if (pw.trim() === "5") {
       setUnlocked(true); setPwErr("");
       try { sessionStorage.setItem("orderUnlocked", "1"); } catch(e) {}
     } else { setPwErr("番号が違います"); setPw(""); }
@@ -1522,13 +1522,13 @@ function OrderTab() {
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>
             </div>
             <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:5 }}>番号を入れてください</div>
-            <div style={{ fontSize:12, color:"var(--sub)" }}>4けたの番号でひらきます</div>
+            <div style={{ fontSize:12, color:"var(--sub)" }}>番号を入れるとひらきます</div>
           </div>
-          <input type="password" inputMode="numeric" value={pw} maxLength={8}
+          <input type="password" inputMode="numeric" value={pw} maxLength={4}
             onChange={e => { setPw(e.target.value.replace(/[^0-9]/g, "")); setPwErr(""); }}
             onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-            placeholder="••••"
-            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:11, padding:"14px", fontSize:22, textAlign:"center", letterSpacing:"0.5em", outline:"none", fontFamily:"inherit", marginBottom: pwErr ? 8 : 16 }} />
+            placeholder="•"
+            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:11, padding:"14px", fontSize:22, textAlign:"center", letterSpacing:"0.3em", outline:"none", fontFamily:"inherit", marginBottom: pwErr ? 8 : 16 }} />
           {pwErr && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:800, textAlign:"center", marginBottom:12 }}>{pwErr}</div>}
           <button onClick={tryUnlock}
             style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
