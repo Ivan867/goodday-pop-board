@@ -574,7 +574,63 @@ function AdminTab({
         marginBottom: 10,
         whiteSpace: "pre-wrap"
       }
-    }, r.reason), done && r.reply && /*#__PURE__*/React.createElement("div", {
+    }, r.reason), Array.isArray(r.files) && r.files.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        marginBottom: 10
+      }
+    }, r.files.map((f, i) => /*#__PURE__*/React.createElement("a", {
+      key: i,
+      href: f.url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      download: f.name,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 7,
+        textDecoration: "none",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "5px 9px 5px 5px",
+        background: "#fff"
+      }
+    }, (f.type || "").startsWith("image/") ? /*#__PURE__*/React.createElement("img", {
+      src: f.url,
+      alt: "",
+      style: {
+        width: 30,
+        height: 30,
+        objectFit: "cover",
+        borderRadius: 5,
+        background: "var(--bg)"
+      }
+    }) : /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 30,
+        height: 30,
+        borderRadius: 5,
+        background: "var(--bg)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 8,
+        fontWeight: 900,
+        color: "var(--sub)"
+      }
+    }, (String(f.name).split(".").pop() || "").slice(0, 4).toUpperCase()), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        fontWeight: 700,
+        color: "var(--primary)",
+        maxWidth: 130,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, f.name)))), done && r.reply && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12.5,
         color: "#2c6b45",
@@ -1369,7 +1425,38 @@ function RequestTab() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [files, setFiles] = useState([]); // 添付ファイル [{name,url,type,size}]
+  const [upBusy, setUpBusy] = useState(false);
   const isPop = kind === "POP作成依頼";
+  const MAX_MB = 10;
+  const pickFiles = async list => {
+    if (!list || !list.length) return;
+    setUpBusy(true);
+    setError("");
+    try {
+      const added = [];
+      for (const f of Array.from(list)) {
+        if (f.size > MAX_MB * 1024 * 1024) {
+          setError(`${f.name} は大きすぎます（${MAX_MB}MBまで）`);
+          continue;
+        }
+        const url = await api.uploadRaw(f);
+        added.push({
+          name: f.name,
+          url,
+          type: f.type || "",
+          size: f.size
+        });
+      }
+      if (added.length) setFiles(v => v.concat(added));
+    } catch (e) {
+      setError("ファイルを送れませんでした");
+    } finally {
+      setUpBusy(false);
+    }
+  };
+  const isImg = f => (f.type || "").startsWith("image/");
+  const fileKB = n => n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)}MB` : `${Math.round(n / 1024)}KB`;
   const submit = async () => {
     if (isPop && !product.trim()) {
       setError("商品名を入力してください");
@@ -1388,9 +1475,11 @@ function RequestTab() {
         product_name: isPop ? product.trim() : product.trim() || kind,
         reason: reason.trim(),
         author: "匿名",
-        priority: isPop ? priority : "普通"
+        priority: isPop ? priority : "普通",
+        files
       });
       setDone(true);
+      setFiles([]);
     } catch (e) {
       setError("送信に失敗しました: " + e.message);
     } finally {
@@ -1585,7 +1674,131 @@ function RequestTab() {
       resize: "vertical",
       lineHeight: 1.5
     }
-  })), error && /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      position: "relative",
+      overflow: "hidden",
+      border: "1px dashed var(--line)",
+      background: upBusy ? "#f6f6f6" : "#fff",
+      borderRadius: 10,
+      padding: "13px",
+      textAlign: "center",
+      cursor: upBusy ? "default" : "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, upBusy ? "送っています…" : "＋ ファイルを添付する"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 10.5,
+      color: "var(--faint)",
+      marginTop: 3
+    }
+  }, "写真・Excel・PDF・Word・テキストなど（1つ", MAX_MB, "MBまで）"), /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    multiple: true,
+    disabled: upBusy,
+    accept: "image/*,.pdf,.xlsx,.xls,.csv,.doc,.docx,.txt,.png,.jpg,.jpeg,.gif,.webp,.bmp,.heic",
+    style: {
+      position: "absolute",
+      inset: 0,
+      opacity: 0,
+      width: "100%",
+      height: "100%",
+      cursor: "pointer"
+    },
+    onChange: e => {
+      const l = e.target.files;
+      e.target.value = "";
+      pickFiles(l);
+    }
+  })), files.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      marginTop: 9
+    }
+  }, files.map((f, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 9,
+      border: "1px solid var(--line)",
+      borderRadius: 9,
+      padding: "7px 9px",
+      background: "#fff"
+    }
+  }, isImg(f) ? /*#__PURE__*/React.createElement("img", {
+    src: f.url,
+    alt: "",
+    style: {
+      width: 38,
+      height: 38,
+      objectFit: "cover",
+      borderRadius: 6,
+      flexShrink: 0,
+      background: "var(--bg)"
+    }
+  }) : /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 38,
+      height: 38,
+      borderRadius: 6,
+      flexShrink: 0,
+      background: "var(--bg)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 9,
+      fontWeight: 900,
+      color: "var(--sub)"
+    }
+  }, (f.name.split(".").pop() || "").slice(0, 4).toUpperCase()), /*#__PURE__*/React.createElement("span", {
+    style: {
+      minWidth: 0,
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 12,
+      fontWeight: 700,
+      color: "var(--ink)",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, f.name), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 10,
+      color: "var(--faint)"
+    }
+  }, fileKB(f.size))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setFiles(v => v.filter((_, k) => k !== i)),
+    "aria-label": `${f.name}を外す`,
+    style: {
+      border: "none",
+      background: "transparent",
+      color: "var(--faint)",
+      fontSize: 16,
+      fontWeight: 900,
+      cursor: "pointer",
+      padding: "0 3px",
+      flexShrink: 0
+    }
+  }, "×")))))), error && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "#e01010",
