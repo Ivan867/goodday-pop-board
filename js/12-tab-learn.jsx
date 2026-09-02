@@ -1524,11 +1524,19 @@ function OrderTab() {
             <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:5 }}>番号を入れてください</div>
             <div style={{ fontSize:12, color:"var(--sub)" }}>番号を入れるとひらきます</div>
           </div>
-          <input type="password" inputMode="numeric" value={pw} maxLength={4}
-            onChange={e => { setPw(e.target.value.replace(/[^0-9]/g, "")); setPwErr(""); }}
-            onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-            placeholder="•"
-            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:11, padding:"14px", fontSize:22, textAlign:"center", letterSpacing:"0.3em", outline:"none", fontFamily:"inherit", marginBottom: pwErr ? 8 : 16 }} />
+          <span style={{ position:"relative", display:"block", marginBottom: pwErr ? 8 : 16 }}>
+            <input type="password" inputMode="numeric" value={pw} maxLength={8}
+              onChange={e => { setPw(e.target.value.replace(/[^0-9]/g, "")); setPwErr(""); }}
+              onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
+              aria-label="番号"
+              style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:11, padding:"14px",
+                fontSize:22, textAlign:"center", outline:"none", fontFamily:"inherit",
+                color:"transparent", caretColor:"transparent", textShadow:"none", background:"#fff" }} />
+            {pw.length > 0 && (
+              <span style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
+                pointerEvents:"none", fontSize:13, fontWeight:800, color:"var(--sub)" }}>入力中</span>
+            )}
+          </span>
           {pwErr && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:800, textAlign:"center", marginBottom:12 }}>{pwErr}</div>}
           <button onClick={tryUnlock}
             style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>

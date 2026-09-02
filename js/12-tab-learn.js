@@ -3826,11 +3826,17 @@ function OrderTab() {
         fontSize: 12,
         color: "var(--sub)"
       }
-    }, "番号を入れるとひらきます")), /*#__PURE__*/React.createElement("input", {
+    }, "番号を入れるとひらきます")), /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "relative",
+        display: "block",
+        marginBottom: pwErr ? 8 : 16
+      }
+    }, /*#__PURE__*/React.createElement("input", {
       type: "password",
       inputMode: "numeric",
       value: pw,
-      maxLength: 4,
+      maxLength: 8,
       onChange: e => {
         setPw(e.target.value.replace(/[^0-9]/g, ""));
         setPwErr("");
@@ -3838,7 +3844,7 @@ function OrderTab() {
       onKeyDown: e => {
         if (e.key === "Enter") tryUnlock();
       },
-      placeholder: "•",
+      "aria-label": "番号",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -3847,12 +3853,26 @@ function OrderTab() {
         padding: "14px",
         fontSize: 22,
         textAlign: "center",
-        letterSpacing: "0.3em",
         outline: "none",
         fontFamily: "inherit",
-        marginBottom: pwErr ? 8 : 16
+        color: "transparent",
+        caretColor: "transparent",
+        textShadow: "none",
+        background: "#fff"
       }
-    }), pwErr && /*#__PURE__*/React.createElement("div", {
+    }), pw.length > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+        fontSize: 13,
+        fontWeight: 800,
+        color: "var(--sub)"
+      }
+    }, "入力中")), pwErr && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12.5,
         color: "#b3261e",
