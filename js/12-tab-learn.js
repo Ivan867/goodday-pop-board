@@ -3919,7 +3919,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "本日の発注"], ["sheet", "管理"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -4774,203 +4774,187 @@ function OrderTab() {
         cursor: "pointer"
       }
     }, "印刷する（A4）")));
-  })(), /*#__PURE__*/React.createElement("div", {
-    id: "sheetPrint"
-  }, /*#__PURE__*/React.createElement("div", {
+  })()) : tab === "print" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      alignItems: "flex-start",
-      marginBottom: "3mm"
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 12
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      const d = new Date(wkStart);
+      d.setDate(d.getDate() - 7);
+      setWkStart(d);
+    },
+    "aria-label": "前の週",
     style: {
-      flex: 1
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      width: 30,
+      height: 30,
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, "‹"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: "15pt",
-      fontWeight: 700,
-      letterSpacing: "1pt"
+      fontSize: 13.5,
+      fontWeight: 900,
+      color: "var(--ink)"
     }
-  }, "塩干\u3000週間発注指示書"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: "10pt",
-      marginTop: "1mm"
-    }
-  }, wkStart.getFullYear(), "年 ", wkStart.getMonth() + 1, "月", wkStart.getDate(), "日（月）〜 ", (() => {
+  }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "〜", (() => {
     const e = new Date(wkStart);
     e.setDate(e.getDate() + 6);
-    return `${e.getMonth() + 1}月${e.getDate()}日`;
-  })(), "（日）"), /*#__PURE__*/React.createElement("div", {
+    return `${e.getMonth() + 1}/${e.getDate()}`;
+  })()), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      const d = new Date(wkStart);
+      d.setDate(d.getDate() + 7);
+      setWkStart(d);
+    },
+    "aria-label": "次の週",
     style: {
-      fontSize: "9pt",
-      marginTop: "1mm",
-      color: "#444"
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      width: 30,
+      height: 30,
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--sub)",
+      cursor: "pointer"
     }
-  }, "総アイテム数 ", rows.length)), /*#__PURE__*/React.createElement("table", {
+  }, "›"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setWkStart(mondayOf(new Date())),
     style: {
-      borderCollapse: "collapse",
-      fontSize: "7pt"
+      marginLeft: "auto",
+      border: "1px solid var(--line)",
+      background: "#fff",
+      borderRadius: 8,
+      padding: "6px 11px",
+      fontSize: 11,
+      fontWeight: 800,
+      color: "var(--sub)",
+      cursor: "pointer"
     }
-  }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, ["作成", "確認", "チーフ"].map(t => /*#__PURE__*/React.createElement("td", {
-    key: t,
+  }, "今週")), rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
-      border: "1px solid #333",
-      padding: "1mm 3mm",
       textAlign: "center",
-      background: "#f2f2f2"
+      color: "var(--faint)",
+      padding: "44px 20px",
+      fontSize: 13,
+      lineHeight: 1.9
     }
-  }, t))), /*#__PURE__*/React.createElement("tr", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("td", {
-    key: i,
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
-      border: "1px solid #333",
-      height: "9mm",
-      minWidth: "14mm"
+      fontSize: 15,
+      fontWeight: 800,
+      color: "var(--sub)"
     }
-  })))))), /*#__PURE__*/React.createElement("div", {
+  }, "この週の予定はまだ空です"), /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(7, 1fr)",
-      gap: "1.5mm",
-      marginBottom: "4mm"
+      marginTop: 6
     }
-  }, SHEET_DAYS.map(([k, l], i) => {
+  }, "「管理」から品目を入れてください")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "13px",
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 900,
+      color: "var(--sub)",
+      marginBottom: 11
+    }
+  }, "印刷される内容"), SHEET_DAYS.map(([k, l], i) => {
     const day = rows.filter(r => r[k] != null && r[k] !== "");
-    const bg = i === 6 ? "#ffe0e0" : i === 5 ? "#dfeaff" : "#fff9d6";
-    const bd = i === 6 ? "#d15a5a" : i === 5 ? "#5a86d1" : "#c9b23c";
     return /*#__PURE__*/React.createElement("div", {
       key: k,
       style: {
-        border: `1px solid ${bd}`,
-        borderRadius: "1mm",
-        overflow: "hidden",
-        minHeight: "32mm"
+        marginBottom: 11
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: bd,
-        color: "#fff",
-        fontSize: "9pt",
-        fontWeight: 700,
-        textAlign: "center",
-        padding: "0.8mm 0"
+        display: "flex",
+        alignItems: "center",
+        gap: 7,
+        marginBottom: 5
       }
-    }, l), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("span", {
       style: {
-        background: bg,
-        padding: "1mm",
-        minHeight: "28mm"
+        fontSize: 12.5,
+        fontWeight: 900,
+        color: i === 6 ? "#d1554f" : i === 5 ? "#3b7dd8" : "var(--ink)"
       }
-    }, day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, l, "曜"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: "7pt",
-        color: "#999",
-        textAlign: "center",
-        paddingTop: "3mm"
+        fontSize: 10,
+        color: "var(--faint)"
       }
-    }, "—") : day.map(r => /*#__PURE__*/React.createElement("div", {
+    }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: "var(--faint)",
+        paddingLeft: 4
+      }
+    }, "—") : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 3
+      }
+    }, day.map(r => /*#__PURE__*/React.createElement("div", {
       key: r.id,
       style: {
-        background: "#fff",
-        border: "0.3mm solid rgba(0,0,0,0.18)",
-        borderRadius: "0.8mm",
-        padding: "0.8mm 1mm",
-        marginBottom: "1mm"
+        display: "flex",
+        alignItems: "center",
+        gap: 7,
+        fontSize: 11.5,
+        color: "var(--text)",
+        paddingLeft: 4
       }
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: "7.5pt",
-        fontWeight: 700,
-        lineHeight: 1.25,
-        wordBreak: "break-all"
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
       }
-    }, r.item_name), /*#__PURE__*/React.createElement("div", {
+    }, r.item_name), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: "8.5pt",
-        fontWeight: 700,
-        textAlign: "right",
-        lineHeight: 1.2
+        fontWeight: 900,
+        flexShrink: 0
       }
-    }, r[k], /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: "6pt",
-        fontWeight: 400
-      }
-    }, r.unit || ""))))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: "#fff",
-        borderTop: `0.3mm solid ${bd}`,
-        fontSize: "7pt",
-        textAlign: "center",
-        padding: "0.6mm 0",
-        fontWeight: 700
-      }
-    }, day.length, "件"));
-  })), /*#__PURE__*/React.createElement("table", {
-    className: "sheet-tbl"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    }, r[k], r.unit || "")))));
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => window.print(),
     style: {
-      width: "24%"
+      width: "100%",
+      border: "none",
+      background: "var(--primary)",
+      color: "#fff",
+      borderRadius: 11,
+      padding: "14px",
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer"
     }
-  }, "品目"), /*#__PURE__*/React.createElement("th", {
+  }, "1週間分を印刷する（A4）"), /*#__PURE__*/React.createElement("div", {
     style: {
-      width: "12%"
-    }
-  }, "仕入先"), /*#__PURE__*/React.createElement("th", {
-    style: {
-      width: "8%"
-    }
-  }, "売価"), /*#__PURE__*/React.createElement("th", {
-    style: {
-      width: "9%"
-    }
-  }, "期限"), SHEET_DAYS.map(([k, l], i) => /*#__PURE__*/React.createElement("th", {
-    key: k,
-    className: i === 6 ? "sun" : i === 5 ? "sat" : ""
-  }, l)), /*#__PURE__*/React.createElement("th", {
-    style: {
-      width: "9%"
-    }
-  }, "単位"), /*#__PURE__*/React.createElement("th", {
-    style: {
-      width: "14%"
-    }
-  }, "備考"))), /*#__PURE__*/React.createElement("tbody", null, rows.map(r => /*#__PURE__*/React.createElement("tr", {
-    key: r.id
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "nm"
-  }, r.item_name), /*#__PURE__*/React.createElement("td", {
-    style: {
-      fontSize: "7.5pt"
-    }
-  }, r.maker || ""), /*#__PURE__*/React.createElement("td", {
-    style: {
-      fontSize: "8pt"
-    }
-  }, r.price != null ? `¥${r.price}` : ""), /*#__PURE__*/React.createElement("td", {
-    style: {
-      fontSize: "7.5pt"
-    }
-  }, r.life_days != null ? `D+${r.life_days}` : ""), SHEET_DAYS.map(([k], i) => /*#__PURE__*/React.createElement("td", {
-    key: k,
-    className: i === 6 ? "sun" : i === 5 ? "sat" : ""
-  }, r[k] == null ? "" : r[k])), /*#__PURE__*/React.createElement("td", null, r.unit || ""), /*#__PURE__*/React.createElement("td", {
-    style: {
-      fontSize: "7.5pt",
-      textAlign: "left",
-      paddingLeft: "1.5mm"
-    }
-  }, r.memo || ""))))), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: "4mm",
-      padding: "2mm 3mm",
-      border: "0.3mm solid #999",
-      background: "#fafafa",
-      fontSize: "9pt",
+      fontSize: 10.5,
+      color: "var(--faint)",
       lineHeight: 1.7,
-      whiteSpace: "pre-wrap"
+      marginTop: 12
     }
-  }, sheetNote))) : tab === "cal" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "曜日ごとに分かれた表が出ます。チェック欄と数量の記入欄があるので、そのまま現場で使えます。"))) : tab === "cal" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -5757,7 +5741,166 @@ function OrderTab() {
         cursor: "pointer"
       }
     }, "使わない"))));
-  })))));
+  }))), /*#__PURE__*/React.createElement("div", {
+    id: "sheetPrint"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      marginBottom: "4mm"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 700,
+      letterSpacing: "1pt"
+    }
+  }, "塩干\u3000週間発注表"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "10pt",
+      marginTop: "1mm"
+    }
+  }, wkStart.getFullYear(), "年 ", wkStart.getMonth() + 1, "月", wkStart.getDate(), "日（月）〜 ", (() => {
+    const e = new Date(wkStart);
+    e.setDate(e.getDate() + 6);
+    return `${e.getMonth() + 1}月${e.getDate()}日`;
+  })(), "（日）")), /*#__PURE__*/React.createElement("table", {
+    style: {
+      borderCollapse: "collapse",
+      fontSize: "7pt"
+    }
+  }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, ["作成", "確認", "チーフ"].map(t => /*#__PURE__*/React.createElement("td", {
+    key: t,
+    style: {
+      border: "1px solid #333",
+      padding: "1mm 3mm",
+      textAlign: "center",
+      background: "#f2f2f2"
+    }
+  }, t))), /*#__PURE__*/React.createElement("tr", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("td", {
+    key: i,
+    style: {
+      border: "1px solid #333",
+      height: "9mm",
+      minWidth: "14mm"
+    }
+  })))))), SHEET_DAYS.map(([k, l], i) => {
+    const day = rows.filter(r => r[k] != null && r[k] !== "");
+    const d = new Date(wkStart);
+    d.setDate(d.getDate() + i);
+    const hd = i === 6 ? "#c00" : i === 5 ? "#06c" : "#333";
+    return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        marginBottom: "3.5mm",
+        breakInside: "avoid"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderLeft: `3px solid ${hd}`,
+        paddingLeft: "2mm",
+        marginBottom: "1mm",
+        display: "flex",
+        alignItems: "baseline",
+        gap: "3mm"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "12pt",
+        fontWeight: 700,
+        color: hd
+      }
+    }, l, "曜"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "9pt"
+      }
+    }, d.getMonth() + 1, "/", d.getDate()), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "8pt",
+        color: "#666"
+      }
+    }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: "9pt",
+        color: "#999",
+        paddingLeft: "3mm"
+      }
+    }, "発注なし") : /*#__PURE__*/React.createElement("table", {
+      className: "sheet-tbl"
+    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "7%"
+      }
+    }, "済"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "30%"
+      }
+    }, "品目"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "14%"
+      }
+    }, "仕入先"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "9%"
+      }
+    }, "売価"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "8%"
+      }
+    }, "期限"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "10%"
+      }
+    }, "数量"), /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: "22%"
+      }
+    }, "備考"))), /*#__PURE__*/React.createElement("tbody", null, day.map(r => /*#__PURE__*/React.createElement("tr", {
+      key: r.id
+    }, /*#__PURE__*/React.createElement("td", {
+      style: {
+        height: "7mm"
+      }
+    }, "□"), /*#__PURE__*/React.createElement("td", {
+      className: "nm"
+    }, r.item_name), /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontSize: "7.5pt"
+      }
+    }, r.maker || ""), /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontSize: "8pt"
+      }
+    }, r.price != null ? `¥${r.price}` : ""), /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontSize: "7.5pt"
+      }
+    }, r.life_days != null ? `D+${r.life_days}` : ""), /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontWeight: 700
+      }
+    }, r[k], r.unit || ""), /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontSize: "7.5pt",
+        textAlign: "left",
+        paddingLeft: "1.5mm"
+      }
+    }, r.memo || ""))))));
+  }), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: "3mm",
+      padding: "2mm 3mm",
+      border: "0.3mm solid #999",
+      background: "#fafafa",
+      fontSize: "9pt",
+      lineHeight: 1.7,
+      whiteSpace: "pre-wrap"
+    }
+  }, sheetNote))));
 }
 
 // ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
