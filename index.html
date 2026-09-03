@@ -97,16 +97,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 .pop-grid.v-list .pc-img img { width: 100%; height: 100%; object-fit: cover; }
 .pop-grid.v-list .pc-body { flex: 1; min-width: 0; padding: 8px 12px; }
 .pop-grid.v-list .pc-name { font-size: 13.5px; }
-/* 発注指示書：A4縦1枚に印刷する */
+/* 発注表：A4横に印刷する */
 @media print {
   body * { visibility: hidden; }
   #sheetPrint, #sheetPrint * { visibility: visible; }
   #sheetPrint { position: absolute; left: 0; top: 0; width: 100%; }
-  @page { size: A4 portrait; margin: 10mm 8mm; }
+  @page { size: A4 landscape; margin: 8mm; }
 }
 #sheetPrint { display: none; }
+/* 曜日ごとのまとまりを枠で囲む */
+.day-box { border: 1.2px solid #333; border-radius: 1mm; overflow: hidden; margin-bottom: 3mm; break-inside: avoid; }
+.day-head { padding: 1.2mm 2.5mm; font-weight: 700; border-bottom: 1px solid #333; background: #f2f2f2; }
 .sheet-tbl { width: 100%; border-collapse: collapse; }
-.sheet-tbl th, .sheet-tbl td { border: 1px solid #333; padding: 2px 2px; font-size: 8.5pt; text-align: center; }
+.sheet-tbl th, .sheet-tbl td { border: 1px solid #333; padding: 2px 3px; font-size: 8.5pt; text-align: center; }
 .sheet-tbl th { background: #eee; font-weight: 700; }
 .sheet-tbl td.nm { text-align: left; font-weight: 700; padding-left: 6px; white-space: nowrap; }
 .sheet-tbl td.sun { color: #c00; }
@@ -197,21 +200,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260901k"></script>
-<script src="js/02-api.js?v=20260901k"></script>
-<script src="js/03-utils.js?v=20260901k"></script>
-<script src="js/04-shared.js?v=20260901k"></script>
-<script src="js/05-tab-board.js?v=20260901k"></script>
-<script src="js/06-tab-create.js?v=20260901k"></script>
-<script src="js/07-tab-floor.js?v=20260901k"></script>
-<script src="js/09-tab-info.js?v=20260901k"></script>
-<script src="js/11-tab-check-fish.js?v=20260901k"></script>
-<script src="js/12-tab-learn.js?v=20260901k"></script>
-<script src="js/14-app.js?v=20260901k"></script>
+<script src="js/01-config.js?v=20260901l"></script>
+<script src="js/02-api.js?v=20260901l"></script>
+<script src="js/03-utils.js?v=20260901l"></script>
+<script src="js/04-shared.js?v=20260901l"></script>
+<script src="js/05-tab-board.js?v=20260901l"></script>
+<script src="js/06-tab-create.js?v=20260901l"></script>
+<script src="js/07-tab-floor.js?v=20260901l"></script>
+<script src="js/09-tab-info.js?v=20260901l"></script>
+<script src="js/11-tab-check-fish.js?v=20260901l"></script>
+<script src="js/12-tab-learn.js?v=20260901l"></script>
+<script src="js/14-app.js?v=20260901l"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260901k";
+window.APP_VER = "20260901l";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

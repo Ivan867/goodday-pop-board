@@ -5802,82 +5802,93 @@ function OrderTab() {
       height: "9mm",
       minWidth: "14mm"
     }
-  })))))), SHEET_DAYS.map(([k, l], i) => {
+  })))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "3mm"
+    }
+  }, SHEET_DAYS.map(([k, l], i) => {
     const day = rows.filter(r => r[k] != null && r[k] !== "");
     const d = new Date(wkStart);
     d.setDate(d.getDate() + i);
     const hd = i === 6 ? "#c00" : i === 5 ? "#06c" : "#333";
     return /*#__PURE__*/React.createElement("div", {
       key: k,
-      style: {
-        marginBottom: "3.5mm",
-        breakInside: "avoid"
-      }
+      className: "day-box"
     }, /*#__PURE__*/React.createElement("div", {
+      className: "day-head",
       style: {
-        borderLeft: `3px solid ${hd}`,
-        paddingLeft: "2mm",
-        marginBottom: "1mm",
         display: "flex",
         alignItems: "baseline",
-        gap: "3mm"
+        gap: "3mm",
+        color: hd
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: "12pt",
-        fontWeight: 700,
-        color: hd
+        fontSize: "11pt"
       }
     }, l, "曜"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: "9pt"
+        fontSize: "8.5pt",
+        color: "#333"
       }
     }, d.getMonth() + 1, "/", d.getDate()), /*#__PURE__*/React.createElement("span", {
       style: {
+        marginLeft: "auto",
         fontSize: "8pt",
         color: "#666"
       }
     }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: "9pt",
+        fontSize: "8.5pt",
         color: "#999",
-        paddingLeft: "3mm"
+        padding: "3mm",
+        textAlign: "center"
       }
     }, "発注なし") : /*#__PURE__*/React.createElement("table", {
-      className: "sheet-tbl"
+      className: "sheet-tbl",
+      style: {
+        border: "none"
+      }
     }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "7%"
+        width: "8%",
+        borderTop: "none",
+        borderLeft: "none"
       }
     }, "済"), /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "30%"
+        width: "32%",
+        borderTop: "none"
       }
     }, "品目"), /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "14%"
+        width: "18%",
+        borderTop: "none"
       }
     }, "仕入先"), /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "9%"
+        width: "13%",
+        borderTop: "none"
       }
     }, "売価"), /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "8%"
+        width: "11%",
+        borderTop: "none"
       }
     }, "期限"), /*#__PURE__*/React.createElement("th", {
       style: {
-        width: "10%"
+        width: "18%",
+        borderTop: "none",
+        borderRight: "none"
       }
-    }, "数量"), /*#__PURE__*/React.createElement("th", {
-      style: {
-        width: "22%"
-      }
-    }, "備考"))), /*#__PURE__*/React.createElement("tbody", null, day.map(r => /*#__PURE__*/React.createElement("tr", {
+    }, "数量"))), /*#__PURE__*/React.createElement("tbody", null, day.map(r => /*#__PURE__*/React.createElement("tr", {
       key: r.id
     }, /*#__PURE__*/React.createElement("td", {
       style: {
-        height: "7mm"
+        height: "6.5mm",
+        borderLeft: "none"
       }
     }, "□"), /*#__PURE__*/React.createElement("td", {
       className: "nm"
@@ -5895,16 +5906,22 @@ function OrderTab() {
       }
     }, r.life_days != null ? `D+${r.life_days}` : ""), /*#__PURE__*/React.createElement("td", {
       style: {
-        fontWeight: 700
+        fontWeight: 700,
+        borderRight: "none"
       }
-    }, r[k], r.unit || ""), /*#__PURE__*/React.createElement("td", {
+    }, r[k], r.unit || ""))), day.some(r => r.memo) && /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+      colSpan: 6,
       style: {
-        fontSize: "7.5pt",
         textAlign: "left",
-        paddingLeft: "1.5mm"
+        fontSize: "7.5pt",
+        padding: "1.5mm 2mm",
+        borderLeft: "none",
+        borderRight: "none",
+        borderBottom: "none",
+        color: "#444"
       }
-    }, r.memo || ""))))));
-  }), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
+    }, day.filter(r => r.memo).map(r => `※${r.item_name}：${r.memo}`).join("　"))))));
+  })), sheetNote.trim() && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: "3mm",
       padding: "2mm 3mm",

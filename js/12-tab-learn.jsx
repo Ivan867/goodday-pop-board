@@ -2163,51 +2163,58 @@ function OrderTab() {
           </div>
 
           {/* 曜日ごとの表 */}
-          {SHEET_DAYS.map(([k, l], i) => {
-            const day = rows.filter(r => r[k] != null && r[k] !== "");
-            const d = new Date(wkStart); d.setDate(d.getDate() + i);
-            const hd = i === 6 ? "#c00" : i === 5 ? "#06c" : "#333";
-            return (
-              <div key={k} style={{ marginBottom:"3.5mm", breakInside:"avoid" }}>
-                <div style={{ borderLeft:`3px solid ${hd}`, paddingLeft:"2mm", marginBottom:"1mm",
-                  display:"flex", alignItems:"baseline", gap:"3mm" }}>
-                  <span style={{ fontSize:"12pt", fontWeight:700, color:hd }}>{l}曜</span>
-                  <span style={{ fontSize:"9pt" }}>{d.getMonth()+1}/{d.getDate()}</span>
-                  <span style={{ fontSize:"8pt", color:"#666" }}>{day.length}件</span>
+          {/* 曜日ごとに枠で囲む（横向きなので2列に並べる） */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"3mm" }}>
+            {SHEET_DAYS.map(([k, l], i) => {
+              const day = rows.filter(r => r[k] != null && r[k] !== "");
+              const d = new Date(wkStart); d.setDate(d.getDate() + i);
+              const hd = i === 6 ? "#c00" : i === 5 ? "#06c" : "#333";
+              return (
+                <div key={k} className="day-box">
+                  <div className="day-head" style={{ display:"flex", alignItems:"baseline", gap:"3mm", color:hd }}>
+                    <span style={{ fontSize:"11pt" }}>{l}曜</span>
+                    <span style={{ fontSize:"8.5pt", color:"#333" }}>{d.getMonth()+1}/{d.getDate()}</span>
+                    <span style={{ marginLeft:"auto", fontSize:"8pt", color:"#666" }}>{day.length}件</span>
+                  </div>
+                  {day.length === 0 ? (
+                    <div style={{ fontSize:"8.5pt", color:"#999", padding:"3mm", textAlign:"center" }}>発注なし</div>
+                  ) : (
+                    <table className="sheet-tbl" style={{ border:"none" }}>
+                      <thead>
+                        <tr>
+                          <th style={{ width:"8%", borderTop:"none", borderLeft:"none" }}>済</th>
+                          <th style={{ width:"32%", borderTop:"none" }}>品目</th>
+                          <th style={{ width:"18%", borderTop:"none" }}>仕入先</th>
+                          <th style={{ width:"13%", borderTop:"none" }}>売価</th>
+                          <th style={{ width:"11%", borderTop:"none" }}>期限</th>
+                          <th style={{ width:"18%", borderTop:"none", borderRight:"none" }}>数量</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {day.map(r => (
+                          <tr key={r.id}>
+                            <td style={{ height:"6.5mm", borderLeft:"none" }}>□</td>
+                            <td className="nm">{r.item_name}</td>
+                            <td style={{ fontSize:"7.5pt" }}>{r.maker || ""}</td>
+                            <td style={{ fontSize:"8pt" }}>{r.price != null ? `¥${r.price}` : ""}</td>
+                            <td style={{ fontSize:"7.5pt" }}>{r.life_days != null ? `D+${r.life_days}` : ""}</td>
+                            <td style={{ fontWeight:700, borderRight:"none" }}>{r[k]}{r.unit || ""}</td>
+                          </tr>
+                        ))}
+                        {day.some(r => r.memo) && (
+                          <tr>
+                            <td colSpan={6} style={{ textAlign:"left", fontSize:"7.5pt", padding:"1.5mm 2mm", borderLeft:"none", borderRight:"none", borderBottom:"none", color:"#444" }}>
+                              {day.filter(r => r.memo).map(r => `※${r.item_name}：${r.memo}`).join("　")}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
-                {day.length === 0 ? (
-                  <div style={{ fontSize:"9pt", color:"#999", paddingLeft:"3mm" }}>発注なし</div>
-                ) : (
-                  <table className="sheet-tbl">
-                <thead>
-                  <tr>
-                    <th style={{ width:"7%" }}>済</th>
-                    <th style={{ width:"30%" }}>品目</th>
-                    <th style={{ width:"14%" }}>仕入先</th>
-                    <th style={{ width:"9%" }}>売価</th>
-                    <th style={{ width:"8%" }}>期限</th>
-                    <th style={{ width:"10%" }}>数量</th>
-                    <th style={{ width:"22%" }}>備考</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {day.map(r => (
-                    <tr key={r.id}>
-                      <td style={{ height:"7mm" }}>□</td>
-                      <td className="nm">{r.item_name}</td>
-                      <td style={{ fontSize:"7.5pt" }}>{r.maker || ""}</td>
-                      <td style={{ fontSize:"8pt" }}>{r.price != null ? `¥${r.price}` : ""}</td>
-                      <td style={{ fontSize:"7.5pt" }}>{r.life_days != null ? `D+${r.life_days}` : ""}</td>
-                      <td style={{ fontWeight:700 }}>{r[k]}{r.unit || ""}</td>
-                      <td style={{ fontSize:"7.5pt", textAlign:"left", paddingLeft:"1.5mm" }}>{r.memo || ""}</td>
-                    </tr>
-                  ))}
-                </tbody>
-                  </table>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
 
           {sheetNote.trim() && (
             <div style={{ marginTop:"3mm", padding:"2mm 3mm", border:"0.3mm solid #999", background:"#fafafa", fontSize:"9pt", lineHeight:1.7, whiteSpace:"pre-wrap" }}>{sheetNote}</div>
