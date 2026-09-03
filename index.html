@@ -61,6 +61,10 @@ html { background: #8FA0B0; }
 html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
 #root { position:fixed; inset:0; }
 #app-scroll { position:fixed; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
+/* iOS：入力欄を離れたあと、拡大されたまま戻らないことがあるのを防ぐ */
+@supports (-webkit-touch-callout: none) {
+  #app-scroll { transform: translateZ(0); }
+}
 body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
@@ -101,11 +105,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
    iOSは文字が16px未満の入力欄でズームするため、入力欄だけ16pxに揃える */
 html, body { overflow-x: hidden; max-width: 100%; }
 * { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 @supports (-webkit-touch-callout: none) {
   /* iOSは16px未満の入力欄でズームするため、実サイズを16pxに揃える。
      幅の広い入力欄（本文・品名など）だけが対象で、狭い欄は個別に維持 */
   input[type="text"], input[type="password"], input[type="search"],
-  input[type="tel"], input[type="email"], input:not([type]), textarea {
+  input[type="tel"], input[type="email"], input[type="date"],
+  input[type="number"], input:not([type]), textarea, select {
     font-size: 16px !important;
   }
   /* 数量など、幅の狭い欄は文字が溢れないよう詰める */
@@ -250,6 +256,22 @@ window.loadLazyTab = function(name){
     document.head.appendChild(s);
   });
 };
+</script>
+<script>
+/* iOS：入力欄からフォーカスが外れたとき、拡大されたままにならないよう表示を戻す */
+(function(){
+  var vp = document.querySelector('meta[name=viewport]');
+  if (!vp) return;
+  var LOCK = "width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover";
+  var FREE = "width=device-width, initial-scale=1.0, viewport-fit=cover";
+  document.addEventListener("focusout", function(e){
+    var t = e.target;
+    if (!t || !/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+    // 一度ゆるめてから戻すと、拡大された表示が元に戻る
+    vp.setAttribute("content", FREE);
+    setTimeout(function(){ vp.setAttribute("content", LOCK); }, 60);
+  }, true);
+})();
 </script>
 </body>
 </html>
