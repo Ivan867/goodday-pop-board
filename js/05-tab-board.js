@@ -191,7 +191,7 @@ function BoardTab({
     d: "M4 4.5h13v15H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"
-  }))], ["order", "管理", false, /*#__PURE__*/React.createElement("svg", {
+  }))], ["order", "木次店", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
     height: "18",
