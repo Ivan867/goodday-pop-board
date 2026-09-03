@@ -1756,7 +1756,14 @@ function OrderTab() {
                         {onDay.map(r => (
                           <div key={r.id} style={{ display:"flex", alignItems:"center", gap:9, background:"var(--bg)", borderRadius:9, padding:"7px 9px" }}>
                             {r.thumb && <img src={r.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0 }} />}
-                            <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.item_name}</span>
+                            <span style={{ flex:1, minWidth:0 }}>
+                              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.item_name}</span>
+                              {(r.maker || r.price != null || r.life_days != null) && (
+                                <span style={{ display:"block", fontSize:9.5, color:"var(--faint)", marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                                  {[r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")}
+                                </span>
+                              )}
+                            </span>
                             <button onClick={() => { const v = Number(r[dk] || 0) - 1; setCell(r, dk, v <= 0 ? "" : String(v)); }}
                               aria-label={`${r.item_name}を1へらす`}
                               style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>

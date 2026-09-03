@@ -4468,16 +4468,30 @@ function OrderTab() {
       }
     }), /*#__PURE__*/React.createElement("span", {
       style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
         fontSize: 12.5,
         fontWeight: 800,
         color: "var(--ink)",
-        flex: 1,
-        minWidth: 0,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
       }
-    }, r.item_name), /*#__PURE__*/React.createElement("button", {
+    }, r.item_name), (r.maker || r.price != null || r.life_days != null) && /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 9.5,
+        color: "var(--faint)",
+        marginTop: 1,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, [r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ "))), /*#__PURE__*/React.createElement("button", {
       onClick: () => {
         const v = Number(r[dk] || 0) - 1;
         setCell(r, dk, v <= 0 ? "" : String(v));
