@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#F5F2EC" />
 <meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: dark)" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -97,6 +97,30 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic Pro
 .pop-grid.v-list .pc-img img { width: 100%; height: 100%; object-fit: cover; }
 .pop-grid.v-list .pc-body { flex: 1; min-width: 0; padding: 8px 12px; }
 .pop-grid.v-list .pc-name { font-size: 13.5px; }
+/* iPhoneで入力欄をタップしたときに画面が勝手に拡大するのを防ぐ。
+   iOSは文字が16px未満の入力欄でズームするため、入力欄だけ16pxに揃える */
+html, body { overflow-x: hidden; max-width: 100%; }
+* { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@supports (-webkit-touch-callout: none) {
+  /* iOSは16px未満の入力欄でズームするため、実サイズを16pxに揃える。
+     幅の広い入力欄（本文・品名など）だけが対象で、狭い欄は個別に維持 */
+  input[type="text"], input[type="password"], input[type="search"],
+  input[type="tel"], input[type="email"], input:not([type]), textarea {
+    font-size: 16px !important;
+  }
+  /* 数量など、幅の狭い欄は文字が溢れないよう詰める */
+  input[inputmode="decimal"], input[inputmode="numeric"] {
+    font-size: 16px !important;
+    letter-spacing: -0.5px;
+    padding-left: 1px !important; padding-right: 1px !important;
+  }
+  select { font-size: 16px !important; }
+}
+/* 入力中に画面が横へずれないようにする */
+body { position: relative; overscroll-behavior-y: none; }
+/* 画面いっぱいの要素がはみ出さないように */
+#root { max-width: 100vw; overflow-x: hidden; }
+
 /* 発注表：A4横に印刷する */
 @media print {
   body * { visibility: hidden; }
@@ -200,21 +224,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260901m"></script>
-<script src="js/02-api.js?v=20260901m"></script>
-<script src="js/03-utils.js?v=20260901m"></script>
-<script src="js/04-shared.js?v=20260901m"></script>
-<script src="js/05-tab-board.js?v=20260901m"></script>
-<script src="js/06-tab-create.js?v=20260901m"></script>
-<script src="js/07-tab-floor.js?v=20260901m"></script>
-<script src="js/09-tab-info.js?v=20260901m"></script>
-<script src="js/11-tab-check-fish.js?v=20260901m"></script>
-<script src="js/12-tab-learn.js?v=20260901m"></script>
-<script src="js/14-app.js?v=20260901m"></script>
+<script src="js/01-config.js?v=20260901n"></script>
+<script src="js/02-api.js?v=20260901n"></script>
+<script src="js/03-utils.js?v=20260901n"></script>
+<script src="js/04-shared.js?v=20260901n"></script>
+<script src="js/05-tab-board.js?v=20260901n"></script>
+<script src="js/06-tab-create.js?v=20260901n"></script>
+<script src="js/07-tab-floor.js?v=20260901n"></script>
+<script src="js/09-tab-info.js?v=20260901n"></script>
+<script src="js/11-tab-check-fish.js?v=20260901n"></script>
+<script src="js/12-tab-learn.js?v=20260901n"></script>
+<script src="js/14-app.js?v=20260901n"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260901m";
+window.APP_VER = "20260901n";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
