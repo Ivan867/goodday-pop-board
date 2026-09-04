@@ -584,7 +584,7 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "calc(6px + env(safe-area-inset-bottom, 0px))",
+      bottom: "env(safe-area-inset-bottom, 0px)",
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
