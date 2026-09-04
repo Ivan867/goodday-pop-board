@@ -27,6 +27,9 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [memoLoading, setMemoLoading] = useState(false);
   const [memoDirty, setMemoDirty] = useState(false);
   const [pinnedBusy, setPinnedBusy] = useState(false);
+  const [delAsk, setDelAsk] = useState(false);   // 一括削除の確認中か
+  const [delWord, setDelWord] = useState("");    // 確認の入力
+  const [delBusy, setDelBusy] = useState(false);
 
   const setPinned = async (popId) => {
     setPinnedBusy(true);
@@ -106,6 +109,19 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const arCount = pops.filter(p => p.archived).length;
   const toggle = (id) => setSel(s => ({ ...s, [id]: !s[id] }));
   const switchView = (v) => { setView(v); setSel({}); };
+  const doDelete = async () => {
+    if (delWord.trim() !== "削除") return;
+    setDelBusy(true);
+    try {
+      await api.delMany(selIds);
+      const n = selIds.length;
+      setSel({}); setDelAsk(false); setDelWord("");
+      await load();
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail: `${n}件を消しました` })); } catch(e) {}
+    } catch (e) { alert("削除できませんでした"); }
+    finally { setDelBusy(false); }
+  };
+
   const apply = async () => {
     if (!selIds.length) return;
     setApplying(true);
@@ -388,10 +404,38 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <span style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>{selIds.length}件 選択中</span>
           <button onClick={() => setSel({})}
             style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
+          <button onClick={() => { setDelAsk(true); setDelWord(""); }}
+            style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>消す</button>
           <button onClick={apply} disabled={applying}
             style={{ border:"none", background: toArchive ? "var(--primary)" : "#2f6fb0", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
             {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
           </button>
+        </div>
+      )}
+
+      {delAsk && (
+        <div onClick={() => !delBusy && setDelAsk(false)}
+          style={{ position:"fixed", inset:0, zIndex:1300, background:"rgba(15,25,38,0.6)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:420, padding:"22px 20px" }}>
+            <div style={{ fontSize:17, fontWeight:900, color:"#b3261e", marginBottom:8 }}>{selIds.length}件を完全に消します</div>
+            <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.8, marginBottom:14 }}>
+              選んだポップと、そこに付いたコメントも一緒に消えます。<br/>
+              <b>一度消すと元に戻せません。</b><br/>
+              残しておきたいだけなら「アーカイブする」をお使いください。
+            </div>
+            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>確認のため「削除」と入力してください</div>
+            <input value={delWord} onChange={e => setDelWord(e.target.value)} placeholder="削除"
+              style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:16 }} />
+            <div style={{ display:"flex", gap:9 }}>
+              <button onClick={() => setDelAsk(false)} disabled={delBusy}
+                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
+              <button onClick={doDelete} disabled={delBusy || delWord.trim() !== "削除"}
+                style={{ flex:1, border:"none", background: (delBusy || delWord.trim() !== "削除") ? "#ddd" : "#b3261e", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                {delBusy ? "消しています…" : "完全に消す"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

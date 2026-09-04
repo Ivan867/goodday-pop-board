@@ -8,7 +8,7 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation,group_id,group_name,group_pos";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
@@ -85,6 +85,10 @@ const api = {
   async setArchivedMany(ids, archived) {
     if (!ids.length) return;
     await sbFetch(`/rest/v1/rpc/admin_set_archived`, { method:"POST", body:{ p_ids: ids, p_archived: archived, p_password: PW_CACHE.admin || "" } });
+  },
+  async delMany(ids) {
+    if (!ids || !ids.length) return 0;
+    return sbOne(`/rest/v1/rpc/admin_delete_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
   },
   async del(id) { await sbFetch(`/rest/v1/rpc/delete_pop_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
   async like(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_likes`, { method:"POST", body:{ p_id:id } }); },
