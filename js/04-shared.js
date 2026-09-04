@@ -17,72 +17,102 @@ function UploadModal({
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [items, setItems] = useState([]); // [{file, preview, name, warn}]
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ratioWarn, setRatioWarn] = useState("");
-  const onFile = e => {
-    const f = e.target.files[0];
-    if (!f) return;
-    setFile(f);
-    const url = URL.createObjectURL(f);
-    setPreview(url);
-    setRatioWarn("");
-    const im = new Image();
-    im.onload = () => {
-      const A4 = 1.41421,
-        TOL = 0.06;
-      const w = im.naturalWidth,
-        h = im.naturalHeight;
-      if (!w || !h) return;
-      const isPortrait = h >= w;
-      const ratio = isPortrait ? h / w : w / h;
-      const diff = Math.abs(ratio - A4) / A4;
-      if (diff > TOL) {
-        const near = ratio > A4 ? "細長め" : "詰まり気味";
-        setRatioWarn(`この画像は${isPortrait ? "縦" : "横"}向きですが、A4の比率（1:1.41）から${near}にずれています（今およそ 1:${ratio.toFixed(2)}）。このままでも投稿できますが、印刷時に余白や見切れが出る場合があります。`);
-      }
-    };
-    im.src = url;
+  const [progress, setProgress] = useState("");
+
+  // ファイル名から商品名の候補をつくる（拡張子と記号を落とす）
+  const guessName = fn => String(fn || "").replace(/\.[^.]+$/, "").replace(/[_\-]+/g, " ").trim();
+  const addFiles = list => {
+    const fs = Array.from(list || []).filter(f => f && /^image\//.test(f.type || ""));
+    if (!fs.length) return;
+    setError("");
+    const added = fs.map(f => ({
+      file: f,
+      preview: URL.createObjectURL(f),
+      name: guessName(f.name),
+      warn: ""
+    }));
+    setItems(v => v.concat(added));
+    // A4比率のチェックは1枚ずつ後追いで
+    added.forEach((it, i) => {
+      const im = new Image();
+      im.onload = () => {
+        const A4 = 1.41421,
+          TOL = 0.06;
+        const w = im.naturalWidth,
+          h = im.naturalHeight;
+        if (!w || !h) return;
+        const isPortrait = h >= w;
+        const ratio = isPortrait ? h / w : w / h;
+        if (Math.abs(ratio - A4) / A4 > TOL) {
+          const near = ratio > A4 ? "細長め" : "詰まり気味";
+          setItems(v => v.map(x => x.preview === it.preview ? {
+            ...x,
+            warn: `A4の比率から${near}にずれています（今およそ 1:${ratio.toFixed(2)}）`
+          } : x));
+        }
+      };
+      im.src = it.preview;
+    });
   };
-  const dzImg = useDropZone(f => onFile({
-    target: {
-      files: [f]
-    }
-  }), "image");
+  const onFile = e => {
+    addFiles(e.target.files);
+    e.target.value = "";
+  };
+  const removeAt = i => setItems(v => v.filter((_, k) => k !== i));
+  const setNameAt = (i, val) => setItems(v => v.map((x, k) => k === i ? {
+    ...x,
+    name: val
+  } : x));
+  const dzImg = useDropZone(f => addFiles([f]), "image");
   const submit = async () => {
-    if (!product.trim()) {
+    if (!items.length) {
+      setError("画像を選択してください");
+      return;
+    }
+    const single = items.length === 1;
+    // 1枚のときは上の商品名、複数のときは各画像の名前を使う
+    if (single && !product.trim() && !items[0].name.trim()) {
       setError("商品名を入力してください");
       return;
     }
-    if (!file) {
-      setError("画像を選択してください");
+    if (!single && items.some(it => !it.name.trim())) {
+      setError("すべての商品名を入れてください");
       return;
     }
     setLoading(true);
     setError("");
     try {
-      const image_url = await api.upload(file);
-      const pop = await api.insert({
-        store_name: store,
-        product_name: product.trim(),
-        category,
-        image_url,
-        likes: 0,
-        author: author.trim(),
-        comment: comment.trim()
-      });
+      let last = null,
+        done = 0;
+      for (const it of items) {
+        setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
+        const image_url = await api.upload(it.file);
+        const nm = single ? product.trim() || it.name.trim() : it.name.trim();
+        last = await api.insert({
+          store_name: store,
+          product_name: nm,
+          category,
+          image_url,
+          likes: 0,
+          author: author.trim(),
+          comment: comment.trim()
+        });
+        done++;
+      }
       try {
         window.dispatchEvent(new CustomEvent("appToast", {
-          detail: "投稿しました"
+          detail: done > 1 ? `${done}枚を投稿しました` : "投稿しました"
         }));
       } catch (e) {}
-      onSuccess(pop);
+      onSuccess(last);
     } catch (e) {
       setError("エラー: " + e.message);
     } finally {
       setLoading(false);
+      setProgress("");
     }
   };
   return /*#__PURE__*/React.createElement("div", {
@@ -214,10 +244,16 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "商品名"), /*#__PURE__*/React.createElement("input", {
+  }, "商品名 ", items.length > 1 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--faint)",
+      fontWeight: 600
+    }
+  }, "（複数のときは画像ごとに入れてください）")), /*#__PURE__*/React.createElement("input", {
     value: product,
     onChange: e => setProduct(e.target.value),
-    placeholder: "例：本マグロ大トロ",
+    disabled: items.length > 1,
+    placeholder: items.length > 1 ? "画像ごとに入力します" : "例：本マグロ大トロ",
     style: {
       width: "100%",
       padding: "10px 12px",
@@ -283,54 +319,115 @@ function UploadModal({
     ...dzImg.props,
     style: {
       display: "block",
+      position: "relative",
+      overflow: "hidden",
       border: "2px dashed #e0e0e0",
       borderRadius: 12,
       padding: "14px",
       textAlign: "center",
       cursor: "pointer",
-      background: preview ? "transparent" : "#fafafa",
+      background: "#fafafa",
       ...dzImg.style
     }
-  }, preview ? /*#__PURE__*/React.createElement("img", {
-    src: preview,
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: "100%",
-      maxHeight: 200,
-      borderRadius: 8
+      color: "var(--sub)",
+      fontSize: 14,
+      fontWeight: 700
+    }
+  }, dzImg.over ? "ここに離してください" : items.length ? "＋ さらに追加する" : "タップして選択（まとめて選べます）"), /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: "image/*",
+    multiple: true,
+    onChange: onFile,
+    style: {
+      position: "absolute",
+      inset: 0,
+      opacity: 0,
+      width: "100%",
+      height: "100%",
+      cursor: "pointer"
+    }
+  })), items.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 10
+    }
+  }, items.map((it, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 10,
+      alignItems: "flex-start",
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "8px 9px",
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: it.preview,
+    alt: "",
+    style: {
+      width: 56,
+      height: 78,
+      objectFit: "cover",
+      borderRadius: 6,
+      flexShrink: 0,
+      background: "var(--bg)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      minWidth: 0,
+      flex: 1
+    }
+  }, items.length > 1 ? /*#__PURE__*/React.createElement("input", {
+    value: it.name,
+    onChange: e => setNameAt(i, e.target.value),
+    placeholder: "商品名",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "8px 10px",
+      border: "1.5px solid var(--line)",
+      borderRadius: 8,
+      fontSize: 13.5,
+      outline: "none",
+      fontFamily: "inherit"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
+      fontSize: 12,
       color: "var(--sub)",
-      fontSize: 14
+      fontWeight: 700,
+      paddingTop: 4
     }
-  }, dzImg.over ? "ここに離してください" : "タップして選択（画像をドラッグしてもOK）"), /*#__PURE__*/React.createElement("input", {
-    type: "file",
-    accept: "image/*",
-    onChange: onFile,
+  }, "上の「商品名」が使われます"), it.warn && /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "none"
-    }
-  })), ratioWarn && /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 8,
+      marginTop: 5,
+      fontSize: 10.5,
+      color: "#8a6d00",
       background: "#fff6de",
       border: "1px solid #eeddad",
-      color: "#8a6d00",
-      borderRadius: 10,
-      padding: "10px 12px",
-      fontSize: 12,
-      fontWeight: 700,
-      lineHeight: 1.6,
-      display: "flex",
-      gap: 8,
-      alignItems: "flex-start"
+      borderRadius: 7,
+      padding: "5px 7px",
+      lineHeight: 1.5
     }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, it.warn)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => removeAt(i),
+    "aria-label": "この画像を外す",
     style: {
-      fontSize: 15,
-      lineHeight: 1.3
+      border: "none",
+      background: "transparent",
+      color: "var(--faint)",
+      fontSize: 17,
+      fontWeight: 900,
+      cursor: "pointer",
+      padding: "0 3px",
+      flexShrink: 0
     }
-  }, "📐"), /*#__PURE__*/React.createElement("span", null, ratioWarn))), error && /*#__PURE__*/React.createElement("div", {
+  }, "×"))))), error && /*#__PURE__*/React.createElement("div", {
     style: {
       color: "var(--primary)",
       fontSize: 13,
@@ -350,7 +447,7 @@ function UploadModal({
       cursor: "pointer",
       opacity: loading ? 0.6 : 1
     }
-  }, loading ? "アップロード中..." : "アップロード"))));
+  }, loading ? progress || "アップロード中..." : items.length > 1 ? `${items.length}枚をアップロード` : "アップロード"))));
 }
 
 // ── Pop Detail Modal ──
