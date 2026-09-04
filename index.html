@@ -61,20 +61,9 @@ html { background: #8FA0B0; }
 html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
 #root { position:fixed; inset:0; }
 #app-scroll { position:fixed; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
-/* 下部バーが上下に揺れないよう固定する（iOSのアドレスバー開閉対策） */
 .hig-pill { -webkit-tap-highlight-color: transparent; }
-@supports (-webkit-touch-callout: none) {
-  /* 合成レイヤーに載せて、スクロール中の再配置による揺れを止める */
-  #root > div[style*="z-index: 205"], #root > div[style*="zIndex:205"] {
-    -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0);
-    -webkit-backface-visibility: hidden; backface-visibility: hidden;
-  }
-}
 
-/* iOS：入力欄を離れたあと、拡大されたまま戻らないことがあるのを防ぐ */
-@supports (-webkit-touch-callout: none) {
-  #app-scroll { transform: translateZ(0); }
-}
+
 body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
@@ -240,21 +229,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260901p"></script>
-<script src="js/02-api.js?v=20260901p"></script>
-<script src="js/03-utils.js?v=20260901p"></script>
-<script src="js/04-shared.js?v=20260901p"></script>
-<script src="js/05-tab-board.js?v=20260901p"></script>
-<script src="js/06-tab-create.js?v=20260901p"></script>
-<script src="js/07-tab-floor.js?v=20260901p"></script>
-<script src="js/09-tab-info.js?v=20260901p"></script>
-<script src="js/11-tab-check-fish.js?v=20260901p"></script>
-<script src="js/12-tab-learn.js?v=20260901p"></script>
-<script src="js/14-app.js?v=20260901p"></script>
+<script src="js/01-config.js?v=20260901q"></script>
+<script src="js/02-api.js?v=20260901q"></script>
+<script src="js/03-utils.js?v=20260901q"></script>
+<script src="js/04-shared.js?v=20260901q"></script>
+<script src="js/05-tab-board.js?v=20260901q"></script>
+<script src="js/06-tab-create.js?v=20260901q"></script>
+<script src="js/07-tab-floor.js?v=20260901q"></script>
+<script src="js/09-tab-info.js?v=20260901q"></script>
+<script src="js/11-tab-check-fish.js?v=20260901q"></script>
+<script src="js/12-tab-learn.js?v=20260901q"></script>
+<script src="js/14-app.js?v=20260901q"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260901p";
+window.APP_VER = "20260901q";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

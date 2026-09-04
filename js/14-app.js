@@ -589,9 +589,7 @@ function App() {
       display: "flex",
       justifyContent: "center",
       padding: "0 6px",
-      pointerEvents: "none",
-      transform: "translateZ(0)",
-      willChange: "auto"
+      pointerEvents: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
