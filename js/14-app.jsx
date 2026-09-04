@@ -278,7 +278,7 @@ function App() {
         </div>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:"max(calc(env(safe-area-inset-bottom) - 22px), 0px)", zIndex:205, display:"flex", justifyContent:"center", padding:"0 6px", pointerEvents:"none" }}>
+      <div style={{ position:"fixed", left:0, right:0, bottom:"calc(6px + env(safe-area-inset-bottom, 0px))", zIndex:205, display:"flex", justifyContent:"center", padding:"0 6px", pointerEvents:"none", transform:"translateZ(0)", willChange:"auto" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:4, width:"100%", maxWidth:1600, background:"var(--primary-soft)", border:"none", borderRadius:18, boxShadow:"0 2px 12px rgba(74,122,176,0.35)", padding:"12px 10px", pointerEvents:"auto" }}>
         {[tabs[0], { key:"bundle", icon:"📅", label:"カレンダー", color:"#3f7cb0" }, { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);

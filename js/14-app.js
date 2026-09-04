@@ -584,12 +584,14 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "max(calc(env(safe-area-inset-bottom) - 22px), 0px)",
+      bottom: "calc(6px + env(safe-area-inset-bottom, 0px))",
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
       padding: "0 6px",
-      pointerEvents: "none"
+      pointerEvents: "none",
+      transform: "translateZ(0)",
+      willChange: "auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
