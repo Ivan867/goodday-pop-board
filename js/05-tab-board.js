@@ -23,6 +23,8 @@ function BoardTab({
   const [fStore, setFStore] = useState("");
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
+  const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
+
   const [view, setView] = useState(() => {
     try {
       return localStorage.getItem("popView") || "md";
@@ -534,13 +536,105 @@ function BoardTab({
     }
   }, icon)))), /*#__PURE__*/React.createElement("div", {
     className: "pop-grid v-" + view
-  }, filtered.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
-    key: pop.id,
-    pop: pop,
-    index: i,
-    onClick: setSel,
-    hasComment: (pop.comment_count || 0) > 0 || commentedIds.has(pop.id)
-  }))))), showUp && /*#__PURE__*/React.createElement(UploadModal, {
+  }, (() => {
+    // 同じまとまりは1件にたたむ（先頭の1枚を代表にする）
+    const seen = {};
+    const list = [];
+    filtered.forEach(pop => {
+      if (pop.group_id) {
+        if (seen[pop.group_id]) {
+          seen[pop.group_id].__count++;
+          return;
+        }
+        const head = {
+          ...pop,
+          __count: 1,
+          __group: true
+        };
+        seen[pop.group_id] = head;
+        list.push(head);
+      } else list.push(pop);
+    });
+    return list.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+      key: pop.id,
+      pop: pop,
+      index: i,
+      onClick: () => pop.__group ? setOpenGroup(pop) : setSel(pop),
+      hasComment: (pop.comment_count || 0) > 0 || commentedIds.has(pop.id)
+    }));
+  })()))), openGroup && (() => {
+    const inGroup = pops.filter(p => p.group_id === openGroup.group_id).sort((a, b) => (a.group_pos || 0) - (b.group_pos || 0));
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "fixed",
+        inset: 0,
+        zIndex: 1100,
+        background: "var(--bg)",
+        overflowY: "auto",
+        WebkitOverflowScrolling: "touch"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "sticky",
+        top: 0,
+        zIndex: 2,
+        background: "var(--primary)",
+        color: "#fff",
+        padding: "10px 14px",
+        display: "flex",
+        alignItems: "center",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => setOpenGroup(null),
+      "aria-label": "もどる",
+      style: {
+        border: "none",
+        background: "rgba(255,255,255,0.2)",
+        color: "#fff",
+        borderRadius: 8,
+        width: 30,
+        height: 30,
+        fontSize: 16,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, "‹"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        minWidth: 0,
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 15.5,
+        fontWeight: 800,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, openGroup.group_name || openGroup.product_name), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 10.5,
+        opacity: 0.85
+      }
+    }, inGroup.length, "枚 ／ ", openGroup.store_name))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 1600,
+        margin: "0 auto",
+        padding: "12px 14px 120px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pop-grid v-" + view
+    }, inGroup.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+      key: pop.id,
+      pop: pop,
+      index: i,
+      onClick: setSel,
+      hasComment: (pop.comment_count || 0) > 0 || commentedIds.has(pop.id)
+    })))));
+  })(), showUp && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUp(false),
     onSuccess: pop => {

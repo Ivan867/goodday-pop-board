@@ -78,6 +78,10 @@ function UploadModal({
       setError("商品名を入力してください");
       return;
     }
+    if (!single && !product.trim()) {
+      setError("まとまりの名前を入れてください（例：9月8日の月曜販促）");
+      return;
+    }
     if (!single && items.some(it => !it.name.trim())) {
       setError("すべての商品名を入れてください");
       return;
@@ -85,6 +89,9 @@ function UploadModal({
     setLoading(true);
     setError("");
     try {
+      // 複数枚は「ひとまとまり」として保存する
+      const gid = single ? null : window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : "g" + Date.now() + Math.random().toString(36).slice(2);
+      const gname = single ? null : product.trim() || "まとめ";
       let last = null,
         done = 0;
       for (const it of items) {
@@ -98,7 +105,10 @@ function UploadModal({
           image_url,
           likes: 0,
           author: author.trim(),
-          comment: comment.trim()
+          comment: comment.trim(),
+          group_id: gid,
+          group_name: gname,
+          group_pos: done
         });
         done++;
       }
@@ -244,16 +254,15 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "商品名 ", items.length > 1 && /*#__PURE__*/React.createElement("span", {
+  }, items.length > 1 ? "まとまりの名前" : "商品名", items.length > 1 && /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
       fontWeight: 600
     }
-  }, "（複数のときは画像ごとに入れてください）")), /*#__PURE__*/React.createElement("input", {
+  }, "（一覧にはこの名前で出ます）")), /*#__PURE__*/React.createElement("input", {
     value: product,
     onChange: e => setProduct(e.target.value),
-    disabled: items.length > 1,
-    placeholder: items.length > 1 ? "画像ごとに入力します" : "例：本マグロ大トロ",
+    placeholder: items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ",
     style: {
       width: "100%",
       padding: "10px 12px",
@@ -1527,7 +1536,33 @@ function PopCard({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "\u3000"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3000"), pop.__group && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 6,
+      left: 6,
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      background: "rgba(20,25,35,0.72)",
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: 900,
+      padding: "3px 9px",
+      borderRadius: 20
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "12",
+    height: "12",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"
+  })), pop.__count, "枚"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: 6,

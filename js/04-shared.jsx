@@ -51,15 +51,22 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
     const single = items.length === 1;
     // 1枚のときは上の商品名、複数のときは各画像の名前を使う
     if (single && !product.trim() && !items[0].name.trim()) { setError("商品名を入力してください"); return; }
+    if (!single && !product.trim()) { setError("まとまりの名前を入れてください（例：9月8日の月曜販促）"); return; }
     if (!single && items.some(it => !it.name.trim())) { setError("すべての商品名を入れてください"); return; }
     setLoading(true); setError("");
     try {
+      // 複数枚は「ひとまとまり」として保存する
+      const gid = single ? null : (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID()
+        : "g" + Date.now() + Math.random().toString(36).slice(2));
+      const gname = single ? null : (product.trim() || "まとめ");
       let last = null, done = 0;
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const image_url = await api.upload(it.file);
         const nm = single ? (product.trim() || it.name.trim()) : it.name.trim();
-        last = await api.insert({ store_name: store, product_name: nm, category, image_url, likes: 0, author: author.trim(), comment: comment.trim() });
+        last = await api.insert({ store_name: store, product_name: nm, category, image_url, likes: 0,
+          author: author.trim(), comment: comment.trim(),
+          group_id: gid, group_name: gname, group_pos: done });
         done++;
       }
       try { window.dispatchEvent(new CustomEvent("appToast", { detail: done > 1 ? `${done}枚を投稿しました` : "投稿しました" })); } catch(e) {}
@@ -92,9 +99,10 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>
-              商品名 {items.length > 1 && <span style={{ color:"var(--faint)", fontWeight:600 }}>（複数のときは画像ごとに入れてください）</span>}
+              {items.length > 1 ? "まとまりの名前" : "商品名"}
+              {items.length > 1 && <span style={{ color:"var(--faint)", fontWeight:600 }}>（一覧にはこの名前で出ます）</span>}
             </div>
-            <input value={product} onChange={e=>setProduct(e.target.value)} disabled={items.length > 1} placeholder={items.length > 1 ? "画像ごとに入力します" : "例：本マグロ大トロ"} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
+            <input value={product} onChange={e=>setProduct(e.target.value)} placeholder={items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ"} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>カテゴリ</div>
@@ -512,6 +520,13 @@ function PopCard({ pop, index, onClick, hasComment }) {
         {pop.image_url
           ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
+        {pop.__group && (
+          <div style={{ position:"absolute", top:6, left:6, display:"flex", alignItems:"center", gap:4,
+            background:"rgba(20,25,35,0.72)", color:"#fff", fontSize:11, fontWeight:900, padding:"3px 9px", borderRadius:20 }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"/></svg>
+            {pop.__count}枚
+          </div>
+        )}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
