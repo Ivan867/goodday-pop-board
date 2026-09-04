@@ -2,14 +2,14 @@
 var { useState, useEffect, useCallback, useRef } = React;
 
 const GNE_LAYOUT = {
-  origin:   { x:44,  y:1118, size:84,  fill:"#ffffff", stroke:"#141414", sw:9,  align:"left",   maxW:1130 },
-  name:     { x:600, y:1296, size:210, fill:"#ffffff", stroke:"#141414", sw:15, align:"center", maxW:1130 },
-  count:    { x:46,  y:1588, size:140, fill:"#ffffff", stroke:"#141414", sw:12, align:"left",   maxW:235  },
-  price:    { x:548, y:1545, size:255, fill:"#e31414", stroke:"#ffffff", sw:12, align:"center", maxW:560  },
-  plus:     { x:872, y:1548, size:54,  fill:"#e31414", stroke:"#ffffff", sw:4,  align:"center" },
-  yen:      { x:868, y:1628, size:58,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
-  taxLabel: { x:1050,y:1552, size:62,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
-  taxPrice: { x:1048,y:1632, size:74,  fill:"#e31414", stroke:"#ffffff", sw:5,  align:"center" },
+  origin:   { x:70,  y:1150, size:74,  fill:"#3a2f22", stroke:"#ffffff", sw:6,  align:"left",   maxW:1060 },
+  name:     { x:600, y:1290, size:150, fill:"#2a2118", stroke:"#ffffff", sw:10, align:"center", maxW:1070 },
+  count:    { x:70,  y:1500, size:78,  fill:"#3a2f22", stroke:"#ffffff", sw:5,  align:"left",   maxW:260  },
+  price:    { x:560, y:1500, size:230, fill:"#c1272d", stroke:"#ffffff", sw:11, align:"center", maxW:540  },
+  plus:     { x:868, y:1452, size:50,  fill:"#c1272d", stroke:"#ffffff", sw:4,  align:"center" },
+  yen:      { x:852, y:1530, size:74,  fill:"#2a2118", stroke:"#ffffff", sw:4,  align:"center" },
+  taxLabel: { x:1010,y:1600, size:44,  fill:"#3a2f22", stroke:"#ffffff", sw:3,  align:"center" },
+  taxPrice: { x:1010,y:1530, size:70,  fill:"#c1272d", stroke:"#ffffff", sw:4,  align:"center" },
 };
 // A4よこ用の配置（1697 x 1200）
 const GNE_LAYOUT_LAND = {
@@ -122,6 +122,7 @@ function GeneratorTab({ onCreatePop }) {
   const tplInput = React.useRef(null);
   const xlsxInput = React.useRef(null);
   const [tpl, setTpl] = useState(null);
+  const [userTpl, setUserTpl] = useState(false);   // 自分で画像を選んだか
   const [fontId, setFontId] = useState(GNE_FONTS[0].id);
   const [loadedFonts, setLoadedFonts] = useState({});
   const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
@@ -219,11 +220,20 @@ function GeneratorTab({ onCreatePop }) {
     gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
+  // 向きに合わせて、用意してあるテンプレを読み込む（自分で選んだ画像があればそれを優先）
+  useEffect(() => {
+    if (userTpl) return;
+    const img = new Image();
+    img.onload = () => setTpl(img);
+    img.onerror = () => setTpl(null);
+    img.src = (land ? "tpl/landscape.jpg" : "tpl/portrait.jpg") + "?v=" + (window.APP_VER || "1");
+  }, [land, userTpl]);
+
   const onTpl = (file) => {
     if (!file) return;
     const url = URL.createObjectURL(file);
     const img = new Image();
-    img.onload = () => { setTpl(img); URL.revokeObjectURL(url); };
+    img.onload = () => { setTpl(img); setUserTpl(true); URL.revokeObjectURL(url); };
     img.src = url;
   };
 
