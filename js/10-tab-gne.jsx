@@ -135,7 +135,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const sc = (off && off.scale) || 1;
   const fs = (off && off.fieldScale) || {};
   const fp = (off && off.fieldPos) || {};
-  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax", offRate:"price" };
+  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax", offRate:"off" };
   const L = {};
   for (const k in LAY) {
     const o = LAY[k];
@@ -214,9 +214,9 @@ function GeneratorTab({ onCreatePop }) {
   const [gx, setGx] = useState(0);       // 文字位置オフセット（横：-120〜+120）
   const [gy, setGy] = useState(0);       // 文字位置オフセット（縦：-320〜+40）
   const [gScale, setGScale] = useState(100);  // 文字サイズ（%）：70〜130
-  const [fScale, setFScale] = useState({ origin:100, name:100, count:100, price:100, tax:100 });  // フィールド別（%）
+  const [fScale, setFScale] = useState({ origin:100, name:100, count:100, price:100, tax:100, off:100 });  // フィールド別（%）
   // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
-  const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0 };
+  const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0, off_x:0, off_y:0 };
   const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name");   // いま位置を動かす対象
 
@@ -234,7 +234,7 @@ function GeneratorTab({ onCreatePop }) {
     if (typeof v.gx === "number") setGx(v.gx);
     if (typeof v.gy === "number") setGy(v.gy);
     if (typeof v.gScale === "number") setGScale(v.gScale);
-    if (v.fScale) setFScale({ origin:100, name:100, count:100, price:100, tax:100, ...v.fScale });
+    if (v.fScale) setFScale({ origin:100, name:100, count:100, price:100, tax:100, off:100, ...v.fScale });
     if (v.fPos) setFPos({ ...ZERO_POS, ...v.fPos });
     if (v.taxMode) setTaxMode(v.taxMode);
     if (typeof v.taxRate === "number") setTaxRate(v.taxRate);
@@ -461,7 +461,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ height:1, background:"var(--line)", margin:"14px 0 12px" }} />
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:8 }}>フィールド別サイズ</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px 14px" }}>
-            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].map(([k, lbl]) => (
+            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).map(([k, lbl]) => (
               <div key={k} style={{ display:"flex", alignItems:"center", gap:6 }}>
                 <span style={{ fontSize:12, fontWeight:800, color:"var(--text)", width:56, flexShrink:0 }}>{lbl}</span>
                 <button onClick={() => setFScale(v => ({ ...v, [k]: Math.max(60, v[k] - 10) }))}
@@ -476,7 +476,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--primary)", marginBottom:3 }}>▼ 1つずつ動かす（選んだ項目だけ）</div>
           <div style={{ fontSize:11, color:"var(--sub)", marginBottom:8, lineHeight:1.5 }}>上の「位置」は全部まとめて動きます。ここは選んだ項目だけが動きます。</div>
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10, padding:"9px", background:"var(--soft)", borderRadius:10 }}>
-            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].map(([k, lbl]) => {
+            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).map(([k, lbl]) => {
               const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
               return (
                 <button key={k} onClick={() => setPosTarget(k)}

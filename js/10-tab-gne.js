@@ -681,7 +681,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     yen: "price",
     taxLabel: "tax",
     taxPrice: "tax",
-    offRate: "price"
+    offRate: "off"
   };
   const L = {};
   for (const k in LAY) {
@@ -814,7 +814,8 @@ function GeneratorTab({
     name: 100,
     count: 100,
     price: 100,
-    tax: 100
+    tax: 100,
+    off: 100
   }); // フィールド別（%）
   // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
   const ZERO_POS = {
@@ -827,7 +828,9 @@ function GeneratorTab({
     price_x: 0,
     price_y: 0,
     tax_x: 0,
-    tax_y: 0
+    tax_y: 0,
+    off_x: 0,
+    off_y: 0
   };
   const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name"); // いま位置を動かす対象
@@ -860,6 +863,7 @@ function GeneratorTab({
       count: 100,
       price: 100,
       tax: 100,
+      off: 100,
       ...v.fScale
     });
     if (v.fPos) setFPos({
@@ -1456,7 +1460,7 @@ function GeneratorTab({
       gridTemplateColumns: "1fr 1fr",
       gap: "8px 14px"
     }
-  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].map(([k, lbl]) => /*#__PURE__*/React.createElement("div", {
+  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).map(([k, lbl]) => /*#__PURE__*/React.createElement("div", {
     key: k,
     style: {
       display: "flex",
@@ -1543,7 +1547,7 @@ function GeneratorTab({
       background: "var(--soft)",
       borderRadius: 10
     }
-  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].map(([k, lbl]) => {
+  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).map(([k, lbl]) => {
     const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
     return /*#__PURE__*/React.createElement("button", {
       key: k,
