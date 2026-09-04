@@ -1536,17 +1536,23 @@ function PopCard({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "\u3000"), pop.__group && /*#__PURE__*/React.createElement("div", {
+  }, "\u3000"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: 6,
-      left: 6,
+      right: 6,
+      display: "flex",
+      gap: 4,
+      alignItems: "center"
+    }
+  }, pop.__group && /*#__PURE__*/React.createElement("div", {
+    style: {
       display: "flex",
       alignItems: "center",
       gap: 4,
-      background: "rgba(20,25,35,0.72)",
+      background: "rgba(20,25,35,0.78)",
       color: "#fff",
-      fontSize: 11,
+      fontSize: 11.5,
       fontWeight: 900,
       padding: "3px 9px",
       borderRadius: 20
@@ -1562,15 +1568,7 @@ function PopCard({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"
-  })), pop.__count, "枚"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      top: 6,
-      right: 6,
-      display: "flex",
-      gap: 4
-    }
-  }, hasComment && /*#__PURE__*/React.createElement("div", {
+  })), pop.__count), hasComment && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "rgba(194,78,0,0.9)",
       color: "white",

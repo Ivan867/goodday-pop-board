@@ -520,14 +520,14 @@ function PopCard({ pop, index, onClick, hasComment }) {
         {pop.image_url
           ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
-        {pop.__group && (
-          <div style={{ position:"absolute", top:6, left:6, display:"flex", alignItems:"center", gap:4,
-            background:"rgba(20,25,35,0.72)", color:"#fff", fontSize:11, fontWeight:900, padding:"3px 9px", borderRadius:20 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"/></svg>
-            {pop.__count}枚
-          </div>
-        )}
-        <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4 }}>
+        <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
+          {pop.__group && (
+            <div style={{ display:"flex", alignItems:"center", gap:4,
+              background:"rgba(20,25,35,0.78)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"3px 9px", borderRadius:20 }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"/></svg>
+              {pop.__count}
+            </div>
+          )}
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
           {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
         </div>
