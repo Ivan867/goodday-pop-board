@@ -3211,11 +3211,30 @@ function CatalogTab() {
 const OI_WDAY = ["日", "月", "火", "水", "木", "金", "土"];
 const SHEET_DAYS = [["mon", "月"], ["tue", "火"], ["wed", "水"], ["thu", "木"], ["fri", "金"], ["sat", "土"], ["sun", "日"]];
 const oiYmd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+// 番号 → その番号で開く店舗
+const ORDER_STORES = [{
+  pin: "5",
+  code: "kisuki",
+  name: "木次店"
+}, {
+  pin: "7",
+  code: "hokubu",
+  name: "北部店"
+}];
 function OrderTab() {
-  // 簡易ロック（他の人が誤って開かないように）
+  // 番号で入る店舗が決まる
+  const [store, setStore] = useState(() => {
+    try {
+      const c = sessionStorage.getItem("orderStore");
+      return ORDER_STORES.find(s => s.code === c) || null;
+    } catch (e) {
+      return null;
+    }
+  });
   const [unlocked, setUnlocked] = useState(() => {
     try {
-      return sessionStorage.getItem("orderUnlocked") === "1";
+      return !!sessionStorage.getItem("orderStore");
     } catch (e) {
       return false;
     }
@@ -3223,17 +3242,20 @@ function OrderTab() {
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
-    if (pw.trim() === "5") {
+    const hit = ORDER_STORES.find(s => s.pin === pw.trim());
+    if (hit) {
+      setStore(hit);
       setUnlocked(true);
       setPwErr("");
       try {
-        sessionStorage.setItem("orderUnlocked", "1");
+        sessionStorage.setItem("orderStore", hit.code);
       } catch (e) {}
     } else {
       setPwErr("番号が違います");
       setPw("");
     }
   };
+  const storeCode = store ? store.code : "kisuki";
   const [items, setItems] = useState([]);
   const [logs, setLogs] = useState([]);
   // ── 週間の発注指示書 ──
@@ -3326,7 +3348,7 @@ function OrderTab() {
     let alive = true;
     (async () => {
       try {
-        const sh = await api.getSheet(wkKey);
+        const sh = await api.getSheet(wkKey, storeCode);
         if (!alive) return;
         setSheet(sh);
         setSheetNote(sh ? sh.note || "" : "");
@@ -3339,11 +3361,12 @@ function OrderTab() {
     return () => {
       alive = false;
     };
-  }, [wkKey, sheetVer]);
+  }, [wkKey, sheetVer, storeCode]);
   const ensureSheet = async () => {
     if (sheet) return sheet;
     const created = await api.createSheet({
       week_start: wkKey,
+      store_code: storeCode,
       author: localStorage.getItem("lastAuthor") || null
     });
     setSheet(created);
@@ -3467,6 +3490,7 @@ function OrderTab() {
             item_id: r.item_id,
             ordered_on: ymd,
             qty: Number(r[key]),
+            store_code: storeCode,
             item_name: r.item_name,
             unit: r.unit || null,
             maker: r.maker || null,
@@ -3505,7 +3529,7 @@ function OrderTab() {
     try {
       const prev = new Date(wkStart);
       prev.setDate(prev.getDate() - 7);
-      const ps = await api.getSheet(oiYmd(prev));
+      const ps = await api.getSheet(oiYmd(prev), storeCode);
       if (!ps) {
         window.alert("前の週の指示書がありません");
         return;
@@ -3995,11 +4019,45 @@ function OrderTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 9
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
       fontSize: 16.5,
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "塩干発注")), /*#__PURE__*/React.createElement("div", {
+  }, "塩干発注"), store && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      background: "rgba(255,255,255,0.22)",
+      borderRadius: 999,
+      padding: "2px 10px"
+    }
+  }, store.name), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setUnlocked(false);
+      setStore(null);
+      setPw("");
+      try {
+        sessionStorage.removeItem("orderStore");
+      } catch (e) {}
+    },
+    style: {
+      marginLeft: "auto",
+      border: "1px solid rgba(255,255,255,0.4)",
+      background: "transparent",
+      color: "#fff",
+      borderRadius: 7,
+      padding: "4px 10px",
+      fontSize: 11,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "店を変える"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",

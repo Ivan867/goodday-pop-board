@@ -289,8 +289,9 @@ const api = {
   },
 
   // ── order_sheets：週間の発注指示書（紙で渡す用）──
-  async getSheet(weekStart) {
-    const rows = await sbJson(`/rest/v1/order_sheets?week_start=eq.${weekStart}&select=*`);
+  async getSheet(weekStart, store) {
+    const sc = store || "kisuki";
+    const rows = await sbJson(`/rest/v1/order_sheets?week_start=eq.${weekStart}&store_code=eq.${sc}&select=*`);
     return rows[0] || null;
   },
   async listSheetRows(sheetId) {
