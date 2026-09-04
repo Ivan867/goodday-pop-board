@@ -89,7 +89,9 @@ const GNE_FIXED = {
   taxLabel: "税込価格"
 };
 const GNE_W = 1200,
-  GNE_H = 1697;
+  GNE_H = 1697; // A4たて
+const GNE_W_LAND = 1697,
+  GNE_H_LAND = 1200; // A4よこ
 const GNE_FONT_STACK = `"${GNE_FONT_NAME}", "Hiragino Sans", "Yu Gothic", sans-serif`;
 function gneCalcTax(price, mode, rate) {
   const r = rate == null || isNaN(+rate) ? 8 : +rate;
@@ -124,7 +126,9 @@ function gneDrawField(ctx, text, cfg, font) {
   ctx.fillStyle = cfg.fill;
   ctx.fillText(text, cfg.x, cfg.y);
 }
-function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
+function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
+  const CW = dim && dim.w || GNE_W,
+    CH = dim && dim.h || GNE_H;
   const dx = off && off.x || 0,
     dy = off && off.y || 0;
   const sc = off && off.scale || 1;
@@ -158,22 +162,22 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off) {
     };
     if (o.maxW) L[k].maxW = o.maxW; // 折り返し幅は据え置き（はみ出し防止）
   }
-  ctx.clearRect(0, 0, GNE_W, GNE_H);
+  ctx.clearRect(0, 0, CW, CH);
   if (tpl) {
-    ctx.drawImage(tpl, 0, 0, GNE_W, GNE_H);
+    ctx.drawImage(tpl, 0, 0, CW, CH);
   } else {
-    const g = ctx.createLinearGradient(0, 0, 0, GNE_H);
+    const g = ctx.createLinearGradient(0, 0, 0, CH);
     g.addColorStop(0, "#cdddee");
     g.addColorStop(1, "#aac2dd");
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, GNE_W, GNE_H);
+    ctx.fillRect(0, 0, CW, CH);
     ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.fillRect(40, 40, GNE_W - 80, 940);
+    ctx.fillRect(40, 40, CW - 80, CH * 0.55);
     ctx.fillStyle = "#5a708c";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = `900 46px ${GNE_FONT_STACK}`;
-    ctx.fillText("テンプレ画像を選択してください", GNE_W / 2, 500);
+    ctx.fillText("テンプレ画像を選択してください", CW / 2, CH * 0.3);
   }
   // 産地と補足（養殖・解凍など）を1行に結合して描く
   const originLine = [f.origin, f.origin2 ? `（${String(f.origin2).replace(/^（|）$/g, "")}）` : ""].filter(Boolean).join("");
@@ -192,6 +196,21 @@ function GeneratorTab({
   onCreatePop
 }) {
   const [gTab, setGTab] = useState("gne"); // gne=POP画像 / souba=便利機能
+  const [land, setLand] = useState(() => {
+    try {
+      return localStorage.getItem("gneLand") === "1";
+    } catch (e) {
+      return false;
+    }
+  });
+  const setLandSave = v => {
+    setLand(v);
+    try {
+      localStorage.setItem("gneLand", v ? "1" : "0");
+    } catch (e) {}
+  };
+  const CW = land ? GNE_W_LAND : GNE_W,
+    CH = land ? GNE_H_LAND : GNE_H;
   const previewRef = React.useRef(null);
   const tplInput = React.useRef(null);
   const xlsxInput = React.useRef(null);
@@ -392,6 +411,9 @@ function GeneratorTab({
       scale: gScale / 100,
       fieldScale: fScale,
       fieldPos: fPos
+    }, {
+      w: CW,
+      h: CH
     });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
   const onTpl = file => {
@@ -491,14 +513,17 @@ function GeneratorTab({
   const dzXlsx = useDropZone(f => onExcel(f), "excel");
   const renderBlob = row => new Promise(res => {
     const c = document.createElement("canvas");
-    c.width = GNE_W;
-    c.height = GNE_H;
+    c.width = CW;
+    c.height = CH;
     gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, {
       x: gx,
       y: gy,
       scale: gScale / 100,
       fieldScale: fScale,
       fieldPos: fPos
+    }, {
+      w: CW,
+      h: CH
     });
     c.toBlob(b => res(b), "image/png");
   });
@@ -613,14 +638,44 @@ function GeneratorTab({
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      color: "var(--sub)",
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
       marginBottom: 8
     }
-  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("canvas", {
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)"
+    }
+  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginLeft: "auto",
+      display: "flex",
+      gap: 2,
+      background: "rgba(120,120,128,0.12)",
+      borderRadius: 8,
+      padding: 2
+    }
+  }, [[false, "たて"], [true, "よこ"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+    key: l,
+    onClick: () => setLandSave(v),
+    "aria-pressed": land === v,
+    style: {
+      border: "none",
+      background: land === v ? "#fff" : "transparent",
+      color: land === v ? "var(--ink)" : "var(--sub)",
+      borderRadius: 6,
+      padding: "4px 12px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer",
+      boxShadow: land === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
+    }
+  }, l)))), /*#__PURE__*/React.createElement("canvas", {
     ref: previewRef,
-    width: GNE_W,
-    height: GNE_H,
+    width: CW,
+    height: CH,
     style: {
       width: "100%",
       maxWidth: "100%",

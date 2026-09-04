@@ -590,6 +590,18 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
+  // ── 週の予定を実績として記録に移す ──
+  async saveWeekLogs(logs) {
+    if (!logs || !logs.length) return [];
+    return sbOne(`/rest/v1/order_logs`, {
+      method: "POST",
+      body: logs,
+      prefer: "return=representation"
+    });
+  },
+  async listLogsBetween(from, to) {
+    return sbJson(`/rest/v1/order_logs?select=*&ordered_on=gte.${from}&ordered_on=lte.${to}&order=ordered_on.asc`);
+  },
   // ── order_sheets：週間の発注指示書（紙で渡す用）──
   async getSheet(weekStart) {
     const rows = await sbJson(`/rest/v1/order_sheets?week_start=eq.${weekStart}&select=*`);

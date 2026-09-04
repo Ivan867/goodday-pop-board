@@ -3408,6 +3408,98 @@ function OrderTab() {
     } catch (e) {}
   };
   // 前の週の内容をそのまま持ってくる
+  // ── 過ぎた日の予定を、実績として記録に残す ──
+  const [recBusy, setRecBusy] = useState(false);
+  const [recMsg, setRecMsg] = useState("");
+  const [savedDays, setSavedDays] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("orderSavedDays") || "{}");
+    } catch (e) {
+      return {};
+    }
+  });
+
+  // その週で「もう過ぎた日」を洗い出す
+  const pastDaysOfWeek = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const out = [];
+    SHEET_DAYS.forEach(([k], i) => {
+      const d = new Date(wkStart);
+      d.setDate(d.getDate() + i);
+      d.setHours(0, 0, 0, 0);
+      if (d < today) out.push({
+        key: k,
+        date: d,
+        ymd: oiYmd(d)
+      });
+    });
+    return out;
+  };
+  // 記録できる件数（過ぎた日 × 数量が入っている品目）
+  const recCount = () => {
+    let n = 0;
+    pastDaysOfWeek().forEach(({
+      key,
+      ymd
+    }) => {
+      if (savedDays[ymd]) return;
+      n += rows.filter(r => r[key] != null && r[key] !== "").length;
+    });
+    return n;
+  };
+  const saveWeekToLogs = async () => {
+    const days = pastDaysOfWeek().filter(d => !savedDays[d.ymd]);
+    if (!days.length) {
+      setRecMsg("記録できる日がありません");
+      return;
+    }
+    setRecBusy(true);
+    setRecMsg("");
+    try {
+      const logs = [];
+      days.forEach(({
+        key,
+        ymd
+      }) => {
+        rows.filter(r => r[key] != null && r[key] !== "").forEach(r => {
+          logs.push({
+            item_id: r.item_id,
+            ordered_on: ymd,
+            qty: Number(r[key]),
+            item_name: r.item_name,
+            unit: r.unit || null,
+            maker: r.maker || null,
+            price: r.price ?? null,
+            note: r.memo || null,
+            author: localStorage.getItem("lastAuthor") || null
+          });
+        });
+      });
+      if (!logs.length) {
+        setRecMsg("記録するものがありません");
+        setRecBusy(false);
+        return;
+      }
+      await api.saveWeekLogs(logs);
+      const mark = {
+        ...savedDays
+      };
+      days.forEach(d => {
+        mark[d.ymd] = true;
+      });
+      setSavedDays(mark);
+      try {
+        localStorage.setItem("orderSavedDays", JSON.stringify(mark));
+      } catch (e) {}
+      setRecMsg(`${logs.length}件を記録しました`);
+      setVer(v => v + 1);
+    } catch (e) {
+      setRecMsg("記録できませんでした");
+    } finally {
+      setRecBusy(false);
+    }
+  };
   const copyPrevWeek = async () => {
     setSheetBusy(true);
     try {
@@ -4755,7 +4847,53 @@ function OrderTab() {
         fontFamily: "inherit",
         lineHeight: 1.6
       }
-    })), /*#__PURE__*/React.createElement("div", {
+    })), recCount() > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff",
+        border: "1.5px solid #cfe0d8",
+        borderRadius: 11,
+        padding: "12px 13px",
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 900,
+        color: "var(--ink)",
+        marginBottom: 4
+      }
+    }, "過ぎた日を記録に残す"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: "var(--sub)",
+        lineHeight: 1.6,
+        marginBottom: 10
+      }
+    }, "日が過ぎた分（", recCount(), "件）を実績として残します。数量が違っていたら、先に上で直してください。"), /*#__PURE__*/React.createElement("button", {
+      onClick: saveWeekToLogs,
+      disabled: recBusy,
+      style: {
+        width: "100%",
+        border: "none",
+        background: recBusy ? "#ccc" : "#3f9e63",
+        color: "#fff",
+        borderRadius: 9,
+        padding: "11px",
+        fontSize: 13,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, recBusy ? "記録中…" : `${recCount()}件を記録する`)), recMsg && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontWeight: 800,
+        color: recMsg.includes("できません") ? "#b3261e" : "#2c6b45",
+        background: recMsg.includes("できません") ? "#fdeceb" : "#eaf6ee",
+        borderRadius: 8,
+        padding: "9px 11px",
+        marginBottom: 12
+      }
+    }, recMsg), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 8
