@@ -1016,7 +1016,8 @@ function GeneratorTab({
         origin2: r["補足"] ?? "",
         name: r["商品名"] ?? "",
         count: r["個数"] ?? "",
-        price: r["本体価格"] ?? ""
+        price: r["本体価格"] ?? "",
+        offRate: r["割安"] ?? ""
       })).filter(r => r.name);
       setRows(rs);
       setStatus(`${rs.length} 件を読み込みました`);
@@ -1035,22 +1036,25 @@ function GeneratorTab({
         "補足": "天然",
         "商品名": "天然ぶり刺身",
         "個数": "5切",
-        "本体価格": 498
+        "本体価格": 498,
+        "割安": ""
       }, {
         "産地": "北海道",
         "補足": "解凍",
         "商品名": "秋鮭切身",
         "個数": "2切",
-        "本体価格": 380
+        "本体価格": 380,
+        "割安": 2
       }, {
         "産地": "島根県産",
         "補足": "",
         "商品名": "宍道湖しじみ",
         "個数": "200g",
-        "本体価格": 298
+        "本体価格": 298,
+        "割安": ""
       }];
       const ws = XLSX.utils.json_to_sheet(data, {
-        header: ["産地", "補足", "商品名", "個数", "本体価格"]
+        header: ["産地", "補足", "商品名", "個数", "本体価格", "割安"]
       });
       ws["!cols"] = [{
         wch: 14
@@ -2115,6 +2119,7 @@ function GeneratorTab({
 
 ;
 Object.assign(window, {
+  GNE_PRESETS,
   GNE_FIXED,
   GNE_FONT_STACK,
   GNE_LAYOUT,

@@ -317,7 +317,7 @@ function GeneratorTab({ onCreatePop }) {
       const wb = XLSX.read(new Uint8Array(buf), { type:"array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(ws, { defval:"" });
-      const rs = json.map((r) => ({ origin:r["産地"] ?? "", origin2:r["補足"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "" })).filter((r) => r.name);
+      const rs = json.map((r) => ({ origin:r["産地"] ?? "", origin2:r["補足"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "", offRate:r["割安"] ?? "" })).filter((r) => r.name);
       setRows(rs);
       setStatus(`${rs.length} 件を読み込みました`);
     } catch (e) { setStatus("Excel読み込みに失敗しました"); }
@@ -329,11 +329,11 @@ function GeneratorTab({ onCreatePop }) {
     try {
       await loadScriptOnce(XLSX_SRC);
       const data = [
-        { "産地":"山陰沖",   "補足":"天然",       "商品名":"天然ぶり刺身", "個数":"5切",  "本体価格":498 },
-        { "産地":"北海道",   "補足":"解凍",       "商品名":"秋鮭切身",     "個数":"2切",  "本体価格":380 },
-        { "産地":"島根県産", "補足":"",           "商品名":"宍道湖しじみ", "個数":"200g", "本体価格":298 },
+        { "産地":"山陰沖",   "補足":"天然",       "商品名":"天然ぶり刺身", "個数":"5切",  "本体価格":498, "割安":"" },
+        { "産地":"北海道",   "補足":"解凍",       "商品名":"秋鮭切身",     "個数":"2切",  "本体価格":380, "割安":2  },
+        { "産地":"島根県産", "補足":"",           "商品名":"宍道湖しじみ", "個数":"200g", "本体価格":298, "割安":"" },
       ];
-      const ws = XLSX.utils.json_to_sheet(data, { header:["産地","補足","商品名","個数","本体価格"] });
+      const ws = XLSX.utils.json_to_sheet(data, { header:["産地","補足","商品名","個数","本体価格","割安"] });
       ws["!cols"] = [{ wch:14 }, { wch:14 }, { wch:22 }, { wch:10 }, { wch:12 }];
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "商品リスト");
@@ -638,4 +638,4 @@ function GeneratorTab({ onCreatePop }) {
 // ===== POP診断：画像をブラウザ内で解析（外部送信なし） =====
 
 
-;Object.assign(window, { GNE_FIXED, GNE_FONT_STACK, GNE_LAYOUT, GNE_W, GeneratorTab, gneCalcTax, gneDrawField, gneRender, gneSanitize });
+;Object.assign(window, { GNE_PRESETS, GNE_FIXED, GNE_FONT_STACK, GNE_LAYOUT, GNE_W, GeneratorTab, gneCalcTax, gneDrawField, gneRender, gneSanitize });
