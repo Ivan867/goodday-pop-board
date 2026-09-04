@@ -83,6 +83,85 @@ const GNE_LAYOUT = {
     align: "center"
   }
 };
+// A4よこ用の配置（1697 x 1200）
+const GNE_LAYOUT_LAND = {
+  origin: {
+    x: 70,
+    y: 445,
+    size: 86,
+    fill: "#ffffff",
+    stroke: "#141414",
+    sw: 9,
+    align: "left",
+    maxW: 1560
+  },
+  name: {
+    x: 848,
+    y: 600,
+    size: 190,
+    fill: "#ffffff",
+    stroke: "#141414",
+    sw: 15,
+    align: "center",
+    maxW: 1560
+  },
+  count: {
+    x: 660,
+    y: 735,
+    size: 96,
+    fill: "#141414",
+    stroke: "#ffffff",
+    sw: 5,
+    align: "left",
+    maxW: 420
+  },
+  price: {
+    x: 980,
+    y: 940,
+    size: 300,
+    fill: "#e31414",
+    stroke: "#ffffff",
+    sw: 14,
+    align: "center",
+    maxW: 700
+  },
+  plus: {
+    x: 1560,
+    y: 900,
+    size: 56,
+    fill: "#e31414",
+    stroke: "#ffffff",
+    sw: 4,
+    align: "center"
+  },
+  yen: {
+    x: 1420,
+    y: 1000,
+    size: 110,
+    fill: "#141414",
+    stroke: "#ffffff",
+    sw: 6,
+    align: "center"
+  },
+  taxLabel: {
+    x: 1300,
+    y: 1120,
+    size: 56,
+    fill: "#141414",
+    stroke: "#ffffff",
+    sw: 3,
+    align: "center"
+  },
+  taxPrice: {
+    x: 1530,
+    y: 1125,
+    size: 78,
+    fill: "#e31414",
+    stroke: "#ffffff",
+    sw: 5,
+    align: "center"
+  }
+};
 const GNE_FIXED = {
   plus: "+税",
   yen: "円",
@@ -129,6 +208,7 @@ function gneDrawField(ctx, text, cfg, font) {
 function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const CW = dim && dim.w || GNE_W,
     CH = dim && dim.h || GNE_H;
+  const LAY = CW > CH ? GNE_LAYOUT_LAND : GNE_LAYOUT;
   const dx = off && off.x || 0,
     dy = off && off.y || 0;
   const sc = off && off.scale || 1;
@@ -145,8 +225,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     taxPrice: "tax"
   };
   const L = {};
-  for (const k in GNE_LAYOUT) {
-    const o = GNE_LAYOUT[k];
+  for (const k in LAY) {
+    const o = LAY[k];
     const g = GROUP[k];
     const fsc = (fs[g] || 100) / 100 * sc; // 全体倍率 × フィールド別倍率
     const fo = {
