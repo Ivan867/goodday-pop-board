@@ -726,7 +726,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
     const p = parseInt(f.price, 10);
     gneDrawField(ctx, String(p), L.price, font);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, L.taxPrice, font);
+    const taxYen = !(dim && dim.taxNoYen);
+    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}${taxYen ? "円" : ""}`, L.taxPrice, font);
   }
   if (!hideFixed) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
@@ -748,6 +749,19 @@ function GeneratorTab({
       return "washoku";
     }
   });
+  const [taxYen, setTaxYen] = useState(() => {
+    try {
+      return localStorage.getItem("gneTaxYen") !== "0";
+    } catch (e) {
+      return true;
+    }
+  });
+  const setTaxYenSave = v => {
+    setTaxYen(v);
+    try {
+      localStorage.setItem("gneTaxYen", v ? "1" : "0");
+    } catch (e) {}
+  };
   const preset = GNE_PRESETS.find(p => p.id === presetId) || GNE_PRESETS[0];
   const pickPreset = id => {
     setPresetId(id);
@@ -969,7 +983,8 @@ function GeneratorTab({
       w: CW,
       h: CH,
       layout: preset.layout,
-      hideFixed: preset.hideFixed
+      hideFixed: preset.hideFixed,
+      taxNoYen: !taxYen
     });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
@@ -1095,7 +1110,8 @@ function GeneratorTab({
       w: CW,
       h: CH,
       layout: preset.layout,
-      hideFixed: preset.hideFixed
+      hideFixed: preset.hideFixed,
+      taxNoYen: !taxYen
     });
     c.toBlob(b => res(b), "image/png");
   });
@@ -1138,7 +1154,7 @@ function GeneratorTab({
     ...p,
     [k]: e.target.value
   }));
-  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode, taxRate)}円` : "—";
+  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode, taxRate)}${taxYen ? "円" : ""}` : "—";
   const fontSt = loadedFonts[font.family];
   const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
   const card = {
@@ -1975,7 +1991,30 @@ function GeneratorTab({
     value: "round"
   }, "四捨五入"), /*#__PURE__*/React.createElement("option", {
     value: "floor"
-  }, "切り捨て")), /*#__PURE__*/React.createElement("span", {
+  }, "切り捨て")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 2,
+      background: "rgba(120,120,128,0.12)",
+      borderRadius: 8,
+      padding: 2
+    }
+  }, [[true, "円あり"], [false, "数字だけ"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+    key: l,
+    onClick: () => setTaxYenSave(v),
+    "aria-pressed": taxYen === v,
+    style: {
+      border: "none",
+      background: taxYen === v ? "#fff" : "transparent",
+      color: taxYen === v ? "var(--ink)" : "var(--sub)",
+      borderRadius: 6,
+      padding: "5px 10px",
+      fontSize: 11.5,
+      fontWeight: 800,
+      cursor: "pointer",
+      boxShadow: taxYen === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
+    }
+  }, l))), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       color: "var(--sub)"

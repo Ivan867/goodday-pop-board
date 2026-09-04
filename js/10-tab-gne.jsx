@@ -165,7 +165,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   if (f.price !== "" && f.price != null && !isNaN(+f.price)) {
     const p = parseInt(f.price, 10);
     gneDrawField(ctx, String(p), L.price, font);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, L.taxPrice, font);
+    const taxYen = !(dim && dim.taxNoYen);
+    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}${taxYen ? "円" : ""}`, L.taxPrice, font);
   }
   if (!hideFixed) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
@@ -180,6 +181,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
 function GeneratorTab({ onCreatePop }) {
   const [gTab, setGTab] = useState("gne");   // gne=POP画像 / souba=便利機能
   const [presetId, setPresetId] = useState(() => { try { return localStorage.getItem("gnePreset") || "washoku"; } catch(e) { return "washoku"; } });
+  const [taxYen, setTaxYen] = useState(() => { try { return localStorage.getItem("gneTaxYen") !== "0"; } catch(e) { return true; } });
+  const setTaxYenSave = (v) => { setTaxYen(v); try { localStorage.setItem("gneTaxYen", v ? "1" : "0"); } catch(e) {} };
   const preset = GNE_PRESETS.find(p => p.id === presetId) || GNE_PRESETS[0];
   const pickPreset = (id) => { setPresetId(id); setUserTpl(false); try { localStorage.setItem("gnePreset", id); } catch(e) {} };
   const land = preset.land;
@@ -283,7 +286,7 @@ function GeneratorTab({ onCreatePop }) {
 
   useEffect(() => {
     const cv = previewRef.current; if (!cv) return;
-    gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed });
+    gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
   // 向きに合わせて、用意してあるテンプレを読み込む（自分で選んだ画像があればそれを優先）
@@ -347,7 +350,7 @@ function GeneratorTab({ onCreatePop }) {
 
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = CW; c.height = CH;
-    gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed });
+    gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen });
     c.toBlob((b) => res(b), "image/png");
   });
 
@@ -372,7 +375,7 @@ function GeneratorTab({ onCreatePop }) {
   }, [rows, tpl, taxMode, fontId, taxRate, gx, gy, gScale, fScale]);
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
-  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode, taxRate)}円` : "—";
+  const taxPreview = f.price && !isNaN(+f.price) ? `${gneCalcTax(parseInt(f.price, 10), taxMode, taxRate)}${taxYen ? "円" : ""}` : "—";
   const fontSt = loadedFonts[font.family];
   const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
 
@@ -592,6 +595,14 @@ function GeneratorTab({ onCreatePop }) {
                 <option value="round">四捨五入</option>
                 <option value="floor">切り捨て</option>
               </select>
+              <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2 }}>
+                {[[true, "円あり"], [false, "数字だけ"]].map(([v, l]) => (
+                  <button key={l} onClick={() => setTaxYenSave(v)} aria-pressed={taxYen === v}
+                    style={{ border:"none", background: taxYen === v ? "#fff" : "transparent", color: taxYen === v ? "var(--ink)" : "var(--sub)",
+                      borderRadius:6, padding:"5px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer",
+                      boxShadow: taxYen === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{l}</button>
+                ))}
+              </div>
               <span style={{ fontSize:12, color:"var(--sub)" }}>税込（{taxRate}%）：<b style={{ color:"var(--ink)" }}>{taxPreview}</b></span>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
