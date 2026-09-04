@@ -13,14 +13,19 @@ const GNE_LAYOUT = {
 };
 // A4よこ用の配置（1697 x 1200）
 const GNE_LAYOUT_LAND = {
-  origin:   { x:70,  y:445,  size:86,  fill:"#ffffff", stroke:"#141414", sw:9,  align:"left",   maxW:1560 },
-  name:     { x:848, y:600,  size:190, fill:"#ffffff", stroke:"#141414", sw:15, align:"center", maxW:1560 },
-  count:    { x:660, y:735,  size:96,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"left",   maxW:420  },
-  price:    { x:980, y:940,  size:300, fill:"#e31414", stroke:"#ffffff", sw:14, align:"center", maxW:700  },
-  plus:     { x:1560,y:900,  size:56,  fill:"#e31414", stroke:"#ffffff", sw:4,  align:"center" },
-  yen:      { x:1420,y:1000, size:110, fill:"#141414", stroke:"#ffffff", sw:6,  align:"center" },
-  taxLabel: { x:1300,y:1120, size:56,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
-  taxPrice: { x:1530,y:1125, size:78,  fill:"#e31414", stroke:"#ffffff", sw:5,  align:"center" },
+  // 「現品限り!!」見出しの下の空きに、産地→品名を置く
+  origin:   { x:96,  y:470,  size:88,  fill:"#ffffff", stroke:"#141414", sw:9,  align:"left",   maxW:1500 },
+  name:     { x:848, y:645,  size:158, fill:"#ffffff", stroke:"#141414", sw:13, align:"center", maxW:1480 },
+  // 単位は価格のすぐ上
+  count:    { x:1000,y:800,  size:88,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"center", maxW:520  },
+  // 価格は星の右～「+税」の左に大きく
+  price:    { x:1010,y:965,  size:290, fill:"#e31414", stroke:"#ffffff", sw:14, align:"center", maxW:700  },
+  yen:      { x:1420,y:1000, size:112, fill:"#141414", stroke:"#ffffff", sw:6,  align:"center" },
+  plus:     { x:1554,y:948,  size:1,   fill:"#e31414", stroke:"#e31414", sw:0,  align:"center" },
+  taxLabel: { x:1213,y:1130, size:1,   fill:"#141414", stroke:"#141414", sw:0,  align:"center" },
+  taxPrice: { x:1420,y:1130, size:78,  fill:"#e31414", stroke:"#ffffff", sw:5,  align:"center" },
+  // 星の中の割合（約◯割安）
+  offRate:  { x:238, y:1012, size:120, fill:"#f5e400", stroke:"#141414", sw:8,  align:"center" },
 };
 
 const GNE_FIXED = { plus:"+税", yen:"円", taxLabel:"税込価格" };
@@ -68,7 +73,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const sc = (off && off.scale) || 1;
   const fs = (off && off.fieldScale) || {};
   const fp = (off && off.fieldPos) || {};
-  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax" };
+  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax", offRate:"price" };
   const L = {};
   for (const k in LAY) {
     const o = LAY[k];
@@ -101,7 +106,11 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, L.taxPrice, font);
   }
   gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
-  gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
+  // よこ向きのテンプレは「+税」「税込価格」が印刷済みなので描かない
+  const isLand = CW > CH;
+  if (!isLand) gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
+  // よこ向き：星の中の「約◯割安」
+  if (isLand && f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
 
 function GeneratorTab({ onCreatePop }) {
@@ -118,7 +127,7 @@ function GeneratorTab({ onCreatePop }) {
   const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
   const [taxMode, setTaxMode] = useState("ceil");
   const [taxRate, setTaxRate] = useState(8);
-  const [f, setF] = useState({ origin:"鹿児島県産", origin2:"養殖・解凍", name:"うなぎかば焼き", count:"1尾", price:"2390" });
+  const [f, setF] = useState({ origin:"鹿児島県産", origin2:"養殖・解凍", name:"うなぎかば焼き", count:"1尾", price:"2390", offRate:"2" });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -482,7 +491,7 @@ function GeneratorTab({ onCreatePop }) {
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>単品入力（ライブプレビュー）</div>
-          {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].map(([label, key]) => (
+          {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].concat(land ? [["約◯割安（星の中の数字）","offRate"]] : []).map(([label, key]) => (
             <div key={key}>
               <div style={{ fontSize:12, color:"var(--sub)", marginBottom:4 }}>{label}</div>
               <input value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
