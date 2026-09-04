@@ -270,28 +270,28 @@ const GNE_PRESETS = [{
   hideFixed: true,
   layout: {
     origin: {
-      x: 150,
-      y: 720,
-      size: 76,
+      x: 120,
+      y: 640,
+      size: 74,
       fill: "#141414",
       stroke: "#ffffff",
       sw: 6,
       align: "left",
-      maxW: 920
+      maxW: 960
     },
     name: {
       x: 600,
-      y: 880,
-      size: 165,
+      y: 800,
+      size: 160,
       fill: "#141414",
       stroke: "#ffffff",
       sw: 11,
       align: "center",
-      maxW: 960
+      maxW: 990
     },
     count: {
-      x: 245,
-      y: 1545,
+      x: 205,
+      y: 1508,
       size: 1,
       fill: "#141414",
       stroke: "#141414",
@@ -299,18 +299,18 @@ const GNE_PRESETS = [{
       align: "center"
     },
     price: {
-      x: 700,
-      y: 1290,
+      x: 620,
+      y: 1300,
       size: 250,
       fill: "#e01414",
       stroke: "#141414",
       sw: 12,
       align: "center",
-      maxW: 620
+      maxW: 520
     },
     plus: {
-      x: 960,
-      y: 1385,
+      x: 986,
+      y: 1360,
       size: 1,
       fill: "#e01414",
       stroke: "#e01414",
@@ -318,8 +318,8 @@ const GNE_PRESETS = [{
       align: "center"
     },
     yen: {
-      x: 960,
-      y: 1385,
+      x: 986,
+      y: 1360,
       size: 1,
       fill: "#141414",
       stroke: "#141414",
@@ -327,8 +327,8 @@ const GNE_PRESETS = [{
       align: "center"
     },
     taxLabel: {
-      x: 760,
-      y: 1590,
+      x: 700,
+      y: 1565,
       size: 1,
       fill: "#141414",
       stroke: "#141414",
@@ -336,11 +336,11 @@ const GNE_PRESETS = [{
       align: "center"
     },
     taxPrice: {
-      x: 880,
-      y: 1578,
-      size: 56,
-      fill: "#141414",
-      stroke: "#ffffff",
+      x: 930,
+      y: 1565,
+      size: 62,
+      fill: "#e01414",
+      stroke: "#141414",
       sw: 4,
       align: "center"
     }
