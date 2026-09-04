@@ -175,6 +175,450 @@ const GNE_LAYOUT_LAND = {
     align: "center"
   }
 };
+
+// 使えるテンプレ一覧（サムネを押して切り替える）
+const GNE_PRESETS = [{
+  id: "washoku",
+  name: "和風・ご馳走",
+  land: false,
+  img: "tpl/portrait.jpg",
+  thumb: "tpl/washoku_thumb.jpg",
+  layout: {
+    origin: {
+      x: 70,
+      y: 1150,
+      size: 74,
+      fill: "#3a2f22",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "left",
+      maxW: 1060
+    },
+    name: {
+      x: 600,
+      y: 1290,
+      size: 150,
+      fill: "#2a2118",
+      stroke: "#ffffff",
+      sw: 10,
+      align: "center",
+      maxW: 1070
+    },
+    count: {
+      x: 70,
+      y: 1500,
+      size: 78,
+      fill: "#3a2f22",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "left",
+      maxW: 260
+    },
+    price: {
+      x: 560,
+      y: 1500,
+      size: 230,
+      fill: "#c1272d",
+      stroke: "#ffffff",
+      sw: 11,
+      align: "center",
+      maxW: 540
+    },
+    plus: {
+      x: 868,
+      y: 1452,
+      size: 50,
+      fill: "#c1272d",
+      stroke: "#ffffff",
+      sw: 4,
+      align: "center"
+    },
+    yen: {
+      x: 852,
+      y: 1530,
+      size: 74,
+      fill: "#2a2118",
+      stroke: "#ffffff",
+      sw: 4,
+      align: "center"
+    },
+    taxLabel: {
+      x: 1010,
+      y: 1600,
+      size: 44,
+      fill: "#3a2f22",
+      stroke: "#ffffff",
+      sw: 3,
+      align: "center"
+    },
+    taxPrice: {
+      x: 1010,
+      y: 1530,
+      size: 70,
+      fill: "#c1272d",
+      stroke: "#ffffff",
+      sw: 4,
+      align: "center"
+    }
+  }
+}, {
+  id: "mon",
+  name: "毎週月曜日限定",
+  land: false,
+  img: "tpl/mon.jpg",
+  thumb: "tpl/mon_thumb.jpg",
+  hideFixed: true,
+  layout: {
+    origin: {
+      x: 150,
+      y: 720,
+      size: 76,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "left",
+      maxW: 920
+    },
+    name: {
+      x: 600,
+      y: 880,
+      size: 165,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 11,
+      align: "center",
+      maxW: 960
+    },
+    count: {
+      x: 245,
+      y: 1545,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    price: {
+      x: 700,
+      y: 1290,
+      size: 250,
+      fill: "#e01414",
+      stroke: "#141414",
+      sw: 12,
+      align: "center",
+      maxW: 620
+    },
+    plus: {
+      x: 960,
+      y: 1385,
+      size: 1,
+      fill: "#e01414",
+      stroke: "#e01414",
+      sw: 0,
+      align: "center"
+    },
+    yen: {
+      x: 960,
+      y: 1385,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxLabel: {
+      x: 760,
+      y: 1590,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxPrice: {
+      x: 880,
+      y: 1578,
+      size: 56,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 4,
+      align: "center"
+    }
+  }
+}, {
+  id: "super",
+  name: "SUPER均一祭",
+  land: false,
+  img: "tpl/super.jpg",
+  thumb: "tpl/super_thumb.jpg",
+  hideFixed: true,
+  layout: {
+    origin: {
+      x: 80,
+      y: 830,
+      size: 70,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "left",
+      maxW: 1030
+    },
+    name: {
+      x: 600,
+      y: 1000,
+      size: 160,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 10,
+      align: "center",
+      maxW: 1050
+    },
+    count: {
+      x: 290,
+      y: 1512,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    price: {
+      x: 640,
+      y: 1330,
+      size: 240,
+      fill: "#e01414",
+      stroke: "#141414",
+      sw: 11,
+      align: "center",
+      maxW: 640
+    },
+    plus: {
+      x: 1000,
+      y: 1512,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    yen: {
+      x: 1000,
+      y: 1512,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxLabel: {
+      x: 790,
+      y: 1600,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxPrice: {
+      x: 940,
+      y: 1608,
+      size: 54,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 3,
+      align: "center"
+    }
+  }
+}, {
+  id: "genpin2",
+  name: "現品限り（枠）",
+  land: true,
+  img: "tpl/landscape.jpg",
+  thumb: "tpl/genpin2_thumb.jpg",
+  hideFixed: true,
+  useOff: true,
+  layout: {
+    origin: {
+      x: 96,
+      y: 470,
+      size: 88,
+      fill: "#ffffff",
+      stroke: "#141414",
+      sw: 9,
+      align: "left",
+      maxW: 1500
+    },
+    name: {
+      x: 848,
+      y: 645,
+      size: 158,
+      fill: "#ffffff",
+      stroke: "#141414",
+      sw: 13,
+      align: "center",
+      maxW: 1480
+    },
+    count: {
+      x: 1000,
+      y: 800,
+      size: 88,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "center",
+      maxW: 520
+    },
+    price: {
+      x: 1010,
+      y: 965,
+      size: 290,
+      fill: "#e31414",
+      stroke: "#ffffff",
+      sw: 14,
+      align: "center",
+      maxW: 700
+    },
+    plus: {
+      x: 1554,
+      y: 948,
+      size: 1,
+      fill: "#e31414",
+      stroke: "#e31414",
+      sw: 0,
+      align: "center"
+    },
+    yen: {
+      x: 1420,
+      y: 1000,
+      size: 112,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "center"
+    },
+    taxLabel: {
+      x: 1213,
+      y: 1130,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxPrice: {
+      x: 1420,
+      y: 1130,
+      size: 78,
+      fill: "#e31414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "center"
+    },
+    offRate: {
+      x: 238,
+      y: 1012,
+      size: 120,
+      fill: "#f5e400",
+      stroke: "#141414",
+      sw: 8,
+      align: "center"
+    }
+  }
+}, {
+  id: "genpin",
+  name: "現品限り（黄）",
+  land: true,
+  img: "tpl/genpin.jpg",
+  thumb: "tpl/genpin_thumb.jpg",
+  hideFixed: true,
+  useOff: true,
+  layout: {
+    origin: {
+      x: 110,
+      y: 470,
+      size: 86,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 7,
+      align: "left",
+      maxW: 1480
+    },
+    name: {
+      x: 848,
+      y: 630,
+      size: 170,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 12,
+      align: "center",
+      maxW: 1500
+    },
+    count: {
+      x: 1000,
+      y: 790,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    price: {
+      x: 1010,
+      y: 1015,
+      size: 235,
+      fill: "#e31414",
+      stroke: "#141414",
+      sw: 12,
+      align: "center",
+      maxW: 520
+    },
+    plus: {
+      x: 1190,
+      y: 1000,
+      size: 1,
+      fill: "#e31414",
+      stroke: "#e31414",
+      sw: 0,
+      align: "center"
+    },
+    yen: {
+      x: 1230,
+      y: 1120,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxLabel: {
+      x: 1430,
+      y: 940,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxPrice: {
+      x: 1480,
+      y: 1125,
+      size: 66,
+      fill: "#e31414",
+      stroke: "#141414",
+      sw: 4,
+      align: "center"
+    },
+    offRate: {
+      x: 300,
+      y: 1090,
+      size: 110,
+      fill: "#ffffff",
+      stroke: "#141414",
+      sw: 7,
+      align: "center"
+    }
+  }
+}];
 const GNE_FIXED = {
   plus: "+税",
   yen: "円",
@@ -221,7 +665,8 @@ function gneDrawField(ctx, text, cfg, font) {
 function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const CW = dim && dim.w || GNE_W,
     CH = dim && dim.h || GNE_H;
-  const LAY = CW > CH ? GNE_LAYOUT_LAND : GNE_LAYOUT;
+  const LAY = dim && dim.layout || (CW > CH ? GNE_LAYOUT_LAND : GNE_LAYOUT);
+  const hideFixed = !!(dim && dim.hideFixed);
   const dx = off && off.x || 0,
     dy = off && off.y || 0;
   const sc = off && off.scale || 1;
@@ -283,30 +728,35 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     gneDrawField(ctx, String(p), L.price, font);
     gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}円`, L.taxPrice, font);
   }
-  gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
-  // よこ向きのテンプレは「+税」「税込価格」が印刷済みなので描かない
-  const isLand = CW > CH;
-  if (!isLand) gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
-  // よこ向き：星の中の「約◯割安」
-  if (isLand && f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
+  if (!hideFixed) {
+    gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
+    gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
+  } else if (L.yen && L.yen.size > 2) {
+    gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
+  }
+  // 星の中の「約◯割安」
+  if (f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
 function GeneratorTab({
   onCreatePop
 }) {
   const [gTab, setGTab] = useState("gne"); // gne=POP画像 / souba=便利機能
-  const [land, setLand] = useState(() => {
+  const [presetId, setPresetId] = useState(() => {
     try {
-      return localStorage.getItem("gneLand") === "1";
+      return localStorage.getItem("gnePreset") || "washoku";
     } catch (e) {
-      return false;
+      return "washoku";
     }
   });
-  const setLandSave = v => {
-    setLand(v);
+  const preset = GNE_PRESETS.find(p => p.id === presetId) || GNE_PRESETS[0];
+  const pickPreset = id => {
+    setPresetId(id);
+    setUserTpl(false);
     try {
-      localStorage.setItem("gneLand", v ? "1" : "0");
+      localStorage.setItem("gnePreset", id);
     } catch (e) {}
   };
+  const land = preset.land;
   const CW = land ? GNE_W_LAND : GNE_W,
     CH = land ? GNE_H_LAND : GNE_H;
   const previewRef = React.useRef(null);
@@ -513,7 +963,9 @@ function GeneratorTab({
       fieldPos: fPos
     }, {
       w: CW,
-      h: CH
+      h: CH,
+      layout: preset.layout,
+      hideFixed: preset.hideFixed
     });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
@@ -523,8 +975,8 @@ function GeneratorTab({
     const img = new Image();
     img.onload = () => setTpl(img);
     img.onerror = () => setTpl(null);
-    img.src = (land ? "tpl/landscape.jpg" : "tpl/portrait.jpg") + "?v=" + (window.APP_VER || "1");
-  }, [land, userTpl]);
+    img.src = preset.img + "?v=" + (window.APP_VER || "1");
+  }, [presetId, userTpl]);
   const onTpl = file => {
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -633,7 +1085,9 @@ function GeneratorTab({
       fieldPos: fPos
     }, {
       w: CW,
-      h: CH
+      h: CH,
+      layout: preset.layout,
+      hideFixed: preset.hideFixed
     });
     c.toBlob(b => res(b), "image/png");
   });
@@ -758,31 +1212,13 @@ function GeneratorTab({
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("div", {
+  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      display: "flex",
-      gap: 2,
-      background: "rgba(120,120,128,0.12)",
-      borderRadius: 8,
-      padding: 2
+      fontSize: 11,
+      color: "var(--faint)"
     }
-  }, [[false, "たて"], [true, "よこ"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
-    key: l,
-    onClick: () => setLandSave(v),
-    "aria-pressed": land === v,
-    style: {
-      border: "none",
-      background: land === v ? "#fff" : "transparent",
-      color: land === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 6,
-      padding: "4px 12px",
-      fontSize: 11.5,
-      fontWeight: 800,
-      cursor: "pointer",
-      boxShadow: land === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
-    }
-  }, l)))), /*#__PURE__*/React.createElement("canvas", {
+  }, preset.name)), /*#__PURE__*/React.createElement("canvas", {
     ref: previewRef,
     width: CW,
     height: CH,
@@ -794,7 +1230,61 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       display: "block"
     }
-  }))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      margin: "14px 0 7px"
+    }
+  }, "テンプレを選ぶ"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      overflowX: "auto",
+      paddingBottom: 4,
+      WebkitOverflowScrolling: "touch"
+    }
+  }, GNE_PRESETS.map(pr => {
+    const on = pr.id === presetId && !userTpl;
+    return /*#__PURE__*/React.createElement("button", {
+      key: pr.id,
+      onClick: () => pickPreset(pr.id),
+      "aria-pressed": on,
+      style: {
+        flexShrink: 0,
+        width: 92,
+        border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 10,
+        padding: 4,
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: pr.thumb + "?v=" + (window.APP_VER || "1"),
+      alt: pr.name,
+      style: {
+        width: "100%",
+        aspectRatio: pr.land ? "1.414/1" : "1/1.414",
+        objectFit: "cover",
+        borderRadius: 6,
+        display: "block",
+        background: "var(--bg)"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 9.5,
+        fontWeight: 800,
+        color: on ? "var(--primary)" : "var(--sub)",
+        marginTop: 4,
+        lineHeight: 1.3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, pr.name));
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "gne-settings",
     style: {
       display: "grid",
@@ -1425,7 +1915,7 @@ function GeneratorTab({
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, "単品入力（ライブプレビュー）"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(land ? [["約◯割安（星の中の数字）", "offRate"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
+  }, "単品入力（ライブプレビュー）"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
     key: key
   }, /*#__PURE__*/React.createElement("div", {
     style: {
