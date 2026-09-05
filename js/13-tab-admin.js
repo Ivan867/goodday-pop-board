@@ -37,6 +37,9 @@ function AdminTab({
   const [delAsk, setDelAsk] = useState(false); // 一括削除の確認中か
   const [delWord, setDelWord] = useState(""); // 確認の入力
   const [delBusy, setDelBusy] = useState(false);
+  const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
+  const [grpName, setGrpName] = useState("");
+  const [grpBusy, setGrpBusy] = useState(false);
   const setPinned = async popId => {
     setPinnedBusy(true);
     try {
@@ -195,6 +198,26 @@ function AdminTab({
   const switchView = v => {
     setView(v);
     setSel({});
+  };
+  const doGroup = async name => {
+    setGrpBusy(true);
+    try {
+      await api.groupPops(selIds, name);
+      const n = selIds.length;
+      setSel({});
+      setGrpAsk(false);
+      setGrpName("");
+      await load();
+      try {
+        window.dispatchEvent(new CustomEvent("appToast", {
+          detail: name ? `${n}件をまとめました` : `${n}件のまとまりを解除しました`
+        }));
+      } catch (e) {}
+    } catch (e) {
+      alert("できませんでした");
+    } finally {
+      setGrpBusy(false);
+    }
   };
   const doDelete = async () => {
     if (delWord.trim() !== "削除") return;
@@ -977,6 +1000,21 @@ function AdminTab({
     }
   }, "解除"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
+      setGrpAsk(true);
+      setGrpName("");
+    },
+    style: {
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--primary)",
+      borderRadius: 9,
+      padding: "9px 13px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "まとめる"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
       setDelAsk(true);
       setDelWord("");
     },
@@ -1004,7 +1042,112 @@ function AdminTab({
       cursor: "pointer",
       opacity: applying ? 0.6 : 1
     }
-  }, applying ? "処理中…" : toArchive ? "アーカイブする" : "公開に戻す")), delAsk && /*#__PURE__*/React.createElement("div", {
+  }, applying ? "処理中…" : toArchive ? "アーカイブする" : "公開に戻す")), grpAsk && /*#__PURE__*/React.createElement("div", {
+    onClick: () => !grpBusy && setGrpAsk(false),
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 1300,
+      background: "rgba(15,25,38,0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "#fff",
+      borderRadius: 16,
+      width: "100%",
+      maxWidth: 420,
+      padding: "22px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 17,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 8
+    }
+  }, selIds.length, "件をひとまとめにします"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 14
+    }
+  }, "一覧には、この名前で1件だけ出るようになります。押すと中の全部が見られます。"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 6
+    }
+  }, "まとまりの名前"), /*#__PURE__*/React.createElement("input", {
+    value: grpName,
+    onChange: e => setGrpName(e.target.value),
+    placeholder: "例：9月8日の月曜販促",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      border: "2px solid var(--line)",
+      borderRadius: 10,
+      padding: "11px 12px",
+      fontSize: 15,
+      outline: "none",
+      fontFamily: "inherit",
+      marginBottom: 14
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 9,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setGrpAsk(false),
+    disabled: grpBusy,
+    style: {
+      flex: 1,
+      border: "none",
+      background: "var(--chip)",
+      color: "var(--text)",
+      borderRadius: 10,
+      padding: "12px",
+      fontSize: 14,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => doGroup(grpName.trim()),
+    disabled: grpBusy || !grpName.trim(),
+    style: {
+      flex: 1,
+      border: "none",
+      background: grpBusy || !grpName.trim() ? "#ddd" : "var(--primary)",
+      color: "#fff",
+      borderRadius: 10,
+      padding: "12px",
+      fontSize: 14,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, grpBusy ? "まとめています…" : "まとめる")), /*#__PURE__*/React.createElement("button", {
+    onClick: () => doGroup(""),
+    disabled: grpBusy,
+    style: {
+      width: "100%",
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--sub)",
+      borderRadius: 10,
+      padding: "10px",
+      fontSize: 12.5,
+      fontWeight: 700,
+      cursor: "pointer"
+    }
+  }, "まとまりを解除する（バラバラに戻す）"))), delAsk && /*#__PURE__*/React.createElement("div", {
     onClick: () => !delBusy && setDelAsk(false),
     style: {
       position: "fixed",

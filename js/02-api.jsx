@@ -86,6 +86,10 @@ const api = {
     if (!ids.length) return;
     await sbFetch(`/rest/v1/rpc/admin_set_archived`, { method:"POST", body:{ p_ids: ids, p_archived: archived, p_password: PW_CACHE.admin || "" } });
   },
+  async groupPops(ids, name) {
+    if (!ids || !ids.length) return 0;
+    return sbOne(`/rest/v1/rpc/admin_group_pops`, { method:"POST", body:{ p_ids: ids, p_name: name || null, p_password: PW_CACHE.admin || "" } });
+  },
   async delMany(ids) {
     if (!ids || !ids.length) return 0;
     return sbOne(`/rest/v1/rpc/admin_delete_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
