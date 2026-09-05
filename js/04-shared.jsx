@@ -533,7 +533,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
         </div>
       </div>
       <div className="pc-body" style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
-        <div className="pc-name" style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.product_name}</div>
+        <div className="pc-name" style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}</div>
         <div className="pc-meta" style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
         <div className="pc-meta" style={{ fontSize:11, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
       </div>

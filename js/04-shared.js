@@ -1605,7 +1605,7 @@ function PopCard({
       flex: 1,
       minWidth: 0
     }
-  }, pop.product_name), /*#__PURE__*/React.createElement("div", {
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), /*#__PURE__*/React.createElement("div", {
     className: "pc-meta",
     style: {
       fontSize: 11,
