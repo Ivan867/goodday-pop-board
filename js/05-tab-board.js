@@ -568,7 +568,7 @@ function BoardTab({
       style: {
         position: "fixed",
         inset: 0,
-        zIndex: 1100,
+        zIndex: 900,
         background: "var(--bg)",
         overflowY: "auto",
         WebkitOverflowScrolling: "touch"

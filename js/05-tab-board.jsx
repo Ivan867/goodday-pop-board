@@ -174,7 +174,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         const inGroup = pops.filter(p => p.group_id === openGroup.group_id)
           .sort((a,b) => (a.group_pos||0) - (b.group_pos||0));
         return (
-          <div style={{ position:"fixed", inset:0, zIndex:1100, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
+          <div style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
             <div style={{ position:"sticky", top:0, zIndex:2, background:"var(--primary)", color:"#fff", padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
               <button onClick={() => setOpenGroup(null)} aria-label="もどる"
                 style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", borderRadius:8, width:30, height:30, fontSize:16, fontWeight:900, cursor:"pointer" }}>‹</button>
