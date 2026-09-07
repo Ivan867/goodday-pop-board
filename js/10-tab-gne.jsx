@@ -108,12 +108,17 @@ function gneDrawField(ctx, text, cfg, font) {
   text = String(text);
   const fam = font ? `"${font.family}", "Hiragino Sans", sans-serif` : GNE_FONT_STACK;
   const wt = font ? font.weight : "900";
+  // 改行（入力の改行、または「/」）で行を分ける
+  const lines = text.split(/\r?\n|\//).map(t => t.trim()).filter(t => t !== "");
+  if (!lines.length) return;
   let size = cfg.size;
   ctx.textAlign = cfg.align;
   ctx.textBaseline = "middle";
   ctx.font = `${wt} ${size}px ${fam}`;
+  // いちばん長い行が収まるまで小さくする
   if (cfg.maxW) {
-    while (ctx.measureText(text).width > cfg.maxW && size > 12) {
+    const widest = () => Math.max(...lines.map(l => ctx.measureText(l).width));
+    while (widest() > cfg.maxW && size > 12) {
       size -= 4;
       ctx.font = `${wt} ${size}px ${fam}`;
     }
@@ -122,9 +127,15 @@ function gneDrawField(ctx, text, cfg, font) {
   ctx.miterLimit = 2;
   ctx.strokeStyle = cfg.stroke;
   ctx.lineWidth = cfg.sw * 2;
-  ctx.strokeText(text, cfg.x, cfg.y);
   ctx.fillStyle = cfg.fill;
-  ctx.fillText(text, cfg.x, cfg.y);
+  // 複数行は上下の真ん中に来るように置く
+  const lh = size * 1.08;
+  const top = cfg.y - (lh * (lines.length - 1)) / 2;
+  lines.forEach((ln, i) => {
+    const y = top + lh * i;
+    ctx.strokeText(ln, cfg.x, y);
+    ctx.fillText(ln, cfg.x, y);
+  });
 }
 
 function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
@@ -582,9 +593,18 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>単品入力（ライブプレビュー）</div>
           {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）","offRate"]] : []).map(([label, key]) => (
             <div key={key}>
-              <div style={{ fontSize:12, color:"var(--sub)", marginBottom:4 }}>{label}</div>
-              <input value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
-                style={{ width:"100%", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
+              <div style={{ fontSize:12, color:"var(--sub)", marginBottom:4 }}>
+                {label}
+                {key === "name" && <span style={{ color:"var(--faint)" }}>（改行すると2行になります）</span>}
+              </div>
+              {key === "name" ? (
+                <textarea value={f[key] || ""} onChange={set(key)} rows={2}
+                  placeholder="長いときは改行してください"
+                  style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15, resize:"vertical", fontFamily:"inherit", lineHeight:1.5 }} />
+              ) : (
+                <input value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
+                  style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
+              )}
             </div>
           ))}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>

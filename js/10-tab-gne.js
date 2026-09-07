@@ -644,12 +644,17 @@ function gneDrawField(ctx, text, cfg, font) {
   text = String(text);
   const fam = font ? `"${font.family}", "Hiragino Sans", sans-serif` : GNE_FONT_STACK;
   const wt = font ? font.weight : "900";
+  // 改行（入力の改行、または「/」）で行を分ける
+  const lines = text.split(/\r?\n|\//).map(t => t.trim()).filter(t => t !== "");
+  if (!lines.length) return;
   let size = cfg.size;
   ctx.textAlign = cfg.align;
   ctx.textBaseline = "middle";
   ctx.font = `${wt} ${size}px ${fam}`;
+  // いちばん長い行が収まるまで小さくする
   if (cfg.maxW) {
-    while (ctx.measureText(text).width > cfg.maxW && size > 12) {
+    const widest = () => Math.max(...lines.map(l => ctx.measureText(l).width));
+    while (widest() > cfg.maxW && size > 12) {
       size -= 4;
       ctx.font = `${wt} ${size}px ${fam}`;
     }
@@ -658,9 +663,15 @@ function gneDrawField(ctx, text, cfg, font) {
   ctx.miterLimit = 2;
   ctx.strokeStyle = cfg.stroke;
   ctx.lineWidth = cfg.sw * 2;
-  ctx.strokeText(text, cfg.x, cfg.y);
   ctx.fillStyle = cfg.fill;
-  ctx.fillText(text, cfg.x, cfg.y);
+  // 複数行は上下の真ん中に来るように置く
+  const lh = size * 1.08;
+  const top = cfg.y - lh * (lines.length - 1) / 2;
+  lines.forEach((ln, i) => {
+    const y = top + lh * i;
+    ctx.strokeText(ln, cfg.x, y);
+    ctx.fillText(ln, cfg.x, y);
+  });
 }
 function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const CW = dim && dim.w || GNE_W,
@@ -1947,12 +1958,33 @@ function GeneratorTab({
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, label), /*#__PURE__*/React.createElement("input", {
+  }, label, key === "name" && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--faint)"
+    }
+  }, "（改行すると2行になります）")), key === "name" ? /*#__PURE__*/React.createElement("textarea", {
+    value: f[key] || "",
+    onChange: set(key),
+    rows: 2,
+    placeholder: "長いときは改行してください",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "10px 12px",
+      fontSize: 15,
+      resize: "vertical",
+      fontFamily: "inherit",
+      lineHeight: 1.5
+    }
+  }) : /*#__PURE__*/React.createElement("input", {
     value: f[key] || "",
     onChange: set(key),
     inputMode: key === "price" ? "numeric" : "text",
     style: {
       width: "100%",
+      boxSizing: "border-box",
       border: "1px solid var(--line)",
       borderRadius: 10,
       padding: "10px 12px",
