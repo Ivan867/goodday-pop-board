@@ -1319,7 +1319,54 @@ function GeneratorTab({
         whiteSpace: "nowrap"
       }
     }, pr.name));
-  })), rows.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "gne-settings",
+    style: {
+      display: "grid",
+      gap: 14,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: card
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: "var(--ink)",
+      marginBottom: 8
+    }
+  }, "テンプレ画像（文字なし・1200×1697推奨）"), /*#__PURE__*/React.createElement("button", {
+    ...dzTpl.props,
+    onClick: () => tplInput.current && tplInput.current.click(),
+    style: {
+      border: "1px dashed #ccc",
+      background: "var(--bg)",
+      borderRadius: 10,
+      padding: "10px 14px",
+      fontSize: 14,
+      fontWeight: 700,
+      color: "var(--text)",
+      cursor: "pointer",
+      ...dzTpl.style
+    }
+  }, dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: 10,
+      fontSize: 12,
+      color: "#2f6fb0",
+      fontWeight: 700
+    }
+  }, "読込済み"), /*#__PURE__*/React.createElement("input", {
+    ref: tplInput,
+    type: "file",
+    accept: "image/*",
+    onChange: e => onTpl(e.target.files[0]),
+    style: {
+      display: "none"
+    }
+  })), rows.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: card
+  }, /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -1396,52 +1443,7 @@ function GeneratorTab({
         flexShrink: 0
       }
     }, r.price));
-  }))))), /*#__PURE__*/React.createElement("div", {
-    className: "gne-settings",
-    style: {
-      display: "grid",
-      gap: 14,
-      minWidth: 0
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: card
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 14,
-      fontWeight: 800,
-      color: "var(--ink)",
-      marginBottom: 8
-    }
-  }, "テンプレ画像（文字なし・1200×1697推奨）"), /*#__PURE__*/React.createElement("button", {
-    ...dzTpl.props,
-    onClick: () => tplInput.current && tplInput.current.click(),
-    style: {
-      border: "1px dashed #ccc",
-      background: "var(--bg)",
-      borderRadius: 10,
-      padding: "10px 14px",
-      fontSize: 14,
-      fontWeight: 700,
-      color: "var(--text)",
-      cursor: "pointer",
-      ...dzTpl.style
-    }
-  }, dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
-    style: {
-      marginLeft: 10,
-      fontSize: 12,
-      color: "#2f6fb0",
-      fontWeight: 700
-    }
-  }, "読込済み"), /*#__PURE__*/React.createElement("input", {
-    ref: tplInput,
-    type: "file",
-    accept: "image/*",
-    onChange: e => onTpl(e.target.files[0]),
-    style: {
-      display: "none"
-    }
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
