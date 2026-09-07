@@ -436,6 +436,40 @@ function GeneratorTab({ onCreatePop }) {
                 );
               })}
             </div>
+
+            {rows.length > 0 && (
+              <>
+                <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", margin:"16px 0 7px" }}>
+                  読み込んだ商品（押すとプレビューに入ります）
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:5, maxHeight:300, overflowY:"auto" }}>
+                  {rows.map((r, i) => {
+                    const on = f.name === r.name && String(f.price) === String(r.price);
+                    return (
+                      <button key={i} onClick={() => setF({ origin:r.origin || "", origin2:r.origin2 || "",
+                          name:r.name || "", count:r.count || "", price:r.price == null ? "" : String(r.price),
+                          offRate:r.offRate == null ? "" : String(r.offRate) })}
+                        style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
+                          border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
+                          background: on ? "var(--soft)" : "#fff", borderRadius:9, padding:"8px 10px", cursor:"pointer" }}>
+                        <span style={{ fontSize:10, fontWeight:900, color:"var(--faint)", width:20, flexShrink:0 }}>{i + 1}</span>
+                        <span style={{ minWidth:0, flex:1 }}>
+                          <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                            {String(r.name || "").replace(/\r?\n/g, " ")}
+                          </span>
+                          <span style={{ display:"block", fontSize:10, color:"var(--faint)", marginTop:1 }}>
+                            {[r.origin, r.count].filter(Boolean).join(" ／ ")}
+                          </span>
+                        </span>
+                        {r.price != null && r.price !== "" && (
+                          <span style={{ fontSize:13, fontWeight:900, color: on ? "var(--primary)" : "var(--sub)", flexShrink:0 }}>{r.price}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -654,40 +688,6 @@ function GeneratorTab({ onCreatePop }) {
             {busy ? "生成中…" : (rows.length ? `${rows.length} 件を ZIP 出力` : "ファイル未読込")}
           </button>
           {status && <div style={{ fontSize:12, color:"var(--sub)" }}>{status}</div>}
-
-          {rows.length > 0 && (
-            <div>
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", margin:"4px 0 7px" }}>
-                読み込んだ商品（押すと上のプレビューに入ります）
-              </div>
-              <div style={{ display:"flex", flexDirection:"column", gap:5, maxHeight:280, overflowY:"auto" }}>
-                {rows.map((r, i) => {
-                  const on = f.name === r.name && String(f.price) === String(r.price);
-                  return (
-                    <button key={i} onClick={() => setF({ origin:r.origin || "", origin2:r.origin2 || "",
-                        name:r.name || "", count:r.count || "", price:r.price == null ? "" : String(r.price),
-                        offRate:r.offRate == null ? "" : String(r.offRate) })}
-                      style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
-                        border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-                        background: on ? "var(--soft)" : "#fff", borderRadius:9, padding:"8px 10px", cursor:"pointer" }}>
-                      <span style={{ fontSize:10, fontWeight:900, color:"var(--faint)", width:20, flexShrink:0 }}>{i + 1}</span>
-                      <span style={{ minWidth:0, flex:1 }}>
-                        <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-                          {String(r.name || "").replace(/\r?\n/g, " ")}
-                        </span>
-                        <span style={{ display:"block", fontSize:10, color:"var(--faint)", marginTop:1 }}>
-                          {[r.origin, r.count].filter(Boolean).join(" ／ ")}
-                        </span>
-                      </span>
-                      {r.price != null && r.price !== "" && (
-                        <span style={{ fontSize:13, fontWeight:900, color: on ? "var(--primary)" : "var(--sub)", flexShrink:0 }}>{r.price}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
         </div>
       </div>
