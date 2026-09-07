@@ -214,7 +214,7 @@ function AdminTab({
         }));
       } catch (e) {}
     } catch (e) {
-      alert("できませんでした");
+      alert("まとめられませんでした：" + (e && e.message ? e.message : ""));
     } finally {
       setGrpBusy(false);
     }
@@ -235,7 +235,7 @@ function AdminTab({
         }));
       } catch (e) {}
     } catch (e) {
-      alert("削除できませんでした");
+      alert("削除できませんでした：" + (e && e.message ? e.message : ""));
     } finally {
       setDelBusy(false);
     }

@@ -88,11 +88,11 @@ const api = {
   },
   async groupPops(ids, name) {
     if (!ids || !ids.length) return 0;
-    return sbOne(`/rest/v1/rpc/admin_group_pops`, { method:"POST", body:{ p_ids: ids, p_name: name || null, p_password: PW_CACHE.admin || "" } });
+    return sbJson(`/rest/v1/rpc/admin_group_pops`, { method:"POST", body:{ p_ids: ids, p_name: name || null, p_password: PW_CACHE.admin || "" } });
   },
   async delMany(ids) {
     if (!ids || !ids.length) return 0;
-    return sbOne(`/rest/v1/rpc/admin_delete_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
+    return sbJson(`/rest/v1/rpc/admin_delete_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
   },
   async del(id) { await sbFetch(`/rest/v1/rpc/delete_pop_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
   async like(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_likes`, { method:"POST", body:{ p_id:id } }); },

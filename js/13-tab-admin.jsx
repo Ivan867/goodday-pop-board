@@ -120,7 +120,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       setSel({}); setGrpAsk(false); setGrpName("");
       await load();
       try { window.dispatchEvent(new CustomEvent("appToast", { detail: name ? `${n}件をまとめました` : `${n}件のまとまりを解除しました` })); } catch(e) {}
-    } catch (e) { alert("できませんでした"); }
+    } catch (e) { alert("まとめられませんでした：" + (e && e.message ? e.message : "")); }
     finally { setGrpBusy(false); }
   };
 
@@ -133,7 +133,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       setSel({}); setDelAsk(false); setDelWord("");
       await load();
       try { window.dispatchEvent(new CustomEvent("appToast", { detail: `${n}件を消しました` })); } catch(e) {}
-    } catch (e) { alert("削除できませんでした"); }
+    } catch (e) { alert("削除できませんでした：" + (e && e.message ? e.message : "")); }
     finally { setDelBusy(false); }
   };
 
