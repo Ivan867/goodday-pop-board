@@ -24,6 +24,7 @@ function BoardTab({
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
+  const grpSwipe = React.useRef(null); // まとまり画面のスワイプ判定
 
   const [view, setView] = useState(() => {
     try {
@@ -565,6 +566,24 @@ function BoardTab({
   })()))), openGroup && (() => {
     const inGroup = pops.filter(p => p.group_id === openGroup.group_id).sort((a, b) => (a.group_pos || 0) - (b.group_pos || 0));
     return /*#__PURE__*/React.createElement("div", {
+      onTouchStart: e => {
+        const t = e.touches[0];
+        grpSwipe.current = {
+          x: t.clientX,
+          y: t.clientY,
+          t: Date.now()
+        };
+      },
+      onTouchEnd: e => {
+        const st = grpSwipe.current;
+        if (!st) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - st.x,
+          dy = t.clientY - st.y;
+        // 横に大きく、縦は小さく動かしたら「もどる」（右でも左でもよい）
+        if (Math.abs(dx) > 70 && Math.abs(dy) < 60 && Date.now() - st.t < 700) setOpenGroup(null);
+        grpSwipe.current = null;
+      },
       style: {
         position: "fixed",
         inset: 0,
@@ -590,16 +609,30 @@ function BoardTab({
       "aria-label": "もどる",
       style: {
         border: "none",
-        background: "rgba(255,255,255,0.2)",
+        background: "rgba(255,255,255,0.22)",
         color: "#fff",
-        borderRadius: 8,
-        width: 30,
-        height: 30,
-        fontSize: 16,
-        fontWeight: 900,
-        cursor: "pointer"
+        borderRadius: 999,
+        padding: "7px 14px 7px 10px",
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        fontSize: 13.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        flexShrink: 0
       }
-    }, "‹"), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: "15",
+      height: "15",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2.6",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M15 5l-7 7 7 7"
+    })), "もどる"), /*#__PURE__*/React.createElement("span", {
       style: {
         minWidth: 0,
         flex: 1
@@ -619,7 +652,7 @@ function BoardTab({
         fontSize: 10.5,
         opacity: 0.85
       }
-    }, inGroup.length, "枚 ／ ", openGroup.store_name))), /*#__PURE__*/React.createElement("div", {
+    }, inGroup.length, "枚 ／ ", openGroup.store_name, " ／ 横にスワイプでもどる"))), /*#__PURE__*/React.createElement("div", {
       style: {
         maxWidth: 1600,
         margin: "0 auto",

@@ -9,6 +9,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
+  const grpSwipe = React.useRef(null);               // まとまり画面のスワイプ判定
 
   const [view, setView] = useState(() => { try { return localStorage.getItem("popView") || "md"; } catch(e) { return "md"; } });
   const setViewSave = (v) => { setView(v); try { localStorage.setItem("popView", v); } catch(e) {} };
@@ -174,15 +175,29 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         const inGroup = pops.filter(p => p.group_id === openGroup.group_id)
           .sort((a,b) => (a.group_pos||0) - (b.group_pos||0));
         return (
-          <div style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
+          <div
+            onTouchStart={(e) => { const t = e.touches[0]; grpSwipe.current = { x:t.clientX, y:t.clientY, t:Date.now() }; }}
+            onTouchEnd={(e) => {
+              const st = grpSwipe.current; if (!st) return;
+              const t = e.changedTouches[0];
+              const dx = t.clientX - st.x, dy = t.clientY - st.y;
+              // 横に大きく、縦は小さく動かしたら「もどる」（右でも左でもよい）
+              if (Math.abs(dx) > 70 && Math.abs(dy) < 60 && Date.now() - st.t < 700) setOpenGroup(null);
+              grpSwipe.current = null;
+            }}
+            style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
             <div style={{ position:"sticky", top:0, zIndex:2, background:"var(--primary)", color:"#fff", padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
               <button onClick={() => setOpenGroup(null)} aria-label="もどる"
-                style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", borderRadius:8, width:30, height:30, fontSize:16, fontWeight:900, cursor:"pointer" }}>‹</button>
+                style={{ border:"none", background:"rgba(255,255,255,0.22)", color:"#fff", borderRadius:999, padding:"7px 14px 7px 10px",
+                  display:"flex", alignItems:"center", gap:4, fontSize:13.5, fontWeight:800, cursor:"pointer", flexShrink:0 }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                もどる
+              </button>
               <span style={{ minWidth:0, flex:1 }}>
                 <span style={{ display:"block", fontSize:15.5, fontWeight:800, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {openGroup.group_name || openGroup.product_name}
                 </span>
-                <span style={{ display:"block", fontSize:10.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name}</span>
+                <span style={{ display:"block", fontSize:10.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name} ／ 横にスワイプでもどる</span>
               </span>
             </div>
             <div style={{ maxWidth:1600, margin:"0 auto", padding:"12px 14px 120px" }}>
