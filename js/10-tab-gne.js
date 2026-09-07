@@ -2185,7 +2185,84 @@ function GeneratorTab({
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, status))))));
+  }, status), rows.length > 0 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      margin: "4px 0 7px"
+    }
+  }, "読み込んだ商品（押すと上のプレビューに入ります）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 5,
+      maxHeight: 280,
+      overflowY: "auto"
+    }
+  }, rows.map((r, i) => {
+    const on = f.name === r.name && String(f.price) === String(r.price);
+    return /*#__PURE__*/React.createElement("button", {
+      key: i,
+      onClick: () => setF({
+        origin: r.origin || "",
+        origin2: r.origin2 || "",
+        name: r.name || "",
+        count: r.count || "",
+        price: r.price == null ? "" : String(r.price),
+        offRate: r.offRate == null ? "" : String(r.offRate)
+      }),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        textAlign: "left",
+        width: "100%",
+        border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
+        background: on ? "var(--soft)" : "#fff",
+        borderRadius: 9,
+        padding: "8px 10px",
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10,
+        fontWeight: 900,
+        color: "var(--faint)",
+        width: 20,
+        flexShrink: 0
+      }
+    }, i + 1), /*#__PURE__*/React.createElement("span", {
+      style: {
+        minWidth: 0,
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 13,
+        fontWeight: 800,
+        color: "var(--ink)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, String(r.name || "").replace(/\r?\n/g, " ")), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 10,
+        color: "var(--faint)",
+        marginTop: 1
+      }
+    }, [r.origin, r.count].filter(Boolean).join(" ／ "))), r.price != null && r.price !== "" && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        fontWeight: 900,
+        color: on ? "var(--primary)" : "var(--sub)",
+        flexShrink: 0
+      }
+    }, r.price));
+  }))))))));
 }
 
 // ===== 相場タブ：先週比の「相場安」計算＋売価計算（プロトタイプ） =====
