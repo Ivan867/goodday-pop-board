@@ -855,7 +855,43 @@ function PopDetail({
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none",
       transition: "transform .25s ease"
     }
-  }), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: e => {
+      e.stopPropagation();
+      onClose && onClose();
+    },
+    "aria-label": "もどる",
+    style: {
+      position: "absolute",
+      top: 14,
+      left: 14,
+      zIndex: 8,
+      border: "none",
+      cursor: "pointer",
+      background: "rgba(20,25,35,0.55)",
+      color: "#fff",
+      borderRadius: 999,
+      padding: "7px 14px 7px 10px",
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      fontSize: 13,
+      fontWeight: 800,
+      backdropFilter: "blur(4px)",
+      WebkitBackdropFilter: "blur(4px)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.6",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  })), "もどる"), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: 14,

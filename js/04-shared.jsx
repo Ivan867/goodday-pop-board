@@ -364,6 +364,15 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url} style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "64vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "64vh", objectFit:"contain", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none", transition:"transform .25s ease" }} />
 
+          <button onClick={(e) => { e.stopPropagation(); onClose && onClose(); }} aria-label="もどる"
+            style={{ position:"absolute", top:14, left:14, zIndex:8, border:"none", cursor:"pointer",
+              background:"rgba(20,25,35,0.55)", color:"#fff", borderRadius:999, padding:"7px 14px 7px 10px",
+              display:"flex", alignItems:"center", gap:5, fontSize:13, fontWeight:800,
+              backdropFilter:"blur(4px)", WebkitBackdropFilter:"blur(4px)" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+            もどる
+          </button>
+
           {navList && navIdx >= 0 && (
             <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:11, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
           )}
