@@ -16,10 +16,52 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
   // ファイル名から商品名の候補をつくる（拡張子と記号を落とす）
   const guessName = (fn) => String(fn || "").replace(/\.[^.]+$/, "").replace(/[_\-]+/g, " ").trim();
 
-  const addFiles = (list) => {
-    const fs = Array.from(list || []).filter(f => f && /^image\//.test(f.type || ""));
-    if (!fs.length) return;
+  // PDFの1ページ目を画像に変換する
+  const pdfToImage = async (file) => {
+    await loadScriptOnce(PDFJS_SRC);
+    const lib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+    if (!lib) throw new Error("PDFを読み込めませんでした");
+    lib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+    const buf = await file.arrayBuffer();
+    const pdf = await lib.getDocument({ data: buf }).promise;
+    const page = await pdf.getPage(1);
+    // 長辺がおよそ1600pxになるように出す
+    const base = page.getViewport({ scale: 1 });
+    const scale = 1600 / Math.max(base.width, base.height);
+    const vp = page.getViewport({ scale });
+    const c = document.createElement("canvas");
+    c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.9));
+    if (!blob) throw new Error("画像に変換できませんでした");
+    const name = String(file.name || "pdf").replace(/\.pdf$/i, "") + ".jpg";
+    try { return new File([blob], name, { type: "image/jpeg" }); }
+    catch (e) { blob.name = name; return blob; }   // File が作れない環境では Blob をそのまま使う
+  };
+
+  const addFiles = async (list) => {
+    const all = Array.from(list || []);
+    const imgs = all.filter(f => f && /^image\//.test(f.type || ""));
+    const pdfs = all.filter(f => f && (/pdf/i.test(f.type || "") || /\.pdf$/i.test(f.name || "")));
+    if (!imgs.length && !pdfs.length) return;
     setError("");
+    // PDFは1ページ目を画像にしてから足す
+    if (pdfs.length) {
+      setError(pdfs.length > 1 ? `PDFを読み込んでいます…（${pdfs.length}件）` : "PDFを読み込んでいます…");
+      for (const pf of pdfs) {
+        try {
+          const img = await pdfToImage(pf);
+          if (img) imgs.push(img);
+        } catch (e) {
+          setError(`${pf.name} を読み込めませんでした（${e && e.message ? e.message : ""}）`);
+        }
+      }
+      if (imgs.length) setError("");
+    }
+    const fs = imgs;
+    if (!fs.length) return;
     const added = fs.map(f => ({ file:f, preview:URL.createObjectURL(f), name:guessName(f.name), warn:"" }));
     setItems(v => v.concat(added));
     // A4比率のチェックは1枚ずつ後追いで
@@ -40,7 +82,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
       im.src = it.preview;
     });
   };
-  const onFile = e => { addFiles(e.target.files); e.target.value = ""; };
+  const onFile = e => { const fl = Array.from(e.target.files || []); e.target.value = ""; addFiles(fl); };
   const removeAt = (i) => setItems(v => v.filter((_, k) => k !== i));
   const setNameAt = (i, val) => setItems(v => v.map((x, k) => k === i ? { ...x, name: val } : x));
 
@@ -118,9 +160,9 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>画像</div>
             <label {...dzImg.props} style={{ display:"block", position:"relative", overflow:"hidden", border:"2px dashed #e0e0e0", borderRadius:12, padding:"14px", textAlign:"center", cursor:"pointer", background:"#fafafa", ...dzImg.style }}>
               <div style={{ color:"var(--sub)", fontSize:14, fontWeight:700 }}>
-                {dzImg.over ? "ここに離してください" : items.length ? "＋ さらに追加する" : "タップして選択（まとめて選べます）"}
+                {dzImg.over ? "ここに離してください" : items.length ? "＋ さらに追加する" : "タップして選択（PDFもOK・まとめて選べます）"}
               </div>
-              <input type="file" accept="image/*" multiple onChange={onFile}
+              <input type="file" accept="image/*,.pdf,application/pdf" multiple onChange={onFile}
                 style={{ position:"absolute", inset:0, opacity:0, width:"100%", height:"100%", cursor:"pointer" }} />
             </label>
 

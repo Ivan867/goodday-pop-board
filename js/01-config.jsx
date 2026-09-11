@@ -38,6 +38,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-05", type:"新機能", title:"PDFもアップロードできます", body:"ポップの投稿でPDFを選べるようになりました。1ページ目が自動で画像になって登録されます。チラシや業者の資料をそのまま共有できます。画像とまぜて選ぶこともできます。" },
   { date:"2026-09-05", type:"改善", title:"読み込んだ商品の一覧をテンプレ画像の下に移動", body:"Excelで読み込んだ商品の一覧を「テンプレ画像」のブロックの下に置きました。押すとその商品がプレビューに入ります。" },
   { date:"2026-09-05", type:"改善", title:"Excelで読み込んだ商品の一覧を見やすい場所に", body:"テンプレのサムネイルのすぐ下に、読み込んだ商品の一覧が出るようになりました。押すとその商品がプレビューに入ります。Excelを読み込むまでは出ません。" },
   { date:"2026-09-05", type:"改善", title:"まとまりの画面から戻りやすくしました", body:"横にスワイプするだけで一覧にもどれます（左右どちらでも大丈夫です）。上の戻るボタンも「もどる」と文字が入って押しやすくなりました。縦のスクロールでは閉じません。" },
@@ -300,6 +301,8 @@ function normJa(s) {
 }
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 const GNE_FONT_NAME = "Noto Sans JP";
 // ★本番はフル版Blackのwoff2をSupabase Storageに置いてこのURLを差し替え（全漢字カバー＆環境差ゼロ）
 const GNE_FONT_URL = "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-900-normal.woff2";
@@ -325,4 +328,4 @@ function loadScriptOnce(src) {
 
 
 
-;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSZIP_SRC, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
+;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSZIP_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
