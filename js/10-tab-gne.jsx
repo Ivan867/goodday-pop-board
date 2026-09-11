@@ -63,18 +63,6 @@ const GNE_PRESETS = [
       taxLabel: { x:790, y:1600, size:1,   fill:"#141414", stroke:"#141414", sw:0,  align:"center" },
       taxPrice: { x:940, y:1608, size:54,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
     } },
-  { id:"genpin2", name:"現品限り（枠）", land:true, img:"tpl/landscape.jpg", thumb:"tpl/genpin2_thumb.jpg", hideFixed:true, useOff:true,
-    layout:{
-      origin:   { x:96,  y:470,  size:88,  fill:"#ffffff", stroke:"#141414", sw:9,  align:"left",   maxW:1500 },
-      name:     { x:848, y:645,  size:158, fill:"#ffffff", stroke:"#141414", sw:13, align:"center", maxW:1480 },
-      count:    { x:1000,y:800,  size:88,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"center", maxW:520  },
-      price:    { x:1010,y:965,  size:290, fill:"#e31414", stroke:"#ffffff", sw:14, align:"center", maxW:700  },
-      plus:     { x:1554,y:948,  size:1,   fill:"#e31414", stroke:"#e31414", sw:0,  align:"center" },
-      yen:      { x:1420,y:1000, size:112, fill:"#141414", stroke:"#ffffff", sw:6,  align:"center" },
-      taxLabel: { x:1213,y:1130, size:1,   fill:"#141414", stroke:"#141414", sw:0,  align:"center" },
-      taxPrice: { x:1420,y:1130, size:78,  fill:"#e31414", stroke:"#ffffff", sw:5,  align:"center" },
-      offRate:  { x:238, y:1012, size:120, fill:"#f5e400", stroke:"#141414", sw:8,  align:"center" },
-    } },
   { id:"genpin", name:"現品限り（黄）", land:true, img:"tpl/genpin.jpg", thumb:"tpl/genpin_thumb.jpg", hideFixed:true, useOff:true,
     layout:{
       origin:   { x:110, y:430,  size:86,  fill:"#141414", stroke:"#ffffff", sw:7,  align:"left",   maxW:1480 },
