@@ -266,7 +266,7 @@ function App() {
 
       {showToTop && !moreOpen && !radialOpen && !popDetailOpen && (
         <button onClick={() => scrollerTop(true)} aria-label="上へ戻る"
-          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(46px + env(safe-area-inset-bottom))" : "calc(30px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
+          style={{ position:"fixed", left:14, bottom: tab === "board" ? "calc(68px + env(safe-area-inset-bottom))" : "calc(52px + env(safe-area-inset-bottom))", zIndex:190, width:46, height:46, borderRadius:12, border:"none", background:"rgba(0,0,0,0.62)", backdropFilter:"blur(6px)", boxShadow:"0 3px 12px rgba(0,0,0,0.25)", color:"#fff", fontSize:22, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeUp .25s ease" }}>↑</button>
       )}
 
       {toast && (

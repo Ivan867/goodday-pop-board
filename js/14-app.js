@@ -516,7 +516,7 @@ function App() {
     style: {
       position: "fixed",
       left: 14,
-      bottom: tab === "board" ? "calc(46px + env(safe-area-inset-bottom))" : "calc(30px + env(safe-area-inset-bottom))",
+      bottom: tab === "board" ? "calc(68px + env(safe-area-inset-bottom))" : "calc(52px + env(safe-area-inset-bottom))",
       zIndex: 190,
       width: 46,
       height: 46,
