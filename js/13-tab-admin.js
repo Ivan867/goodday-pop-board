@@ -37,6 +37,9 @@ function AdminTab({
   const [delAsk, setDelAsk] = useState(false); // 一括削除の確認中か
   const [delWord, setDelWord] = useState(""); // 確認の入力
   const [delBusy, setDelBusy] = useState(false);
+  const [delPops, setDelPops] = useState([]); // 消された投稿
+  const [trashSel, setTrashSel] = useState({}); // ゴミ箱での選択
+  const [trashBusy, setTrashBusy] = useState(false);
   const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
@@ -83,12 +86,20 @@ function AdminTab({
       setReqLoading(false);
     }
   }, []);
+  const loadTrash = useCallback(async () => {
+    try {
+      setDelPops((await api.listDeleted()) || []);
+    } catch (e) {
+      setDelPops([]);
+    }
+  }, []);
   useEffect(() => {
     if (unlocked) {
       load();
       loadReqs();
+      loadTrash();
     }
-  }, [unlocked, load, loadReqs]);
+  }, [unlocked, load, loadReqs, loadTrash]);
   const tryUnlock = async () => {
     if (gChecking) return;
     setGChecking(true);
@@ -484,7 +495,7 @@ function AdminTab({
       gap: 7,
       marginBottom: 16
     }
-  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("trash", "ゴミ箱", delPops.length || 0), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
@@ -864,7 +875,189 @@ function AdminTab({
         whiteSpace: "nowrap"
       }
     }, g);
-  }))))))), section === "archive" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }))))))), section === "trash" && (() => {
+    const ids = Object.keys(trashSel).filter(k => trashSel[k]);
+    const doRestore = async () => {
+      setTrashBusy(true);
+      try {
+        await api.restorePops(ids);
+        setTrashSel({});
+        await loadTrash();
+        await load();
+        try {
+          window.dispatchEvent(new CustomEvent("appToast", {
+            detail: `${ids.length}件を戻しました`
+          }));
+        } catch (e) {}
+      } catch (e) {
+        alert("戻せませんでした");
+      } finally {
+        setTrashBusy(false);
+      }
+    };
+    const doPurge = async () => {
+      if (!window.confirm(`${ids.length}件を完全に消しますか？\nこの操作は戻せません。`)) return;
+      setTrashBusy(true);
+      try {
+        await api.delMany(ids);
+        setTrashSel({});
+        await loadTrash();
+        try {
+          window.dispatchEvent(new CustomEvent("appToast", {
+            detail: `${ids.length}件を消しました`
+          }));
+        } catch (e) {}
+      } catch (e) {
+        alert("消せませんでした");
+      } finally {
+        setTrashBusy(false);
+      }
+    };
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        lineHeight: 1.8,
+        marginBottom: 14
+      }
+    }, "みんなが消した投稿です。一覧には出ませんが、ここから戻せます。"), delPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        color: "var(--faint)",
+        padding: "44px 20px",
+        fontSize: 13
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 800,
+        color: "var(--sub)"
+      }
+    }, "消された投稿はありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, ids.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "sticky",
+        top: 0,
+        zIndex: 5,
+        background: "var(--bg)",
+        padding: "10px 0",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 800,
+        color: "var(--ink)"
+      }
+    }, ids.length, "件 選択中"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setTrashSel({}),
+      style: {
+        marginLeft: "auto",
+        border: "1px solid var(--line)",
+        background: "#fff",
+        color: "var(--sub)",
+        borderRadius: 9,
+        padding: "9px 12px",
+        fontSize: 13,
+        fontWeight: 700,
+        cursor: "pointer"
+      }
+    }, "解除"), /*#__PURE__*/React.createElement("button", {
+      onClick: doRestore,
+      disabled: trashBusy,
+      style: {
+        border: "none",
+        background: "#3f9e63",
+        color: "#fff",
+        borderRadius: 9,
+        padding: "9px 15px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "もどす"), /*#__PURE__*/React.createElement("button", {
+      onClick: doPurge,
+      disabled: trashBusy,
+      style: {
+        border: "1px solid #f0c8c4",
+        background: "#fff",
+        color: "#b3261e",
+        borderRadius: 9,
+        padding: "9px 13px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "完全に消す")), /*#__PURE__*/React.createElement("div", {
+      className: "pop-grid v-sm"
+    }, delPops.map(pop => {
+      const on = !!trashSel[pop.id];
+      return /*#__PURE__*/React.createElement("button", {
+        key: pop.id,
+        onClick: () => setTrashSel(v => ({
+          ...v,
+          [pop.id]: !v[pop.id]
+        })),
+        style: {
+          position: "relative",
+          border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
+          background: "#fff",
+          borderRadius: 10,
+          overflow: "hidden",
+          cursor: "pointer",
+          padding: 0,
+          textAlign: "left"
+        }
+      }, /*#__PURE__*/React.createElement("img", {
+        src: pop.image_url,
+        alt: "",
+        style: {
+          width: "100%",
+          aspectRatio: "1/1.414",
+          objectFit: "cover",
+          display: "block",
+          background: "var(--bg)",
+          opacity: 0.65
+        }
+      }), /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 11,
+          fontWeight: 800,
+          color: "var(--ink)",
+          padding: "5px 6px 2px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }
+      }, pop.product_name), /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          fontSize: 9.5,
+          color: "var(--faint)",
+          padding: "0 6px 6px"
+        }
+      }, fmtDate(pop.deleted_at), " に削除"), on && /*#__PURE__*/React.createElement("span", {
+        style: {
+          position: "absolute",
+          top: 6,
+          right: 6,
+          background: "var(--primary)",
+          color: "#fff",
+          borderRadius: "50%",
+          width: 22,
+          height: 22,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 13,
+          fontWeight: 900
+        }
+      }, "✓"));
+    }))));
+  })(), section === "archive" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",

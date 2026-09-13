@@ -69,16 +69,22 @@ const api = {
   },
   // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
-    let q = `/rest/v1/pops?select=*&order=created_at.desc`;
+    let q = `/rest/v1/pops?select=*&deleted_at=is.null&order=created_at.desc`;
     if (store) q += `&store_name=eq.${encodeURIComponent(store)}`;
     if (cat)   q += `&category=eq.${encodeURIComponent(cat)}`;
     return sbJson(q);
   },
-  async listAll() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&order=created_at.desc`); },
+  async listAll() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&deleted_at=is.null&order=created_at.desc`); },
   // 公開中のみ（掲示板・検索用）。アーカイブ済みはサーバー側で除外し、件数も上限つき。
-  async listActive() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.false&order=created_at.desc&limit=${POP_LIMIT}`); },
+  async listActive() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.false&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`); },
+  // 管理画面：消された投稿の一覧
+  async listDeleted() { return sbJson(`/rest/v1/pops?select=${POP_COLS},deleted_at&deleted_at=not.is.null&order=deleted_at.desc`); },
+  async restorePops(ids) {
+    if (!ids || !ids.length) return 0;
+    return sbJson(`/rest/v1/rpc/admin_restore_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
+  },
   // アーカイブ済みのみ（アーカイブタブ用）。
-  async listArchived() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.true&order=created_at.desc&limit=${POP_LIMIT}`); },
+  async listArchived() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.true&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`); },
   async insert(data) { return sbOne(`/rest/v1/pops`, { method:"POST", body:data, prefer:"return=representation" }); },
   // POPのジャンルを設定（管理画面の選別用）。genre は文字列 or null（未分類）。
   async setGenre(id, genre) { await sbFetch(`/rest/v1/rpc/admin_set_genre`, { method:"POST", body:{ p_id:id, p_genre:genre, p_password: PW_CACHE.admin || "" } }); },
