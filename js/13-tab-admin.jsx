@@ -33,6 +33,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [delPops, setDelPops] = useState([]);      // 消された投稿
   const [trashSel, setTrashSel] = useState({});    // ゴミ箱での選択
   const [trashBusy, setTrashBusy] = useState(false);
+  const [opLogs, setOpLogs] = useState([]);
   const [grpAsk, setGrpAsk] = useState(false);    // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
@@ -74,7 +75,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const loadTrash = useCallback(async () => {
     try { setDelPops(await api.listDeleted() || []); } catch(e) { setDelPops([]); }
   }, []);
-  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); } }, [unlocked, load, loadReqs, loadTrash]);
+  const loadOpLogs = useCallback(async () => {
+    try { setOpLogs(await api.listOpLogs(200) || []); } catch(e) { setOpLogs([]); }
+  }, []);
+  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs]);
 
   const tryUnlock = async () => {
     if (gChecking) return;
@@ -234,6 +238,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {mainSeg("genre", "ジャンル", genreCount("未分類") || 0)}
         {mainSeg("archive", "アーカイブ")}
         {mainSeg("trash", "ゴミ箱", delPops.length || 0)}
+        {mainSeg("oplog", "操作の記録")}
         {mainSeg("notice", "お知らせ")}
         {mainSeg("pinned", "ピン留め")}
         {mainSeg("memo", "制作メモ")}
@@ -387,6 +392,40 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           )}
         </div>
       )}
+
+      {section === "oplog" && (() => {
+        const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた" };
+        const COLOR = { delete:"#c2691a", rename:"#2f6fb0", restore:"#3f9e63", purge:"#b3261e", group:"#6b4ea0" };
+        return (
+          <div>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>
+              消したり名前を直したりした記録です。新しい順に200件まで見られます。
+            </div>
+            {opLogs.length === 0 ? (
+              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13 }}>
+                <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>まだ記録がありません</div>
+              </div>
+            ) : (
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                {opLogs.map(lg => (
+                  <div key={lg.id} style={{ display:"flex", alignItems:"flex-start", gap:9, background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"9px 11px" }}>
+                    <span style={{ fontSize:10, fontWeight:900, color:"#fff", background: COLOR[lg.action] || "#889",
+                      borderRadius:6, padding:"3px 7px", flexShrink:0, whiteSpace:"nowrap" }}>{LABEL[lg.action] || lg.action}</span>
+                    <span style={{ minWidth:0, flex:1 }}>
+                      <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                        {lg.target_name || "（名前なし）"}
+                      </span>
+                      {lg.detail && <span style={{ display:"block", fontSize:10.5, color:"var(--sub)", marginTop:2 }}>{lg.detail}</span>}
+                      <span style={{ display:"block", fontSize:10, color:"var(--faint)", marginTop:2 }}>
+                        {fmtDate(lg.created_at)}{lg.store_name ? ` ／ ${lg.store_name}` : ""}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+      );})()}
 
       {section === "trash" && (() => {
         const ids = Object.keys(trashSel).filter(k => trashSel[k]);

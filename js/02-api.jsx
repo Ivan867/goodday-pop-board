@@ -78,6 +78,12 @@ const api = {
   // 公開中のみ（掲示板・検索用）。アーカイブ済みはサーバー側で除外し、件数も上限つき。
   async listActive() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.false&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`); },
   // 管理画面：消された投稿の一覧
+  async listOpLogs(limit) {
+    return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit||200}`);
+  },
+  async listOpLogs(limit) {
+    return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit || 200}`);
+  },
   async listDeleted() { return sbJson(`/rest/v1/pops?select=${POP_COLS},deleted_at&deleted_at=not.is.null&order=deleted_at.desc`); },
   async restorePops(ids) {
     if (!ids || !ids.length) return 0;
