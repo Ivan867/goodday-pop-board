@@ -1889,19 +1889,20 @@ function PopCard({
     },
     style: {
       width: "100%",
+      aspectRatio: "1 / 1.414",
+      objectFit: "cover",
+      objectPosition: "top center",
       display: "block",
+      background: "#f0f2f5",
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: 120,
-      color: "var(--faint)",
-      fontSize: 13
+      width: "100%",
+      aspectRatio: "1 / 1.414",
+      background: "#f0f2f5"
     }
-  }, "\u3000"), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: 6,

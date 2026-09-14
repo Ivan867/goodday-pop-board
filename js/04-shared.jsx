@@ -668,8 +668,8 @@ function PopCard({ pop, index, onClick, hasComment }) {
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
       <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
-          : <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:120, color:"var(--faint)", fontSize:13 }}>　</div>}
+          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", aspectRatio:"1 / 1.414", objectFit:"cover", objectPosition:"top center", display:"block", background:"#f0f2f5", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
+          : <div style={{ width:"100%", aspectRatio:"1 / 1.414", background:"#f0f2f5" }} />}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
           {pop.__group && (
             <div style={{ display:"flex", alignItems:"center", gap:4,

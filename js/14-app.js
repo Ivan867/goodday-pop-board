@@ -596,14 +596,14 @@ function App() {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-around",
-      gap: 4,
+      gap: 2,
       width: "100%",
       maxWidth: 1600,
-      background: "var(--primary-soft)",
+      background: "var(--primary)",
       border: "none",
-      borderRadius: 18,
-      boxShadow: "0 2px 12px rgba(74,122,176,0.35)",
-      padding: "12px 10px",
+      borderRadius: "20px 20px 0 0",
+      boxShadow: "0 -2px 16px rgba(20,40,70,0.18)",
+      padding: "8px 8px 10px",
       pointerEvents: "auto"
     }
   }, [tabs[0], {
@@ -756,14 +756,15 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "12px 17px",
+        padding: "7px 14px 6px",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 26,
+        gap: 3,
+        borderRadius: 18,
         background: active ? "#fff" : "transparent",
-        color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.92)",
+        color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.94)",
         transition: "background .2s"
       }
     }, /*#__PURE__*/React.createElement("span", {
@@ -772,7 +773,15 @@ function App() {
         lineHeight: 1,
         opacity: active ? 1 : 0.95
       }
-    }, moreOpen && more ? NAV_SVG.close : navIcon), showBadge && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10.5,
+        fontWeight: 800,
+        letterSpacing: "0.01em",
+        lineHeight: 1,
+        whiteSpace: "nowrap"
+      }
+    }, navLabel), showBadge && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
       style: {
         position: "absolute",
         top: 6,
