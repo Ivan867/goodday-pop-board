@@ -687,9 +687,9 @@ function PopDetail({
     setDeleting(true);
     setPwError("");
     try {
-      const ok = await api.verifyPassword("delete", pwInput);
-      if (!ok) {
-        setPwError("パスワードが違います");
+      const r = await api.verifyPasswordEx("delete", pwInput);
+      if (!r.ok) {
+        setPwError(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `番号が違います（あと${r.left}回）` : "番号が違います");
         setPwInput("");
         setDeleting(false);
         return;
@@ -723,9 +723,9 @@ function PopDetail({
     setRnBusy(true);
     setRnErr("");
     try {
-      const ok = await api.verifyPassword("delete", rnPw);
-      if (!ok) {
-        setRnErr("番号が違います");
+      const r = await api.verifyPasswordEx("delete", rnPw);
+      if (!r.ok) {
+        setRnErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `番号が違います（あと${r.left}回）` : "番号が違います");
         setRnPw("");
         setRnBusy(false);
         return;

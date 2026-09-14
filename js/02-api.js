@@ -404,15 +404,46 @@ const api = {
   },
   // ── rpc：パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない） ──
   async verifyPassword(purpose, password) {
-    const v = await sbJson(`/rest/v1/rpc/verify_password`, {
-      method: "POST",
-      body: {
-        p_purpose: purpose,
-        p_password: password
-      }
-    });
-    if (v === true) PW_CACHE[purpose] = password;
-    return v === true;
+    const r = await this.verifyPasswordEx(purpose, password);
+    return r.ok;
+  },
+  // 回数制限つきの照合：{ ok, locked, seconds, left } を返す
+  async verifyPasswordEx(purpose, password) {
+    try {
+      const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
+        method: "POST",
+        body: {
+          p_kind: purpose,
+          p_password: password
+        }
+      });
+      if (v && v.ok) PW_CACHE[purpose] = password;
+      return v || {
+        ok: false,
+        locked: false
+      };
+    } catch (e) {
+      // 何かあっても従来のやり方で通す
+      const v = await sbJson(`/rest/v1/rpc/verify_password`, {
+        method: "POST",
+        body: {
+          p_purpose: purpose,
+          p_password: password
+        }
+      });
+      if (v === true) PW_CACHE[purpose] = password;
+      return {
+        ok: v === true,
+        locked: false
+      };
+    }
+  },
+  // 待ち時間を読みやすい文字にする
+  lockText(sec) {
+    if (!sec) return "";
+    if (sec < 60) return `${sec}秒`;
+    const m = Math.ceil(sec / 60);
+    return m < 60 ? `${m}分` : `${Math.ceil(m / 60)}時間`;
   },
   // ── tray_presets：包材・トレーのカテゴリ（プリセット） ──
   async listTrayPresets() {

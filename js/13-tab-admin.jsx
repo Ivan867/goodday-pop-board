@@ -80,9 +80,13 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     if (gChecking) return;
     setGChecking(true); setGErr("");
     try {
-      const ok = await api.verifyPassword("admin", gpw);
-      if (ok) { setUnlocked(true); setGErr(""); }
-      else { setGErr("パスワードが違います"); }
+      const r = await api.verifyPasswordEx("admin", gpw);
+      if (r.ok) { setUnlocked(true); setGErr(""); }
+      else {
+        setGErr(r.locked
+          ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください`
+          : (r.left > 0 ? `パスワードが違います（あと${r.left}回）` : "パスワードが違います"));
+      }
     } catch (e) {
       setGErr("通信に失敗しました。電波を確認してください");
     } finally {
