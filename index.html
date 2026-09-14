@@ -43,7 +43,8 @@
   --soft-text: #1d5a94;
 }
 /* いまどきの見た目：角は大きめに丸く、影はごく薄く */
-.ucard, .wcard { border-radius: 16px; }
+.wcard { border-radius: 16px; }
+.ucard { border-radius: 2px; }   /* ポップは紙のまま見せる */
 button { border-radius: 12px; }
 /* 押したときの反応をはっきりさせる（触った実感） */
 button:active, .ucard:active { transform: scale(.97); }
@@ -251,21 +252,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260906j"></script>
-<script src="js/02-api.js?v=20260906j"></script>
-<script src="js/03-utils.js?v=20260906j"></script>
-<script src="js/04-shared.js?v=20260906j"></script>
-<script src="js/05-tab-board.js?v=20260906j"></script>
-<script src="js/06-tab-create.js?v=20260906j"></script>
-<script src="js/07-tab-floor.js?v=20260906j"></script>
-<script src="js/09-tab-info.js?v=20260906j"></script>
-<script src="js/11-tab-check-fish.js?v=20260906j"></script>
-<script src="js/12-tab-learn.js?v=20260906j"></script>
-<script src="js/14-app.js?v=20260906j"></script>
+<script src="js/01-config.js?v=20260906k"></script>
+<script src="js/02-api.js?v=20260906k"></script>
+<script src="js/03-utils.js?v=20260906k"></script>
+<script src="js/04-shared.js?v=20260906k"></script>
+<script src="js/05-tab-board.js?v=20260906k"></script>
+<script src="js/06-tab-create.js?v=20260906k"></script>
+<script src="js/07-tab-floor.js?v=20260906k"></script>
+<script src="js/09-tab-info.js?v=20260906k"></script>
+<script src="js/11-tab-check-fish.js?v=20260906k"></script>
+<script src="js/12-tab-learn.js?v=20260906k"></script>
+<script src="js/14-app.js?v=20260906k"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260906j";
+window.APP_VER = "20260906k";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

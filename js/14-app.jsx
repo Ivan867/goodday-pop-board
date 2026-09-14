@@ -279,7 +279,7 @@ function App() {
       )}
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, display:"flex", justifyContent:"center", padding:0, pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:2, width:"100%", maxWidth:1600, background:"var(--primary)", border:"none", borderRadius:"20px 20px 0 0", boxShadow:"0 -2px 16px rgba(20,40,70,0.18)", padding:"8px 8px calc(10px + env(safe-area-inset-bottom, 0px))", pointerEvents:"auto" }}>
+       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:2, width:"100%", maxWidth:1600, background:"var(--primary)", border:"none", borderRadius:"34px 34px 0 0", boxShadow:"0 -2px 16px rgba(20,40,70,0.18)", padding:"10px 8px calc(48px + env(safe-area-inset-bottom, 0px))", pointerEvents:"auto" }}>
         {[tabs[0], { key:"bundle", icon:"📅", label:"カレンダー", color:"#3f7cb0" }, { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }

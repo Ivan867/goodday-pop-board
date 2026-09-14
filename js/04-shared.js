@@ -1856,7 +1856,7 @@ function PopCard({
   return /*#__PURE__*/React.createElement("div", {
     className: "ucard",
     style: {
-      borderRadius: 14,
+      borderRadius: 2,
       overflow: "hidden",
       background: "white",
       cursor: "pointer",
@@ -1890,17 +1890,16 @@ function PopCard({
     style: {
       width: "100%",
       aspectRatio: "1 / 1.414",
-      objectFit: "cover",
-      objectPosition: "top center",
+      objectFit: "contain",
       display: "block",
-      background: "#f0f2f5",
+      background: "#fff",
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       aspectRatio: "1 / 1.414",
-      background: "#f0f2f5"
+      background: "#fff"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
