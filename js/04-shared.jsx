@@ -219,7 +219,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     touchY.current = null;
     if (Math.abs(dy) < 55) return;
     if (dy < 0) { goNext(); }
-    else { onClose && onClose(); }   // 上スワイプ＝次のポップ / 下スワイプ＝閉じて一覧へ
+    else { if (zoom <= 1) onClose && onClose(); }   // 上スワイプ＝次のポップ / 下スワイプ＝閉じて一覧へ（拡大中は閉じない）
   };
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(pop.likes||0);
@@ -346,6 +346,42 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     }
   };
 
+  // ── 画像を指で広げて拡大する ──
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x:0, y:0 });
+  const pinch = React.useRef(null);
+  const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  const onPinchStart = (e) => {
+    if (e.touches.length === 2) {
+      e.stopPropagation();
+      pinch.current = { d: dist(e.touches), z: zoom,
+        cx:(e.touches[0].clientX+e.touches[1].clientX)/2,
+        cy:(e.touches[0].clientY+e.touches[1].clientY)/2, px:pan.x, py:pan.y };
+    } else if (e.touches.length === 1 && zoom > 1) {
+      e.stopPropagation();
+      pinch.current = { one:true, x:e.touches[0].clientX, y:e.touches[0].clientY, px:pan.x, py:pan.y };
+    }
+  };
+  const onPinchMove = (e) => {
+    const st = pinch.current; if (!st) return;
+    if (e.touches.length === 2 && !st.one) {
+      e.preventDefault(); e.stopPropagation();
+      const z = Math.min(4, Math.max(1, st.z * (dist(e.touches) / st.d)));
+      setZoom(z);
+      if (z === 1) setPan({ x:0, y:0 });
+    } else if (e.touches.length === 1 && st.one) {
+      e.preventDefault(); e.stopPropagation();
+      setPan({ x: st.px + (e.touches[0].clientX - st.x), y: st.py + (e.touches[0].clientY - st.y) });
+    }
+  };
+  const onPinchEnd = (e) => {
+    pinch.current = null;
+    if (zoom <= 1.02) { setZoom(1); setPan({ x:0, y:0 }); }
+  };
+  const resetZoom = () => { setZoom(1); setPan({ x:0, y:0 }); };
+  // 別のポップに移ったら戻す
+  useEffect(() => { resetZoom(); }, [pop.id]);
+
   // ── 商品名を直す（削除と同じ番号で）──
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState("");
@@ -432,7 +468,13 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         {/* 画像エリア（ショート風・シート内で大きく） */}
         <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
-          <img src={pop.image_url} style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "64vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "64vh", objectFit:"contain", display:"block", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none", transition:"transform .25s ease" }} />
+          <img src={pop.image_url}
+            onTouchStart={onPinchStart} onTouchMove={onPinchMove} onTouchEnd={onPinchEnd}
+            onDoubleClick={() => zoom > 1 ? resetZoom() : setZoom(2)}
+            style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "64vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "64vh", objectFit:"contain", display:"block",
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` + (pop.rotation ? ` rotate(${pop.rotation}deg)` : ""),
+              transition: pinch.current ? "none" : "transform .25s ease",
+              touchAction:"none", willChange:"transform" }} />
 
           <button onClick={(e) => { e.stopPropagation(); onClose && onClose(); }} aria-label="もどる"
             style={{ position:"absolute", top:14, left:14, zIndex:8, border:"none", cursor:"pointer",
