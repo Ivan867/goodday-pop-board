@@ -584,11 +584,11 @@ function App() {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: "env(safe-area-inset-bottom, 0px)",
+      bottom: 0,
       zIndex: 205,
       display: "flex",
       justifyContent: "center",
-      padding: "0 6px",
+      padding: 0,
       pointerEvents: "none"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -603,7 +603,7 @@ function App() {
       border: "none",
       borderRadius: "20px 20px 0 0",
       boxShadow: "0 -2px 16px rgba(20,40,70,0.18)",
-      padding: "8px 8px 10px",
+      padding: "8px 8px calc(10px + env(safe-area-inset-bottom, 0px))",
       pointerEvents: "auto"
     }
   }, [tabs[0], {
