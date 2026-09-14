@@ -180,6 +180,18 @@ const api = {
       }
     });
   },
+  async renamePop(id, name) {
+    const r = await sbFetch(`/rest/v1/rpc/rename_pop_secure`, {
+      method: "POST",
+      body: {
+        p_id: id,
+        p_name: name,
+        p_password: PW_CACHE.delete || ""
+      }
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   async del(id) {
     await sbFetch(`/rest/v1/rpc/delete_pop_secure`, {
       method: "POST",

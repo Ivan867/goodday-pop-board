@@ -344,6 +344,27 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     }
   };
 
+  // ── 商品名を直す（削除と同じ番号で）──
+  const [renaming, setRenaming] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [rnPw, setRnPw] = useState("");
+  const [rnErr, setRnErr] = useState("");
+  const [rnBusy, setRnBusy] = useState(false);
+  const openRename = () => { setNewName(pop.product_name || ""); setRnPw(""); setRnErr(""); setRenaming(true); };
+  const doRename = async () => {
+    if (!newName.trim()) { setRnErr("商品名を入れてください"); return; }
+    setRnBusy(true); setRnErr("");
+    try {
+      const ok = await api.verifyPassword("delete", rnPw);
+      if (!ok) { setRnErr("番号が違います"); setRnPw(""); setRnBusy(false); return; }
+      await api.renamePop(pop.id, newName.trim());
+      pop.product_name = newName.trim();
+      setRenaming(false);
+      try { window.dispatchEvent(new CustomEvent("appToast", { detail:"名前を直しました" })); } catch(e) {}
+    } catch(e) { setRnErr("直せませんでした"); }
+    finally { setRnBusy(false); }
+  };
+
   const handleAddComment = async () => {
     if (!cText.trim()) { setCError("コメントを入力してください"); return; }
     setCSubmitting(true); setCError("");
@@ -435,7 +456,11 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
           {/* 左下 情報オーバーレイ */}
           <div style={{ position:"absolute", left:0, right:64, bottom:0, padding:"36px 14px 14px 68px", background:"linear-gradient(to top, rgba(0,0,0,0.72), transparent)", zIndex:4 }}>
-            <div style={{ fontSize:18, fontWeight:900, color:"#fff", textShadow:"0 1px 4px rgba(0,0,0,0.6)", lineHeight:1.3 }}>{pop.product_name}</div>
+            <button onClick={openRename} aria-label="商品名を直す"
+              style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, textAlign:"left" }}>
+              <span style={{ fontSize:18, fontWeight:900, color:"#fff", textShadow:"0 1px 4px rgba(0,0,0,0.6)", lineHeight:1.3 }}>{pop.product_name}</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.75, flexShrink:0 }}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+            </button>
             <div style={{ fontSize:12, color:"rgba(255,255,255,0.9)", marginTop:3, textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>🏪 {pop.store_name}　·　{pop.category}{pop.author ? `　·　${pop.author}` : ""}</div>
             {pop.comment && <div style={{ fontSize:12, color:"rgba(255,255,255,0.92)", marginTop:6, lineHeight:1.6, textShadow:"0 1px 3px rgba(0,0,0,0.6)", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{pop.comment}</div>}
           </div>
@@ -459,7 +484,32 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               </div>
             </div>
           )}
-          {showPrint && (
+          {renaming && (
+        <div onClick={(e) => { e.stopPropagation(); if (!rnBusy) setRenaming(false); }}
+          style={{ position:"fixed", inset:0, zIndex:1400, background:"rgba(15,25,38,0.62)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:400, padding:"22px 20px" }}>
+            <div style={{ fontSize:16.5, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>商品名を直す</div>
+            <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="商品名"
+              style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
+            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>番号（削除と同じ）</div>
+            <input type="password" inputMode="numeric" value={rnPw} onChange={e => { setRnPw(e.target.value); setRnErr(""); }}
+              onKeyDown={e => { if (e.key === "Enter") doRename(); }}
+              style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom: rnErr ? 8 : 16 }} />
+            {rnErr && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:800, marginBottom:12 }}>{rnErr}</div>}
+            <div style={{ display:"flex", gap:9 }}>
+              <button onClick={() => setRenaming(false)} disabled={rnBusy}
+                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
+              <button onClick={doRename} disabled={rnBusy || !newName.trim()}
+                style={{ flex:1, border:"none", background: (rnBusy || !newName.trim()) ? "#ccc" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                {rnBusy ? "直しています…" : "直す"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPrint && (
         <div onClick={() => setShowPrint(false)}
           style={{ position:"fixed", inset:0, zIndex:1200, background:"rgba(15,25,38,0.55)", display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
           <div onClick={e => e.stopPropagation()}

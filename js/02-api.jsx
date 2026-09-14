@@ -100,6 +100,11 @@ const api = {
     if (!ids || !ids.length) return 0;
     return sbJson(`/rest/v1/rpc/admin_delete_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
   },
+  async renamePop(id, name) {
+    const r = await sbFetch(`/rest/v1/rpc/rename_pop_secure`, { method:"POST", body:{ p_id:id, p_name:name, p_password: PW_CACHE.delete || "" } });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
   async del(id) { await sbFetch(`/rest/v1/rpc/delete_pop_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
   async like(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_likes`, { method:"POST", body:{ p_id:id } }); },
   async markUsed(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_used`, { method:"POST", body:{ p_id:id } }); },
