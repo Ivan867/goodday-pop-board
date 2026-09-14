@@ -224,7 +224,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           display:"flex", flexDirection:"column", alignItems:"center", gap:5, lineHeight:1.3 }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{SEG_ICON[v]}</svg>
         <span style={{ whiteSpace:"nowrap" }}>{label}</span>
-        {badge ? <span style={{ position:"absolute", top:5, right:6, background:"#e0555f", color:"#fff", fontSize:9.5, fontWeight:900, borderRadius:999, minWidth:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 4px" }}>{badge}</span> : null}
+        {badge ? <span style={{ position:"absolute", top:5, right:6, background:"#e0555f", color:"#fff", fontSize:11.5, fontWeight:900, borderRadius:999, minWidth:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 4px" }}>{badge}</span> : null}
       </button>
     );
   };
@@ -282,16 +282,16 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               return (
                 <div key={r.id} style={{ background: done ? "#f6faf7" : "#fff", borderRadius:14, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
-                    {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:10, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
+                    {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:11.5, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
                     {done && (
-                      <span style={{ display:"flex", alignItems:"center", gap:3, background:"#3f9e63", color:"#fff", fontSize:10.5, fontWeight:900, padding:"3px 9px", borderRadius:7 }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:3, background:"#3f9e63", color:"#fff", fontSize:11.5, fontWeight:900, padding:"3px 9px", borderRadius:7 }}>
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
                         対応済み
                       </span>
                     )}
-                    {r.kind && r.kind !== "POP作成依頼" && <span style={{ fontSize:10, fontWeight:800, color:"#2f6fb0", background:"#eaf2fb", borderRadius:6, padding:"2px 7px", marginRight:6, flexShrink:0 }}>{r.kind}</span>}
+                    {r.kind && r.kind !== "POP作成依頼" && <span style={{ fontSize:11.5, fontWeight:800, color:"#2f6fb0", background:"#eaf2fb", borderRadius:6, padding:"2px 7px", marginRight:6, flexShrink:0 }}>{r.kind}</span>}
                     <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>{r.product_name}</span>
-                    <span style={{ marginLeft:"auto", fontSize:11, color:"var(--faint)", whiteSpace:"nowrap" }}>{fmtDate(r.created_at)} 受付</span>
+                    <span style={{ marginLeft:"auto", fontSize:12, color:"var(--faint)", whiteSpace:"nowrap" }}>{fmtDate(r.created_at)} 受付</span>
                   </div>
                   <div style={{ fontSize:12, color:"var(--sub)", marginBottom: r.reason ? 8 : 10 }}>{r.store_name}</div>
                   {r.reason && <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.5, background:"var(--bg)", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
@@ -302,10 +302,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                           style={{ display:"flex", alignItems:"center", gap:7, textDecoration:"none", border:"1px solid var(--line)", borderRadius:8, padding:"5px 9px 5px 5px", background:"#fff" }}>
                           {(f.type || "").startsWith("image/")
                             ? <img src={f.url} alt="" style={{ width:30, height:30, objectFit:"cover", borderRadius:5, background:"var(--bg)" }} />
-                            : <span style={{ width:30, height:30, borderRadius:5, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:8, fontWeight:900, color:"var(--sub)" }}>
+                            : <span style={{ width:30, height:30, borderRadius:5, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11.5, fontWeight:900, color:"var(--sub)" }}>
                                 {(String(f.name).split(".").pop() || "").slice(0,4).toUpperCase()}
                               </span>}
-                          <span style={{ fontSize:11, fontWeight:700, color:"var(--primary)", maxWidth:130, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
+                          <span style={{ fontSize:12, fontWeight:700, color:"var(--primary)", maxWidth:130, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
                         </a>
                       ))}
                     </div>
@@ -314,7 +314,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   {done && r.reply && (
                     <div style={{ fontSize:12.5, color:"#2c6b45", lineHeight:1.6, background:"#eaf6ee", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>
                       <span style={{ fontWeight:900 }}>返答：</span>{r.reply}
-                      {r.replied_at && <span style={{ marginLeft:8, fontSize:10.5, color:"#6a9a7c" }}>（{fmtDate(r.replied_at)}）</span>}
+                      {r.replied_at && <span style={{ marginLeft:8, fontSize:11.5, color:"#6a9a7c" }}>（{fmtDate(r.replied_at)}）</span>}
                     </div>
                   )}
 
@@ -409,14 +409,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
                 {opLogs.map(lg => (
                   <div key={lg.id} style={{ display:"flex", alignItems:"flex-start", gap:9, background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"9px 11px" }}>
-                    <span style={{ fontSize:10, fontWeight:900, color:"#fff", background: COLOR[lg.action] || "#889",
+                    <span style={{ fontSize:11.5, fontWeight:900, color:"#fff", background: COLOR[lg.action] || "#889",
                       borderRadius:6, padding:"3px 7px", flexShrink:0, whiteSpace:"nowrap" }}>{LABEL[lg.action] || lg.action}</span>
                     <span style={{ minWidth:0, flex:1 }}>
                       <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                         {lg.target_name || "（名前なし）"}
                       </span>
-                      {lg.detail && <span style={{ display:"block", fontSize:10.5, color:"var(--sub)", marginTop:2 }}>{lg.detail}</span>}
-                      <span style={{ display:"block", fontSize:10, color:"var(--faint)", marginTop:2 }}>
+                      {lg.detail && <span style={{ display:"block", fontSize:11.5, color:"var(--sub)", marginTop:2 }}>{lg.detail}</span>}
+                      <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", marginTop:2 }}>
                         {fmtDate(lg.created_at)}{lg.store_name ? ` ／ ${lg.store_name}` : ""}
                       </span>
                     </span>
@@ -472,8 +472,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                         style={{ position:"relative", border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
                           background:"#fff", borderRadius:10, overflow:"hidden", cursor:"pointer", padding:0, textAlign:"left" }}>
                         <img src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"cover", display:"block", background:"var(--bg)", opacity:0.65 }} />
-                        <span style={{ display:"block", fontSize:11, fontWeight:800, color:"var(--ink)", padding:"5px 6px 2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{pop.product_name}</span>
-                        <span style={{ display:"block", fontSize:9.5, color:"var(--faint)", padding:"0 6px 6px" }}>{fmtDate(pop.deleted_at)} に削除</span>
+                        <span style={{ display:"block", fontSize:12, fontWeight:800, color:"var(--ink)", padding:"5px 6px 2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{pop.product_name}</span>
+                        <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", padding:"0 6px 6px" }}>{fmtDate(pop.deleted_at)} に削除</span>
                         {on && <span style={{ position:"absolute", top:6, right:6, background:"var(--primary)", color:"#fff", borderRadius:"50%", width:22, height:22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:900 }}>✓</span>}
                       </button>
                     );
@@ -509,7 +509,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                     {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--primary)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
                     <div style={{ padding:"6px 8px" }}>
                       <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
-                      <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
+                      <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
                     </div>
                   </button>
                 );
@@ -546,7 +546,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>
               一覧には、この名前で1件だけ出るようになります。押すと中の全部が見られます。
             </div>
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>まとまりの名前</div>
+            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>まとまりの名前</div>
             <input value={grpName} onChange={e => setGrpName(e.target.value)} placeholder="例：9月8日の月曜販促"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:14 }} />
             <div style={{ display:"flex", gap:9, marginBottom:10 }}>
@@ -576,7 +576,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               <b>一度消すと元に戻せません。</b><br/>
               残しておきたいだけなら「アーカイブする」をお使いください。
             </div>
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>確認のため「削除」と入力してください</div>
+            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>確認のため「削除」と入力してください</div>
             <input value={delWord} onChange={e => setDelWord(e.target.value)} placeholder="削除"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:16 }} />
             <div style={{ display:"flex", gap:9 }}>
@@ -699,7 +699,7 @@ function ArchiveTab({ onCreateFromPop }) {
                 <img src={pop.image_url} loading="lazy" onClick={() => setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"var(--chip)", display:"block" }} />
                 <button onClick={(e) => openResForm(pop, e)} title="資料に登録"
-                  style={{ position:"absolute", right:5, bottom:5, border:"none", background:"rgba(29,58,87,0.86)", color:"#fff", borderRadius:999, padding:"4px 9px", fontSize:10, fontWeight:900, cursor:"pointer" }}>
+                  style={{ position:"absolute", right:5, bottom:5, border:"none", background:"rgba(29,58,87,0.86)", color:"#fff", borderRadius:999, padding:"4px 9px", fontSize:11.5, fontWeight:900, cursor:"pointer" }}>
                   資料へ
                 </button>
               </div>
@@ -714,7 +714,7 @@ function ArchiveTab({ onCreateFromPop }) {
           <div onClick={e => e.stopPropagation()}
             style={{ background:"#fff", borderRadius:16, padding:18, width:"100%", maxWidth:340, maxHeight:"86vh", overflowY:"auto" }}>
             <div style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>資料に登録</div>
-            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。</div>
+            <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。</div>
             <img src={resTarget.image_url} style={{ width:"100%", borderRadius:10, marginBottom:12, background:"var(--chip)" }} />
             <input value={resTitle} onChange={e => setResTitle(e.target.value)} placeholder="タイトル"
               style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:9, fontSize:13.5, outline:"none", marginBottom:8 }} />
@@ -856,7 +856,7 @@ function RequestTab() {
               <span style={{ fontSize:13, fontWeight:800, color:"var(--sub)" }}>
                 {upBusy ? "送っています…" : "＋ ファイルを添付する"}
               </span>
-              <span style={{ display:"block", fontSize:10.5, color:"var(--faint)", marginTop:3 }}>
+              <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", marginTop:3 }}>
                 写真・Excel・PDF・Word・テキストなど（1つ{MAX_MB}MBまで）
               </span>
               <input type="file" multiple disabled={upBusy}
@@ -871,12 +871,12 @@ function RequestTab() {
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:9, border:"1px solid var(--line)", borderRadius:9, padding:"7px 9px", background:"#fff" }}>
                     {isImg(f)
                       ? <img src={f.url} alt="" style={{ width:38, height:38, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--bg)" }} />
-                      : <span style={{ width:38, height:38, borderRadius:6, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:900, color:"var(--sub)" }}>
+                      : <span style={{ width:38, height:38, borderRadius:6, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11.5, fontWeight:900, color:"var(--sub)" }}>
                           {(f.name.split(".").pop() || "").slice(0,4).toUpperCase()}
                         </span>}
                     <span style={{ minWidth:0, flex:1 }}>
                       <span style={{ display:"block", fontSize:12, fontWeight:700, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
-                      <span style={{ display:"block", fontSize:10, color:"var(--faint)" }}>{fileKB(f.size)}</span>
+                      <span style={{ display:"block", fontSize:11.5, color:"var(--faint)" }}>{fileKB(f.size)}</span>
                     </span>
                     <button onClick={() => setFiles(v => v.filter((_, k) => k !== i))} aria-label={`${f.name}を外す`}
                       style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:16, fontWeight:900, cursor:"pointer", padding:"0 3px", flexShrink:0 }}>×</button>
@@ -979,7 +979,7 @@ function NoticeAdmin({ onNoticeChange }) {
           </button>
         </div>
         <div style={{ fontSize:12, color: tipEnabled?"#2f6fed":"#999", fontWeight:700, marginBottom:6 }}>{tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"}</div>
-        <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。</div>
+        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。</div>
 
         <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>案内文</div>
         <textarea value={tipMessage} onChange={e => setTipMessage(e.target.value)} rows={2}
@@ -1001,7 +1001,7 @@ function NoticeAdmin({ onNoticeChange }) {
           </button>
         </div>
         <div style={{ fontSize:12, color: featEnabled?"#2f6fb0":"#999", fontWeight:700, marginBottom:6 }}>{featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"}</div>
-        <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。</div>
+        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。</div>
 
         <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
         <textarea value={featMessage} onChange={e => setFeatMessage(e.target.value)} rows={2}
@@ -1019,10 +1019,10 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px" }}>
           <span style={{ fontSize:20 }}>🎉</span>
           <div style={{ minWidth:0, flex:1 }}>
-            <div style={{ fontSize:10.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
+            <div style={{ fontSize:11.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
             <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{featMessage.trim() || "（ここにお知らせ文が表示されます）"}</div>
           </div>
-          {featTab && <span style={{ fontSize:11, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
+          {featTab && <span style={{ fontSize:12, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
         </div>
       </div>
 
@@ -1046,14 +1046,14 @@ function NoticeAdmin({ onNoticeChange }) {
                 </span>
                 <span style={{ fontSize:17, width:24, textAlign:"center", flexShrink:0, opacity: on ? 1 : 0.4 }}>{t.icon}</span>
                 <span style={{ fontSize:13.5, fontWeight:800, color: on ? "var(--ink)" : "var(--faint)", flex:1 }}>{t.label}</span>
-                <span style={{ fontSize:10.5, color:"var(--faint)", flexShrink:0 }}>{t.section}</span>
+                <span style={{ fontSize:11.5, color:"var(--faint)", flexShrink:0 }}>{t.section}</span>
               </button>
             );
           })}
         </div>
 
         <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>④ 下のボタンに赤い印をつける</div>
-        <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
+        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
 
         <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>どのボタンに付けるか</div>
         <select value={badgeTab} onChange={e => setBadgeTab(e.target.value)}
@@ -1084,7 +1084,7 @@ function NoticeAdmin({ onNoticeChange }) {
             <span style={{ fontSize:13, fontWeight:800 }}>カタログ</span>
             <span style={{ position:"absolute", top:2, right:10, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px #fff" }} />
             {badgeText.trim() && (
-              <span style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:11, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap" }}>{badgeText.trim()}</span>
+              <span style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:12, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap" }}>{badgeText.trim()}</span>
             )}
           </div>
         </div>
@@ -1158,7 +1158,7 @@ function RotateAdmin() {
                   <img src={pop.image_url} loading="lazy"
                     style={{ maxWidth: side ? "100%" : "100%", maxHeight:"100%", objectFit:"contain", transform: rot ? `rotate(${rot}deg)` : "none", transition:"transform .25s ease" }} />
                 </div>
-                <div style={{ fontSize:11, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
+                <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
                 <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                   <button onClick={() => rotate(pop, -90)} disabled={busyId === pop.id}
                     style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="左に90度">↺</button>
@@ -1166,10 +1166,10 @@ function RotateAdmin() {
                     style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="右に90度">↻</button>
                   {rot !== 0 && (
                     <button onClick={() => rotate(pop, -rot)} disabled={busyId === pop.id}
-                      style={{ border:"1px solid var(--line)", background:"var(--soft)", color:"var(--primary)", borderRadius:7, padding:"6px 8px", fontSize:10, fontWeight:800, cursor:"pointer" }} title="元に戻す">戻す</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--soft)", color:"var(--primary)", borderRadius:7, padding:"6px 8px", fontSize:11.5, fontWeight:800, cursor:"pointer" }} title="元に戻す">戻す</button>
                   )}
                 </div>
-                {rot !== 0 && <div style={{ fontSize:10, color:"var(--primary-soft)", fontWeight:800, marginTop:5, textAlign:"center" }}>{rot}度</div>}
+                {rot !== 0 && <div style={{ fontSize:11.5, color:"var(--primary-soft)", fontWeight:800, marginTop:5, textAlign:"center" }}>{rot}度</div>}
               </div>
             );
           })}
@@ -1263,7 +1263,7 @@ function CatalogAdmin() {
       <div style={{ border:"1px solid var(--line)", borderRadius:12, padding:13, marginBottom:16, background:"#fff" }}>
         <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>カタログを追加</div>
 
-        <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>スーパー名</div>
+        <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>スーパー名</div>
         <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10 }}>
           {STORES.map(st => (
             <button key={st} onClick={() => setF("store", st)}
@@ -1287,11 +1287,11 @@ function CatalogAdmin() {
 
         <div style={{ display:"flex", gap:7, marginBottom:9 }}>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>年</div>
+            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>年</div>
             <input value={form.year} onChange={e => setF("year", e.target.value.replace(/[^0-9]/g, ""))} inputMode="numeric" placeholder="2026" style={{ ...inp }} />
           </div>
           <div style={{ flex:2, minWidth:0 }}>
-            <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</div>
+            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</div>
             <select value={form.season} onChange={e => setF("season", e.target.value)} style={{ ...inp, appearance:"auto" }}>
               {SEASONS.map(x => <option key={x} value={x}>{x}</option>)}
             </select>
@@ -1299,14 +1299,14 @@ function CatalogAdmin() {
         </div>
 
         <div style={{ marginBottom:9 }}>
-          <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
+          <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
           <input ref={thumbRef} type="file" accept="image/*" onChange={pickThumb} disabled={busy} style={{ fontSize:12, width:"100%" }} />
           {form.thumb_url && <img src={form.thumb_url} style={{ width:60, borderRadius:6, marginTop:6, display:"block" }} />}
         </div>
 
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="カタログ名（例：お歳暮 2026）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.note} onChange={e => setF("note", e.target.value)} placeholder="メモ（例：締切 12/10）" style={{ ...inp, marginBottom:8 }} />
-        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:11.5 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:12 }} />
 
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
           <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
@@ -1316,7 +1316,7 @@ function CatalogAdmin() {
           <button onClick={add} disabled={busy}
             style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:9, padding:"10px 20px", fontSize:13, fontWeight:900, cursor: busy ? "default" : "pointer" }}>{busy ? "処理中…" : "追加"}</button>
         </div>
-        {msg && <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+        {msg && <div style={{ fontSize:12, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
       </div>
 
       <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>登録済み（{list.length}）</div>
@@ -1332,17 +1332,17 @@ function CatalogAdmin() {
                 ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--chip)" }} />
                 : <div style={{ width:38, height:48, borderRadius:6, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
               <div style={{ minWidth:0, flex:1 }}>
-                <div style={{ fontSize:10, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
+                <div style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
                 <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.title}</div>
-                {c.note && <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
+                {c.note && <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
                 <button onClick={() => toggle(c)}
-                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "#fff", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "#fff", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
                 <button onClick={() => toggleDead(c)}
-                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "#fff", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "#fff", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
                 <button onClick={() => del(c)}
-                  style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:10.5, fontWeight:800, cursor:"pointer" }}>削除</button>
+                  style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer" }}>削除</button>
               </div>
             </div>
           ))}
@@ -1456,7 +1456,7 @@ function ResourceAdmin() {
 
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="タイトル（例：魚売場POP 10シリーズ）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.description} onChange={e => setF("description", e.target.value)} placeholder="説明（任意）" style={{ ...inp, marginBottom:8 }} />
-        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:10, fontSize:11.5 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:10, fontSize:12 }} />
 
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
           <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
@@ -1468,7 +1468,7 @@ function ResourceAdmin() {
             {busy ? "処理中…" : "追加"}
           </button>
         </div>
-        {msg && <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+        {msg && <div style={{ fontSize:12, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
       </div>
 
       {/* 一覧 */}
@@ -1490,21 +1490,21 @@ function ResourceAdmin() {
                 <span style={{ fontSize:19, flexShrink:0 }}>{r.emoji || "📄"}</span>
                 <div style={{ minWidth:0, flex:1 }}>
                   <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{r.title}</div>
-                  {r.description && <div style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{r.description}</div>}
+                  {r.description && <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{r.description}</div>}
                 </div>
-                <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, fontWeight:800, color:"var(--primary-soft)", textDecoration:"none", flexShrink:0 }}>開く</a>
+                <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, fontWeight:800, color:"var(--primary-soft)", textDecoration:"none", flexShrink:0 }}>開く</a>
               </div>
               <div style={{ display:"flex", gap:6, marginTop:9, flexWrap:"wrap" }}>
                 <button onClick={() => toggleVisible(r)}
-                  style={{ border:"1px solid var(--line)", background: r.visible ? "var(--soft)" : "#fff", color: r.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:11, fontWeight:800, cursor:"pointer" }}>
+                  style={{ border:"1px solid var(--line)", background: r.visible ? "var(--soft)" : "#fff", color: r.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                   {r.visible ? "表示中" : "非表示"}
                 </button>
                 <button onClick={() => move(r, -1)} disabled={i === 0}
-                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===0 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:800, cursor: i===0 ? "default" : "pointer" }}>↑</button>
+                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===0 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:12, fontWeight:800, cursor: i===0 ? "default" : "pointer" }}>↑</button>
                 <button onClick={() => move(r, 1)} disabled={i === list.length - 1}
-                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===list.length-1 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:800, cursor: i===list.length-1 ? "default" : "pointer" }}>↓</button>
+                  style={{ border:"1px solid var(--line)", background:"#fff", color: i===list.length-1 ? "var(--faint)" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:12, fontWeight:800, cursor: i===list.length-1 ? "default" : "pointer" }}>↓</button>
                 <button onClick={() => del(r)}
-                  style={{ marginLeft:"auto", border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"5px 11px", fontSize:11, fontWeight:800, cursor:"pointer" }}>削除</button>
+                  style={{ marginLeft:"auto", border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>削除</button>
               </div>
             </div>
           ))}
@@ -1639,7 +1639,7 @@ function RankingPanel({ onCreateFromPop }) {
             style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:11, padding:"9px 6px", cursor:"pointer",
               background: metric === x.key ? "var(--soft)" : "#fff", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>
             <div style={{ fontSize:13, fontWeight:800 }}>{x.label}</div>
-            <div style={{ fontSize:11, fontWeight:700, opacity:0.75, marginTop:2 }}>計 {totals[x.key]}</div>
+            <div style={{ fontSize:12, fontWeight:700, opacity:0.75, marginTop:2 }}>計 {totals[x.key]}</div>
           </button>
         ))}
       </div>
@@ -1663,11 +1663,11 @@ function RankingPanel({ onCreateFromPop }) {
             <img src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:9, flexShrink:0, border:"1px solid var(--line)" }} />
             <div style={{ minWidth:0, flex:1 }}>
               <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
-              <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>
+              <div style={{ fontSize:12, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>
             </div>
             <div style={{ textAlign:"right", flexShrink:0 }}>
               <div style={{ fontSize:17, fontWeight:900, color: i < 3 ? "var(--primary)" : "var(--ink)", lineHeight:1 }}>{m.get(p)}</div>
-              <div style={{ fontSize:10, color:"var(--faint)", fontWeight:700 }}>{m.label}{m.unit}</div>
+              <div style={{ fontSize:11.5, color:"var(--faint)", fontWeight:700 }}>{m.label}{m.unit}</div>
             </div>
           </div>
         );

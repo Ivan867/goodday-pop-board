@@ -1155,7 +1155,7 @@ function GeneratorTab({
   }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)"
     }
   }, preset.name)), /*#__PURE__*/React.createElement("canvas", {
@@ -1214,7 +1214,7 @@ function GeneratorTab({
     }), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 9.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: on ? "var(--primary)" : "var(--sub)",
         marginTop: 4,
@@ -1312,7 +1312,7 @@ function GeneratorTab({
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "var(--faint)",
         width: 20,
@@ -1336,7 +1336,7 @@ function GeneratorTab({
     }, String(r.name || "").replace(/\r?\n/g, " ")), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--faint)",
         marginTop: 1
       }
@@ -1359,7 +1359,7 @@ function GeneratorTab({
     }
   }, "文字の位置・サイズ"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12
     }
@@ -1403,7 +1403,7 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 2
@@ -1420,7 +1420,7 @@ function GeneratorTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--text)",
       margin: "10px 0 2px"
@@ -1437,7 +1437,7 @@ function GeneratorTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--text)",
       margin: "10px 0 2px"
@@ -1543,7 +1543,7 @@ function GeneratorTab({
     }
   }, "▼ 1つずつ動かす（選んだ項目だけ）"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
@@ -1625,7 +1625,7 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       background: "var(--bg)",
       borderRadius: 8,
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       cursor: "pointer"
@@ -1658,7 +1658,7 @@ function GeneratorTab({
     }
   }, "↓"), /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       fontWeight: 800,
       lineHeight: 1.7,
@@ -1689,7 +1689,7 @@ function GeneratorTab({
     }
   }, "💾 設定を保存する"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
@@ -1743,7 +1743,7 @@ function GeneratorTab({
     }
   }, "みんなと共有")), pMsg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--primary)",
       fontWeight: 800,
       marginBottom: 8
@@ -1754,7 +1754,7 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 5
@@ -1782,7 +1782,7 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--ink)",
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer",
       padding: 0
@@ -1806,7 +1806,7 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 5
@@ -1834,7 +1834,7 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--primary)",
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer",
       padding: 0
@@ -1883,7 +1883,7 @@ function GeneratorTab({
     }
   }, "標準に戻す")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       marginTop: 10
     }
@@ -2025,7 +2025,7 @@ function GeneratorTab({
       color: taxYen === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
       padding: "5px 10px",
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer",
       boxShadow: taxYen === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none"

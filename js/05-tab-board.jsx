@@ -89,7 +89,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
               style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "#fff", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"8px 3px", cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
-              <span style={{ fontSize:10, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
+              <span style={{ fontSize:11.5, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
             </button>
           ))}
         </div>
@@ -100,10 +100,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px", marginBottom:12, cursor: feat.tab ? "pointer" : "default", boxShadow:"0 4px 16px rgba(47,111,176,0.22)", animation:"fadeUp .35s ease" }}>
             <span style={{ fontSize:20, flexShrink:0 }}>🎉</span>
             <div style={{ minWidth:0, flex:1 }}>
-              <div style={{ fontSize:10.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
+              <div style={{ fontSize:11.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
               <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{feat.message}</div>
             </div>
-            {feat.tab && <span style={{ fontSize:11, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
+            {feat.tab && <span style={{ fontSize:12, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
             <button onClick={(e) => { e.stopPropagation(); try { localStorage.setItem("featSeen", feat.ver || feat.message); } catch(x){} setFeatShow(false); }}
               style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", width:26, height:26, borderRadius:"50%", fontSize:14, fontWeight:800, cursor:"pointer", flexShrink:0, lineHeight:1 }}>✕</button>
           </div>
@@ -137,7 +137,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         ) : (
           <>
             <div style={{ display:"flex", alignItems:"center", marginBottom:9 }}>
-              <span style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)" }}>{filtered.length}件</span>
+              <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>{filtered.length}件</span>
               <div style={{ marginLeft:"auto", display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
                 {[
                   ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
@@ -197,7 +197,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 <span style={{ display:"block", fontSize:15.5, fontWeight:800, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {openGroup.group_name || openGroup.product_name}
                 </span>
-                <span style={{ display:"block", fontSize:10.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name} ／ 横にスワイプでもどる</span>
+                <span style={{ display:"block", fontSize:11.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name} ／ 横にスワイプでもどる</span>
               </span>
             </div>
             <div style={{ maxWidth:1600, margin:"0 auto", padding:"12px 14px 120px" }}>
@@ -405,7 +405,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           <div>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12, paddingLeft:2 }}>
               <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px" }}>みんなのポップ</span>
-              <span style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft, #4a7ab0)", background:"var(--soft)", borderRadius:999, padding:"2px 10px" }}>{allPops.length}</span>
+              <span style={{ fontSize:12, fontWeight:900, color:"var(--primary-soft, #4a7ab0)", background:"var(--soft)", borderRadius:999, padding:"2px 10px" }}>{allPops.length}</span>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
               {allPops.map(pop=>(

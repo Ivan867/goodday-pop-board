@@ -234,7 +234,7 @@ function BoardTab({
     }
   }, icon, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 800,
       color: primary ? "#fff" : "var(--ink)",
       whiteSpace: "nowrap"
@@ -267,7 +267,7 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
@@ -280,7 +280,7 @@ function BoardTab({
     }
   }, feat.message)), feat.tab && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "#2f6fb0",
       background: "#fff",
@@ -401,7 +401,7 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)"
     }
@@ -649,7 +649,7 @@ function BoardTab({
     }, openGroup.group_name || openGroup.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10.5,
+        fontSize: 11.5,
         opacity: 0.85
       }
     }, inGroup.length, "枚 ／ ", openGroup.store_name, " ／ 横にスワイプでもどる"))), /*#__PURE__*/React.createElement("div", {
@@ -1103,7 +1103,7 @@ function SearchTab({
     }
   }, "みんなのポップ"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 900,
       color: "var(--primary-soft, #4a7ab0)",
       background: "var(--soft)",

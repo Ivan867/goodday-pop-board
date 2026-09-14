@@ -179,7 +179,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
                         <div style={{ fontSize:12, color:"var(--sub)", fontWeight:700, paddingTop:4 }}>上の「商品名」が使われます</div>
                       )}
                       {it.warn && (
-                        <div style={{ marginTop:5, fontSize:10.5, color:"#8a6d00", background:"#fff6de", border:"1px solid #eeddad", borderRadius:7, padding:"5px 7px", lineHeight:1.5 }}>{it.warn}</div>
+                        <div style={{ marginTop:5, fontSize:11.5, color:"#8a6d00", background:"#fff6de", border:"1px solid #eeddad", borderRadius:7, padding:"5px 7px", lineHeight:1.5 }}>{it.warn}</div>
                       )}
                     </div>
                     <button onClick={() => removeAt(i)} aria-label="この画像を外す"
@@ -421,7 +421,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <span style={{ width:46, height:46, borderRadius:"50%", background: active ? activeColor : "rgba(22,30,42,0.62)", border: active ? "none" : "1px solid rgba(255,255,255,0.22)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", boxShadow:"0 2px 8px rgba(0,0,0,0.3)", transition:"all .18s ease" }}>
         <Ico d={ICONS[icon]} fill={active && fillWhenActive ? "#fff" : "none"} />
       </span>
-      <span style={{ fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(22,30,42,0.55)", borderRadius:6, padding:"1px 6px", letterSpacing:"-0.2px" }}>{label}</span>
+      <span style={{ fontSize:11.5, fontWeight:800, color:"#fff", background:"rgba(22,30,42,0.55)", borderRadius:6, padding:"1px 6px", letterSpacing:"-0.2px" }}>{label}</span>
     </button>
   );
 
@@ -444,7 +444,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           </button>
 
           {navList && navIdx >= 0 && (
-            <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:11, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
+            <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:12, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
           )}
 
           <button onClick={onClose} style={{ position:"absolute", bottom:14, left:14, background:"rgba(0,0,0,0.55)", border:"none", color:"#fff", fontSize:18, width:44, height:44, borderRadius:12, cursor:"pointer", backdropFilter:"blur(4px)", zIndex:6, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
@@ -499,7 +499,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <div style={{ fontSize:16.5, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>商品名を直す</div>
             <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="商品名"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>番号（削除と同じ）</div>
+            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>番号（削除と同じ）</div>
             <input type="password" inputMode="numeric" value={rnPw} onChange={e => { setRnPw(e.target.value); setRnErr(""); }}
               onKeyDown={e => { if (e.key === "Enter") doRename(); }}
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom: rnErr ? 8 : 16 }} />
@@ -522,7 +522,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           <div onClick={e => e.stopPropagation()}
             style={{ background:"#fff", borderRadius:"20px 20px 0 0", width:"100%", maxWidth:460, padding:"20px 18px calc(22px + env(safe-area-inset-bottom))", animation:"sheetUp .3s cubic-bezier(.16,1,.3,1)" }}>
             <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>印刷する</div>
-            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.6, marginBottom:16 }}>
+            <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:16 }}>
               余白なしでA4に印刷します。印刷画面が開いたら、用紙をA4・余白を「なし」にして印刷してください。
             </div>
             {[
@@ -538,7 +538,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                 </span>
                 <span style={{ minWidth:0 }}>
                   <span style={{ display:"block", fontSize:14, fontWeight:900, color:"var(--ink)" }}>{title}</span>
-                  <span style={{ display:"block", fontSize:11, color:"var(--sub)", marginTop:2 }}>{desc}</span>
+                  <span style={{ display:"block", fontSize:12, color:"var(--sub)", marginTop:2 }}>{desc}</span>
                 </span>
               </button>
             ))}
@@ -579,7 +579,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:2 }}>
                       <span style={{ fontSize:12.5, fontWeight:800, color: c.store_name ? "var(--ink)" : "var(--sub)" }}>{c.store_name || "ワンタップ返信"}</span>
-                      <span style={{ fontSize:11, color:"var(--faint)" }}>{timeAgo(c.created_at)}</span>
+                      <span style={{ fontSize:12, color:"var(--faint)" }}>{timeAgo(c.created_at)}</span>
                     </div>
                     <div style={{ fontSize:13.5, color:"var(--text)", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{c.comment}</div>
                   </div>
@@ -597,7 +597,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <button onClick={handleAddComment} disabled={cSubmitting}
               style={{ background:"var(--primary)", color:"#fff", border:"none", borderRadius:9, padding:"10px 15px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1, flexShrink:0 }}>{cSubmitting ? "…" : "送信"}</button>
           </div>
-          {cError && <div style={{ fontSize:11.5, color:"var(--primary)", marginTop:6 }}>{cError}</div>}
+          {cError && <div style={{ fontSize:12, color:"var(--primary)", marginTop:6 }}>{cError}</div>}
         </div>
       </div>
     </div>
@@ -631,19 +631,19 @@ function PopCard({ pop, index, onClick, hasComment }) {
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
           {pop.__group && (
             <div style={{ display:"flex", alignItems:"center", gap:4,
-              background:"rgba(20,25,35,0.78)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"3px 9px", borderRadius:20 }}>
+              background:"rgba(20,25,35,0.78)", color:"#fff", fontSize:12, fontWeight:900, padding:"3px 9px", borderRadius:20 }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"/></svg>
               {pop.__count}
             </div>
           )}
-          {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
-          {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
+          {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:12, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
+          {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:12, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
         </div>
       </div>
       <div className="pc-body" style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
         <div className="pc-name" style={{ fontWeight:800, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}</div>
-        <div className="pc-meta" style={{ fontSize:11, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
-        <div className="pc-meta" style={{ fontSize:11, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
+        <div className="pc-meta" style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
+        <div className="pc-meta" style={{ fontSize:12, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
       </div>
     </div>
   );

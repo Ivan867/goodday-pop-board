@@ -142,7 +142,7 @@ function CalendarTab() {
     key: w,
     style: {
       textAlign: "center",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       padding: "4px 0",
       color: i === 0 ? "#c0392b" : i === 6 ? "#2f6fb0" : "var(--sub)"
@@ -182,7 +182,7 @@ function CalendarTab() {
       }
     }, d), ev ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 8.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: "var(--soft-text)",
         lineHeight: 1.15,
@@ -191,7 +191,7 @@ function CalendarTab() {
       }
     }, ev.name.length > 4 ? ev.name.slice(0, 4) : ev.name) : hol ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 8,
+        fontSize: 11.5,
         fontWeight: 800,
         color: "#c0392b",
         lineHeight: 1.1,
@@ -243,7 +243,7 @@ function CalendarTab() {
     }
   }, e.date.getDate()), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       color: "var(--sub)",
       fontWeight: 700
     }
@@ -260,7 +260,7 @@ function CalendarTab() {
     }
   }, e.name, e.holiday && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "#c0392b",
       background: "#fdeeee",
@@ -270,13 +270,13 @@ function CalendarTab() {
     }
   }, "祝日")), e.food && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--soft-text)",
       marginTop: 2
     }
   }, "💡 ", e.food)))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       marginTop: 8,
@@ -453,7 +453,7 @@ function CompetitorTab() {
     }
   }, g.cat)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.7,
       marginBottom: 11,
@@ -490,7 +490,7 @@ function CompetitorTab() {
     }
   }, r.name), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       background: "var(--chip)",
@@ -511,14 +511,14 @@ function CompetitorTab() {
     }
   }, r.desc), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--soft-text)",
       lineHeight: 1.6,
       marginTop: 5
     }
   }, "💡 ", r.hint))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       marginTop: 4,
@@ -815,7 +815,7 @@ function IndustryTab() {
     }
   }, "鮮魚ニュースを探す")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 11,
       lineHeight: 1.6
@@ -872,7 +872,7 @@ function IndustryTab() {
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         display: "inline-block",
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 800,
         color: "var(--soft-text)",
         background: "var(--soft)",
@@ -958,7 +958,7 @@ function IndustryTab() {
       }
     }, fmtDate(it.pubDate) && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: site.color,
         flexShrink: 0
@@ -972,7 +972,7 @@ function IndustryTab() {
       }
     }, it.title)), strip(it.description) && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.6,
         marginTop: 5
@@ -980,7 +980,7 @@ function IndustryTab() {
     }, strip(it.description)))));
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       marginTop: 4,
@@ -1001,7 +1001,7 @@ function IndustryTab() {
     }
   }, "いまの業界の動き"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 14,
       lineHeight: 1.6
@@ -1025,7 +1025,7 @@ function IndustryTab() {
     }
   }, t.season && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 9.5,
+      fontSize: 11.5,
       fontWeight: 900,
       color: "var(--primary-soft)",
       background: "var(--soft)",
@@ -1067,7 +1067,7 @@ function IndustryTab() {
     }
   }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       color: "var(--faint)",
       fontWeight: 800,
       marginTop: 8
@@ -1087,7 +1087,7 @@ function IndustryTab() {
     }
   }, "鮮魚が強い店の売り方"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 16,
       lineHeight: 1.6
@@ -1116,7 +1116,7 @@ function IndustryTab() {
     }
   }, g.cat)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.7,
       marginBottom: 11,
@@ -1153,7 +1153,7 @@ function IndustryTab() {
     }
   }, r.name), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       background: "var(--chip)",
@@ -1174,7 +1174,7 @@ function IndustryTab() {
     }
   }, r.desc), r.hint && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--primary)",
       fontWeight: 800,
       marginTop: 6,
@@ -1268,7 +1268,7 @@ function SoubaTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)"
     }
   }, t), /*#__PURE__*/React.createElement("div", {
@@ -1441,7 +1441,7 @@ function SoubaTab({
     }
   }, "原価＋利益率 → 売価"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 14
     }
@@ -1615,7 +1615,7 @@ function SoubaTab({
       }
     }, "歩留まりから実質原価を計算"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         marginBottom: 14
       }
@@ -1893,7 +1893,7 @@ function SoubaTab({
       }
     }, "立て塩（塩水）の塩の量"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         marginBottom: 14
       }
@@ -1933,7 +1933,7 @@ function SoubaTab({
     }, cell("塩の量", `${salt.toFixed(salt < 10 ? 1 : 0)}g`, "#2f6fb0"), cell("大さじ換算", `約${(salt / 18).toFixed(1)}杯`, "var(--sub)")));
   })(), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       marginTop: 4
@@ -2427,7 +2427,7 @@ function CatalogTab() {
         }
       }, c.store), c.area && /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 9,
+          fontSize: 11.5,
           color: "var(--faint)",
           fontWeight: 800
         }
@@ -2512,13 +2512,13 @@ function CatalogTab() {
       }
     }, c.area && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         fontWeight: 800
       }
     }, c.area), c.stores_count ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: g.color,
         background: g.color + "12",
@@ -2527,7 +2527,7 @@ function CatalogTab() {
       }
     }, c.stores_count, "店") : null, c.revenue ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: g.color,
         background: g.color + "12",
@@ -2536,7 +2536,7 @@ function CatalogTab() {
       }
     }, c.revenue) : null), c.strength && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--text)",
         lineHeight: 1.6,
         background: "var(--bg)",
@@ -2552,7 +2552,7 @@ function CatalogTab() {
       style: {
         display: "flex",
         gap: 5,
-        fontSize: 10,
+        fontSize: 11.5,
         lineHeight: 1.55,
         marginBottom: 3
       }
@@ -2570,7 +2570,7 @@ function CatalogTab() {
       style: {
         display: "flex",
         gap: 5,
-        fontSize: 10,
+        fontSize: 11.5,
         lineHeight: 1.55
       }
     }, /*#__PURE__*/React.createElement("span", {
@@ -2805,7 +2805,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2824,7 +2824,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2843,7 +2843,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2862,7 +2862,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2881,7 +2881,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2900,7 +2900,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2967,7 +2967,7 @@ function CatalogTab() {
         color: on ? "var(--primary)" : "var(--sub)",
         borderRadius: 999,
         padding: "4px 11px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 700,
         cursor: "pointer",
         display: "flex",
@@ -2979,14 +2979,14 @@ function CatalogTab() {
         background: "var(--primary-soft)",
         color: "#fff",
         borderRadius: 999,
-        fontSize: 9,
+        fontSize: 11.5,
         fontWeight: 900,
         padding: "0 5px",
         lineHeight: 1.6
       }
     }, used), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 8,
+        fontSize: 11.5,
         transform: on ? "rotate(180deg)" : "none",
         display: "inline-block",
         transition: "transform .2s"
@@ -3116,7 +3116,7 @@ function CatalogTab() {
     }
   }, "重点調査 ", favCount)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 700,
       color: "var(--sub)",
       marginBottom: 10
@@ -3191,7 +3191,7 @@ function CatalogTab() {
       }
     }, g.label), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         fontWeight: 900,
         color: g.color,
         background: g.color + "16",
@@ -4031,7 +4031,7 @@ function OrderTab() {
     }
   }, "塩干発注"), store && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       background: "rgba(255,255,255,0.22)",
       borderRadius: 999,
@@ -4053,7 +4053,7 @@ function OrderTab() {
       color: "#fff",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4136,7 +4136,7 @@ function OrderTab() {
       }, /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 9.5,
+          fontSize: 11.5,
           fontWeight: 800,
           opacity: sel ? 0.85 : 0.7
         }
@@ -4150,7 +4150,7 @@ function OrderTab() {
       }, d.getDate()), n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 8.5,
+          fontSize: 11.5,
           fontWeight: 900,
           marginTop: 1,
           color: sel ? "#fff" : "var(--primary-soft)",
@@ -4331,7 +4331,7 @@ function OrderTab() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 9,
+          fontSize: 11.5,
           color: "var(--faint)"
         }
       }, "写真なし"), /*#__PURE__*/React.createElement("div", {
@@ -4352,13 +4352,13 @@ function OrderTab() {
         }
       }, r.item_name), /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 10,
+          fontSize: 11.5,
           color: "var(--faint)",
           marginTop: 2
         }
       }, [r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")), r.memo && /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 10.5,
+          fontSize: 11.5,
           color: "#c07a1a",
           fontWeight: 700,
           marginTop: 3
@@ -4390,14 +4390,14 @@ function OrderTab() {
         }
       }), /*#__PURE__*/React.createElement("span", {
         style: {
-          fontSize: 10,
+          fontSize: 11.5,
           color: "var(--faint)",
           width: 26
         }
       }, r.unit || "")));
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         lineHeight: 1.7,
         marginTop: 16
@@ -4510,7 +4510,7 @@ function OrderTab() {
         background: "#fff",
         borderRadius: 8,
         padding: "6px 11px",
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--sub)",
         cursor: "pointer"
@@ -4542,13 +4542,13 @@ function OrderTab() {
       }, /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 900
         }
       }, OI_WDAY[dnum]), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 9,
+          fontSize: 11.5,
           fontWeight: 800,
           opacity: 0.75,
           marginTop: 1
@@ -4556,7 +4556,7 @@ function OrderTab() {
       }, d.getDate()), n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 9.5,
+          fontSize: 11.5,
           fontWeight: 900,
           marginTop: 2,
           color: sel ? "#fff" : "var(--primary-soft)"
@@ -4579,13 +4579,13 @@ function OrderTab() {
       }
     }, wd, "曜に発注するもの ", onDay.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "var(--primary-soft)"
       }
     }, onDay.length, "件")), onDay.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--faint)",
         lineHeight: 1.6,
         marginTop: 6
@@ -4634,7 +4634,7 @@ function OrderTab() {
     }, r.item_name), (r.maker || r.price != null || r.life_days != null) && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 9.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         marginTop: 1,
         overflow: "hidden",
@@ -4703,7 +4703,7 @@ function OrderTab() {
       }
     }, "＋"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         width: 22,
         flexShrink: 0
@@ -4731,7 +4731,7 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--sub)",
         marginBottom: 9
@@ -4756,7 +4756,7 @@ function OrderTab() {
           color: on ? "var(--primary)" : "var(--sub)",
           borderRadius: 999,
           padding: "5px 12px",
-          fontSize: 11.5,
+          fontSize: 12,
           fontWeight: 800,
           cursor: "pointer",
           display: "flex",
@@ -4768,14 +4768,14 @@ function OrderTab() {
           background: "var(--primary-soft)",
           color: "#fff",
           borderRadius: 999,
-          fontSize: 9,
+          fontSize: 11.5,
           fontWeight: 900,
           padding: "0 5px",
           lineHeight: 1.6
         }
       }, n), /*#__PURE__*/React.createElement("span", {
         style: {
-          fontSize: 8,
+          fontSize: 11.5,
           transform: on ? "rotate(180deg)" : "none",
           display: "inline-block"
         }
@@ -4860,7 +4860,7 @@ function OrderTab() {
       }, it.name), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 9.5,
+          fontSize: 11.5,
           color: "var(--faint)",
           marginTop: 1
         }
@@ -4882,7 +4882,7 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--sub)",
         marginBottom: 7
@@ -4922,7 +4922,7 @@ function OrderTab() {
       }
     }, "過ぎた日を記録に残す"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.6,
         marginBottom: 10
@@ -5045,7 +5045,7 @@ function OrderTab() {
       background: "#fff",
       borderRadius: 8,
       padding: "6px 11px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       cursor: "pointer"
@@ -5105,12 +5105,12 @@ function OrderTab() {
       }
     }, l, "曜"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--faint)"
       }
     }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--faint)",
         paddingLeft: 4
       }
@@ -5126,7 +5126,7 @@ function OrderTab() {
         display: "flex",
         alignItems: "center",
         gap: 7,
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--text)",
         paddingLeft: 4
       }
@@ -5159,7 +5159,7 @@ function OrderTab() {
     }
   }, "1週間分を印刷する（A4）"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--faint)",
       lineHeight: 1.7,
       marginTop: 12
@@ -5208,7 +5208,7 @@ function OrderTab() {
   }, "›"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)"
     }
@@ -5245,7 +5245,7 @@ function OrderTab() {
     key: w,
     style: {
       textAlign: "center",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 900,
       color: i === 0 ? "#d1554f" : i === 6 ? "#3b7dd8" : "var(--faint)",
       padding: "3px 0"
@@ -5284,13 +5284,13 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: isToday ? 900 : 700,
         color: "var(--ink)"
       }
     }, d), n > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "#2c6b45"
       }
@@ -5320,7 +5320,7 @@ function OrderTab() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       width: 52,
@@ -5345,7 +5345,7 @@ function OrderTab() {
     }
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 900,
       color: "var(--ink)",
       width: 34,
@@ -5354,7 +5354,7 @@ function OrderTab() {
     }
   }, w.count, "回"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--primary-soft)",
       width: 46,
@@ -5363,7 +5363,7 @@ function OrderTab() {
     }
   }, w.qty > 0 ? w.qty : "—"))), weeks.every(w => w.count === 0) && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--faint)",
       lineHeight: 1.6
     }
@@ -5383,7 +5383,7 @@ function OrderTab() {
     }
   }, Number(pickDate.slice(5, 7)), "月", Number(pickDate.slice(8, 10)), "日（", OI_WDAY[new Date(pickDate + "T00:00:00").getDay()], "）に発注したもの"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--sub)",
       marginBottom: 10
     }
@@ -5391,7 +5391,7 @@ function OrderTab() {
     const dayLogs = logs.filter(l => l.ordered_on === pickDate);
     return dayLogs.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--faint)",
         marginBottom: 12
       }
@@ -5450,13 +5450,13 @@ function OrderTab() {
     }));
   })(), active.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--faint)",
       lineHeight: 1.6
     }
   }, "先に「品目」から登録してください") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 7
@@ -5507,7 +5507,7 @@ function OrderTab() {
     }
   }), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       width: 32,
       flexShrink: 0
@@ -5589,7 +5589,7 @@ function OrderTab() {
     }
   }))), impMsg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 700,
       color: impMsg.includes("できません") || impMsg.includes("見つかり") ? "#b3261e" : "var(--primary)",
       background: "var(--soft)",
@@ -5720,7 +5720,7 @@ function OrderTab() {
         color: "var(--sub)",
         borderRadius: 8,
         padding: "7px 13px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer"
       }
@@ -5772,7 +5772,7 @@ function OrderTab() {
         color: "var(--primary)",
         borderRadius: 7,
         padding: "5px 12px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer",
         flexShrink: 0
@@ -5871,14 +5871,14 @@ function OrderTab() {
       }
     }, "いつも ", it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--primary-soft)",
         marginBottom: 6
       }
     }, mo + 1, "月：", n, "回 / ", q > 0 ? q + (it.unit || "") : "—"), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.5,
         marginBottom: 7
@@ -5896,7 +5896,7 @@ function OrderTab() {
         color: "var(--text)",
         borderRadius: 7,
         padding: "5px 13px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer"
       }
@@ -5909,7 +5909,7 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--sub)",
         fontWeight: 700
       }
@@ -5921,7 +5921,7 @@ function OrderTab() {
         color: "var(--sub)",
         borderRadius: 7,
         padding: "5px 11px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer"
       }
@@ -5933,7 +5933,7 @@ function OrderTab() {
         color: "#fff",
         borderRadius: 7,
         padding: "5px 13px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer"
       }
@@ -5946,7 +5946,7 @@ function OrderTab() {
         color: "var(--sub)",
         borderRadius: 7,
         padding: "5px 13px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer"
       }
@@ -6420,7 +6420,7 @@ function BundleTab() {
     }, p.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--faint)"
       }
     }, p.store_name)), /*#__PURE__*/React.createElement("span", {
@@ -6432,7 +6432,7 @@ function BundleTab() {
       }
     }, "＋"))), cands.length === 0 && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--faint)",
         padding: "8px 2px"
       }
@@ -6489,7 +6489,7 @@ function BundleTab() {
       }), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 800,
           color: "var(--ink)",
           padding: "5px 6px",
@@ -6650,7 +6650,7 @@ function BundleTab() {
         color: "#fff",
         borderRadius: 7,
         padding: "5px 12px",
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 800,
         cursor: "pointer",
         flexShrink: 0
@@ -6670,7 +6670,7 @@ function BundleTab() {
       }
     }, "×")), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.6,
         whiteSpace: "pre-wrap",
@@ -6755,7 +6755,7 @@ function BundleTab() {
       }
     }, b.name), soon && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 9,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
         background: "#e0855f",
@@ -6766,7 +6766,7 @@ function BundleTab() {
     }, "来月")), b.note && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--sub)",
         lineHeight: 1.5,
         overflow: "hidden",
@@ -6775,7 +6775,7 @@ function BundleTab() {
       }
     }, b.note)), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 900,
         color: n > 0 ? col : "var(--faint)",
         flexShrink: 0,
@@ -6849,7 +6849,7 @@ function BundleTab() {
         color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--faint)",
         borderRadius: 5,
         padding: "3px 0",
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 900,
         cursor: "pointer",
         lineHeight: 1.3
@@ -6885,7 +6885,7 @@ function BundleTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         fontWeight: 800,
         color: on ? "var(--ink)" : "var(--sub)",
         overflow: "hidden",
@@ -6894,7 +6894,7 @@ function BundleTab() {
       }
     }, b.name), n > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 8,
+        fontSize: 11.5,
         fontWeight: 900,
         color: col,
         flexShrink: 0
@@ -6923,7 +6923,7 @@ function BundleTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 8,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "var(--faint)",
       textAlign: "right",
@@ -6933,7 +6933,7 @@ function BundleTab() {
     key: m,
     style: {
       textAlign: "center",
-      fontSize: 8,
+      fontSize: 11.5,
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
@@ -6986,7 +6986,7 @@ function BundleTab() {
       background: "#fff",
       borderRadius: 7,
       padding: "6px 12px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--primary)",
       cursor: "pointer"
@@ -7005,7 +7005,7 @@ function BundleTab() {
     }
   }, viewM, "月に決まった行事はありません", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11
+      fontSize: 12
     }
   }, "下の「いつでも使うもの」から選べます")) : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -7054,7 +7054,7 @@ function BundleTab() {
     b: b
   })))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--faint)",
       lineHeight: 1.7,
       marginTop: 18

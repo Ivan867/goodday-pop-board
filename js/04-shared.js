@@ -475,7 +475,7 @@ function UploadModal({
   }, "上の「商品名」が使われます"), it.warn && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 5,
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "#8a6d00",
       background: "#fff6de",
       border: "1px solid #eeddad",
@@ -884,7 +884,7 @@ function PopDetail({
     fill: active && fillWhenActive ? "#fff" : "none"
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "#fff",
       background: "rgba(22,30,42,0.55)",
@@ -1003,7 +1003,7 @@ function PopDetail({
       right: 14,
       background: "rgba(0,0,0,0.4)",
       color: "#fff",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       padding: "3px 9px",
       borderRadius: 12,
@@ -1317,7 +1317,7 @@ function PopDetail({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -1414,7 +1414,7 @@ function PopDetail({
     }
   }, "印刷する"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 16
@@ -1471,7 +1471,7 @@ function PopDetail({
   }, title), /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 2
     }
@@ -1656,7 +1656,7 @@ function PopDetail({
     }
   }, c.store_name || "ワンタップ返信"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)"
     }
   }, timeAgo(c.created_at))), /*#__PURE__*/React.createElement("div", {
@@ -1721,7 +1721,7 @@ function PopDetail({
     }
   }, cSubmitting ? "…" : "送信")), cError && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--primary)",
       marginTop: 6
     }
@@ -1838,7 +1838,7 @@ function PopCard({
       gap: 4,
       background: "rgba(20,25,35,0.78)",
       color: "#fff",
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 900,
       padding: "3px 9px",
       borderRadius: 20
@@ -1858,7 +1858,7 @@ function PopCard({
     style: {
       background: "rgba(194,78,0,0.9)",
       color: "white",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 900,
       padding: "2px 7px",
       borderRadius: 20
@@ -1867,7 +1867,7 @@ function PopCard({
     style: {
       background: "rgba(255,107,107,0.9)",
       color: "white",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 900,
       padding: "2px 7px",
       borderRadius: 20
@@ -1894,7 +1894,7 @@ function PopCard({
   }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), /*#__PURE__*/React.createElement("div", {
     className: "pc-meta",
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       whiteSpace: "nowrap",
       flexShrink: 0
@@ -1902,7 +1902,7 @@ function PopCard({
   }, pop.store_name), /*#__PURE__*/React.createElement("div", {
     className: "pc-meta",
     style: {
-      fontSize: 11,
+      fontSize: 12,
       background: tint.bg,
       padding: "2px 8px",
       borderRadius: 20,

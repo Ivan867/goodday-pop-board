@@ -470,7 +470,7 @@ function AdminTab({
         right: 6,
         background: "#e0555f",
         color: "#fff",
-        fontSize: 9.5,
+        fontSize: 11.5,
         fontWeight: 900,
         borderRadius: 999,
         minWidth: 16,
@@ -572,7 +572,7 @@ function AdminTab({
       style: {
         background: "#e01010",
         color: "#fff",
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 900,
         padding: "2px 7px",
         borderRadius: 7
@@ -584,7 +584,7 @@ function AdminTab({
         gap: 3,
         background: "#3f9e63",
         color: "#fff",
-        fontSize: 10.5,
+        fontSize: 11.5,
         fontWeight: 900,
         padding: "3px 9px",
         borderRadius: 7
@@ -602,7 +602,7 @@ function AdminTab({
       d: "M4 12.5l5 5L20 6.5"
     })), "対応済み"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 800,
         color: "#2f6fb0",
         background: "#eaf2fb",
@@ -620,7 +620,7 @@ function AdminTab({
     }, r.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: "auto",
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--faint)",
         whiteSpace: "nowrap"
       }
@@ -683,13 +683,13 @@ function AdminTab({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 8,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "var(--sub)"
       }
     }, (String(f.name).split(".").pop() || "").slice(0, 4).toUpperCase()), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 700,
         color: "var(--primary)",
         maxWidth: 130,
@@ -715,7 +715,7 @@ function AdminTab({
     }, "返答："), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: 8,
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "#6a9a7c"
       }
     }, "（", fmtDate(r.replied_at), "）")), /*#__PURE__*/React.createElement("input", {
@@ -938,7 +938,7 @@ function AdminTab({
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
         background: COLOR[lg.action] || "#889",
@@ -965,14 +965,14 @@ function AdminTab({
     }, lg.target_name || "（名前なし）"), lg.detail && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--sub)",
         marginTop: 2
       }
     }, lg.detail), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--faint)",
         marginTop: 2
       }
@@ -1126,7 +1126,7 @@ function AdminTab({
       }), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 800,
           color: "var(--ink)",
           padding: "5px 6px 2px",
@@ -1137,7 +1137,7 @@ function AdminTab({
       }, pop.product_name), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 9.5,
+          fontSize: 11.5,
           color: "var(--faint)",
           padding: "0 6px 6px"
         }
@@ -1252,7 +1252,7 @@ function AdminTab({
       }
     }, p.product_name), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--sub)",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -1374,7 +1374,7 @@ function AdminTab({
     }
   }, "一覧には、この名前で1件だけ出るようになります。押すと中の全部が見られます。"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -1479,7 +1479,7 @@ function AdminTab({
     }
   }, "選んだポップと、そこに付いたコメントも一緒に消えます。", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "一度消すと元に戻せません。"), /*#__PURE__*/React.createElement("br", null), "残しておきたいだけなら「アーカイブする」をお使いください。"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -1834,7 +1834,7 @@ function ArchiveTab({
       color: "#fff",
       borderRadius: 999,
       padding: "4px 9px",
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 900,
       cursor: "pointer"
     }
@@ -1870,7 +1870,7 @@ function ArchiveTab({
     }
   }, "資料に登録"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 12
@@ -2266,7 +2266,7 @@ function RequestTab() {
   }, upBusy ? "送っています…" : "＋ ファイルを添付する"), /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--faint)",
       marginTop: 3
     }
@@ -2327,7 +2327,7 @@ function RequestTab() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 9,
+      fontSize: 11.5,
       fontWeight: 900,
       color: "var(--sub)"
     }
@@ -2349,7 +2349,7 @@ function RequestTab() {
   }, f.name), /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 10,
+      fontSize: 11.5,
       color: "var(--faint)"
     }
   }, fileKB(f.size))), /*#__PURE__*/React.createElement("button", {
@@ -2630,7 +2630,7 @@ function NoticeAdmin({
     }
   }, tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
@@ -2732,7 +2732,7 @@ function NoticeAdmin({
     }
   }, featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
@@ -2813,7 +2813,7 @@ function NoticeAdmin({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
@@ -2826,7 +2826,7 @@ function NoticeAdmin({
     }
   }, featMessage.trim() || "（ここにお知らせ文が表示されます）")), featTab && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "#2f6fb0",
       background: "#fff",
@@ -2914,7 +2914,7 @@ function NoticeAdmin({
       }
     }, t.label), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         flexShrink: 0
       }
@@ -2928,7 +2928,7 @@ function NoticeAdmin({
     }
   }, "④ 下のボタンに赤い印をつける"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
@@ -3074,7 +3074,7 @@ function NoticeAdmin({
       transform: "translateX(-50%)",
       background: "#e0555f",
       color: "#fff",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       borderRadius: 9,
       padding: "6px 11px",
@@ -3224,7 +3224,7 @@ function RotateAdmin() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--ink)",
         whiteSpace: "nowrap",
@@ -3277,14 +3277,14 @@ function RotateAdmin() {
         color: "var(--primary)",
         borderRadius: 7,
         padding: "6px 8px",
-        fontSize: 10,
+        fontSize: 11.5,
         fontWeight: 800,
         cursor: "pointer"
       },
       title: "元に戻す"
     }, "戻す")), rot !== 0 && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--primary-soft)",
         fontWeight: 800,
         marginTop: 5,
@@ -3479,7 +3479,7 @@ function CatalogAdmin() {
     }
   }, "カタログを追加"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 5
@@ -3556,7 +3556,7 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -3576,7 +3576,7 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -3597,7 +3597,7 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -3643,7 +3643,7 @@ function CatalogAdmin() {
     style: {
       ...inp,
       marginBottom: 11,
-      fontSize: 11.5
+      fontSize: 12
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3681,7 +3681,7 @@ function CatalogAdmin() {
     }
   }, busy ? "処理中…" : "追加")), msg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 9,
       lineHeight: 1.5
@@ -3755,7 +3755,7 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10,
+      fontSize: 11.5,
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
@@ -3770,7 +3770,7 @@ function CatalogAdmin() {
     }
   }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -3791,7 +3791,7 @@ function CatalogAdmin() {
       color: c.visible ? "var(--primary)" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -3803,7 +3803,7 @@ function CatalogAdmin() {
       color: c.link_status === "dead" ? "#b3261e" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -3815,7 +3815,7 @@ function CatalogAdmin() {
       color: "#b3261e",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 10.5,
+      fontSize: 11.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4057,7 +4057,7 @@ function ResourceAdmin() {
     style: {
       ...inp,
       marginBottom: 10,
-      fontSize: 11.5
+      fontSize: 12
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4095,7 +4095,7 @@ function ResourceAdmin() {
     }
   }, busy ? "処理中…" : "追加")), msg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 9,
       lineHeight: 1.5
@@ -4182,7 +4182,7 @@ function ResourceAdmin() {
     }
   }, r.title), r.description && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -4193,7 +4193,7 @@ function ResourceAdmin() {
     target: "_blank",
     rel: "noopener noreferrer",
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--primary-soft)",
       textDecoration: "none",
@@ -4214,7 +4214,7 @@ function ResourceAdmin() {
       color: r.visible ? "var(--primary)" : "var(--sub)",
       borderRadius: 7,
       padding: "5px 11px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4227,7 +4227,7 @@ function ResourceAdmin() {
       color: i === 0 ? "var(--faint)" : "var(--text)",
       borderRadius: 7,
       padding: "5px 10px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       cursor: i === 0 ? "default" : "pointer"
     }
@@ -4240,7 +4240,7 @@ function ResourceAdmin() {
       color: i === list.length - 1 ? "var(--faint)" : "var(--text)",
       borderRadius: 7,
       padding: "5px 10px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       cursor: i === list.length - 1 ? "default" : "pointer"
     }
@@ -4253,7 +4253,7 @@ function ResourceAdmin() {
       color: "#b3261e",
       borderRadius: 7,
       padding: "5px 11px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4536,7 +4536,7 @@ function RankingPanel({
     }
   }, x.label), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 700,
       opacity: 0.75,
       marginTop: 2
@@ -4651,7 +4651,7 @@ function RankingPanel({
       }
     }, p.product_name), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         marginTop: 2
       }
@@ -4669,7 +4669,7 @@ function RankingPanel({
       }
     }, m.get(p)), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 10,
+        fontSize: 11.5,
         color: "var(--faint)",
         fontWeight: 700
       }
