@@ -390,10 +390,10 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   const ActionBtn = ({ onClick, disabled, active, icon, label, activeColor, fillWhenActive }) => (
     <button onClick={onClick} disabled={disabled}
       style={{ border:"none", background:"transparent", cursor: disabled?"default":"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3, padding:0 }}>
-      <span style={{ width:46, height:46, borderRadius:"50%", background: active ? activeColor : "rgba(255,255,255,0.16)", border: active ? "none" : "1px solid rgba(255,255,255,0.3)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", boxShadow: active ? "0 3px 10px rgba(0,0,0,0.25)" : "none", transition:"all .18s ease" }}>
+      <span style={{ width:46, height:46, borderRadius:"50%", background: active ? activeColor : "rgba(22,30,42,0.62)", border: active ? "none" : "1px solid rgba(255,255,255,0.22)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", boxShadow:"0 2px 8px rgba(0,0,0,0.3)", transition:"all .18s ease" }}>
         <Ico d={ICONS[icon]} fill={active && fillWhenActive ? "#fff" : "none"} />
       </span>
-      <span style={{ fontSize:10, fontWeight:800, color:"#fff", textShadow:"0 1px 3px rgba(0,0,0,0.55)", letterSpacing:"-0.2px" }}>{label}</span>
+      <span style={{ fontSize:10.5, fontWeight:800, color:"#fff", background:"rgba(22,30,42,0.55)", borderRadius:6, padding:"1px 6px", letterSpacing:"-0.2px" }}>{label}</span>
     </button>
   );
 

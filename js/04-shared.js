@@ -826,14 +826,15 @@ function PopDetail({
       width: 46,
       height: 46,
       borderRadius: "50%",
-      background: active ? activeColor : "rgba(255,255,255,0.16)",
-      border: active ? "none" : "1px solid rgba(255,255,255,0.3)",
+      background: active ? activeColor : "rgba(22,30,42,0.62)",
+      border: active ? "none" : "1px solid rgba(255,255,255,0.22)",
       backdropFilter: "blur(8px)",
+      WebkitBackdropFilter: "blur(8px)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       color: "#fff",
-      boxShadow: active ? "0 3px 10px rgba(0,0,0,0.25)" : "none",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
       transition: "all .18s ease"
     }
   }, /*#__PURE__*/React.createElement(Ico, {
@@ -841,10 +842,12 @@ function PopDetail({
     fill: active && fillWhenActive ? "#fff" : "none"
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
+      fontSize: 10.5,
       fontWeight: 800,
       color: "#fff",
-      textShadow: "0 1px 3px rgba(0,0,0,0.55)",
+      background: "rgba(22,30,42,0.55)",
+      borderRadius: 6,
+      padding: "1px 6px",
       letterSpacing: "-0.2px"
     }
   }, label));
