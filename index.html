@@ -32,9 +32,9 @@
 :root {
   --primary: #1d3a57;
   --primary-soft: #4a7ab0;
-  --chip: #eef1f4;
-  --bg: #f4f6f8;
-  --line: #e4e8ec;
+  --chip: #e8edf2;
+  --bg: #eef1f5;
+  --line: #d4dae1;
   --ink: #1a2b3c;
   --text: #3a4653;
   --sub: #7a8794;
@@ -42,6 +42,16 @@
   --soft: #e7f1fa;
   --soft-text: #1d5a94;
 }
+/* 押せるものは白く浮かせて、背景と見分けやすくする */
+button, .hig-pill, label[style*="cursor"] { -webkit-tap-highlight-color: transparent; }
+button[style*="background:#fff"], button[style*="background: #fff"],
+button[style*="background:\"#fff\""] {
+  box-shadow: 0 1px 2px rgba(20,35,55,0.07);
+}
+/* 入力欄も背景から少し立たせる */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+textarea, select { background:#fff; }
+
 .wcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:8px 11px; margin-bottom:9px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); }
 .sk { background:linear-gradient(90deg, #EDEAE2 25%, #F7F4EE 50%, #EDEAE2 75%); background-size:200% 100%; animation:skm 1.3s infinite; }
 @keyframes skm { from { background-position:200% 0; } to { background-position:-200% 0; } }
@@ -227,21 +237,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260906a"></script>
-<script src="js/02-api.js?v=20260906a"></script>
-<script src="js/03-utils.js?v=20260906a"></script>
-<script src="js/04-shared.js?v=20260906a"></script>
-<script src="js/05-tab-board.js?v=20260906a"></script>
-<script src="js/06-tab-create.js?v=20260906a"></script>
-<script src="js/07-tab-floor.js?v=20260906a"></script>
-<script src="js/09-tab-info.js?v=20260906a"></script>
-<script src="js/11-tab-check-fish.js?v=20260906a"></script>
-<script src="js/12-tab-learn.js?v=20260906a"></script>
-<script src="js/14-app.js?v=20260906a"></script>
+<script src="js/01-config.js?v=20260906b"></script>
+<script src="js/02-api.js?v=20260906b"></script>
+<script src="js/03-utils.js?v=20260906b"></script>
+<script src="js/04-shared.js?v=20260906b"></script>
+<script src="js/05-tab-board.js?v=20260906b"></script>
+<script src="js/06-tab-create.js?v=20260906b"></script>
+<script src="js/07-tab-floor.js?v=20260906b"></script>
+<script src="js/09-tab-info.js?v=20260906b"></script>
+<script src="js/11-tab-check-fish.js?v=20260906b"></script>
+<script src="js/12-tab-learn.js?v=20260906b"></script>
+<script src="js/14-app.js?v=20260906b"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260906a";
+window.APP_VER = "20260906b";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
