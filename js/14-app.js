@@ -37,6 +37,83 @@ var LAZY_TABS = {
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
+// メニューの線画アイコン（濃紺で統一）
+const MENU_ICON = (() => {
+  const P = (d, extra) => /*#__PURE__*/React.createElement("svg", {
+    width: "24",
+    height: "24",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, d, extra);
+  return {
+    search: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+      cx: "11",
+      cy: "11",
+      r: "7"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M20 20l-3.7-3.7"
+    }))),
+    bundle: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+      x: "3",
+      y: "5",
+      width: "18",
+      height: "16",
+      rx: "2.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M3 10h18M8 3v4M16 3v4"
+    }))),
+    tool: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M12 20h9"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"
+    }))),
+    request: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 5.5h16v13H4z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M4 7l8 6 8-6"
+    }))),
+    order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+      x: "4",
+      y: "10.5",
+      width: "16",
+      height: "10.5",
+      rx: "2"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M8 10.5V7a4 4 0 018 0v3.5"
+    }))),
+    barcode: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"
+    }))),
+    gne: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+      x: "3",
+      y: "4.5",
+      width: "18",
+      height: "15",
+      rx: "2.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M7 9.5h6M7 14h10"
+    }))),
+    archive: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+      x: "3",
+      y: "4",
+      width: "18",
+      height: "5",
+      rx: "1.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"
+    }))),
+    admin: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M9.5 12.2l1.8 1.8 3.4-3.6"
+    })))
+  };
+})();
 function LazyTab(props) {
   var info = LAZY_TABS[props.tabKey];
   var readyState = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]));
@@ -873,15 +950,19 @@ function App() {
       setTab(o.key);
       setMoreOpen(false);
     },
+    "aria-label": o.label,
+    "aria-current": tab === o.key ? "page" : undefined,
+    className: "menu-item",
     style: {
       border: "none",
       background: "none",
-      padding: 0,
+      padding: "6px 2px",
       cursor: "pointer",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 6
+      gap: 7,
+      minHeight: 44
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -893,18 +974,18 @@ function App() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 26,
+      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)",
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      boxShadow: tab === o.key ? "none" : "0 1px 4px rgba(120,100,70,0.06)"
+      boxShadow: tab === o.key ? "none" : "0 1px 4px rgba(20,40,70,0.06)"
     }
-  }, o.icon, o.badge && /*#__PURE__*/React.createElement("span", {
+  }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: -5,
       right: -9,
       background: "var(--primary)",
       color: "#fff",
-      fontSize: 8.5,
+      fontSize: 11.5,
       fontWeight: 900,
       padding: "2px 5px",
       borderRadius: 7,
@@ -912,8 +993,8 @@ function App() {
     }
   }, o.badge)), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: tab === o.key ? "var(--primary)" : "var(--text)",
       lineHeight: 1.25,
       textAlign: "center"

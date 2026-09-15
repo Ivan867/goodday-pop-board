@@ -13,6 +13,27 @@ var LAZY_TABS = {
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
+// メニューの線画アイコン（濃紺で統一）
+const MENU_ICON = (() => {
+  const P = (d, extra) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {d}{extra}
+    </svg>
+  );
+  return {
+    search:  P(<><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></>),
+    bundle:  P(<><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></>),
+    tool:    P(<><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></>),
+    request: P(<><path d="M4 5.5h16v13H4z"/><path d="M4 7l8 6 8-6"/></>),
+    order:   P(<><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></>),
+    barcode: P(<><path d="M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"/></>),
+    gne:     P(<><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></>),
+    archive: P(<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>),
+    admin:   P(<><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></>),
+  };
+})();
+
 function LazyTab(props) {
   var info = LAZY_TABS[props.tabKey];
   var readyState = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]));
@@ -331,12 +352,14 @@ function App() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"14px 8px" }}>
               {TAB_REGISTRY.filter(o => o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)).map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                  style={{ border:"none", background:"none", padding:0, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
-                  <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(120,100,70,0.06)" }}>
-                    {o.icon}
-                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:8.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
+                  aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
+                  className="menu-item"
+                  style={{ border:"none", background:"none", padding:"6px 2px", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:7, minHeight:44 }}>
+                  <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(20,40,70,0.06)" }}>
+                    {MENU_ICON[o.key] || MENU_ICON.search}
+                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
                   </span>
-                  <span style={{ fontSize:11.5, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--text)", lineHeight:1.25, textAlign:"center" }}>{o.label}</span>
+                  <span style={{ fontSize:13.5, fontWeight:700, color: tab===o.key ? "var(--primary)" : "var(--text)", lineHeight:1.25, textAlign:"center" }}>{o.label}</span>
                 </button>
               ))}
             </div>
