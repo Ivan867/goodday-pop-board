@@ -601,12 +601,9 @@ function App() {
       maxWidth: 1600,
       background: "var(--primary)",
       border: "none",
-      borderRadius: "28px",
-      boxShadow: "0 4px 18px rgba(20,40,70,0.22)",
-      padding: "6px 8px 7px",
-      marginBottom: "calc(8px + env(safe-area-inset-bottom, 0px))",
-      marginLeft: 10,
-      marginRight: 10,
+      borderRadius: "22px 22px 0 0",
+      boxShadow: "0 -2px 14px rgba(20,40,70,0.16)",
+      padding: "6px 8px calc(7px + env(safe-area-inset-bottom, 0px))",
       pointerEvents: "auto"
     }
   }, [tabs[0], {
