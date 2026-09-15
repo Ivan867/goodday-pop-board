@@ -92,7 +92,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
     if (!items.length) { setError("画像を選択してください"); return; }
     const single = items.length === 1;
     // 1枚のときは上の商品名、複数のときは各画像の名前を使う
-    if (single && !product.trim() && !items[0].name.trim()) { setError("商品名を入力してください"); return; }
+    if (single && !product.trim()) { setError("商品名を入力してください"); return; }
     if (!single && !product.trim()) { setError("まとまりの名前を入れてください（例：9月8日の月曜販促）"); return; }
     if (!single && items.some(it => !it.name.trim())) { setError("すべての商品名を入れてください"); return; }
     setLoading(true); setError("");
@@ -105,7 +105,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const image_url = await api.upload(it.file);
-        const nm = single ? (product.trim() || it.name.trim()) : it.name.trim();
+        const nm = single ? product.trim() : it.name.trim();
         last = await api.insert({ store_name: store, product_name: nm, category, image_url, likes: 0,
           author: author.trim(), comment: comment.trim(),
           group_id: gid, group_name: gname, group_pos: done });
@@ -176,7 +176,9 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
                         <input value={it.name} onChange={e => setNameAt(i, e.target.value)} placeholder="商品名"
                           style={{ width:"100%", boxSizing:"border-box", padding:"8px 10px", border:"1.5px solid var(--line)", borderRadius:8, fontSize:13.5, outline:"none", fontFamily:"inherit" }} />
                       ) : (
-                        <div style={{ fontSize:12, color:"var(--sub)", fontWeight:700, paddingTop:4 }}>上の「商品名」が使われます</div>
+                        <div style={{ fontSize:12, fontWeight:700, paddingTop:4, color: product.trim() ? "var(--sub)" : "#b3261e" }}>
+                          {product.trim() ? "上の「商品名」が使われます" : "上に商品名を入れてください"}
+                        </div>
                       )}
                       {it.warn && (
                         <div style={{ marginTop:5, fontSize:11.5, color:"#8a6d00", background:"#fff6de", border:"1px solid #eeddad", borderRadius:7, padding:"5px 7px", lineHeight:1.5 }}>{it.warn}</div>

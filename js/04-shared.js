@@ -134,7 +134,7 @@ function UploadModal({
     }
     const single = items.length === 1;
     // 1枚のときは上の商品名、複数のときは各画像の名前を使う
-    if (single && !product.trim() && !items[0].name.trim()) {
+    if (single && !product.trim()) {
       setError("商品名を入力してください");
       return;
     }
@@ -157,7 +157,7 @@ function UploadModal({
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const image_url = await api.upload(it.file);
-        const nm = single ? product.trim() || it.name.trim() : it.name.trim();
+        const nm = single ? product.trim() : it.name.trim();
         last = await api.insert({
           store_name: store,
           product_name: nm,
@@ -468,11 +468,11 @@ function UploadModal({
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
-      color: "var(--sub)",
       fontWeight: 700,
-      paddingTop: 4
+      paddingTop: 4,
+      color: product.trim() ? "var(--sub)" : "#b3261e"
     }
-  }, "上の「商品名」が使われます"), it.warn && /*#__PURE__*/React.createElement("div", {
+  }, product.trim() ? "上の「商品名」が使われます" : "上に商品名を入れてください"), it.warn && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 5,
       fontSize: 11.5,
