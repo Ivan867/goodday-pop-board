@@ -1125,7 +1125,7 @@ function PopDetail({
     activeColor: "#e0245e",
     fillWhenActive: true,
     icon: "heart",
-    label: String(likes)
+    label: "いいね"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: handleUsed,
     active: used,
@@ -1942,16 +1942,7 @@ function PopCard({
       padding: "2px 7px",
       borderRadius: 20
     }
-  }, "コメント"), pop.likes > 0 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(255,107,107,0.9)",
-      color: "white",
-      fontSize: 12,
-      fontWeight: 900,
-      padding: "2px 7px",
-      borderRadius: 20
-    }
-  }, pop.likes))), /*#__PURE__*/React.createElement("div", {
+  }, "コメント"))), /*#__PURE__*/React.createElement("div", {
     className: "pc-body",
     style: {
       padding: "9px 12px",

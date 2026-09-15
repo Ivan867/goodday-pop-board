@@ -495,7 +495,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
           {/* 右側 縦積みアクション */}
           <div style={{ position:"absolute", right:11, bottom:16, display:"flex", flexDirection:"column", gap:13, zIndex:5 }}>
-            <ActionBtn onClick={handleLike} active={liked} activeColor="#e0245e" fillWhenActive icon="heart" label={String(likes)} />
+            <ActionBtn onClick={handleLike} active={liked} activeColor="#e0245e" fillWhenActive icon="heart" label="いいね" />
             <ActionBtn onClick={handleUsed} active={used} activeColor="#2f6fb0" icon={used ? "check" : "hand"} label={used ? `使った ${usedCount}` : "使った"} />
             <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} icon="chat" label={String(comments.length)} />
             <ActionBtn onClick={handleDownload} icon="save" label="保存" />
@@ -681,7 +681,6 @@ function PopCard({ pop, index, onClick, hasComment }) {
             </div>
           )}
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:12, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
-          {pop.likes>0 && <div style={{ background:"rgba(255,107,107,0.9)", color:"white", fontSize:12, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>{pop.likes}</div>}
         </div>
       </div>
       <div className="pc-body" style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
