@@ -601,9 +601,12 @@ function App() {
       maxWidth: 1600,
       background: "var(--primary)",
       border: "none",
-      borderRadius: "34px 34px 0 0",
-      boxShadow: "0 -2px 16px rgba(20,40,70,0.18)",
-      padding: "10px 8px calc(48px + env(safe-area-inset-bottom, 0px))",
+      borderRadius: "28px",
+      boxShadow: "0 4px 18px rgba(20,40,70,0.22)",
+      padding: "6px 8px 7px",
+      marginBottom: "calc(8px + env(safe-area-inset-bottom, 0px))",
+      marginLeft: 10,
+      marginRight: 10,
       pointerEvents: "auto"
     }
   }, [tabs[0], {
@@ -756,13 +759,13 @@ function App() {
         position: "relative",
         border: "none",
         cursor: "pointer",
-        padding: "7px 14px 6px",
+        padding: "5px 13px 4px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 3,
-        borderRadius: 18,
+        gap: 2,
+        borderRadius: 16,
         background: active ? "#fff" : "transparent",
         color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.94)",
         transition: "background .2s"
