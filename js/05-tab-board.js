@@ -180,20 +180,6 @@ function BoardTab({
     rx: "2.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M7 9.5h6M7 14h10"
-  }))], ["industry", "業界情報", false, /*#__PURE__*/React.createElement("svg", {
-    key: "c",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 4.5h13v15H4z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M17 9h3v8.5a2 2 0 01-2 2h-1M7 8h7M7 11.5h7M7 15h4"
   }))], ["order", "木次店", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
@@ -212,6 +198,22 @@ function BoardTab({
     rx: "2"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 10.5V7a4 4 0 018 0v3.5"
+  }))], ["search", "検索", false, /*#__PURE__*/React.createElement("svg", {
+    key: "e",
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.1",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "11",
+    cy: "11",
+    r: "7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 20l-3.6-3.6"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
