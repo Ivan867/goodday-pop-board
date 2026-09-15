@@ -26,27 +26,31 @@ function BoardTab({
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
   const grpSwipe = React.useRef(null); // まとまり画面のスワイプ判定
   // 文字サイズ（標準／拡大）
-  const [bigText, setBigText] = useState(() => {
+  const TEXT_SIZES = {
+    sm: "12px",
+    md: "14.5px",
+    lg: "19px"
+  };
+  const [textSize, setTextSize] = useState(() => {
     try {
-      return localStorage.getItem("bigText") === "1";
+      const v = localStorage.getItem("textSize");
+      if (v && TEXT_SIZES[v]) return v;
+      return localStorage.getItem("bigText") === "1" ? "lg" : "md"; // 前の設定を引き継ぐ
     } catch (e) {
-      return false;
+      return "md";
     }
   });
-  const setBigTextSave = v => {
-    setBigText(v);
+  const setTextSizeSave = v => {
+    setTextSize(v);
     try {
-      localStorage.setItem("bigText", v ? "1" : "0");
-    } catch (e) {}
-    try {
-      document.documentElement.style.setProperty("--pc-name-size", v ? "16px" : "13px");
+      localStorage.setItem("textSize", v);
     } catch (e) {}
   };
   useEffect(() => {
     try {
-      document.documentElement.style.setProperty("--pc-name-size", bigText ? "16px" : "13px");
+      document.documentElement.style.setProperty("--pc-name-size", TEXT_SIZES[textSize] || TEXT_SIZES.md);
     } catch (e) {}
-  }, [bigText]);
+  }, [textSize]);
   const [view, setView] = useState(() => {
     try {
       return localStorage.getItem("popView") || "md";
@@ -444,20 +448,22 @@ function BoardTab({
       borderRadius: 8,
       padding: 2
     }
-  }, [[false, "標準"], [true, "拡大"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
-    key: l,
-    onClick: () => setBigTextSave(v),
-    "aria-pressed": bigText === v,
+  }, [["sm", "小"], ["md", "中"], ["lg", "大"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    onClick: () => setTextSizeSave(v),
+    "aria-pressed": textSize === v,
+    "aria-label": `文字サイズ ${l}`,
     style: {
       border: "none",
-      background: bigText === v ? "#fff" : "transparent",
-      color: bigText === v ? "var(--ink)" : "var(--sub)",
+      background: textSize === v ? "#fff" : "transparent",
+      color: textSize === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
-      padding: "4px 10px",
-      fontSize: 11.5,
+      padding: "4px 12px",
+      fontSize: 12,
       fontWeight: 800,
       cursor: "pointer",
-      boxShadow: bigText === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
+      minWidth: 34,
+      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
     }
   }, l))), /*#__PURE__*/React.createElement("div", {
     style: {
