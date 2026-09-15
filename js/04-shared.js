@@ -1963,7 +1963,7 @@ function PopCard({
     className: "pc-name",
     style: {
       fontWeight: 800,
-      fontSize: 13,
+      fontSize: "var(--pc-name-size, 13px)",
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",

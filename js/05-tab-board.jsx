@@ -10,6 +10,16 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
   const grpSwipe = React.useRef(null);               // まとまり画面のスワイプ判定
+  // 文字サイズ（標準／拡大）
+  const [bigText, setBigText] = useState(() => { try { return localStorage.getItem("bigText") === "1"; } catch(e) { return false; } });
+  const setBigTextSave = (v) => {
+    setBigText(v);
+    try { localStorage.setItem("bigText", v ? "1" : "0"); } catch(e) {}
+    try { document.documentElement.style.setProperty("--pc-name-size", v ? "16px" : "13px"); } catch(e) {}
+  };
+  useEffect(() => {
+    try { document.documentElement.style.setProperty("--pc-name-size", bigText ? "16px" : "13px"); } catch(e) {}
+  }, [bigText]);
 
   const [view, setView] = useState(() => { try { return localStorage.getItem("popView") || "md"; } catch(e) { return "md"; } });
   const setViewSave = (v) => { setView(v); try { localStorage.setItem("popView", v); } catch(e) {} };
@@ -139,6 +149,15 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           <>
             <div style={{ display:"flex", alignItems:"center", marginBottom:9 }}>
               <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>{filtered.length}件</span>
+              <span style={{ marginLeft:12, fontSize:11, color:"var(--sub)", fontWeight:700 }}>文字サイズ</span>
+              <div style={{ marginLeft:6, display:"flex", gap:2, background:"var(--chip)", borderRadius:8, padding:2 }}>
+                {[[false,"標準"],[true,"拡大"]].map(([v,l]) => (
+                  <button key={l} onClick={() => setBigTextSave(v)} aria-pressed={bigText===v}
+                    style={{ border:"none", background: bigText===v ? "#fff" : "transparent", color: bigText===v ? "var(--ink)" : "var(--sub)",
+                      borderRadius:6, padding:"4px 10px", fontSize:11.5, fontWeight:800, cursor:"pointer",
+                      boxShadow: bigText===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
+                ))}
+              </div>
               <div style={{ marginLeft:"auto", display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
                 {[
                   ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
