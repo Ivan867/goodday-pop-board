@@ -44,6 +44,8 @@ function AdminTab({
   const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
+  const [grpCover, setGrpCover] = useState(null); // 表紙にするポップ
+
   const setPinned = async popId => {
     setPinnedBusy(true);
     try {
@@ -219,10 +221,10 @@ function AdminTab({
     setView(v);
     setSel({});
   };
-  const doGroup = async name => {
+  const doGroup = async (name, cover) => {
     setGrpBusy(true);
     try {
-      await api.groupPops(selIds, name);
+      await api.groupPops(selIds, name, cover);
       const n = selIds.length;
       setSel({});
       setGrpAsk(false);
@@ -1297,6 +1299,7 @@ function AdminTab({
     onClick: () => {
       setGrpAsk(true);
       setGrpName("");
+      setGrpCover(selIds[0] || null);
     },
     style: {
       border: "1px solid var(--line)",
@@ -1396,6 +1399,50 @@ function AdminTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 6
+    }
+  }, "表紙にするポップ（一覧に出ます）"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      overflowX: "auto",
+      paddingBottom: 6,
+      marginBottom: 14
+    }
+  }, selIds.map(id => {
+    const p2 = pops.find(x => x.id === id);
+    if (!p2) return null;
+    const on = grpCover === id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: id,
+      onClick: () => setGrpCover(id),
+      "aria-pressed": on,
+      style: {
+        flexShrink: 0,
+        width: 62,
+        border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
+        background: "#fff",
+        borderRadius: 9,
+        padding: 3,
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: p2.image_url,
+      alt: "",
+      style: {
+        width: "100%",
+        aspectRatio: "1/1.414",
+        objectFit: "contain",
+        background: "#fff",
+        borderRadius: 5,
+        display: "block"
+      }
+    }));
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
       display: "flex",
       gap: 9,
       marginBottom: 10
@@ -1415,7 +1462,7 @@ function AdminTab({
       cursor: "pointer"
     }
   }, "やめる"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => doGroup(grpName.trim()),
+    onClick: () => doGroup(grpName.trim(), grpCover),
     disabled: grpBusy || !grpName.trim(),
     style: {
       flex: 1,

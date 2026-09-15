@@ -342,7 +342,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
     <div style={{ maxWidth:1600, margin:"0 auto", padding:"10px 16px 84px" }}>
 
       {/* 左端のジャンル付箋タブ（扇フィルターと同時に表示。勝部が選別したジャンルで絞り込み） */}
-      <div style={{ position:"fixed", left:0, top:"calc(50% + 16px)", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:3 }}>
+      <div className="genre-tabs" style={{ position:"fixed", left:0, top:"calc(50% + 16px)", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:3, maxHeight:"calc(100vh - 210px)", overflowY:"auto", overscrollBehavior:"contain", WebkitOverflowScrolling:"touch", paddingTop:2, paddingBottom:2 }}>
           {GENRES.map(g => {
             const c = GENRE_COLORS[g];
             const on = fGenre === g;

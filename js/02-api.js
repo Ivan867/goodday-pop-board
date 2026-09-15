@@ -165,13 +165,14 @@ const api = {
       }
     });
   },
-  async groupPops(ids, name) {
+  async groupPops(ids, name, cover) {
     if (!ids || !ids.length) return 0;
     return sbJson(`/rest/v1/rpc/admin_group_pops`, {
       method: "POST",
       body: {
         p_ids: ids,
         p_name: name || null,
+        p_cover: cover || null,
         p_password: PW_CACHE.admin || ""
       }
     });

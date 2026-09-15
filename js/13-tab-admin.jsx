@@ -37,6 +37,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [grpAsk, setGrpAsk] = useState(false);    // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
+  const [grpCover, setGrpCover] = useState(null);   // 表紙にするポップ
 
   const setPinned = async (popId) => {
     setPinnedBusy(true);
@@ -126,10 +127,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const arCount = pops.filter(p => p.archived).length;
   const toggle = (id) => setSel(s => ({ ...s, [id]: !s[id] }));
   const switchView = (v) => { setView(v); setSel({}); };
-  const doGroup = async (name) => {
+  const doGroup = async (name, cover) => {
     setGrpBusy(true);
     try {
-      await api.groupPops(selIds, name);
+      await api.groupPops(selIds, name, cover);
       const n = selIds.length;
       setSel({}); setGrpAsk(false); setGrpName("");
       await load();
@@ -526,7 +527,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <span style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>{selIds.length}件 選択中</span>
           <button onClick={() => setSel({})}
             style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
-          <button onClick={() => { setGrpAsk(true); setGrpName(""); }}
+          <button onClick={() => { setGrpAsk(true); setGrpName(""); setGrpCover(selIds[0] || null); }}
             style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>まとめる</button>
           <button onClick={() => { setDelAsk(true); setDelWord(""); }}
             style={{ border:"1px solid #f0c8c4", background:"#fff", color:"#b3261e", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>消す</button>
@@ -549,10 +550,26 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>まとまりの名前</div>
             <input value={grpName} onChange={e => setGrpName(e.target.value)} placeholder="例：9月8日の月曜販促"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:14 }} />
+            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>表紙にするポップ（一覧に出ます）</div>
+            <div style={{ display:"flex", gap:7, overflowX:"auto", paddingBottom:6, marginBottom:14 }}>
+              {selIds.map(id => {
+                const p2 = pops.find(x => x.id === id);
+                if (!p2) return null;
+                const on = grpCover === id;
+                return (
+                  <button key={id} onClick={() => setGrpCover(id)} aria-pressed={on}
+                    style={{ flexShrink:0, width:62, border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
+                      background:"#fff", borderRadius:9, padding:3, cursor:"pointer" }}>
+                    <img src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"#fff", borderRadius:5, display:"block" }} />
+                  </button>
+                );
+              })}
+            </div>
+
             <div style={{ display:"flex", gap:9, marginBottom:10 }}>
               <button onClick={() => setGrpAsk(false)} disabled={grpBusy}
                 style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
-              <button onClick={() => doGroup(grpName.trim())} disabled={grpBusy || !grpName.trim()}
+              <button onClick={() => doGroup(grpName.trim(), grpCover)} disabled={grpBusy || !grpName.trim()}
                 style={{ flex:1, border:"none", background: (grpBusy || !grpName.trim()) ? "#ddd" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
                 {grpBusy ? "まとめています…" : "まとめる"}
               </button>

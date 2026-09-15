@@ -905,6 +905,7 @@ function SearchTab({
       padding: "10px 16px 84px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "genre-tabs",
     style: {
       position: "fixed",
       left: 0,
@@ -913,7 +914,13 @@ function SearchTab({
       zIndex: 166,
       display: "flex",
       flexDirection: "column",
-      gap: 3
+      gap: 3,
+      maxHeight: "calc(100vh - 210px)",
+      overflowY: "auto",
+      overscrollBehavior: "contain",
+      WebkitOverflowScrolling: "touch",
+      paddingTop: 2,
+      paddingBottom: 2
     }
   }, GENRES.map(g => {
     const c = GENRE_COLORS[g];
