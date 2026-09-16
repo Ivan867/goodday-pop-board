@@ -176,11 +176,23 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             </div>
             <div className={"pop-grid v-" + view}>
               {(() => {
-                // 同じまとまりは1件にたたむ（先頭の1枚を代表にする）
+                // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）
                 const seen = {}; const list = [];
                 filtered.forEach(pop => {
                   if (pop.group_id) {
-                    if (seen[pop.group_id]) { seen[pop.group_id].__count++; return; }
+                    const cur = seen[pop.group_id];
+                    if (cur) {
+                      cur.__count++;
+                      // より表紙に近いもの（group_posが小さい）が来たら、絵だけ差し替える
+                      const a = pop.group_pos == null ? 9999 : pop.group_pos;
+                      const b = cur.group_pos == null ? 9999 : cur.group_pos;
+                      if (a < b) {
+                        cur.image_url = pop.image_url;
+                        cur.rotation  = pop.rotation;
+                        cur.group_pos = pop.group_pos;
+                      }
+                      return;
+                    }
                     const head = { ...pop, __count: 1, __group: true };
                     seen[pop.group_id] = head; list.push(head);
                   } else list.push(pop);
