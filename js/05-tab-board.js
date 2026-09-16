@@ -428,6 +428,31 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
+      display: "flex",
+      gap: 2,
+      background: "var(--chip)",
+      borderRadius: 8,
+      padding: 2
+    }
+  }, [["sm", "小"], ["md", "中"], ["lg", "大"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    onClick: () => setTextSizeSave(v),
+    "aria-pressed": textSize === v,
+    "aria-label": `文字サイズ ${l}`,
+    style: {
+      border: "none",
+      background: textSize === v ? "#fff" : "transparent",
+      color: textSize === v ? "var(--ink)" : "var(--sub)",
+      borderRadius: 6,
+      padding: "4px 12px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer",
+      minWidth: 34,
+      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
+    }
+  }, l))), /*#__PURE__*/React.createElement("div", {
+    style: {
       marginLeft: "auto",
       display: "flex",
       gap: 3,
