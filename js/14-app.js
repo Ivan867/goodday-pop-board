@@ -592,7 +592,11 @@ function App() {
     "aria-label": "上へ戻る",
     style: {
       position: "fixed",
-      left: 14,
+      ...(tab === "search" ? {
+        right: 14
+      } : {
+        left: 14
+      }),
       bottom: tab === "board" ? "calc(68px + env(safe-area-inset-bottom))" : "calc(52px + env(safe-area-inset-bottom))",
       zIndex: 190,
       width: 46,
