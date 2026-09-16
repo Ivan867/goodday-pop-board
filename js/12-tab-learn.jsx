@@ -2625,7 +2625,7 @@ function BundleTab() {
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
-        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カレンダー</div>
+        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
       </div>
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
@@ -2634,11 +2634,11 @@ function BundleTab() {
         ) : (
           <>
             {/* 年間の帯グラフ（月を押すと切り替わる） */}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 10px 8px", marginBottom:12, overflowX:"auto" }}>
+            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 10px 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:"58vh", WebkitOverflowScrolling:"touch" }}>
               <div style={{ minWidth:520 }}>
                 {/* 月の見出し＝押せる */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6 }}>
-                  <div />
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"#fff", paddingBottom:2 }}>
+                  <div style={{ position:"sticky", left:0, zIndex:4, background:"#fff" }} />
                   {MONTH_ORDER.map((mm) => {
                     const m = String(mm);
                     const isNow = mm === NOW_M, isView = mm === viewM;
@@ -2662,7 +2662,7 @@ function BundleTab() {
                     <button key={b.id} onClick={() => openBundle(b)}
                       style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, width:"100%", alignItems:"center",
                         border:"none", background: on ? "var(--soft)" : "transparent", borderRadius:7, padding:"4px 2px", marginBottom:3, cursor:"pointer" }}>
-                      <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4 }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, position:"sticky", left:0, zIndex:2, background: on ? "var(--soft)" : "#fff" }}>
                         <span style={{ fontSize:11.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
                         {n > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
                       </span>

@@ -6924,7 +6924,7 @@ function BundleTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "カレンダー")), /*#__PURE__*/React.createElement("div", {
+  }, "行事カレンダー")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -6944,7 +6944,10 @@ function BundleTab() {
       borderRadius: 12,
       padding: "12px 10px 8px",
       marginBottom: 12,
-      overflowX: "auto"
+      overflowX: "auto",
+      overflowY: "auto",
+      maxHeight: "58vh",
+      WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6955,9 +6958,21 @@ function BundleTab() {
       display: "grid",
       gridTemplateColumns: "84px repeat(12, 1fr)",
       gap: 2,
-      marginBottom: 6
+      marginBottom: 6,
+      position: "sticky",
+      top: 0,
+      zIndex: 3,
+      background: "#fff",
+      paddingBottom: 2
     }
-  }, /*#__PURE__*/React.createElement("div", null), MONTH_ORDER.map(mm => {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "sticky",
+      left: 0,
+      zIndex: 4,
+      background: "#fff"
+    }
+  }), MONTH_ORDER.map(mm => {
     const m = String(mm);
     const isNow = mm === NOW_M,
       isView = mm === viewM;
@@ -7003,7 +7018,11 @@ function BundleTab() {
         alignItems: "center",
         gap: 4,
         minWidth: 0,
-        paddingLeft: 4
+        paddingLeft: 4,
+        position: "sticky",
+        left: 0,
+        zIndex: 2,
+        background: on ? "var(--soft)" : "#fff"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
