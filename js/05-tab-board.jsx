@@ -154,16 +154,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
         ) : (
           <>
             <div style={{ display:"flex", alignItems:"center", marginBottom:9 }}>
-              <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)" }}>{filtered.length}件</span>
-              <span style={{ marginLeft:12, fontSize:11, color:"var(--sub)", fontWeight:700 }}>文字サイズ</span>
-              <div style={{ marginLeft:6, display:"flex", gap:2, background:"var(--chip)", borderRadius:8, padding:2 }}>
-                {[["sm","小"],["md","中"],["lg","大"]].map(([v,l]) => (
-                  <button key={v} onClick={() => setTextSizeSave(v)} aria-pressed={textSize===v} aria-label={`文字サイズ ${l}`}
-                    style={{ border:"none", background: textSize===v ? "#fff" : "transparent", color: textSize===v ? "var(--ink)" : "var(--sub)",
-                      borderRadius:6, padding:"4px 12px", fontSize:12, fontWeight:800, cursor:"pointer", minWidth:34,
-                      boxShadow: textSize===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
-                ))}
-              </div>
               <div style={{ marginLeft:"auto", display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
                 {[
                   ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
