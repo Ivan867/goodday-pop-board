@@ -2584,6 +2584,8 @@ function BundleTab() {
 
   // ── 年間の図 ──
   const MONTH_LABEL = ["1","2","3","4","5","6","7","8","9","10","11","12"];
+  // 当月が真ん中あたりに来るように並べ替える（今月-5 〜 今月+6）
+  const MONTH_ORDER = Array.from({ length: 12 }, (_, i) => ((NOW_M - 7 + i + 12) % 12) + 1);
   const BAR_COLORS = ["#d1554f","#c39a3c","#3f9e63","#3b7dd8","#8a5fc4","#c4685f","#3f8f9e","#9e7b3f"];
 
   const seasonal = bundles.filter(b => Array.isArray(b.months) && b.months.length > 0 && b.months.length < 12);
@@ -2637,8 +2639,8 @@ function BundleTab() {
                 {/* 月の見出し＝押せる */}
                 <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6 }}>
                   <div />
-                  {MONTH_LABEL.map((m, i) => {
-                    const mm = i + 1;
+                  {MONTH_ORDER.map((mm) => {
+                    const m = String(mm);
                     const isNow = mm === NOW_M, isView = mm === viewM;
                     return (
                       <button key={m} onClick={() => setViewM(mm)} aria-label={`${mm}月を見る`}
@@ -2664,8 +2666,8 @@ function BundleTab() {
                         <span style={{ fontSize:11.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
                         {n > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
                       </span>
-                      {MONTH_LABEL.map((m, i) => {
-                        const mm = i + 1, hit = b.months.includes(mm);
+                      {MONTH_ORDER.map((mm) => {
+                        const m = String(mm), hit = b.months.includes(mm);
                         return (
                           <span key={m} style={{ height:15, borderRadius:3,
                             background: hit ? col : "var(--bg)",

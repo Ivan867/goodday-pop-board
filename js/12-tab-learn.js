@@ -6809,6 +6809,10 @@ function BundleTab() {
 
   // ── 年間の図 ──
   const MONTH_LABEL = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+  // 当月が真ん中あたりに来るように並べ替える（今月-5 〜 今月+6）
+  const MONTH_ORDER = Array.from({
+    length: 12
+  }, (_, i) => (NOW_M - 7 + i + 12) % 12 + 1);
   const BAR_COLORS = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
   const seasonal = bundles.filter(b => Array.isArray(b.months) && b.months.length > 0 && b.months.length < 12);
   const always = bundles.filter(b => !seasonal.some(x => x.id === b.id));
@@ -6953,8 +6957,8 @@ function BundleTab() {
       gap: 2,
       marginBottom: 6
     }
-  }, /*#__PURE__*/React.createElement("div", null), MONTH_LABEL.map((m, i) => {
-    const mm = i + 1;
+  }, /*#__PURE__*/React.createElement("div", null), MONTH_ORDER.map(mm => {
+    const m = String(mm);
     const isNow = mm === NOW_M,
       isView = mm === viewM;
     return /*#__PURE__*/React.createElement("button", {
@@ -7017,8 +7021,8 @@ function BundleTab() {
         color: col,
         flexShrink: 0
       }
-    }, n)), MONTH_LABEL.map((m, i) => {
-      const mm = i + 1,
+    }, n)), MONTH_ORDER.map(mm => {
+      const m = String(mm),
         hit = b.months.includes(mm);
       return /*#__PURE__*/React.createElement("span", {
         key: m,

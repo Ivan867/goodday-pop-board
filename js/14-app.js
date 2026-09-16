@@ -686,7 +686,7 @@ function App() {
   }, [tabs[0], {
     key: "bundle",
     icon: "📅",
-    label: "カレンダー",
+    label: "行事",
     color: "#3f7cb0"
   }, {
     key: "catalog",
