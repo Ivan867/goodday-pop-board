@@ -6963,7 +6963,8 @@ function BundleTab() {
       top: 0,
       zIndex: 3,
       background: "#fff",
-      paddingBottom: 2
+      padding: "2px 0 4px",
+      boxShadow: "0 2px 0 #fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6982,7 +6983,7 @@ function BundleTab() {
       "aria-label": `${mm}月を見る`,
       style: {
         border: "none",
-        background: isView ? "var(--primary)" : "transparent",
+        background: isView ? "var(--primary)" : "#fff",
         color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--faint)",
         borderRadius: 5,
         padding: "3px 0",
@@ -7022,7 +7023,8 @@ function BundleTab() {
         position: "sticky",
         left: 0,
         zIndex: 2,
-        background: on ? "var(--soft)" : "#fff"
+        background: on ? "#e7f1fa" : "#fff",
+        paddingRight: 4
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
