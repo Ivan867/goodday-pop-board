@@ -3432,6 +3432,14 @@ function OrderTab() {
   };
   // 前の週の内容をそのまま持ってくる
   // ── 過ぎた日の予定を、実績として記録に残す ──
+  // ── 資料（見るだけ）──
+  const [docs, setDocs] = useState([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  useEffect(() => {
+    if (tab !== "docs" || docs.length) return;
+    setDocsLoading(true);
+    api.listResources(false).then(r => setDocs(r || [])).catch(() => setDocs([])).finally(() => setDocsLoading(false));
+  }, [tab]);
   const [recBusy, setRecBusy] = useState(false);
   const [recMsg, setRecMsg] = useState("");
   const [savedDays, setSavedDays] = useState(() => {
@@ -4069,7 +4077,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["docs", "資料"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -5164,7 +5172,117 @@ function OrderTab() {
       lineHeight: 1.7,
       marginTop: 12
     }
-  }, "曜日ごとに分かれた表が出ます。チェック欄と数量の記入欄があるので、そのまま現場で使えます。"))) : tab === "cal" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "曜日ごとに分かれた表が出ます。チェック欄と数量の記入欄があるので、そのまま現場で使えます。"))) : tab === "docs" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 13
+    }
+  }, "早見表や商品コードなどの資料です。押すと開きます（見るだけ）。"), docsLoading ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 20px",
+      fontSize: 13
+    }
+  }, "読み込んでいます…") : docs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 20px",
+      fontSize: 13
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, "資料がありません")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 7
+    }
+  }, docs.map(r => {
+    const K = {
+      sheet: {
+        t: "表",
+        c: "#1d7a4d",
+        bg: "#e6f4ec"
+      },
+      pdf: {
+        t: "PDF",
+        c: "#b3261e",
+        bg: "#fdeceb"
+      },
+      image: {
+        t: "画像",
+        c: "#2f6fb0",
+        bg: "#e7f1fa"
+      },
+      link: {
+        t: "リンク",
+        c: "#6b4ea0",
+        bg: "#efeafa"
+      }
+    };
+    const k = K[r.kind] || K.link;
+    return /*#__PURE__*/React.createElement("a", {
+      key: r.id,
+      href: r.url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 11,
+        textDecoration: "none",
+        background: "#fff",
+        border: "1px solid var(--line)",
+        borderRadius: 12,
+        padding: "13px 14px"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        flexShrink: 0,
+        background: k.bg,
+        color: k.c,
+        fontSize: 11.5,
+        fontWeight: 900,
+        borderRadius: 7,
+        padding: "5px 9px",
+        minWidth: 42,
+        textAlign: "center"
+      }
+    }, k.t), /*#__PURE__*/React.createElement("span", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        fontSize: 14.5,
+        fontWeight: 700,
+        color: "var(--ink)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, r.title), /*#__PURE__*/React.createElement("svg", {
+      width: "17",
+      height: "17",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "var(--faint)",
+      strokeWidth: "2.2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      style: {
+        flexShrink: 0
+      }
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M9 6l6 6-6 6"
+    })));
+  }))) : tab === "cal" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
