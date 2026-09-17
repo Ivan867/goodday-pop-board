@@ -81,9 +81,34 @@ const api = {
   async listOpLogs(limit) {
     return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit||200}`);
   },
-  async listOpLogs(limit) {
-    return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit || 200}`);
+  // ── バックアップ：中身をまるごと書き出す ──
+  BACKUP_TABLES: ["pops","pop_comments","catalogs","order_items","order_sheets","order_sheet_rows",
+                  "order_logs","pop_bundles","pop_bundle_items","pop_bundle_prompts","resources",
+                  "market_trends","shared_tray_presets","prompt_library","fish_columns","blog_posts",
+                  "pop_requests","site_notice","production_notes","op_logs"],
+  async makeBackup(onProgress) {
+    const out = { 書き出した日時: new Date().toISOString(), 版: (window.APP_VER || ""), 中身: {} };
+    const names = this.BACKUP_TABLES;
+    for (let i = 0; i < names.length; i++) {
+      const t = names[i];
+      if (onProgress) onProgress(i + 1, names.length, t);
+      try {
+        let all = [], from = 0;
+        for (;;) {
+          let part;
+          try { part = await sbJson(`/rest/v1/${t}?select=*&offset=${from}&limit=1000`); }
+          catch (e) { part = []; }
+          if (!Array.isArray(part) || !part.length) break;
+          all = all.concat(part);
+          if (part.length < 1000) break;
+          from += 1000;
+        }
+        out.中身[t] = all;
+      } catch (e) { out.中身[t] = { エラー: String((e && e.message) || e) }; }
+    }
+    return out;
   },
+
   async listDeleted() { return sbJson(`/rest/v1/pops?select=${POP_COLS},deleted_at&deleted_at=not.is.null&order=deleted_at.desc`); },
   async restorePops(ids) {
     if (!ids || !ids.length) return 0;

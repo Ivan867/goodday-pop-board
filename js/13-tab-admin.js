@@ -41,6 +41,9 @@ function AdminTab({
   const [trashSel, setTrashSel] = useState({}); // ゴミ箱での選択
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
+  const [bkBusy, setBkBusy] = useState(false);
+  const [bkMsg, setBkMsg] = useState("");
+  const [bkDone, setBkDone] = useState("");
   const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
@@ -506,7 +509,7 @@ function AdminTab({
       gap: 7,
       marginBottom: 16
     }
-  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("trash", "ゴミ箱", delPops.length || 0), mainSeg("oplog", "操作の記録"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("trash", "ゴミ箱", delPops.length || 0), mainSeg("oplog", "操作の記録"), mainSeg("backup", "控えを取る"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
@@ -886,7 +889,93 @@ function AdminTab({
         whiteSpace: "nowrap"
       }
     }, g);
-  }))))))), section === "oplog" && (() => {
+  }))))))), section === "backup" && (() => {
+    const run = async () => {
+      setBkBusy(true);
+      setBkDone("");
+      setBkMsg("はじめます…");
+      try {
+        const data = await api.makeBackup((i, n, t) => setBkMsg(`${i} / ${n} … ${t}`));
+        const json = JSON.stringify(data, null, 1);
+        const blob = new Blob([json], {
+          type: "application/json"
+        });
+        const d = new Date();
+        const nm = `GoodDay控え_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}.json`;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = nm;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        const total = Object.values(data.中身).reduce((s2, v) => s2 + (Array.isArray(v) ? v.length : 0), 0);
+        setBkMsg("");
+        setBkDone(`${total}件を書き出しました（${Math.round(json.length / 1024)}KB）`);
+      } catch (e) {
+        setBkMsg("");
+        setBkDone("うまくいきませんでした：" + (e && e.message || ""));
+      } finally {
+        setBkBusy(false);
+      }
+    };
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "var(--text)",
+        lineHeight: 1.9,
+        marginBottom: 16
+      }
+    }, "いまの中身をまとめて1つのファイルに書き出します。", /*#__PURE__*/React.createElement("br", null), "ポップの名前・カタログ・発注の品目・行事など、文字の情報が入ります。"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#fff6de",
+        border: "1px solid #eeddad",
+        color: "#8a6d00",
+        borderRadius: 10,
+        padding: "11px 13px",
+        fontSize: 12,
+        lineHeight: 1.8,
+        marginBottom: 18
+      }
+    }, "写真そのものは入りません。写真はサーバーに置いたままです。", /*#__PURE__*/React.createElement("br", null), "月に一度など、ときどき取っておくと安心です。"), /*#__PURE__*/React.createElement("button", {
+      onClick: run,
+      disabled: bkBusy,
+      style: {
+        width: "100%",
+        border: "none",
+        background: bkBusy ? "#ccc" : "var(--primary)",
+        color: "#fff",
+        borderRadius: 12,
+        padding: "15px",
+        fontSize: 15,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, bkBusy ? "書き出しています…" : "控えを取る（ファイルに保存）"), bkMsg && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "var(--sub)",
+        marginTop: 12,
+        textAlign: "center"
+      }
+    }, bkMsg), bkDone && /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 14,
+        background: bkDone.includes("うまく") ? "#fdeceb" : "#eaf6ee",
+        color: bkDone.includes("うまく") ? "#b3261e" : "#2c6b45",
+        border: "1px solid " + (bkDone.includes("うまく") ? "#f5c6c2" : "#c9e6d4"),
+        borderRadius: 10,
+        padding: "12px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, bkDone), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--faint)",
+        lineHeight: 1.8,
+        marginTop: 18
+      }
+    }, "取ったファイルは、パソコンや iCloud など手元に残しておいてください。", /*#__PURE__*/React.createElement("br", null), "もし中身が消えても、このファイルがあれば戻せます。"));
+  })(), section === "oplog" && (() => {
     const LABEL = {
       delete: "消した",
       rename: "名前を直した",
