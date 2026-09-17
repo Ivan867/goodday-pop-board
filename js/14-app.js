@@ -684,7 +684,7 @@ function App() {
       border: "none",
       borderRadius: "22px 22px 0 0",
       boxShadow: "0 -2px 14px rgba(20,40,70,0.16)",
-      padding: "6px 8px calc(7px + env(safe-area-inset-bottom, 0px) / 2)",
+      padding: "6px 8px calc(7px + env(safe-area-inset-bottom, 0px))",
       pointerEvents: "auto"
     }
   }, [tabs[0], {
