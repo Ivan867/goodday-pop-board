@@ -33,7 +33,12 @@ var LAZY_TABS = {
   archive: {
     file: "13-tab-admin",
     comp: "ArchiveTab"
-  } // アーカイブ（同上）
+  },
+  // アーカイブ（同上）
+  trend: {
+    file: "16-tab-trend",
+    comp: "TrendTab"
+  } // トレンド（訴求の切り口）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -111,6 +116,11 @@ const MENU_ICON = (() => {
       d: "M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M9.5 12.2l1.8 1.8 3.4-3.6"
+    }))),
+    trend: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M3.5 17l5-5 3.5 3.5 6-6.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M14.5 9h4v4"
     })))
   };
 })();
@@ -560,7 +570,9 @@ function App() {
   }), tab === "tool" && /*#__PURE__*/React.createElement(PopToolTab, {
     seed: toolSeed,
     onSeedConsumed: () => setToolSeed(null)
-  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
+  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "trend"
+  }), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
     key: "search" + dataVer,
     onCreateFromPop: handleCreateFromPop,
     radialOpen: radialOpen,

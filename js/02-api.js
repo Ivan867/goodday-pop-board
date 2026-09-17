@@ -113,6 +113,38 @@ const api = {
     return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.false&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`);
   },
   // 管理画面：消された投稿の一覧
+  // ── トレンド（訴求の切り口を貯める）──
+  async listSpecies() {
+    return sbJson(`/rest/v1/fish_species?select=id,canonical_name,aliases,season_months,common_cuts,common_dishes,note&order=canonical_name.asc`);
+  },
+  // その魚種の直近シグナルと文脈語
+  async speciesSignals(speciesId, limit) {
+    return sbJson(`/rest/v1/trend_signal_species?select=match_method,confidence,trend_raw_signals(term,source,captured_at,raw_payload)&species_id=eq.${speciesId}&order=id.desc&limit=${limit || 50}`);
+  },
+  async speciesScores(speciesId) {
+    return sbJson(`/rest/v1/trend_scores?select=week_start,raw_count,score_z,wow_ratio,context_terms&species_id=eq.${speciesId}&order=week_start.desc&limit=8`);
+  },
+  // 直近1週で伸びているもの
+  async topWow(weekStart) {
+    const w = weekStart || (() => {
+      const d = new Date();
+      const dow = d.getDay();
+      d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+      return d.toISOString().slice(0, 10);
+    })();
+    return sbJson(`/rest/v1/trend_scores?select=raw_count,score_z,wow_ratio,context_terms,week_start,fish_species(id,canonical_name)&week_start=eq.${w}&order=raw_count.desc&limit=20`);
+  },
+  async addTrendNote(term, species, context) {
+    return sbJson(`/rest/v1/rpc/add_trend_note`, {
+      method: "POST",
+      body: {
+        p_term: term,
+        p_species: species || null,
+        p_context: context || [],
+        p_password: PW_CACHE.admin || ""
+      }
+    });
+  },
   async listOpLogs(limit) {
     return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit || 200}`);
   },

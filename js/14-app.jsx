@@ -10,6 +10,7 @@ var LAZY_TABS = {
   admin:   { file:"13-tab-admin",   comp:"AdminTab" },
   request: { file:"13-tab-admin",   comp:"RequestTab" },   // お問い合わせ（管理ファイル内のため遅延経由で）
   archive: { file:"13-tab-admin",   comp:"ArchiveTab" },   // アーカイブ（同上）
+  trend:   { file:"16-tab-trend",   comp:"TrendTab" },     // トレンド（訴求の切り口）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -31,6 +32,7 @@ const MENU_ICON = (() => {
     gne:     P(<><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></>),
     archive: P(<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>),
     admin:   P(<><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></>),
+    trend:   P(<><path d="M3.5 17l5-5 3.5 3.5 6-6.5"/><path d="M14.5 9h4v4"/></>),
   };
 })();
 
@@ -270,6 +272,7 @@ function App() {
       {tab==="catalog" && <CatalogTab />}
       {tab==="order"   && <OrderTab />}
       {tab==="bundle"  && <BundleTab />}
+      {tab==="trend" && <LazyTab tabKey="trend" />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <LazyTab tabKey="gne" compProps={{ onCreatePop: handleCreatePop }} />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}
