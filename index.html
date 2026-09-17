@@ -94,8 +94,6 @@ html { background: #8FA0B0; }
    これによりiOSのラバーバンドで画面全体がずれる問題を構造的に根絶する。
    高さは 100dvh（動的ビューポート）でアドレスバーの出入りに追従させ、下部のすき間を防ぐ。 */
 html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
-/* 画面の一番下（ホームバーのあたり）を下のバーと同じ色にして、一体に見せる */
-html { background: #1d3a57; }
 #root { position:fixed; inset:0; }
 #app-scroll { position:fixed; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
 .hig-pill { -webkit-tap-highlight-color: transparent; }
@@ -264,21 +262,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260907i"></script>
-<script src="js/02-api.js?v=20260907i"></script>
-<script src="js/03-utils.js?v=20260907i"></script>
-<script src="js/04-shared.js?v=20260907i"></script>
-<script src="js/05-tab-board.js?v=20260907i"></script>
-<script src="js/06-tab-create.js?v=20260907i"></script>
-<script src="js/07-tab-floor.js?v=20260907i"></script>
-<script src="js/09-tab-info.js?v=20260907i"></script>
-<script src="js/11-tab-check-fish.js?v=20260907i"></script>
-<script src="js/12-tab-learn.js?v=20260907i"></script>
-<script src="js/14-app.js?v=20260907i"></script>
+<script src="js/01-config.js?v=20260907j"></script>
+<script src="js/02-api.js?v=20260907j"></script>
+<script src="js/03-utils.js?v=20260907j"></script>
+<script src="js/04-shared.js?v=20260907j"></script>
+<script src="js/05-tab-board.js?v=20260907j"></script>
+<script src="js/06-tab-create.js?v=20260907j"></script>
+<script src="js/07-tab-floor.js?v=20260907j"></script>
+<script src="js/09-tab-info.js?v=20260907j"></script>
+<script src="js/11-tab-check-fish.js?v=20260907j"></script>
+<script src="js/12-tab-learn.js?v=20260907j"></script>
+<script src="js/14-app.js?v=20260907j"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260907i";
+window.APP_VER = "20260907j";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
