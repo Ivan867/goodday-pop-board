@@ -14,7 +14,7 @@ function AdminTab({
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
   const [gChecking, setGChecking] = useState(false);
-  const [section, setSection] = useState("req"); // req | archive
+  const [section, setSection] = useState("home"); // home（タイル一覧）| 各画面
 
   // アーカイブ管理用
   const [pops, setPops] = useState([]);
@@ -315,6 +315,7 @@ function AdminTab({
 
   // ---- 依頼 ----
   const openReqs = reqs.filter(r => r.status !== "対応済み").length;
+  const pinnedCount = pops.filter(p => p.is_pinned).length;
   const saveReply = async r => {
     const text = (replyDraft[r.id] ?? r.reply ?? "").trim();
     try {
@@ -502,14 +503,157 @@ function AdminTab({
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "管理画面"), /*#__PURE__*/React.createElement("div", {
+  }, "管理画面"), section === "home" ? /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(76px, 1fr))",
-      gap: 7,
+      gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))",
+      gap: 10
+    }
+  }, [["req", "依頼", openReqs || 0, "#c2691a", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h16v13H4z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M4 7l8 6 8-6"
+  }))], ["genre", "ジャンル", genreCount("未分類") || 0, "#6b4ea0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M20.6 13.4L12 4.8H4v8l8.6 8.6a2 2 0 002.8 0l5.2-5.2a2 2 0 000-2.8z"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "7.5",
+    cy: "7.5",
+    r: "1.3"
+  }))], ["archive", "アーカイブ", arCount, "#2f6fb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "4",
+    width: "18",
+    height: "5",
+    rx: "1.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M5 9v9.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V9M10 13h4"
+  }))], ["trash", "ゴミ箱", delPops.length || 0, "#b3261e", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"
+  }))], ["oplog", "操作の記録", opLogs.length || 0, "#3f8f9e", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "8.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 7.5V12l3 2"
+  }))], ["backup", "控えを取る", null, "#3f9e63", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 3v11M8 10.5l4 4 4-4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M4 16.5v2.5a1.5 1.5 0 001.5 1.5h13a1.5 1.5 0 001.5-1.5v-2.5"
+  }))], ["notice", "お知らせ", null, "#c39a3c", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 9.5h4l7-4.5v14l-7-4.5H4z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M18 9a4 4 0 010 6"
+  }))], ["pinned", "ピン留め", pinnedCount, "#d1554f", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 17v4M8 3h8l-1 6 3 3v2H6v-2l3-3z"
+  }))], ["memo", "制作メモ", null, "#9e7b3f", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 20h9"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"
+  }))], ["ranking", "記録", null, "#2aa3a3", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 20V10M10 20V4M16 20v-7M22 20H2"
+  }))], ["device", "端末", null, "#8a9099", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+    x: "6",
+    y: "3",
+    width: "12",
+    height: "18",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M11 18h2"
+  }))], ["res", "資料", null, "#1d9e75", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M5 4.5h9l5 5v10H5z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 4.5v5h5"
+  }))], ["cat", "カタログ", null, "#378add", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h7v14H4zM13 5.5h7v14h-7z"
+  }))], ["dev", "更新履歴", null, "#639922", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "8.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 12h8M12 8v8"
+  }))], ["rot", "向き", null, "#b08968", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M20 12a8 8 0 11-2.3-5.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 4v5h-5"
+  }))]].map(([k, label, n, col, icon]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setSection(k),
+    style: {
+      position: "relative",
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: 14,
+      padding: "18px 8px 13px",
+      cursor: "pointer",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 9,
+      minHeight: 104,
+      boxShadow: "0 1px 3px rgba(20,40,70,0.06)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "30",
+    height: "30",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: col,
+    strokeWidth: "1.7",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, icon), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--text)",
+      lineHeight: 1.3,
+      textAlign: "center"
+    }
+  }, label), n != null && n > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      top: 8,
+      right: 9,
+      background: col,
+      color: "#fff",
+      fontSize: 11.5,
+      fontWeight: 900,
+      minWidth: 21,
+      height: 21,
+      borderRadius: 11,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0 5px"
+    }
+  }, n)))) : /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSection("home"),
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      border: "1px solid var(--line)",
+      background: "#fff",
+      color: "var(--sub)",
+      borderRadius: 10,
+      padding: "8px 14px 8px 10px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      cursor: "pointer",
       marginBottom: 16
     }
-  }, mainSeg("req", "依頼", openReqs || 0), mainSeg("genre", "ジャンル", genreCount("未分類") || 0), mainSeg("archive", "アーカイブ"), mainSeg("trash", "ゴミ箱", delPops.length || 0), mainSeg("oplog", "操作の記録"), mainSeg("backup", "控えを取る"), mainSeg("notice", "お知らせ"), mainSeg("pinned", "ピン留め"), mainSeg("memo", "制作メモ"), mainSeg("ranking", "記録"), mainSeg("device", "端末"), mainSeg("res", "資料"), mainSeg("cat", "カタログ"), mainSeg("dev", "更新履歴"), mainSeg("rot", "向き")), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  })), "メニューへ"), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
