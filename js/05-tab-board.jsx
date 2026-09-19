@@ -117,7 +117,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             ["search", "検索", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>],
           ].map(([key, label, primary, icon]) => (
             <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "#fff", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"8px 3px", cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"8px 3px", cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
               <span style={{ fontSize:11.5, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
             </button>
@@ -170,7 +170,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
               <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:8, padding:2 }}>
                 {[["sm","小"],["md","中"],["lg","大"]].map(([v,l]) => (
                   <button key={v} onClick={() => setTextSizeSave(v)} aria-pressed={textSize===v} aria-label={`文字サイズ ${l}`}
-                    style={{ border:"none", background: textSize===v ? "#fff" : "transparent", color: textSize===v ? "var(--ink)" : "var(--sub)",
+                    style={{ border:"none", background: textSize===v ? "var(--card, #fff)" : "transparent", color: textSize===v ? "var(--ink)" : "var(--sub)",
                       borderRadius:6, padding:"4px 12px", fontSize:12, fontWeight:800, cursor:"pointer", minWidth:34,
                       boxShadow: textSize===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
                 ))}

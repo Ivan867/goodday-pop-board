@@ -664,14 +664,14 @@ function PopCard({ pop, index, onClick, hasComment }) {
   const tint = CAT_TINT[pop.category] || CAT_TINT["その他"];
   return (
     <div className="ucard"
-      style={{ borderRadius:2, overflow:"hidden", background:"white", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(index,10)*0.04}s both` }}
+      style={{ borderRadius:2, overflow:"hidden", background:"var(--card, #fff)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(index,10)*0.04}s both` }}
       onClick={()=>onClick(pop)}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
       <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", aspectRatio:"1 / 1.414", objectFit:"contain", display:"block", background:"#fff", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
-          : <div style={{ width:"100%", aspectRatio:"1 / 1.414", background:"#fff" }} />}
+          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin" onLoad={e => { e.target.classList.add("ld"); const p=e.target.parentElement; if(p) p.classList.remove("imgskel"); }} style={{ width:"100%", aspectRatio:"1 / 1.414", objectFit:"contain", display:"block", background:"var(--card, #fff)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
+          : <div style={{ width:"100%", aspectRatio:"1 / 1.414", background:"var(--card, #fff)" }} />}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
           {pop.__group && (
             <div style={{ display:"flex", alignItems:"center", gap:4,

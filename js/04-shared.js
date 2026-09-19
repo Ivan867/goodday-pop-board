@@ -1,3 +1,4 @@
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 /* GoodDay 鮮魚共有 — 04-shared （自動分割・window共有） */
 var {
   useState,
@@ -226,7 +227,7 @@ function UploadModal({
       fontSize: 21,
       fontWeight: 900
     }
-  }, "ポップをアップロード"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30DD\u30C3\u30D7\u3092\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9"), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
     style: {
       background: "none",
@@ -235,7 +236,7 @@ function UploadModal({
       cursor: "pointer",
       color: "var(--sub)"
     }
-  }, "✕")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -248,7 +249,7 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "店舗"), /*#__PURE__*/React.createElement("select", {
+  }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
     value: store,
     onChange: e => setStore(e.target.value),
     style: {
@@ -267,12 +268,12 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "お名前 ", /*#__PURE__*/React.createElement("span", {
+  }, "\u304A\u540D\u524D ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
       fontWeight: 600
     }
-  }, "（任意）")), /*#__PURE__*/React.createElement("div", {
+  }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -281,7 +282,7 @@ function UploadModal({
   }, /*#__PURE__*/React.createElement("input", {
     value: author,
     onChange: e => setAuthor(e.target.value),
-    placeholder: "例：山田 太郎",
+    placeholder: "\u4F8B\uFF1A\u5C71\u7530 \u592A\u90CE",
     style: {
       flex: 1,
       minWidth: 0,
@@ -294,7 +295,7 @@ function UploadModal({
   }), /*#__PURE__*/React.createElement("button", {
     type: "button",
     onClick: () => setAuthor("勝部"),
-    title: "勝部を入力",
+    title: "\u52DD\u90E8\u3092\u5165\u529B",
     style: {
       flexShrink: 0,
       width: 46,
@@ -307,7 +308,7 @@ function UploadModal({
       cursor: "pointer",
       lineHeight: 1
     }
-  }, "※"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "\u203B"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 700,
@@ -319,7 +320,7 @@ function UploadModal({
       color: "var(--faint)",
       fontWeight: 600
     }
-  }, "（一覧にはこの名前で出ます）")), /*#__PURE__*/React.createElement("input", {
+  }, "\uFF08\u4E00\u89A7\u306B\u306F\u3053\u306E\u540D\u524D\u3067\u51FA\u307E\u3059\uFF09")), /*#__PURE__*/React.createElement("input", {
     value: product,
     onChange: e => setProduct(e.target.value),
     placeholder: items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ",
@@ -338,7 +339,7 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "カテゴリ"), /*#__PURE__*/React.createElement("select", {
+  }, "\u30AB\u30C6\u30B4\u30EA"), /*#__PURE__*/React.createElement("select", {
     value: category,
     onChange: e => setCategory(e.target.value),
     style: {
@@ -357,15 +358,15 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "コメント ", /*#__PURE__*/React.createElement("span", {
+  }, "\u30B3\u30E1\u30F3\u30C8 ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 400,
       color: "var(--faint)"
     }
-  }, "（任意）")), /*#__PURE__*/React.createElement("textarea", {
+  }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("textarea", {
     value: comment,
     onChange: e => setComment(e.target.value),
-    placeholder: "例：脂がのっていておすすめ！刺身・塩焼きに。",
+    placeholder: "\u4F8B\uFF1A\u8102\u304C\u306E\u3063\u3066\u3044\u3066\u304A\u3059\u3059\u3081\uFF01\u523A\u8EAB\u30FB\u5869\u713C\u304D\u306B\u3002",
     rows: 3,
     style: {
       width: "100%",
@@ -384,8 +385,7 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "画像"), /*#__PURE__*/React.createElement("label", {
-    ...dzImg.props,
+  }, "\u753B\u50CF"), /*#__PURE__*/React.createElement("label", _extends({}, dzImg.props, {
     style: {
       display: "block",
       position: "relative",
@@ -398,7 +398,7 @@ function UploadModal({
       background: "#fafafa",
       ...dzImg.style
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "var(--sub)",
       fontSize: 14,
@@ -454,7 +454,7 @@ function UploadModal({
   }, items.length > 1 ? /*#__PURE__*/React.createElement("input", {
     value: it.name,
     onChange: e => setNameAt(i, e.target.value),
-    placeholder: "商品名",
+    placeholder: "\u5546\u54C1\u540D",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -485,7 +485,7 @@ function UploadModal({
     }
   }, it.warn)), /*#__PURE__*/React.createElement("button", {
     onClick: () => removeAt(i),
-    "aria-label": "この画像を外す",
+    "aria-label": "\u3053\u306E\u753B\u50CF\u3092\u5916\u3059",
     style: {
       border: "none",
       background: "transparent",
@@ -496,7 +496,7 @@ function UploadModal({
       padding: "0 3px",
       flexShrink: 0
     }
-  }, "×"))))), error && /*#__PURE__*/React.createElement("div", {
+  }, "\xD7"))))), error && /*#__PURE__*/React.createElement("div", {
     style: {
       color: "var(--primary)",
       fontSize: 13,
@@ -1044,7 +1044,7 @@ function PopDetail({
       e.stopPropagation();
       onClose && onClose();
     },
-    "aria-label": "もどる",
+    "aria-label": "\u3082\u3069\u308B",
     style: {
       position: "absolute",
       top: 14,
@@ -1075,7 +1075,7 @@ function PopDetail({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M15 5l-7 7 7 7"
-  })), "もどる"), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
+  })), "\u3082\u3069\u308B"), navList && navIdx >= 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: 14,
@@ -1109,7 +1109,7 @@ function PopDetail({
       alignItems: "center",
       justifyContent: "center"
     }
-  }, "✕"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       right: 11,
@@ -1125,7 +1125,7 @@ function PopDetail({
     activeColor: "#e0245e",
     fillWhenActive: true,
     icon: "heart",
-    label: "いいね"
+    label: "\u3044\u3044\u306D"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: handleUsed,
     active: used,
@@ -1144,18 +1144,18 @@ function PopDetail({
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: handleDownload,
     icon: "save",
-    label: "保存"
+    label: "\u4FDD\u5B58"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => setShowPrint(true),
     icon: "print",
-    label: "印刷"
+    label: "\u5370\u5237"
   }), onCreateFromPop && /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
       onCreateFromPop(pop);
       onClose();
     },
     icon: "edit",
-    label: "作成"
+    label: "\u4F5C\u6210"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
       setShowArcConfirm(true);
@@ -1163,7 +1163,7 @@ function PopDetail({
       setPwError("");
     },
     icon: "box",
-    label: "保管"
+    label: "\u4FDD\u7BA1"
   }), /*#__PURE__*/React.createElement(ActionBtn, {
     onClick: () => {
       setShowDelConfirm(true);
@@ -1171,7 +1171,7 @@ function PopDetail({
       setPwError("");
     },
     icon: "trash",
-    label: "削除"
+    label: "\u524A\u9664"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
@@ -1184,7 +1184,7 @@ function PopDetail({
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: openRename,
-    "aria-label": "商品名を直す",
+    "aria-label": "\u5546\u54C1\u540D\u3092\u76F4\u3059",
     style: {
       border: "none",
       background: "transparent",
@@ -1227,7 +1227,7 @@ function PopDetail({
       marginTop: 3,
       textShadow: "0 1px 3px rgba(0,0,0,0.6)"
     }
-  }, "🏪 ", pop.store_name, "\u3000·\u3000", pop.category, pop.author ? `　·　${pop.author}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFEA ", pop.store_name, "\u3000\xB7\u3000", pop.category, pop.author ? `　·　${pop.author}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "rgba(255,255,255,0.92)",
@@ -1271,20 +1271,20 @@ function PopDetail({
       color: "var(--ink)",
       marginBottom: 6
     }
-  }, "アーカイブに移しますか？"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30FC\u30AB\u30A4\u30D6\u306B\u79FB\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 10,
       lineHeight: 1.6
     }
-  }, "一覧から見えなくなりますが、消えるわけではありません。管理画面の「アーカイブ」からいつでも戻せます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E00\u89A7\u304B\u3089\u898B\u3048\u306A\u304F\u306A\u308A\u307E\u3059\u304C\u3001\u6D88\u3048\u308B\u308F\u3051\u3067\u306F\u3042\u308A\u307E\u305B\u3093\u3002\u7BA1\u7406\u753B\u9762\u306E\u300C\u30A2\u30FC\u30AB\u30A4\u30D6\u300D\u304B\u3089\u3044\u3064\u3067\u3082\u623B\u305B\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 10
     }
-  }, "ヒント：本社の郵便番号"), /*#__PURE__*/React.createElement("input", {
+  }, "\u30D2\u30F3\u30C8\uFF1A\u672C\u793E\u306E\u90F5\u4FBF\u756A\u53F7"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     value: pwInput,
     onChange: e => {
@@ -1292,7 +1292,7 @@ function PopDetail({
       setPwError("");
     },
     onKeyDown: e => e.key === "Enter" && handleArchiveConfirm(),
-    placeholder: "パスワードを入力",
+    placeholder: "\u30D1\u30B9\u30EF\u30FC\u30C9\u3092\u5165\u529B",
     autoFocus: true,
     style: {
       width: "100%",
@@ -1333,7 +1333,7 @@ function PopDetail({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "戻る"), /*#__PURE__*/React.createElement("button", {
+  }, "\u623B\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: handleArchiveConfirm,
     disabled: arcBusy,
     style: {
@@ -1379,10 +1379,10 @@ function PopDetail({
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "商品名を直す"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5546\u54C1\u540D\u3092\u76F4\u3059"), /*#__PURE__*/React.createElement("input", {
     value: newName,
     onChange: e => setNewName(e.target.value),
-    placeholder: "商品名",
+    placeholder: "\u5546\u54C1\u540D",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1401,7 +1401,7 @@ function PopDetail({
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "番号（削除と同じ）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u756A\u53F7\uFF08\u524A\u9664\u3068\u540C\u3058\uFF09"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     inputMode: "numeric",
     value: rnPw,
@@ -1449,7 +1449,7 @@ function PopDetail({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: doRename,
     disabled: rnBusy || !newName.trim(),
     style: {
@@ -1491,14 +1491,14 @@ function PopDetail({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "印刷する"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5370\u5237\u3059\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 16
     }
-  }, "余白なしでA4に印刷します。印刷画面が開いたら、用紙をA4・余白を「なし」にして印刷してください。"), [[1, "A4に1枚", "1ページいっぱいに大きく"], [2, "A4に2枚", "上下に半分ずつ（A5サイズ）"], [4, "A4に4枚", "4分割（A6サイズ）"]].map(([n, title, desc]) => /*#__PURE__*/React.createElement("button", {
+  }, "\u4F59\u767D\u306A\u3057\u3067A4\u306B\u5370\u5237\u3057\u307E\u3059\u3002\u5370\u5237\u753B\u9762\u304C\u958B\u3044\u305F\u3089\u3001\u7528\u7D19\u3092A4\u30FB\u4F59\u767D\u3092\u300C\u306A\u3057\u300D\u306B\u3057\u3066\u5370\u5237\u3057\u3066\u304F\u3060\u3055\u3044\u3002"), [[1, "A4に1枚", "1ページいっぱいに大きく"], [2, "A4に2枚", "上下に半分ずつ（A5サイズ）"], [4, "A4に4枚", "4分割（A6サイズ）"]].map(([n, title, desc]) => /*#__PURE__*/React.createElement("button", {
     key: n,
     onClick: () => doPrint(n),
     style: {
@@ -1568,7 +1568,7 @@ function PopDetail({
       cursor: "pointer",
       marginTop: 6
     }
-  }, "やめる"))), showDelConfirm && /*#__PURE__*/React.createElement("div", {
+  }, "\u3084\u3081\u308B"))), showDelConfirm && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       inset: 0,
@@ -1600,13 +1600,13 @@ function PopDetail({
       color: "#d05050",
       marginBottom: 8
     }
-  }, "本当に削除しますか？"), /*#__PURE__*/React.createElement("div", {
+  }, "\u672C\u5F53\u306B\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 10
     }
-  }, "ヒント：本社の郵便番号"), /*#__PURE__*/React.createElement("input", {
+  }, "\u30D2\u30F3\u30C8\uFF1A\u672C\u793E\u306E\u90F5\u4FBF\u756A\u53F7"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     value: pwInput,
     onChange: e => {
@@ -1614,7 +1614,7 @@ function PopDetail({
       setPwError("");
     },
     onKeyDown: e => e.key === "Enter" && handleDeleteConfirm(),
-    placeholder: "パスワードを入力",
+    placeholder: "\u30D1\u30B9\u30EF\u30FC\u30C9\u3092\u5165\u529B",
     autoFocus: true,
     style: {
       width: "100%",
@@ -1655,7 +1655,7 @@ function PopDetail({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "戻る"), /*#__PURE__*/React.createElement("button", {
+  }, "\u623B\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: handleDeleteConfirm,
     disabled: deleting,
     style: {
@@ -1682,12 +1682,12 @@ function PopDetail({
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "コメント ", comments.length > 0 && /*#__PURE__*/React.createElement("span", {
+  }, "\u30B3\u30E1\u30F3\u30C8 ", comments.length > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
       fontWeight: 600
     }
-  }, comments.length, "件")), comments.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, comments.length, "\u4EF6")), comments.length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -1769,7 +1769,7 @@ function PopDetail({
   }, s))), /*#__PURE__*/React.createElement("textarea", {
     value: cText,
     onChange: e => setCText(e.target.value),
-    placeholder: "コメントを入力…",
+    placeholder: "\u30B3\u30E1\u30F3\u30C8\u3092\u5165\u529B\u2026",
     rows: 1,
     style: {
       flex: 1,
@@ -1858,7 +1858,7 @@ function PopCard({
     style: {
       borderRadius: 2,
       overflow: "hidden",
-      background: "white",
+      background: "var(--card, #fff)",
       cursor: "pointer",
       animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`
     },
@@ -1892,14 +1892,14 @@ function PopCard({
       aspectRatio: "1 / 1.414",
       objectFit: "contain",
       display: "block",
-      background: "#fff",
+      background: "var(--card, #fff)",
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       aspectRatio: "1 / 1.414",
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1942,7 +1942,7 @@ function PopCard({
       padding: "2px 7px",
       borderRadius: 20
     }
-  }, "コメント"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u30B3\u30E1\u30F3\u30C8"))), /*#__PURE__*/React.createElement("div", {
     className: "pc-body",
     style: {
       padding: "9px 12px",

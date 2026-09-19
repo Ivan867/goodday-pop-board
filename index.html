@@ -63,6 +63,17 @@ html[data-theme="dark"] .ucard, html[data-theme="dark"] .wcard { background: var
 html[data-theme="dark"] input:not([type="range"]), html[data-theme="dark"] textarea,
 html[data-theme="dark"] select { background: var(--card); color: var(--ink); border-color: var(--line); }
 html[data-theme="dark"] input::placeholder, html[data-theme="dark"] textarea::placeholder { color: var(--faint); }
+/* 白地を前提にしていた箇所を、暗い画面でも読めるようにそろえる */
+html[data-theme="dark"] .pop-grid > div,
+html[data-theme="dark"] .pop-grid > button { background: var(--card); }
+html[data-theme="dark"] .pc-name { color: var(--ink); }
+html[data-theme="dark"] .hig-pill { background: var(--card) !important; color: var(--primary-soft) !important; border-color: var(--line) !important; }
+html[data-theme="dark"] .imgskel, html[data-theme="dark"] .sk {
+  background: linear-gradient(90deg, #232c36 25%, #2b3540 50%, #232c36 75%);
+  background-size: 200% 100%;
+}
+/* まとまり・詳細の白い面 */
+html[data-theme="dark"] [data-popdetail="1"] > div { background: var(--card); }
 /* いまどきの見た目：角は大きめに丸く、影はごく薄く */
 .wcard { border-radius: 16px; }
 .ucard { border-radius: 2px; }   /* ポップは紙のまま見せる */
@@ -283,21 +294,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260918b"></script>
-<script src="js/02-api.js?v=20260918b"></script>
-<script src="js/03-utils.js?v=20260918b"></script>
-<script src="js/04-shared.js?v=20260918b"></script>
-<script src="js/05-tab-board.js?v=20260918b"></script>
-<script src="js/06-tab-create.js?v=20260918b"></script>
-<script src="js/07-tab-floor.js?v=20260918b"></script>
-<script src="js/09-tab-info.js?v=20260918b"></script>
-<script src="js/11-tab-check-fish.js?v=20260918b"></script>
-<script src="js/12-tab-learn.js?v=20260918b"></script>
-<script src="js/14-app.js?v=20260918b"></script>
+<script src="js/01-config.js?v=20260918c"></script>
+<script src="js/02-api.js?v=20260918c"></script>
+<script src="js/03-utils.js?v=20260918c"></script>
+<script src="js/04-shared.js?v=20260918c"></script>
+<script src="js/05-tab-board.js?v=20260918c"></script>
+<script src="js/06-tab-create.js?v=20260918c"></script>
+<script src="js/07-tab-floor.js?v=20260918c"></script>
+<script src="js/09-tab-info.js?v=20260918c"></script>
+<script src="js/11-tab-check-fish.js?v=20260918c"></script>
+<script src="js/12-tab-learn.js?v=20260918c"></script>
+<script src="js/14-app.js?v=20260918c"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260918b";
+window.APP_VER = "20260918c";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

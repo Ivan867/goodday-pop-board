@@ -275,7 +275,7 @@ function BoardTab({
       justifyContent: "center",
       gap: 3,
       border: primary ? "none" : "1px solid var(--line)",
-      background: primary ? "var(--primary-soft, #4a7ab0)" : "#fff",
+      background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)",
       color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)",
       borderRadius: 12,
       padding: "8px 3px",
@@ -464,7 +464,7 @@ function BoardTab({
     "aria-label": `文字サイズ ${l}`,
     style: {
       border: "none",
-      background: textSize === v ? "#fff" : "transparent",
+      background: textSize === v ? "var(--card, #fff)" : "transparent",
       color: textSize === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
       padding: "4px 12px",
