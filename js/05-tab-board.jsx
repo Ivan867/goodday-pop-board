@@ -9,7 +9,20 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
-  const grpSwipe = React.useRef(null);               // まとまり画面のスワイプ判定
+  const grpSwipe = React.useRef(null);
+  // 画面の明るさ
+  const [dark, setDark] = useState(() => { try { return localStorage.getItem("theme") === "dark"; } catch(e) { return false; } });
+  const setDarkSave = (v) => {
+    setDark(v);
+    try { localStorage.setItem("theme", v ? "dark" : "light"); } catch(e) {}
+    try {
+      const m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", v ? "#161d25" : "#F5F2EC");
+    } catch(e) {}
+  };
+  useEffect(() => {
+    try { document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); } catch(e) {}
+  }, [dark]);               // まとまり画面のスワイプ判定
   // 文字サイズ（標準／拡大）
   const TEXT_SIZES = { sm:"12px", md:"14.5px", lg:"19px" };
   const [textSize, setTextSize] = useState(() => {
@@ -162,7 +175,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                       boxShadow: textSize===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
                 ))}
               </div>
-              <div style={{ marginLeft:"auto", display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3 }}>
+              <div style={{ marginLeft:8, display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3, flexShrink:0 }}>
                 {[
                   ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
                   ["sm", "小", <svg key="2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
@@ -173,6 +186,18 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                     style={{ border:"none", background: view===k ? "#fff" : "transparent", color: view===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
                 ))}
               </div>
+
+              <button onClick={() => setDarkSave(!dark)} aria-pressed={dark}
+                aria-label={dark ? "明るい画面にする" : "暗い画面にする"}
+                style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)",
+                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center",
+                  color:"var(--sub)", flexShrink:0 }}>
+                {dark ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>
+                )}
+              </button>
             </div>
             <div className={"pop-grid v-" + view}>
               {(() => {

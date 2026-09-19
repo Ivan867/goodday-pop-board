@@ -24,7 +24,30 @@ function BoardTab({
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
-  const grpSwipe = React.useRef(null); // まとまり画面のスワイプ判定
+  const grpSwipe = React.useRef(null);
+  // 画面の明るさ
+  const [dark, setDark] = useState(() => {
+    try {
+      return localStorage.getItem("theme") === "dark";
+    } catch (e) {
+      return false;
+    }
+  });
+  const setDarkSave = v => {
+    setDark(v);
+    try {
+      localStorage.setItem("theme", v ? "dark" : "light");
+    } catch (e) {}
+    try {
+      const m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", v ? "#161d25" : "#F5F2EC");
+    } catch (e) {}
+  };
+  useEffect(() => {
+    try {
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    } catch (e) {}
+  }, [dark]); // まとまり画面のスワイプ判定
   // 文字サイズ（標準／拡大）
   const TEXT_SIZES = {
     sm: "12px",
@@ -287,7 +310,7 @@ function BoardTab({
       fontSize: 20,
       flexShrink: 0
     }
-  }, "🎉"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDF89"), /*#__PURE__*/React.createElement("div", {
     style: {
       minWidth: 0,
       flex: 1
@@ -298,7 +321,7 @@ function BoardTab({
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
-  }, "新機能のお知らせ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u65B0\u6A5F\u80FD\u306E\u304A\u77E5\u3089\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
@@ -315,7 +338,7 @@ function BoardTab({
       padding: "4px 10px",
       flexShrink: 0
     }
-  }, "ひらく"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3072\u3089\u304F"), /*#__PURE__*/React.createElement("button", {
     onClick: e => {
       e.stopPropagation();
       try {
@@ -336,7 +359,7 @@ function BoardTab({
       flexShrink: 0,
       lineHeight: 1
     }
-  }, "✕")), tipOn && showNotice && !radialOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), tipOn && showNotice && !radialOpen && /*#__PURE__*/React.createElement("div", {
     onClick: () => setShowNotice(false),
     style: {
       position: "fixed",
@@ -416,11 +439,11 @@ function BoardTab({
       fontSize: 16,
       color: "var(--sub)"
     }
-  }, "ポップがまだありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30DD\u30C3\u30D7\u304C\u307E\u3060\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13
     }
-  }, "アップロードボタンから最初のポップを共有しましょう！")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u30DC\u30BF\u30F3\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046\uFF01")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -453,12 +476,13 @@ function BoardTab({
     }
   }, l))), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginLeft: "auto",
+      marginLeft: 8,
       display: "flex",
       gap: 3,
       background: "var(--chip)",
       borderRadius: 9,
-      padding: 3
+      padding: 3,
+      flexShrink: 0
     }
   }, [["list", "リスト", /*#__PURE__*/React.createElement("svg", {
     key: "1",
@@ -581,7 +605,49 @@ function BoardTab({
       alignItems: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
-  }, icon)))), /*#__PURE__*/React.createElement("div", {
+  }, icon))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setDarkSave(!dark),
+    "aria-pressed": dark,
+    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
+    style: {
+      marginLeft: "auto",
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      borderRadius: 9,
+      padding: "7px 11px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      color: "var(--sub)",
+      flexShrink: 0
+    }
+  }, dark ? /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "4.2"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+  })) : /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "pop-grid v-" + view
   }, (() => {
     // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）
@@ -661,7 +727,7 @@ function BoardTab({
       }
     }, /*#__PURE__*/React.createElement("button", {
       onClick: () => setOpenGroup(null),
-      "aria-label": "もどる",
+      "aria-label": "\u3082\u3069\u308B",
       style: {
         border: "none",
         background: "rgba(255,255,255,0.22)",
@@ -687,7 +753,7 @@ function BoardTab({
       strokeLinejoin: "round"
     }, /*#__PURE__*/React.createElement("path", {
       d: "M15 5l-7 7 7 7"
-    })), "もどる"), /*#__PURE__*/React.createElement("span", {
+    })), "\u3082\u3069\u308B"), /*#__PURE__*/React.createElement("span", {
       style: {
         minWidth: 0,
         flex: 1
@@ -707,7 +773,7 @@ function BoardTab({
         fontSize: 11.5,
         opacity: 0.85
       }
-    }, inGroup.length, "枚 ／ ", openGroup.store_name, " ／ 横にスワイプでもどる"))), /*#__PURE__*/React.createElement("div", {
+    }, inGroup.length, "\u679A \uFF0F ", openGroup.store_name, " \uFF0F \u6A2A\u306B\u30B9\u30EF\u30A4\u30D7\u3067\u3082\u3069\u308B"))), /*#__PURE__*/React.createElement("div", {
       style: {
         maxWidth: 1600,
         margin: "0 auto",
@@ -973,7 +1039,7 @@ function SearchTab({
       ensureLoaded();
     },
     onFocus: ensureLoaded,
-    placeholder: "商品名・店舗名・カテゴリで検索...",
+    placeholder: "\u5546\u54C1\u540D\u30FB\u5E97\u8217\u540D\u30FB\u30AB\u30C6\u30B4\u30EA\u3067\u691C\u7D22...",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1003,7 +1069,7 @@ function SearchTab({
       alignItems: "center",
       justifyContent: "center"
     }
-  }, "✕")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: "0 15px",
@@ -1107,7 +1173,7 @@ function SearchTab({
     style: {
       animation: "pulse 1.5s infinite"
     }
-  }, "読み込み中...")) : !hasFilter ? allPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D...")) : !hasFilter ? allPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: "70px 40px",
@@ -1142,13 +1208,13 @@ function SearchTab({
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだポップがありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u30DD\u30C3\u30D7\u304C\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       marginTop: 6,
       lineHeight: 1.6
     }
-  }, "「＋投稿」から最初のポップを共有してみましょう")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\uFF0B\u6295\u7A3F\u300D\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u3066\u307F\u307E\u3057\u3087\u3046")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -1163,7 +1229,7 @@ function SearchTab({
       color: "var(--ink)",
       letterSpacing: "-0.3px"
     }
-  }, "みんなのポップ"), /*#__PURE__*/React.createElement("span", {
+  }, "\u307F\u3093\u306A\u306E\u30DD\u30C3\u30D7"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       fontWeight: 900,
@@ -1227,7 +1293,7 @@ function SearchTab({
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "一致するポップが見つかりません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E00\u81F4\u3059\u308B\u30DD\u30C3\u30D7\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       marginTop: 6
@@ -1252,26 +1318,26 @@ function SearchTab({
       cursor: "pointer",
       boxShadow: "0 2px 8px rgba(74,122,176,0.3)"
     }
-  }, "絞り込みを外す")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u7D5E\u308A\u8FBC\u307F\u3092\u5916\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
       fontWeight: 700,
       marginBottom: 12
     }
-  }, q && /*#__PURE__*/React.createElement("span", null, "「", /*#__PURE__*/React.createElement("span", {
+  }, q && /*#__PURE__*/React.createElement("span", null, "\u300C", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
-  }, search), "」"), (fGenre || fStore || fCat) && /*#__PURE__*/React.createElement("span", {
+  }, search), "\u300D"), (fGenre || fStore || fCat) && /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: q ? 4 : 0
     }
-  }, [fGenre, fStore, fCat].filter(Boolean).join(" · "), " "), "の検索結果：", /*#__PURE__*/React.createElement("span", {
+  }, [fGenre, fStore, fCat].filter(Boolean).join(" · "), " "), "\u306E\u691C\u7D22\u7D50\u679C\uFF1A", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--ink)"
     }
-  }, results.length, "件")), /*#__PURE__*/React.createElement("div", {
+  }, results.length, "\u4EF6")), /*#__PURE__*/React.createElement("div", {
     className: "pop-grid v-md"
   }, results.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
