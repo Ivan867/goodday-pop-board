@@ -57,7 +57,7 @@ function BoardTab({
   const [textSize, setTextSize] = useState(() => {
     try {
       const v = localStorage.getItem("textSize");
-      if (v && TEXT_SIZES[v]) return v;
+      if (v === "md" || v === "lg") return v;
       return localStorage.getItem("bigText") === "1" ? "lg" : "md"; // 前の設定を引き継ぐ
     } catch (e) {
       return "md";
@@ -76,7 +76,8 @@ function BoardTab({
   }, [textSize]);
   const [view, setView] = useState(() => {
     try {
-      return localStorage.getItem("popView") || "md";
+      const v = localStorage.getItem("popView");
+      return v === "md" || v === "lg" ? v : "md";
     } catch (e) {
       return "md";
     }
@@ -457,21 +458,22 @@ function BoardTab({
       borderRadius: 8,
       padding: 2
     }
-  }, [["sm", "小"], ["md", "中"], ["lg", "大"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
     key: v,
     onClick: () => setTextSizeSave(v),
     "aria-pressed": textSize === v,
-    "aria-label": `文字サイズ ${l}`,
+    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
     style: {
       border: "none",
       background: textSize === v ? "var(--card, #fff)" : "transparent",
       color: textSize === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
-      padding: "4px 12px",
-      fontSize: 12,
+      padding: "3px 12px",
+      fontSize: idx === 0 ? 12 : 17,
       fontWeight: 800,
       cursor: "pointer",
       minWidth: 34,
+      lineHeight: 1.4,
       boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
     }
   }, l))), /*#__PURE__*/React.createElement("div", {
@@ -484,71 +486,7 @@ function BoardTab({
       padding: 3,
       flexShrink: 0
     }
-  }, [["list", "リスト", /*#__PURE__*/React.createElement("svg", {
-    key: "1",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 6h16M4 12h16M4 18h16"
-  }))], ["sm", "小", /*#__PURE__*/React.createElement("svg", {
-    key: "2",
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "3",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "3",
-    width: "4",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "10",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "10",
-    width: "5",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "10",
-    width: "4",
-    height: "5"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "17",
-    width: "5",
-    height: "4"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "10",
-    y: "17",
-    width: "5",
-    height: "4"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "17",
-    y: "17",
-    width: "4",
-    height: "4"
-  }))], ["md", "中", /*#__PURE__*/React.createElement("svg", {
+  }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
     width: "15",
     height: "15",
@@ -576,7 +514,7 @@ function BoardTab({
     y: "13",
     width: "8",
     height: "8"
-  }))], ["lg", "大", /*#__PURE__*/React.createElement("svg", {
+  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
     key: "4",
     width: "15",
     height: "15",

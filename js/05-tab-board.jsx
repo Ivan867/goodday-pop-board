@@ -28,7 +28,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [textSize, setTextSize] = useState(() => {
     try {
       const v = localStorage.getItem("textSize");
-      if (v && TEXT_SIZES[v]) return v;
+      if (v === "md" || v === "lg") return v;
       return localStorage.getItem("bigText") === "1" ? "lg" : "md";   // 前の設定を引き継ぐ
     } catch(e) { return "md"; }
   });
@@ -40,7 +40,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     try { document.documentElement.style.setProperty("--pc-name-size", TEXT_SIZES[textSize] || TEXT_SIZES.md); } catch(e) {}
   }, [textSize]);
 
-  const [view, setView] = useState(() => { try { return localStorage.getItem("popView") || "md"; } catch(e) { return "md"; } });
+  const [view, setView] = useState(() => { try { const v = localStorage.getItem("popView"); return (v === "md" || v === "lg") ? v : "md"; } catch(e) { return "md"; } });
   const setViewSave = (v) => { setView(v); try { localStorage.setItem("popView", v); } catch(e) {} };
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
@@ -168,19 +168,17 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           <>
             <div style={{ display:"flex", alignItems:"center", marginBottom:9 }}>
               <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:8, padding:2 }}>
-                {[["sm","小"],["md","中"],["lg","大"]].map(([v,l]) => (
-                  <button key={v} onClick={() => setTextSizeSave(v)} aria-pressed={textSize===v} aria-label={`文字サイズ ${l}`}
+                {[["md","A"],["lg","A"]].map(([v,l], idx) => (
+                  <button key={v} onClick={() => setTextSizeSave(v)} aria-pressed={textSize===v} aria-label={idx === 0 ? "文字を中くらいにする" : "文字を大きくする"}
                     style={{ border:"none", background: textSize===v ? "var(--card, #fff)" : "transparent", color: textSize===v ? "var(--ink)" : "var(--sub)",
-                      borderRadius:6, padding:"4px 12px", fontSize:12, fontWeight:800, cursor:"pointer", minWidth:34,
+                      borderRadius:6, padding:"3px 12px", fontSize: idx === 0 ? 12 : 17, fontWeight:800, cursor:"pointer", minWidth:34, lineHeight:1.4,
                       boxShadow: textSize===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
                 ))}
               </div>
               <div style={{ marginLeft:8, display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3, flexShrink:0 }}>
                 {[
-                  ["list", "リスト", <svg key="1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>],
-                  ["sm", "小", <svg key="2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><rect x="3" y="10" width="5" height="5"/><rect x="10" y="10" width="5" height="5"/><rect x="17" y="10" width="4" height="5"/><rect x="3" y="17" width="5" height="4"/><rect x="10" y="17" width="5" height="4"/><rect x="17" y="17" width="4" height="4"/></svg>],
-                  ["md", "中", <svg key="3" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
-                  ["lg", "大", <svg key="4" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
+                  ["md", "2まい", <svg key="3" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
+                  ["lg", "1まい", <svg key="4" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
                 ].map(([k, label, icon]) => (
                   <button key={k} onClick={() => setViewSave(k)} title={label}
                     style={{ border:"none", background: view===k ? "#fff" : "transparent", color: view===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
