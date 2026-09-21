@@ -543,7 +543,45 @@ function BoardTab({
       alignItems: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
-  }, icon))), /*#__PURE__*/React.createElement("button", {
+  }, icon)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 1,
+      alignSelf: "stretch",
+      background: "var(--line)",
+      margin: "3px 2px"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onFeatGo && onFeatGo("bundle"),
+    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u3092\u958B\u304F",
+    title: "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC",
+    style: {
+      border: "none",
+      background: "transparent",
+      color: "var(--sub)",
+      borderRadius: 7,
+      padding: "6px 9px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "5",
+    width: "18",
+    height: "16",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 10h18M8 3v4M16 3v4"
+  })))), /*#__PURE__*/React.createElement("button", {
     onClick: () => setDarkSave(!dark),
     "aria-pressed": dark,
     "aria-label": dark ? "明るい画面にする" : "暗い画面にする",

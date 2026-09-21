@@ -513,7 +513,7 @@ function App() {
       transform: refreshing ? undefined : `rotate(${pullY * 4}deg)`,
       animation: refreshing ? "spin 0.7s linear infinite" : "none"
     }
-  }, "↻")), /*#__PURE__*/React.createElement("div", {
+  }, "\u21BB")), /*#__PURE__*/React.createElement("div", {
     style: {
       paddingTop: "env(safe-area-inset-top)",
       background: "var(--bg)"
@@ -544,7 +544,7 @@ function App() {
       fontSize: 16,
       lineHeight: 1.3
     }
-  }, "⚠️"), /*#__PURE__*/React.createElement("span", {
+  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap"
     }
@@ -601,7 +601,7 @@ function App() {
     }
   }), tab === "dev" && /*#__PURE__*/React.createElement(DevTab, null), showToTop && !moreOpen && !radialOpen && !popDetailOpen && /*#__PURE__*/React.createElement("button", {
     onClick: () => scrollerTop(true),
-    "aria-label": "上へ戻る",
+    "aria-label": "\u4E0A\u3078\u623B\u308B",
     style: {
       position: "fixed",
       ...(tab === "search" ? {
@@ -627,7 +627,7 @@ function App() {
       justifyContent: "center",
       animation: "fadeUp .25s ease"
     }
-  }, "↑"), toast && /*#__PURE__*/React.createElement("div", {
+  }, "\u2191"), toast && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       left: 0,
@@ -700,11 +700,6 @@ function App() {
       pointerEvents: "auto"
     }
   }, [tabs[0], {
-    key: "bundle",
-    icon: "📅",
-    label: "行事",
-    color: "#3f7cb0"
-  }, {
     key: "catalog",
     icon: "📖",
     label: "カタログ",
@@ -954,7 +949,7 @@ function App() {
       marginBottom: 12,
       paddingLeft: 2
     }
-  }, "メニュー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30E1\u30CB\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(3, 1fr)",
@@ -1060,14 +1055,14 @@ class ErrBoundary extends React.Component {
         color: "#b3261e",
         marginBottom: 8
       }
-    }, "表示できませんでした"), /*#__PURE__*/React.createElement("div", {
+    }, "\u8868\u793A\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: "var(--sub)",
         lineHeight: 1.7,
         marginBottom: 14
       }
-    }, "下の内容をそのままコピーして開発担当に送ってください。アプリの他の画面は使えます。"), /*#__PURE__*/React.createElement("textarea", {
+    }, "\u4E0B\u306E\u5185\u5BB9\u3092\u305D\u306E\u307E\u307E\u30B3\u30D4\u30FC\u3057\u3066\u958B\u767A\u62C5\u5F53\u306B\u9001\u3063\u3066\u304F\u3060\u3055\u3044\u3002\u30A2\u30D7\u30EA\u306E\u4ED6\u306E\u753B\u9762\u306F\u4F7F\u3048\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("textarea", {
       readOnly: true,
       value: msg,
       style: {
@@ -1105,7 +1100,7 @@ class ErrBoundary extends React.Component {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "コピーする"), /*#__PURE__*/React.createElement("button", {
+    }, "\u30B3\u30D4\u30FC\u3059\u308B"), /*#__PURE__*/React.createElement("button", {
       onClick: () => {
         this.setState({
           err: null
@@ -1122,7 +1117,7 @@ class ErrBoundary extends React.Component {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "戻る")));
+    }, "\u623B\u308B")));
   }
 }
 ReactDOM.render(/*#__PURE__*/React.createElement(ErrBoundary, null, /*#__PURE__*/React.createElement(App, null)), document.getElementById("root"));
