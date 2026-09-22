@@ -10,6 +10,14 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
   const grpSwipe = React.useRef(null);
+  // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const go = () => { try { if (window.prefetchBundles) window.prefetchBundles(); } catch(e) {} };
+      if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 3000 }); else go();
+    }, 1500);
+    return () => clearTimeout(t);
+  }, []);
   // 画面の明るさ
   const [dark, setDark] = useState(() => { try { return localStorage.getItem("theme") === "dark"; } catch(e) { return false; } });
   const setDarkSave = (v) => {
@@ -183,13 +191,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                   <button key={k} onClick={() => setViewSave(k)} title={label}
                     style={{ border:"none", background: view===k ? "#fff" : "transparent", color: view===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
                 ))}
-                              <span style={{ width:1, alignSelf:"stretch", background:"var(--line)", margin:"3px 2px" }} />
-                <button onClick={() => onFeatGo && onFeatGo("bundle")} aria-label="行事カレンダーを開く" title="行事カレンダー"
-                  style={{ border:"none", background:"transparent", color:"var(--sub)", borderRadius:7,
-                    padding:"6px 9px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-                </button>
-</div>
+              </div>
+
+              <button onClick={() => onFeatGo && onFeatGo("bundle")} aria-label="行事カレンダーを開く" title="行事カレンダー"
+                style={{ marginLeft:10, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
+                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center", flexShrink:0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+              </button>
 
               <button onClick={() => setDarkSave(!dark)} aria-pressed={dark}
                 aria-label={dark ? "明るい画面にする" : "暗い画面にする"}

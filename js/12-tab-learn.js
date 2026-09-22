@@ -73,13 +73,13 @@ function CalendarTab() {
       fontSize: 18,
       fontWeight: 900
     }
-  }, "行事カレンダー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "売場に関わる行事・ハレの日をチェック"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u58F2\u5834\u306B\u95A2\u308F\u308B\u884C\u4E8B\u30FB\u30CF\u30EC\u306E\u65E5\u3092\u30C1\u30A7\u30C3\u30AF"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -105,13 +105,13 @@ function CalendarTab() {
       color: "var(--text)",
       cursor: "pointer"
     }
-  }, "‹"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2039"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 17,
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, ym.y, "年 ", ym.m + 1, "月"), /*#__PURE__*/React.createElement("button", {
+  }, ym.y, "\u5E74 ", ym.m + 1, "\u6708"), /*#__PURE__*/React.createElement("button", {
     onClick: nextM,
     style: {
       border: "1px solid var(--line)",
@@ -124,7 +124,7 @@ function CalendarTab() {
       color: "var(--text)",
       cursor: "pointer"
     }
-  }, "›")), /*#__PURE__*/React.createElement("div", {
+  }, "\u203A")), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       border: "1px solid var(--line)",
@@ -206,7 +206,7 @@ function CalendarTab() {
       color: "var(--ink)",
       marginBottom: 9
     }
-  }, ym.m + 1, "月の行事"), monthEvents.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, ym.m + 1, "\u6708\u306E\u884C\u4E8B"), monthEvents.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--sub)",
@@ -216,7 +216,7 @@ function CalendarTab() {
       padding: "16px",
       textAlign: "center"
     }
-  }, "この月の登録行事はありません") : monthEvents.map((e, i) => /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u6708\u306E\u767B\u9332\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093") : monthEvents.map((e, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
@@ -268,13 +268,13 @@ function CalendarTab() {
       padding: "1px 7px",
       marginLeft: 7
     }
-  }, "祝日")), e.food && /*#__PURE__*/React.createElement("div", {
+  }, "\u795D\u65E5")), e.food && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--soft-text)",
       marginTop: 2
     }
-  }, "💡 ", e.food)))), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCA1 ", e.food)))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
@@ -282,7 +282,7 @@ function CalendarTab() {
       marginTop: 8,
       lineHeight: 1.7
     }
-  }, "行事の追加・編集機能は今後対応予定です。", /*#__PURE__*/React.createElement("br", null), "まずは季節の売場づくりの目安にどうぞ。")));
+  }, "\u884C\u4E8B\u306E\u8FFD\u52A0\u30FB\u7DE8\u96C6\u6A5F\u80FD\u306F\u4ECA\u5F8C\u5BFE\u5FDC\u4E88\u5B9A\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u307E\u305A\u306F\u5B63\u7BC0\u306E\u58F2\u5834\u3065\u304F\u308A\u306E\u76EE\u5B89\u306B\u3069\u3046\u305E\u3002")));
 }
 function CompetitorTab() {
   const GROUPS = [{
@@ -417,13 +417,13 @@ function CompetitorTab() {
       fontSize: 18,
       fontWeight: 900
     }
-  }, "競合情報"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7AF6\u5408\u60C5\u5831"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "鮮魚が強い15店舗を4タイプで整理。売り方のヒントに"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u9BAE\u9B5A\u304C\u5F37\u304415\u5E97\u8217\u30924\u30BF\u30A4\u30D7\u3067\u6574\u7406\u3002\u58F2\u308A\u65B9\u306E\u30D2\u30F3\u30C8\u306B"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -497,13 +497,13 @@ function CompetitorTab() {
       borderRadius: 6,
       padding: "1px 6px"
     }
-  }, "注目度 ", r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"), /*#__PURE__*/React.createElement("span", {
+  }, "\u6CE8\u76EE\u5EA6 ", r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
       color: "var(--faint)",
       fontSize: 17
     }
-  }, "↗")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2197")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--text)",
@@ -516,7 +516,7 @@ function CompetitorTab() {
       lineHeight: 1.6,
       marginTop: 5
     }
-  }, "💡 ", r.hint))))), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCA1 ", r.hint))))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
@@ -524,7 +524,7 @@ function CompetitorTab() {
       marginTop: 4,
       lineHeight: 1.7
     }
-  }, "店名をタップすると公式サイトが別タブで開きます。", /*#__PURE__*/React.createElement("br", null), "各社の売場づくりを参考に、うちの強みを磨きましょう。")));
+  }, "\u5E97\u540D\u3092\u30BF\u30C3\u30D7\u3059\u308B\u3068\u516C\u5F0F\u30B5\u30A4\u30C8\u304C\u5225\u30BF\u30D6\u3067\u958B\u304D\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u5404\u793E\u306E\u58F2\u5834\u3065\u304F\u308A\u3092\u53C2\u8003\u306B\u3001\u3046\u3061\u306E\u5F37\u307F\u3092\u78E8\u304D\u307E\u3057\u3087\u3046\u3002")));
 }
 function IndustryTab() {
   const [subTab, setSubTab] = useState("news");
@@ -747,13 +747,13 @@ function IndustryTab() {
       fontSize: 18,
       fontWeight: 900
     }
-  }, "業界情報"), /*#__PURE__*/React.createElement("div", {
+  }, "\u696D\u754C\u60C5\u5831"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "最新記事と、鮮魚が強い15店舗の売り方"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u6700\u65B0\u8A18\u4E8B\u3068\u3001\u9BAE\u9B5A\u304C\u5F37\u304415\u5E97\u8217\u306E\u58F2\u308A\u65B9"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -788,7 +788,7 @@ function IndustryTab() {
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "ucard",
     style: {
       background: "#fff",
@@ -807,20 +807,20 @@ function IndustryTab() {
     style: {
       fontSize: 19
     }
-  }, "🗞"), /*#__PURE__*/React.createElement("span", {
+  }, "\uD83D\uDDDE"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 14.5,
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "鮮魚ニュースを探す")), /*#__PURE__*/React.createElement("div", {
+  }, "\u9BAE\u9B5A\u30CB\u30E5\u30FC\u30B9\u3092\u63A2\u3059")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 11,
       lineHeight: 1.6
     }
-  }, "気になるテーマをタップすると、Googleニュースの最新記事まとめが開きます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u6C17\u306B\u306A\u308B\u30C6\u30FC\u30DE\u3092\u30BF\u30C3\u30D7\u3059\u308B\u3068\u3001Google\u30CB\u30E5\u30FC\u30B9\u306E\u6700\u65B0\u8A18\u4E8B\u307E\u3068\u3081\u304C\u958B\u304D\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -892,7 +892,7 @@ function IndustryTab() {
         fontSize: 18,
         flexShrink: 0
       }
-    }, "↗")), st.status === "loading" && /*#__PURE__*/React.createElement("div", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("div", {
+    }, "\u2197")), st.status === "loading" && /*#__PURE__*/React.createElement("div", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
         background: "#fff",
@@ -931,12 +931,12 @@ function IndustryTab() {
         fontSize: 12.5,
         lineHeight: 1.7
       }
-    }, "最新記事を読み込めませんでした。", /*#__PURE__*/React.createElement("span", {
+    }, "\u6700\u65B0\u8A18\u4E8B\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F\u3002", /*#__PURE__*/React.createElement("span", {
       style: {
         color: site.color,
         fontWeight: 800
       }
-    }, "サイトを開く →")), st.status === "ok" && st.items.map((it, i) => /*#__PURE__*/React.createElement("a", {
+    }, "\u30B5\u30A4\u30C8\u3092\u958B\u304F \u2192")), st.status === "ok" && st.items.map((it, i) => /*#__PURE__*/React.createElement("a", {
       key: i,
       href: it.link,
       target: "_blank",
@@ -986,7 +986,7 @@ function IndustryTab() {
       marginTop: 4,
       lineHeight: 1.7
     }
-  }, "記事はタップすると別タブで開きます。", /*#__PURE__*/React.createElement("br", null), "最新情報は各サイトから自動で取得しています。"), trends.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u8A18\u4E8B\u306F\u30BF\u30C3\u30D7\u3059\u308B\u3068\u5225\u30BF\u30D6\u3067\u958B\u304D\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u6700\u65B0\u60C5\u5831\u306F\u5404\u30B5\u30A4\u30C8\u304B\u3089\u81EA\u52D5\u3067\u53D6\u5F97\u3057\u3066\u3044\u307E\u3059\u3002"), trends.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",
@@ -999,14 +999,14 @@ function IndustryTab() {
       color: "var(--ink)",
       marginBottom: 3
     }
-  }, "いまの業界の動き"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3044\u307E\u306E\u696D\u754C\u306E\u52D5\u304D"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 14,
       lineHeight: 1.6
     }
-  }, "各社の予約カタログや発表から拾った傾向です"), trends.map(t => /*#__PURE__*/React.createElement("div", {
+  }, "\u5404\u793E\u306E\u4E88\u7D04\u30AB\u30BF\u30ED\u30B0\u3084\u767A\u8868\u304B\u3089\u62FE\u3063\u305F\u50BE\u5411\u3067\u3059"), trends.map(t => /*#__PURE__*/React.createElement("div", {
     key: t.id,
     style: {
       background: "#fff",
@@ -1072,7 +1072,7 @@ function IndustryTab() {
       fontWeight: 800,
       marginTop: 8
     }
-  }, "出典：", t.source)))), /*#__PURE__*/React.createElement("div", {
+  }, "\u51FA\u5178\uFF1A", t.source)))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",
@@ -1085,14 +1085,14 @@ function IndustryTab() {
       color: "var(--ink)",
       marginBottom: 3
     }
-  }, "鮮魚が強い店の売り方"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9BAE\u9B5A\u304C\u5F37\u3044\u5E97\u306E\u58F2\u308A\u65B9"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 16,
       lineHeight: 1.6
     }
-  }, "全国15店舗を4タイプで整理。POPや売場づくりのヒントに"), GROUPS.map(g => /*#__PURE__*/React.createElement("div", {
+  }, "\u5168\u56FD15\u5E97\u8217\u30924\u30BF\u30A4\u30D7\u3067\u6574\u7406\u3002POP\u3084\u58F2\u5834\u3065\u304F\u308A\u306E\u30D2\u30F3\u30C8\u306B"), GROUPS.map(g => /*#__PURE__*/React.createElement("div", {
     key: g.cat,
     style: {
       marginBottom: 22
@@ -1160,13 +1160,13 @@ function IndustryTab() {
       borderRadius: 6,
       padding: "1px 6px"
     }
-  }, "注目度 ", r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"), /*#__PURE__*/React.createElement("span", {
+  }, "\u6CE8\u76EE\u5EA6 ", r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
       color: "var(--faint)",
       fontSize: 17
     }
-  }, "↗")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2197")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--text)",
@@ -1180,7 +1180,7 @@ function IndustryTab() {
       marginTop: 6,
       lineHeight: 1.5
     }
-  }, "見どころ：", r.hint))))))));
+  }, "\u898B\u3069\u3053\u308D\uFF1A", r.hint))))))));
 }
 function SoubaTab({
   onCreatePop
@@ -1300,13 +1300,13 @@ function SoubaTab({
       fontSize: 18,
       fontWeight: 900
     }
-  }, "便利機能"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4FBF\u5229\u6A5F\u80FD"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "売場の計算をぜんぶここで。入力するだけでパッと答え"), /*#__PURE__*/React.createElement("div", {
+  }, "\u58F2\u5834\u306E\u8A08\u7B97\u3092\u305C\u3093\u3076\u3053\u3053\u3067\u3002\u5165\u529B\u3059\u308B\u3060\u3051\u3067\u30D1\u30C3\u3068\u7B54\u3048"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1344,7 +1344,7 @@ function SoubaTab({
       color: "#2f6fb0",
       marginBottom: 14
     }
-  }, "先週とくらべて何割 相場安？"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5148\u9031\u3068\u304F\u3089\u3079\u3066\u4F55\u5272 \u76F8\u5834\u5B89\uFF1F"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
@@ -1355,7 +1355,7 @@ function SoubaTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "先週の売価（100g 円）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5148\u9031\u306E\u58F2\u4FA1\uFF08100g \u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: last,
     onChange: e => setLast(e.target.value),
     inputMode: "decimal",
@@ -1367,13 +1367,13 @@ function SoubaTab({
       fontSize: 20,
       color: "var(--faint)"
     }
-  }, "→"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192"), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "今週の売価（100g 円）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u4ECA\u9031\u306E\u58F2\u4FA1\uFF08100g \u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: now,
     onChange: e => setNow(e.target.value),
     inputMode: "decimal",
@@ -1430,7 +1430,7 @@ function SoubaTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "このおトク文でPOPを作成 →")))), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u304A\u30C8\u30AF\u6587\u3067POP\u3092\u4F5C\u6210 \u2192")))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1439,13 +1439,13 @@ function SoubaTab({
       color: "#8B6914",
       marginBottom: 4
     }
-  }, "原価＋利益率 → 売価"), /*#__PURE__*/React.createElement("div", {
+  }, "\u539F\u4FA1\uFF0B\u5229\u76CA\u7387 \u2192 \u58F2\u4FA1"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 14
     }
-  }, "売価 = 原価 ÷（1 − 利益率）。利益率は売価に対する割合（値入率）。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u58F2\u4FA1 = \u539F\u4FA1 \xF7\uFF081 \u2212 \u5229\u76CA\u7387\uFF09\u3002\u5229\u76CA\u7387\u306F\u58F2\u4FA1\u306B\u5BFE\u3059\u308B\u5272\u5408\uFF08\u5024\u5165\u7387\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
@@ -1456,11 +1456,11 @@ function SoubaTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "原価（100g 円）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u539F\u4FA1\uFF08100g \u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: cost,
     onChange: e => setCost(e.target.value),
     inputMode: "decimal",
-    placeholder: "例：120",
+    placeholder: "\u4F8B\uFF1A120",
     style: inp
   })), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1468,7 +1468,7 @@ function SoubaTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "利益率（%）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5229\u76CA\u7387\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: margin,
     onChange: e => setMargin(e.target.value),
     inputMode: "decimal",
@@ -1499,7 +1499,7 @@ function SoubaTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "この売価でPOPを作成 →")))), sub === "arari" && (() => {
+  }, "\u3053\u306E\u58F2\u4FA1\u3067POP\u3092\u4F5C\u6210 \u2192")))), sub === "arari" && (() => {
     const c = parseFloat(aCost),
       v = parseFloat(aSell);
     const ok = !isNaN(c) && !isNaN(v) && c > 0 && v > 0;
@@ -1517,7 +1517,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "粗利率をチェック"), /*#__PURE__*/React.createElement("div", {
+    }, "\u7C97\u5229\u7387\u3092\u30C1\u30A7\u30C3\u30AF"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1528,7 +1528,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "原価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u539F\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: aCost,
       onChange: e => setACost(e.target.value),
       inputMode: "decimal",
@@ -1540,7 +1540,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "売価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u58F2\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: aSell,
       onChange: e => setASell(e.target.value),
       inputMode: "decimal",
@@ -1561,7 +1561,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "目標の粗利率から売価を逆算"), /*#__PURE__*/React.createElement("div", {
+    }, "\u76EE\u6A19\u306E\u7C97\u5229\u7387\u304B\u3089\u58F2\u4FA1\u3092\u9006\u7B97"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1572,7 +1572,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "原価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u539F\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: gCost,
       onChange: e => setGCost(e.target.value),
       inputMode: "decimal",
@@ -1584,7 +1584,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "目標粗利率（%）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u76EE\u6A19\u7C97\u5229\u7387\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: gRate,
       onChange: e => setGRate(e.target.value),
       inputMode: "decimal",
@@ -1613,13 +1613,13 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 4
       }
-    }, "歩留まりから実質原価を計算"), /*#__PURE__*/React.createElement("div", {
+    }, "\u6B69\u7559\u307E\u308A\u304B\u3089\u5B9F\u8CEA\u539F\u4FA1\u3092\u8A08\u7B97"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
         marginBottom: 14
       }
-    }, "丸魚を捌いたあとの「使える部分」あたりの原価が出ます（目安：ブリのフィレ 約55%、三枚おろし 約45〜50%）"), /*#__PURE__*/React.createElement("div", {
+    }, "\u4E38\u9B5A\u3092\u634C\u3044\u305F\u3042\u3068\u306E\u300C\u4F7F\u3048\u308B\u90E8\u5206\u300D\u3042\u305F\u308A\u306E\u539F\u4FA1\u304C\u51FA\u307E\u3059\uFF08\u76EE\u5B89\uFF1A\u30D6\u30EA\u306E\u30D5\u30A3\u30EC \u7D0455%\u3001\u4E09\u679A\u304A\u308D\u3057 \u7D0445\u301C50%\uFF09"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1630,7 +1630,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "仕入単価（円/kg）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u4ED5\u5165\u5358\u4FA1\uFF08\u5186/kg\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: yUnit,
       onChange: e => setYUnit(e.target.value),
       inputMode: "decimal",
@@ -1642,7 +1642,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "歩留まり（%）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u6B69\u7559\u307E\u308A\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: yRate,
       onChange: e => setYRate(e.target.value),
       inputMode: "decimal",
@@ -1671,7 +1671,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "目標粗利率（%）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u76EE\u6A19\u7C97\u5229\u7387\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: yMargin,
       onChange: e => setYMargin(e.target.value),
       inputMode: "decimal",
@@ -1703,7 +1703,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "◯%引きの値段は？"), /*#__PURE__*/React.createElement("div", {
+    }, "\u25EF%\u5F15\u304D\u306E\u5024\u6BB5\u306F\uFF1F"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1714,7 +1714,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "元の売価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5143\u306E\u58F2\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: nPrice,
       onChange: e => setNPrice(e.target.value),
       inputMode: "decimal",
@@ -1726,7 +1726,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "割引率（%）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5272\u5F15\u7387\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: nPct,
       onChange: e => setNPct(e.target.value),
       inputMode: "decimal",
@@ -1746,7 +1746,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "◯円引きは何%相当？"), /*#__PURE__*/React.createElement("div", {
+    }, "\u25EF\u5186\u5F15\u304D\u306F\u4F55%\u76F8\u5F53\uFF1F"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1757,7 +1757,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "元の売価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5143\u306E\u58F2\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: n2Price,
       onChange: e => setN2Price(e.target.value),
       inputMode: "decimal",
@@ -1769,7 +1769,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "値引き額（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5024\u5F15\u304D\u984D\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: n2Yen,
       onChange: e => setN2Yen(e.target.value),
       inputMode: "decimal",
@@ -1797,7 +1797,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "100g単価 → パック売価"), /*#__PURE__*/React.createElement("div", {
+    }, "100g\u5358\u4FA1 \u2192 \u30D1\u30C3\u30AF\u58F2\u4FA1"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1808,7 +1808,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "100g単価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "100g\u5358\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: g100,
       onChange: e => setG100(e.target.value),
       inputMode: "decimal",
@@ -1820,7 +1820,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "内容量（g）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5185\u5BB9\u91CF\uFF08g\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: gWt,
       onChange: e => setGWt(e.target.value),
       inputMode: "decimal",
@@ -1841,7 +1841,7 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 14
       }
-    }, "パック売価 → 100g単価"), /*#__PURE__*/React.createElement("div", {
+    }, "\u30D1\u30C3\u30AF\u58F2\u4FA1 \u2192 100g\u5358\u4FA1"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1852,7 +1852,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "売価（円）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u58F2\u4FA1\uFF08\u5186\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: g2Sell,
       onChange: e => setG2Sell(e.target.value),
       inputMode: "decimal",
@@ -1864,7 +1864,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "内容量（g）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u5185\u5BB9\u91CF\uFF08g\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: g2Wt,
       onChange: e => setG2Wt(e.target.value),
       inputMode: "decimal",
@@ -1891,13 +1891,13 @@ function SoubaTab({
         color: "#2f6fb0",
         marginBottom: 4
       }
-    }, "立て塩（塩水）の塩の量"), /*#__PURE__*/React.createElement("div", {
+    }, "\u7ACB\u3066\u5869\uFF08\u5869\u6C34\uFF09\u306E\u5869\u306E\u91CF"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
         marginBottom: 14
       }
-    }, "目安：立て塩は3%前後（海水と同じくらい）。魚の下処理・臭み抜きに"), /*#__PURE__*/React.createElement("div", {
+    }, "\u76EE\u5B89\uFF1A\u7ACB\u3066\u5869\u306F3%\u524D\u5F8C\uFF08\u6D77\u6C34\u3068\u540C\u3058\u304F\u3089\u3044\uFF09\u3002\u9B5A\u306E\u4E0B\u51E6\u7406\u30FB\u81ED\u307F\u629C\u304D\u306B"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 10
@@ -1908,7 +1908,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "水の量（ml）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u6C34\u306E\u91CF\uFF08ml\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: sWater,
       onChange: e => setSWater(e.target.value),
       inputMode: "decimal",
@@ -1919,7 +1919,7 @@ function SoubaTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: lbl
-    }, "濃度（%）"), /*#__PURE__*/React.createElement("input", {
+    }, "\u6FC3\u5EA6\uFF08%\uFF09"), /*#__PURE__*/React.createElement("input", {
       value: sPct,
       onChange: e => setSPct(e.target.value),
       inputMode: "decimal",
@@ -1938,7 +1938,7 @@ function SoubaTab({
       textAlign: "center",
       marginTop: 4
     }
-  }, "※ プロトタイプです。計算方法・表示・項目はご要望に合わせて調整できます。")));
+  }, "\u203B \u30D7\u30ED\u30C8\u30BF\u30A4\u30D7\u3067\u3059\u3002\u8A08\u7B97\u65B9\u6CD5\u30FB\u8868\u793A\u30FB\u9805\u76EE\u306F\u3054\u8981\u671B\u306B\u5408\u308F\u305B\u3066\u8ABF\u6574\u3067\u304D\u307E\u3059\u3002")));
 }
 
 // ===== 管理画面：パスワードで解錠 → 依頼一覧／アーカイブ管理 =====
@@ -2333,12 +2333,12 @@ function CatalogTab() {
         padding: compact ? "7px 0" : "9px 0",
         whiteSpace: "nowrap"
       }
-    }, "画像で探す"), /*#__PURE__*/React.createElement("a", {
+    }, "\u753B\u50CF\u3067\u63A2\u3059"), /*#__PURE__*/React.createElement("a", {
       href: buildYahooUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
-      title: "Yahoo!画像検索で探す",
-      "aria-label": "Yahoo!画像検索で探す",
+      title: "Yahoo!\u753B\u50CF\u691C\u7D22\u3067\u63A2\u3059",
+      "aria-label": "Yahoo!\u753B\u50CF\u691C\u7D22\u3067\u63A2\u3059",
       style: {
         flexShrink: 0,
         display: "flex",
@@ -2358,8 +2358,8 @@ function CatalogTab() {
       href: buildBingUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
-      title: "Bing画像検索で探す",
-      "aria-label": "Bing画像検索で探す",
+      title: "Bing\u753B\u50CF\u691C\u7D22\u3067\u63A2\u3059",
+      "aria-label": "Bing\u753B\u50CF\u691C\u7D22\u3067\u63A2\u3059",
       style: {
         flexShrink: 0,
         display: "flex",
@@ -2379,8 +2379,8 @@ function CatalogTab() {
       href: buildPinterestUrl(c),
       target: "_blank",
       rel: "noopener noreferrer",
-      title: "Pinterestで探す",
-      "aria-label": "Pinterestで探す",
+      title: "Pinterest\u3067\u63A2\u3059",
+      "aria-label": "Pinterest\u3067\u63A2\u3059",
       style: {
         flexShrink: 0,
         display: "flex",
@@ -2525,7 +2525,7 @@ function CatalogTab() {
         borderRadius: 5,
         padding: "1px 6px"
       }
-    }, c.stores_count, "店") : null, c.revenue ? /*#__PURE__*/React.createElement("span", {
+    }, c.stores_count, "\u5E97") : null, c.revenue ? /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11.5,
         fontWeight: 800,
@@ -2562,7 +2562,7 @@ function CatalogTab() {
         color: g.color,
         flexShrink: 0
       }
-    }, "規模"), /*#__PURE__*/React.createElement("span", {
+    }, "\u898F\u6A21"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)"
       }
@@ -2579,7 +2579,7 @@ function CatalogTab() {
         color: g.color,
         flexShrink: 0
       }
-    }, "仕組み"), /*#__PURE__*/React.createElement("span", {
+    }, "\u4ED5\u7D44\u307F"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--sub)"
       }
@@ -2610,7 +2610,7 @@ function CatalogTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "カタログ")), /*#__PURE__*/React.createElement("div", {
+  }, "\u30AB\u30BF\u30ED\u30B0")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -2810,7 +2810,7 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "見たいもの"), /*#__PURE__*/React.createElement("select", {
+  }, "\u898B\u305F\u3044\u3082\u306E"), /*#__PURE__*/React.createElement("select", {
     value: dailyTarget,
     onChange: e => setDailyTarget(e.target.value),
     style: selBase
@@ -2829,14 +2829,14 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "検索対象年"), /*#__PURE__*/React.createElement("select", {
+  }, "\u691C\u7D22\u5BFE\u8C61\u5E74"), /*#__PURE__*/React.createElement("select", {
     value: searchYear,
     onChange: e => setSearchYear(Number(e.target.value)),
     style: selBase
   }, YEAR_OPTS.map(y => /*#__PURE__*/React.createElement("option", {
     key: y,
     value: y
-  }, y, "年")))), /*#__PURE__*/React.createElement("label", {
+  }, y, "\u5E74")))), /*#__PURE__*/React.createElement("label", {
     style: {
       display: "block"
     }
@@ -2848,7 +2848,7 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "時期"), /*#__PURE__*/React.createElement("select", {
+  }, "\u6642\u671F"), /*#__PURE__*/React.createElement("select", {
     value: season,
     onChange: e => setSeason(e.target.value),
     style: selBase
@@ -2867,7 +2867,7 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "商品ジャンル"), /*#__PURE__*/React.createElement("select", {
+  }, "\u5546\u54C1\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("select", {
     value: genre,
     onChange: e => setGenre(e.target.value),
     style: selBase
@@ -2886,7 +2886,7 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "検索のしかた"), /*#__PURE__*/React.createElement("select", {
+  }, "\u691C\u7D22\u306E\u3057\u304B\u305F"), /*#__PURE__*/React.createElement("select", {
     value: mode,
     onChange: e => setModeSave(e.target.value),
     style: selBase
@@ -2905,7 +2905,7 @@ function CatalogTab() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "追加検索ワード"), /*#__PURE__*/React.createElement("span", {
+  }, "\u8FFD\u52A0\u691C\u7D22\u30EF\u30FC\u30C9"), /*#__PURE__*/React.createElement("span", {
     style: {
       position: "relative",
       display: "block"
@@ -2916,15 +2916,15 @@ function CatalogTab() {
     onKeyDown: e => {
       if (e.key === "Enter") e.preventDefault();
     },
-    placeholder: "例：まぐろ / 特上 / 4人前",
-    "aria-label": "Google検索に足す言葉",
+    placeholder: "\u4F8B\uFF1A\u307E\u3050\u308D / \u7279\u4E0A / 4\u4EBA\u524D",
+    "aria-label": "Google\u691C\u7D22\u306B\u8DB3\u3059\u8A00\u8449",
     style: {
       ...selBase,
       paddingRight: extraWords ? 34 : 10
     }
   }), extraWords && /*#__PURE__*/React.createElement("button", {
     onClick: () => setExtraWords(""),
-    "aria-label": "追加検索ワードを消す",
+    "aria-label": "\u8FFD\u52A0\u691C\u7D22\u30EF\u30FC\u30C9\u3092\u6D88\u3059",
     style: {
       position: "absolute",
       right: 6,
@@ -2944,7 +2944,7 @@ function CatalogTab() {
       alignItems: "center",
       justifyContent: "center"
     }
-  }, "×")))), /*#__PURE__*/React.createElement("div", {
+  }, "\xD7")))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 9
     }
@@ -2991,7 +2991,7 @@ function CatalogTab() {
         display: "inline-block",
         transition: "transform .2s"
       }
-    }, "▼"));
+    }, "\u25BC"));
   })), openWordSet && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 7,
@@ -3030,7 +3030,7 @@ function CatalogTab() {
       padding: "40px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : loadError ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : loadError ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -3044,11 +3044,11 @@ function CatalogTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "読み込めませんでした"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6
     }
-  }, "電波の良いところで開き直してください")) : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u96FB\u6CE2\u306E\u826F\u3044\u3068\u3053\u308D\u3067\u958B\u304D\u76F4\u3057\u3066\u304F\u3060\u3055\u3044")) : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -3061,7 +3061,7 @@ function CatalogTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだカタログがありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u30AB\u30BF\u30ED\u30B0\u304C\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -3081,7 +3081,7 @@ function CatalogTab() {
       fontWeight: 600,
       cursor: "pointer"
     }
-  }, "すべて"), groupsIn.map(g => /*#__PURE__*/React.createElement("button", {
+  }, "\u3059\u3079\u3066"), groupsIn.map(g => /*#__PURE__*/React.createElement("button", {
     key: g.key,
     onClick: () => setGrp(g.key),
     "aria-pressed": grp === g.key,
@@ -3114,14 +3114,14 @@ function CatalogTab() {
       alignItems: "center",
       gap: 4
     }
-  }, "重点調査 ", favCount)), /*#__PURE__*/React.createElement("div", {
+  }, "\u91CD\u70B9\u8ABF\u67FB ", favCount)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 700,
       color: "var(--sub)",
       marginBottom: 10
     }
-  }, shown.length, "社を表示中"), shown.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, shown.length, "\u793E\u3092\u8868\u793A\u4E2D"), shown.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -3135,11 +3135,11 @@ function CatalogTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "該当するお店がありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8A72\u5F53\u3059\u308B\u304A\u5E97\u304C\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6
     }
-  }, "絞り込みを外してみてください"), /*#__PURE__*/React.createElement("button", {
+  }, "\u7D5E\u308A\u8FBC\u307F\u3092\u5916\u3057\u3066\u307F\u3066\u304F\u3060\u3055\u3044"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setGrp("");
       setFavOnly(false);
@@ -3155,7 +3155,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "絞り込みを外す")) : /*#__PURE__*/React.createElement(React.Fragment, null, grp || favOnly ? /*#__PURE__*/React.createElement("div", {
+  }, "\u7D5E\u308A\u8FBC\u307F\u3092\u5916\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, grp || favOnly ? /*#__PURE__*/React.createElement("div", {
     className: "cat-grid c-" + cview
   }, cats.map(c => /*#__PURE__*/React.createElement(Card, {
     key: c.id,
@@ -3898,7 +3898,7 @@ function OrderTab() {
         fontWeight: 800,
         letterSpacing: "-0.3px"
       }
-    }, "管理")), /*#__PURE__*/React.createElement("div", {
+    }, "\u7BA1\u7406")), /*#__PURE__*/React.createElement("div", {
       style: {
         maxWidth: 420,
         margin: "0 auto",
@@ -3945,12 +3945,12 @@ function OrderTab() {
         color: "var(--ink)",
         marginBottom: 5
       }
-    }, "番号を入れてください"), /*#__PURE__*/React.createElement("div", {
+    }, "\u756A\u53F7\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)"
       }
-    }, "番号を入れるとひらきます")), /*#__PURE__*/React.createElement("span", {
+    }, "\u756A\u53F7\u3092\u5165\u308C\u308B\u3068\u3072\u3089\u304D\u307E\u3059")), /*#__PURE__*/React.createElement("span", {
       style: {
         position: "relative",
         display: "block",
@@ -3968,7 +3968,7 @@ function OrderTab() {
       onKeyDown: e => {
         if (e.key === "Enter") tryUnlock();
       },
-      "aria-label": "番号",
+      "aria-label": "\u756A\u53F7",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -3996,7 +3996,7 @@ function OrderTab() {
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, "入力中")), pwErr && /*#__PURE__*/React.createElement("div", {
+    }, "\u5165\u529B\u4E2D")), pwErr && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12.5,
         color: "#b3261e",
@@ -4017,7 +4017,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "ひらく")));
+    }, "\u3072\u3089\u304F")));
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4037,7 +4037,7 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "塩干発注"), store && /*#__PURE__*/React.createElement("span", {
+  }, "\u5869\u5E72\u767A\u6CE8"), store && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -4065,7 +4065,7 @@ function OrderTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "店を変える"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u5E97\u3092\u5909\u3048\u308B"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -4098,7 +4098,7 @@ function OrderTab() {
       padding: "40px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : tab === "today" ? /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : tab === "today" ? /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
     const keyOf = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][pickDay.getDay()];
     const wd = OI_WDAY[pickDay.getDay()];
     const mine = rows.filter(r => r[keyOf] != null && r[keyOf] !== "");
@@ -4188,7 +4188,7 @@ function OrderTab() {
         d.setDate(d.getDate() - 7);
         setPickDay(d);
       },
-      "aria-label": "前の週",
+      "aria-label": "\u524D\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
         background: "#fff",
@@ -4200,19 +4200,19 @@ function OrderTab() {
         color: "var(--sub)",
         cursor: "pointer"
       }
-    }, "‹"), /*#__PURE__*/React.createElement("span", {
+    }, "\u2039"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13.5,
         fontWeight: 900,
         color: "var(--ink)"
       }
-    }, pickDay.getMonth() + 1, "月", pickDay.getDate(), "日（", wd, "）", isToday ? "・今日" : ""), /*#__PURE__*/React.createElement("button", {
+    }, pickDay.getMonth() + 1, "\u6708", pickDay.getDate(), "\u65E5\uFF08", wd, "\uFF09", isToday ? "・今日" : ""), /*#__PURE__*/React.createElement("button", {
       onClick: () => {
         const d = new Date(pickDay);
         d.setDate(d.getDate() + 7);
         setPickDay(d);
       },
-      "aria-label": "次の週",
+      "aria-label": "\u6B21\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
         background: "#fff",
@@ -4224,14 +4224,14 @@ function OrderTab() {
         color: "var(--sub)",
         cursor: "pointer"
       }
-    }, "›"), mine.length > 0 && /*#__PURE__*/React.createElement("span", {
+    }, "\u203A"), mine.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: "auto",
         fontSize: 12,
         fontWeight: 800,
         color: doneN === mine.length ? "#3f9e63" : "var(--sub)"
       }
-    }, doneN, " / ", mine.length, " 済み")), mine.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, doneN, " / ", mine.length, " \u6E08\u307F")), mine.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         color: "var(--faint)",
@@ -4245,11 +4245,11 @@ function OrderTab() {
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, wd, "曜の発注はありません"), /*#__PURE__*/React.createElement("div", {
+    }, wd, "\u66DC\u306E\u767A\u6CE8\u306F\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 6
       }
-    }, "「管理」で曜日に品目を入れると、ここに出ます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    }, "\u300C\u7BA1\u7406\u300D\u3067\u66DC\u65E5\u306B\u54C1\u76EE\u3092\u5165\u308C\u308B\u3068\u3001\u3053\u3053\u306B\u51FA\u307E\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: {
         height: 6,
         background: "var(--chip)",
@@ -4342,7 +4342,7 @@ function OrderTab() {
           fontSize: 11.5,
           color: "var(--faint)"
         }
-      }, "写真なし"), /*#__PURE__*/React.createElement("div", {
+      }, "\u5199\u771F\u306A\u3057"), /*#__PURE__*/React.createElement("div", {
         style: {
           minWidth: 0,
           flex: 1
@@ -4410,7 +4410,7 @@ function OrderTab() {
         lineHeight: 1.7,
         marginTop: 16
       }
-    }, "上の日付を押すと、その日の発注が出ます。数量はその場で直せます。")));
+    }, "\u4E0A\u306E\u65E5\u4ED8\u3092\u62BC\u3059\u3068\u3001\u305D\u306E\u65E5\u306E\u767A\u6CE8\u304C\u51FA\u307E\u3059\u3002\u6570\u91CF\u306F\u305D\u306E\u5834\u3067\u76F4\u305B\u307E\u3059\u3002")));
   })()) : tab === "sheet" ? /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
     const DK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     const dk = DK[sheetDay]; // いま編集している曜日
@@ -4470,7 +4470,7 @@ function OrderTab() {
         d.setDate(d.getDate() - 7);
         setWkStart(d);
       },
-      "aria-label": "前の週",
+      "aria-label": "\u524D\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
         background: "#fff",
@@ -4482,13 +4482,13 @@ function OrderTab() {
         color: "var(--sub)",
         cursor: "pointer"
       }
-    }, "‹"), /*#__PURE__*/React.createElement("span", {
+    }, "\u2039"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 900,
         color: "var(--ink)"
       }
-    }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "〜", (() => {
+    }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "\u301C", (() => {
       const e = new Date(wkStart);
       e.setDate(e.getDate() + 6);
       return `${e.getMonth() + 1}/${e.getDate()}`;
@@ -4498,7 +4498,7 @@ function OrderTab() {
         d.setDate(d.getDate() + 7);
         setWkStart(d);
       },
-      "aria-label": "次の週",
+      "aria-label": "\u6B21\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
         background: "#fff",
@@ -4510,7 +4510,7 @@ function OrderTab() {
         color: "var(--sub)",
         cursor: "pointer"
       }
-    }, "›"), /*#__PURE__*/React.createElement("button", {
+    }, "\u203A"), /*#__PURE__*/React.createElement("button", {
       onClick: () => setWkStart(mondayOf(new Date())),
       style: {
         marginLeft: "auto",
@@ -4523,7 +4523,7 @@ function OrderTab() {
         color: "var(--sub)",
         cursor: "pointer"
       }
-    }, "今週")), /*#__PURE__*/React.createElement("div", {
+    }, "\u4ECA\u9031")), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 4,
@@ -4585,20 +4585,20 @@ function OrderTab() {
         color: "var(--ink)",
         marginBottom: onDay.length ? 9 : 0
       }
-    }, wd, "曜に発注するもの ", onDay.length > 0 && /*#__PURE__*/React.createElement("span", {
+    }, wd, "\u66DC\u306B\u767A\u6CE8\u3059\u308B\u3082\u306E ", onDay.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11.5,
         fontWeight: 900,
         color: "var(--primary-soft)"
       }
-    }, onDay.length, "件")), onDay.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, onDay.length, "\u4EF6")), onDay.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--faint)",
         lineHeight: 1.6,
         marginTop: 6
       }
-    }, "下から品目を押すと、この曜日に入ります") : /*#__PURE__*/React.createElement("div", {
+    }, "\u4E0B\u304B\u3089\u54C1\u76EE\u3092\u62BC\u3059\u3068\u3001\u3053\u306E\u66DC\u65E5\u306B\u5165\u308A\u307E\u3059") : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -4672,7 +4672,7 @@ function OrderTab() {
         alignItems: "center",
         justifyContent: "center"
       }
-    }, "−"), /*#__PURE__*/React.createElement("input", {
+    }, "\u2212"), /*#__PURE__*/React.createElement("input", {
       value: r[dk] == null ? "" : String(r[dk]),
       onChange: e => setCell(r, dk, e.target.value.replace(/[^0-9.]/g, "")),
       inputMode: "decimal",
@@ -4709,7 +4709,7 @@ function OrderTab() {
         alignItems: "center",
         justifyContent: "center"
       }
-    }, "＋"), /*#__PURE__*/React.createElement("span", {
+    }, "\uFF0B"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11.5,
         color: "var(--faint)",
@@ -4718,7 +4718,7 @@ function OrderTab() {
       }
     }, r.unit || ""), /*#__PURE__*/React.createElement("button", {
       onClick: () => setCell(r, dk, ""),
-      "aria-label": "この曜日から外す",
+      "aria-label": "\u3053\u306E\u66DC\u65E5\u304B\u3089\u5916\u3059",
       style: {
         border: "none",
         background: "transparent",
@@ -4729,7 +4729,7 @@ function OrderTab() {
         padding: "0 2px",
         flexShrink: 0
       }
-    }, "×"))))), active.length > 0 && /*#__PURE__*/React.createElement("div", {
+    }, "\xD7"))))), active.length > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#fff",
         border: "1px solid var(--line)",
@@ -4744,7 +4744,7 @@ function OrderTab() {
         color: "var(--sub)",
         marginBottom: 9
       }
-    }, "押すと", wd, "曜に入ります"), /*#__PURE__*/React.createElement("div", {
+    }, "\u62BC\u3059\u3068", wd, "\u66DC\u306B\u5165\u308A\u307E\u3059"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 5,
@@ -4787,7 +4787,7 @@ function OrderTab() {
           transform: on ? "rotate(180deg)" : "none",
           display: "inline-block"
         }
-      }, "▼"));
+      }, "\u25BC"));
     })), openCat && /*#__PURE__*/React.createElement("div", {
       style: {
         background: "var(--bg)",
@@ -4879,7 +4879,7 @@ function OrderTab() {
           color: on ? "#2c6b45" : "var(--sub)",
           flexShrink: 0
         }
-      }, "¥", it.price));
+      }, "\xA5", it.price));
     }))), /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#fff",
@@ -4895,12 +4895,12 @@ function OrderTab() {
         color: "var(--sub)",
         marginBottom: 7
       }
-    }, "全体の補足（紙に出ます）"), /*#__PURE__*/React.createElement("textarea", {
+    }, "\u5168\u4F53\u306E\u88DC\u8DB3\uFF08\u7D19\u306B\u51FA\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("textarea", {
       value: sheetNote,
       onChange: e => setSheetNote(e.target.value),
       onBlur: saveNote,
       rows: 2,
-      placeholder: "例：数量は目安です。売れ行きを見て調整してください。",
+      placeholder: "\u4F8B\uFF1A\u6570\u91CF\u306F\u76EE\u5B89\u3067\u3059\u3002\u58F2\u308C\u884C\u304D\u3092\u898B\u3066\u8ABF\u6574\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -4928,14 +4928,14 @@ function OrderTab() {
         color: "var(--ink)",
         marginBottom: 4
       }
-    }, "過ぎた日を記録に残す"), /*#__PURE__*/React.createElement("div", {
+    }, "\u904E\u304E\u305F\u65E5\u3092\u8A18\u9332\u306B\u6B8B\u3059"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.6,
         marginBottom: 10
       }
-    }, "日が過ぎた分（", recCount(), "件）を実績として残します。数量が違っていたら、先に上で直してください。"), /*#__PURE__*/React.createElement("button", {
+    }, "\u65E5\u304C\u904E\u304E\u305F\u5206\uFF08", recCount(), "\u4EF6\uFF09\u3092\u5B9F\u7E3E\u3068\u3057\u3066\u6B8B\u3057\u307E\u3059\u3002\u6570\u91CF\u304C\u9055\u3063\u3066\u3044\u305F\u3089\u3001\u5148\u306B\u4E0A\u3067\u76F4\u3057\u3066\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("button", {
       onClick: saveWeekToLogs,
       disabled: recBusy,
       style: {
@@ -4978,7 +4978,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "前の週をコピー"), rows.length > 0 && /*#__PURE__*/React.createElement("button", {
+    }, "\u524D\u306E\u9031\u3092\u30B3\u30D4\u30FC"), rows.length > 0 && /*#__PURE__*/React.createElement("button", {
       onClick: () => window.print(),
       style: {
         flex: 1,
@@ -4991,7 +4991,7 @@ function OrderTab() {
         fontWeight: 900,
         cursor: "pointer"
       }
-    }, "印刷する（A4）")));
+    }, "\u5370\u5237\u3059\u308B\uFF08A4\uFF09")));
   })()) : tab === "print" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -5005,7 +5005,7 @@ function OrderTab() {
       d.setDate(d.getDate() - 7);
       setWkStart(d);
     },
-    "aria-label": "前の週",
+    "aria-label": "\u524D\u306E\u9031",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -5017,13 +5017,13 @@ function OrderTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "‹"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2039"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13.5,
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "〜", (() => {
+  }, wkStart.getMonth() + 1, "/", wkStart.getDate(), "\u301C", (() => {
     const e = new Date(wkStart);
     e.setDate(e.getDate() + 6);
     return `${e.getMonth() + 1}/${e.getDate()}`;
@@ -5033,7 +5033,7 @@ function OrderTab() {
       d.setDate(d.getDate() + 7);
       setWkStart(d);
     },
-    "aria-label": "次の週",
+    "aria-label": "\u6B21\u306E\u9031",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -5045,7 +5045,7 @@ function OrderTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "›"), /*#__PURE__*/React.createElement("button", {
+  }, "\u203A"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setWkStart(mondayOf(new Date())),
     style: {
       marginLeft: "auto",
@@ -5058,7 +5058,7 @@ function OrderTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "今週")), rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u4ECA\u9031")), rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -5072,11 +5072,11 @@ function OrderTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "この週の予定はまだ空です"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u9031\u306E\u4E88\u5B9A\u306F\u307E\u3060\u7A7A\u3067\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6
     }
-  }, "「管理」から品目を入れてください")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\u7BA1\u7406\u300D\u304B\u3089\u54C1\u76EE\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       border: "1px solid var(--line)",
@@ -5091,7 +5091,7 @@ function OrderTab() {
       color: "var(--sub)",
       marginBottom: 11
     }
-  }, "印刷される内容"), SHEET_DAYS.map(([k, l], i) => {
+  }, "\u5370\u5237\u3055\u308C\u308B\u5185\u5BB9"), SHEET_DAYS.map(([k, l], i) => {
     const day = rows.filter(r => r[k] != null && r[k] !== "");
     return /*#__PURE__*/React.createElement("div", {
       key: k,
@@ -5111,18 +5111,18 @@ function OrderTab() {
         fontWeight: 900,
         color: i === 6 ? "#d1554f" : i === 5 ? "#3b7dd8" : "var(--ink)"
       }
-    }, l, "曜"), /*#__PURE__*/React.createElement("span", {
+    }, l, "\u66DC"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11.5,
         color: "var(--faint)"
       }
-    }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, day.length, "\u4EF6")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--faint)",
         paddingLeft: 4
       }
-    }, "—") : /*#__PURE__*/React.createElement("div", {
+    }, "\u2014") : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -5165,28 +5165,28 @@ function OrderTab() {
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "1週間分を印刷する（A4）"), /*#__PURE__*/React.createElement("div", {
+  }, "1\u9031\u9593\u5206\u3092\u5370\u5237\u3059\u308B\uFF08A4\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--faint)",
       lineHeight: 1.7,
       marginTop: 12
     }
-  }, "曜日ごとに分かれた表が出ます。チェック欄と数量の記入欄があるので、そのまま現場で使えます。"))) : tab === "docs" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u66DC\u65E5\u3054\u3068\u306B\u5206\u304B\u308C\u305F\u8868\u304C\u51FA\u307E\u3059\u3002\u30C1\u30A7\u30C3\u30AF\u6B04\u3068\u6570\u91CF\u306E\u8A18\u5165\u6B04\u304C\u3042\u308B\u306E\u3067\u3001\u305D\u306E\u307E\u307E\u73FE\u5834\u3067\u4F7F\u3048\u307E\u3059\u3002"))) : tab === "docs" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.8,
       marginBottom: 13
     }
-  }, "早見表や商品コードなどの資料です。押すと開きます（見るだけ）。"), docsLoading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u65E9\u898B\u8868\u3084\u5546\u54C1\u30B3\u30FC\u30C9\u306A\u3069\u306E\u8CC7\u6599\u3067\u3059\u3002\u62BC\u3059\u3068\u958B\u304D\u307E\u3059\uFF08\u898B\u308B\u3060\u3051\uFF09\u3002"), docsLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "40px 20px",
       fontSize: 13
     }
-  }, "読み込んでいます…") : docs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u3093\u3067\u3044\u307E\u3059\u2026") : docs.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -5199,7 +5199,7 @@ function OrderTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "資料がありません")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u8CC7\u6599\u304C\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -5291,7 +5291,7 @@ function OrderTab() {
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setCursor(new Date(y, mo - 1, 1)),
-    "aria-label": "前の月",
+    "aria-label": "\u524D\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -5303,15 +5303,15 @@ function OrderTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "‹"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2039"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 15,
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, y, "年", mo + 1, "月"), /*#__PURE__*/React.createElement("button", {
+  }, y, "\u5E74", mo + 1, "\u6708"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setCursor(new Date(y, mo + 1, 1)),
-    "aria-label": "次の月",
+    "aria-label": "\u6B21\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -5323,14 +5323,14 @@ function OrderTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "›"), /*#__PURE__*/React.createElement("span", {
+  }, "\u203A"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, monthCount, "回 / ", monthQty > 0 ? monthQty : 0)), active.length > 0 && /*#__PURE__*/React.createElement("select", {
+  }, monthCount, "\u56DE / ", monthQty > 0 ? monthQty : 0)), active.length > 0 && /*#__PURE__*/React.createElement("select", {
     value: focusItem,
     onChange: e => setFocusItem(e.target.value),
     style: {
@@ -5341,7 +5341,7 @@ function OrderTab() {
     }
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
-  }, "すべての品目"), active.map(i => /*#__PURE__*/React.createElement("option", {
+  }, "\u3059\u3079\u3066\u306E\u54C1\u76EE"), active.map(i => /*#__PURE__*/React.createElement("option", {
     key: i.id,
     value: i.id
   }, i.name))), /*#__PURE__*/React.createElement("div", {
@@ -5412,7 +5412,7 @@ function OrderTab() {
         fontWeight: 900,
         color: "#2c6b45"
       }
-    }, n, "件"));
+    }, n, "\u4EF6"));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
@@ -5428,7 +5428,7 @@ function OrderTab() {
       color: "var(--ink)",
       marginBottom: 9
     }
-  }, "週ごとの推移"), weeks.map(w => /*#__PURE__*/React.createElement("div", {
+  }, "\u9031\u3054\u3068\u306E\u63A8\u79FB"), weeks.map(w => /*#__PURE__*/React.createElement("div", {
     key: w.no,
     style: {
       display: "flex",
@@ -5444,7 +5444,7 @@ function OrderTab() {
       width: 52,
       flexShrink: 0
     }
-  }, "第", w.no, "週"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7B2C", w.no, "\u9031"), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       height: 16,
@@ -5470,7 +5470,7 @@ function OrderTab() {
       textAlign: "right",
       flexShrink: 0
     }
-  }, w.count, "回"), /*#__PURE__*/React.createElement("span", {
+  }, w.count, "\u56DE"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -5485,7 +5485,7 @@ function OrderTab() {
       color: "var(--faint)",
       lineHeight: 1.6
     }
-  }, "この月の記録はまだありません")), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u6708\u306E\u8A18\u9332\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093")), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       border: "1px solid var(--line)",
@@ -5499,13 +5499,13 @@ function OrderTab() {
       color: "var(--ink)",
       marginBottom: 3
     }
-  }, Number(pickDate.slice(5, 7)), "月", Number(pickDate.slice(8, 10)), "日（", OI_WDAY[new Date(pickDate + "T00:00:00").getDay()], "）に発注したもの"), /*#__PURE__*/React.createElement("div", {
+  }, Number(pickDate.slice(5, 7)), "\u6708", Number(pickDate.slice(8, 10)), "\u65E5\uFF08", OI_WDAY[new Date(pickDate + "T00:00:00").getDay()], "\uFF09\u306B\u767A\u6CE8\u3057\u305F\u3082\u306E"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--sub)",
       marginBottom: 10
     }
-  }, "カレンダーの日を押すと切り替わります"), (() => {
+  }, "\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u65E5\u3092\u62BC\u3059\u3068\u5207\u308A\u66FF\u308F\u308A\u307E\u3059"), (() => {
     const dayLogs = logs.filter(l => l.ordered_on === pickDate);
     return dayLogs.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
@@ -5513,7 +5513,7 @@ function OrderTab() {
         color: "var(--faint)",
         marginBottom: 12
       }
-    }, "まだ記録がありません") : /*#__PURE__*/React.createElement("div", {
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -5552,7 +5552,7 @@ function OrderTab() {
         }
       }, l.qty, it ? it.unit || "" : ""), /*#__PURE__*/React.createElement("button", {
         onClick: () => delLog(l),
-        "aria-label": "この記録を消す",
+        "aria-label": "\u3053\u306E\u8A18\u9332\u3092\u6D88\u3059",
         style: {
           border: "none",
           background: "transparent",
@@ -5564,7 +5564,7 @@ function OrderTab() {
           lineHeight: 1,
           flexShrink: 0
         }
-      }, "×"));
+      }, "\xD7"));
     }));
   })(), active.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5572,14 +5572,14 @@ function OrderTab() {
       color: "var(--faint)",
       lineHeight: 1.6
     }
-  }, "先に「品目」から登録してください") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u5148\u306B\u300C\u54C1\u76EE\u300D\u304B\u3089\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 7
     }
-  }, "この日に発注したものを記録する"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u65E5\u306B\u767A\u6CE8\u3057\u305F\u3082\u306E\u3092\u8A18\u9332\u3059\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -5644,7 +5644,7 @@ function OrderTab() {
       cursor: "pointer",
       flexShrink: 0
     }
-  }, "記録"))))), msg && /*#__PURE__*/React.createElement("div", {
+  }, "\u8A18\u9332"))))), msg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "#b3261e",
@@ -5670,7 +5670,7 @@ function OrderTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "＋ 品目を追加"), /*#__PURE__*/React.createElement("label", {
+  }, "\uFF0B \u54C1\u76EE\u3092\u8FFD\u52A0"), /*#__PURE__*/React.createElement("label", {
     style: {
       flex: 1,
       border: "1px solid var(--line)",
@@ -5734,7 +5734,7 @@ function OrderTab() {
   }, editId ? "品目を直す" : "品目を追加"), /*#__PURE__*/React.createElement("input", {
     value: form.name,
     onChange: e => setF("name", e.target.value),
-    placeholder: "品名（例：もずく）",
+    placeholder: "\u54C1\u540D\uFF08\u4F8B\uFF1A\u3082\u305A\u304F\uFF09",
     style: {
       ...inp,
       marginBottom: 8
@@ -5742,7 +5742,7 @@ function OrderTab() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.maker,
     onChange: e => setF("maker", e.target.value),
-    placeholder: "メーカー・仕入先（例：CGC）",
+    placeholder: "\u30E1\u30FC\u30AB\u30FC\u30FB\u4ED5\u5165\u5148\uFF08\u4F8B\uFF1ACGC\uFF09",
     style: {
       ...inp,
       marginBottom: 8,
@@ -5758,7 +5758,7 @@ function OrderTab() {
     value: form.qty,
     onChange: e => setF("qty", e.target.value.replace(/[^0-9.]/g, "")),
     inputMode: "decimal",
-    placeholder: "いつもの数量",
+    placeholder: "\u3044\u3064\u3082\u306E\u6570\u91CF",
     style: {
       ...inp,
       flex: 1
@@ -5766,7 +5766,7 @@ function OrderTab() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.unit,
     onChange: e => setF("unit", e.target.value),
-    placeholder: "単位",
+    placeholder: "\u5358\u4F4D",
     style: {
       ...inp,
       width: 96,
@@ -5775,7 +5775,7 @@ function OrderTab() {
   })), /*#__PURE__*/React.createElement("input", {
     value: form.note,
     onChange: e => setF("note", e.target.value),
-    placeholder: "メモ（例：連休前は多め）",
+    placeholder: "\u30E1\u30E2\uFF08\u4F8B\uFF1A\u9023\u4F11\u524D\u306F\u591A\u3081\uFF09",
     style: {
       ...inp,
       marginBottom: 11,
@@ -5810,7 +5810,7 @@ function OrderTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: saveItem,
     disabled: busy,
     style: {
@@ -5842,7 +5842,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "使わないもの ", off.length, "件 ", showOff ? "を隠す" : "を見る"), showOff && /*#__PURE__*/React.createElement("div", {
+    }, "\u4F7F\u308F\u306A\u3044\u3082\u306E ", off.length, "\u4EF6 ", showOff ? "を隠す" : "を見る"), showOff && /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 8,
         display: "flex",
@@ -5895,9 +5895,9 @@ function OrderTab() {
         cursor: "pointer",
         flexShrink: 0
       }
-    }, "もどす"), /*#__PURE__*/React.createElement("button", {
+    }, "\u3082\u3069\u3059"), /*#__PURE__*/React.createElement("button", {
       onClick: () => removeItem(it),
-      "aria-label": "完全に消す",
+      "aria-label": "\u5B8C\u5168\u306B\u6D88\u3059",
       style: {
         border: "none",
         background: "transparent",
@@ -5908,7 +5908,7 @@ function OrderTab() {
         padding: "0 3px",
         flexShrink: 0
       }
-    }, "×"))))) : null;
+    }, "\xD7"))))) : null;
   })(), active.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
@@ -5923,11 +5923,11 @@ function OrderTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだ品目がありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u54C1\u76EE\u304C\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6
     }
-  }, "よく発注するものから登録してみてください")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u3088\u304F\u767A\u6CE8\u3059\u308B\u3082\u306E\u304B\u3089\u767B\u9332\u3057\u3066\u307F\u3066\u304F\u3060\u3055\u3044")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -5987,14 +5987,14 @@ function OrderTab() {
         color: "var(--faint)",
         flexShrink: 0
       }
-    }, "いつも ", it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
+    }, "\u3044\u3064\u3082 ", it.qty, it.unit || "")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         fontWeight: 800,
         color: "var(--primary-soft)",
         marginBottom: 6
       }
-    }, mo + 1, "月：", n, "回 / ", q > 0 ? q + (it.unit || "") : "—"), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
+    }, mo + 1, "\u6708\uFF1A", n, "\u56DE / ", q > 0 ? q + (it.unit || "") : "—"), (it.maker || it.note) && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
@@ -6018,7 +6018,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "直す"), confirmOff === it.id ? /*#__PURE__*/React.createElement("span", {
+    }, "\u76F4\u3059"), confirmOff === it.id ? /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: "auto",
         display: "flex",
@@ -6031,7 +6031,7 @@ function OrderTab() {
         color: "var(--sub)",
         fontWeight: 700
       }
-    }, "使わない？"), /*#__PURE__*/React.createElement("button", {
+    }, "\u4F7F\u308F\u306A\u3044\uFF1F"), /*#__PURE__*/React.createElement("button", {
       onClick: () => setConfirmOff(null),
       style: {
         border: "1px solid var(--line)",
@@ -6043,7 +6043,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "やめる"), /*#__PURE__*/React.createElement("button", {
+    }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
       onClick: () => toggleActive(it, false),
       style: {
         border: "none",
@@ -6055,7 +6055,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "はい")) : /*#__PURE__*/React.createElement("button", {
+    }, "\u306F\u3044")) : /*#__PURE__*/React.createElement("button", {
       onClick: () => setConfirmOff(it.id),
       style: {
         marginLeft: "auto",
@@ -6068,7 +6068,7 @@ function OrderTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "使わない"))));
+    }, "\u4F7F\u308F\u306A\u3044"))));
   }))), /*#__PURE__*/React.createElement("div", {
     id: "sheetPrint"
   }, /*#__PURE__*/React.createElement("div", {
@@ -6087,16 +6087,16 @@ function OrderTab() {
       fontWeight: 700,
       letterSpacing: "1pt"
     }
-  }, "塩干\u3000週間発注表"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5869\u5E72\u3000\u9031\u9593\u767A\u6CE8\u8868"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: "10pt",
       marginTop: "1mm"
     }
-  }, wkStart.getFullYear(), "年 ", wkStart.getMonth() + 1, "月", wkStart.getDate(), "日（月）〜 ", (() => {
+  }, wkStart.getFullYear(), "\u5E74 ", wkStart.getMonth() + 1, "\u6708", wkStart.getDate(), "\u65E5\uFF08\u6708\uFF09\u301C ", (() => {
     const e = new Date(wkStart);
     e.setDate(e.getDate() + 6);
     return `${e.getMonth() + 1}月${e.getDate()}日`;
-  })(), "（日）")), /*#__PURE__*/React.createElement("table", {
+  })(), "\uFF08\u65E5\uFF09")), /*#__PURE__*/React.createElement("table", {
     style: {
       borderCollapse: "collapse",
       fontSize: "7pt"
@@ -6142,7 +6142,7 @@ function OrderTab() {
       style: {
         fontSize: "11pt"
       }
-    }, l, "曜"), /*#__PURE__*/React.createElement("span", {
+    }, l, "\u66DC"), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: "8.5pt",
         color: "#333"
@@ -6153,14 +6153,14 @@ function OrderTab() {
         fontSize: "8pt",
         color: "#666"
       }
-    }, day.length, "件")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, day.length, "\u4EF6")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: "8.5pt",
         color: "#999",
         padding: "3mm",
         textAlign: "center"
       }
-    }, "発注なし") : /*#__PURE__*/React.createElement("table", {
+    }, "\u767A\u6CE8\u306A\u3057") : /*#__PURE__*/React.createElement("table", {
       className: "sheet-tbl",
       style: {
         border: "none"
@@ -6171,40 +6171,40 @@ function OrderTab() {
         borderTop: "none",
         borderLeft: "none"
       }
-    }, "済"), /*#__PURE__*/React.createElement("th", {
+    }, "\u6E08"), /*#__PURE__*/React.createElement("th", {
       style: {
         width: "32%",
         borderTop: "none"
       }
-    }, "品目"), /*#__PURE__*/React.createElement("th", {
+    }, "\u54C1\u76EE"), /*#__PURE__*/React.createElement("th", {
       style: {
         width: "18%",
         borderTop: "none"
       }
-    }, "仕入先"), /*#__PURE__*/React.createElement("th", {
+    }, "\u4ED5\u5165\u5148"), /*#__PURE__*/React.createElement("th", {
       style: {
         width: "13%",
         borderTop: "none"
       }
-    }, "売価"), /*#__PURE__*/React.createElement("th", {
+    }, "\u58F2\u4FA1"), /*#__PURE__*/React.createElement("th", {
       style: {
         width: "11%",
         borderTop: "none"
       }
-    }, "期限"), /*#__PURE__*/React.createElement("th", {
+    }, "\u671F\u9650"), /*#__PURE__*/React.createElement("th", {
       style: {
         width: "18%",
         borderTop: "none",
         borderRight: "none"
       }
-    }, "数量"))), /*#__PURE__*/React.createElement("tbody", null, day.map(r => /*#__PURE__*/React.createElement("tr", {
+    }, "\u6570\u91CF"))), /*#__PURE__*/React.createElement("tbody", null, day.map(r => /*#__PURE__*/React.createElement("tr", {
       key: r.id
     }, /*#__PURE__*/React.createElement("td", {
       style: {
         height: "6.5mm",
         borderLeft: "none"
       }
-    }, "□"), /*#__PURE__*/React.createElement("td", {
+    }, "\u25A1"), /*#__PURE__*/React.createElement("td", {
       className: "nm"
     }, r.item_name), /*#__PURE__*/React.createElement("td", {
       style: {
@@ -6249,6 +6249,26 @@ function OrderTab() {
 }
 
 // ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
+// 行事カレンダーの先読み（一覧画面から裏で呼ぶ）
+function prefetchBundles(force) {
+  if (!force && window.__bundleCache && Date.now() - window.__bundleCache.at < 5 * 60 * 1000) {
+    return Promise.resolve(window.__bundleCache);
+  }
+  if (window.__bundleLoading) return window.__bundleLoading;
+  window.__bundleLoading = Promise.all([api.listBundles(), api.listAllBundleItems()]).then(([bs, cnt]) => {
+    const prev = window.__bundleCache || {};
+    window.__bundleCache = {
+      bs: bs || [],
+      cnt: cnt || [],
+      ps: prev.ps,
+      at: Date.now()
+    };
+    return window.__bundleCache;
+  }).finally(() => {
+    window.__bundleLoading = null;
+  });
+  return window.__bundleLoading;
+}
 function BundleTab() {
   const [sel, setSel] = useState(null); // 開いているPOP詳細
   const [bundles, setBundles] = useState([]);
@@ -6272,29 +6292,63 @@ function BundleTab() {
   const [pOpen, setPOpen] = useState(false);
   const [copied, setCopied] = useState("");
   const NOW_M = new Date().getMonth() + 1;
+  const chartBox = useRef(null);
   useEffect(() => {
     let alive = true;
-    setLoading(true);
+    const apply = c => {
+      if (!alive || !c) return;
+      setBundles(c.bs || []);
+      const map = {};
+      (c.cnt || []).forEach(r => {
+        map[r.bundle_id] = (map[r.bundle_id] || 0) + 1;
+      });
+      setCounts(map);
+      if (c.ps) setPops(c.ps);
+    };
+    // 前に読んだものがあれば、すぐに出す
+    if (window.__bundleCache) {
+      apply(window.__bundleCache);
+      setLoading(false);
+    } else setLoading(true);
     (async () => {
       try {
-        const [bs, ps, cnt] = await Promise.all([api.listBundles(), api.listAll(), api.listAllBundleItems()]);
-        if (alive) {
-          setBundles(bs || []);
-          setPops(ps || []);
-          const map = {};
-          (cnt || []).forEach(r => {
-            map[r.bundle_id] = (map[r.bundle_id] || 0) + 1;
-          });
-          setCounts(map);
-        }
+        // 行事と件数だけ先に（軽い）→ 表をすぐ出す
+        const c = await prefetchBundles(ver > 0);
+        apply(c);
       } catch (e) {} finally {
         if (alive) setLoading(false);
       }
+      // ポップ一覧は束を開いたときに使うので、あとから読む
+      try {
+        const ps = await api.listAll();
+        if (alive) setPops(ps || []);
+        if (window.__bundleCache) window.__bundleCache.ps = ps || [];
+      } catch (e) {}
     })();
     return () => {
       alive = false;
     };
   }, [ver]);
+
+  // 見ている月の行事が表の上に来るよう、自動で送る
+  useEffect(() => {
+    const box = chartBox.current;
+    if (!box || loading) return;
+    const t = setTimeout(() => {
+      const first = box.querySelector('[data-on="1"]');
+      if (!first) {
+        box.scrollTop = 0;
+        return;
+      }
+      const head = box.querySelector('[data-head="1"]');
+      const hh = head ? head.offsetHeight + 6 : 34;
+      box.scrollTo({
+        top: Math.max(0, first.offsetTop - hh - 4),
+        behavior: "smooth"
+      });
+    }, 60);
+    return () => clearTimeout(t);
+  }, [viewM, loading, bundles.length]);
 
   // 束を開く
   const openBundle = async b => {
@@ -6391,7 +6445,7 @@ function BundleTab() {
         setOpenId("");
         setQ("");
       },
-      "aria-label": "もどる",
+      "aria-label": "\u3082\u3069\u308B",
       style: {
         border: "none",
         background: "rgba(255,255,255,0.2)",
@@ -6403,7 +6457,7 @@ function BundleTab() {
         fontWeight: 900,
         cursor: "pointer"
       }
-    }, "‹"), /*#__PURE__*/React.createElement("div", {
+    }, "\u2039"), /*#__PURE__*/React.createElement("div", {
       style: {
         minWidth: 0
       }
@@ -6474,7 +6528,7 @@ function BundleTab() {
     }, /*#__PURE__*/React.createElement("input", {
       value: q,
       onChange: e => setQ(e.target.value),
-      placeholder: "品名でさがす",
+      placeholder: "\u54C1\u540D\u3067\u3055\u304C\u3059",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -6548,13 +6602,13 @@ function BundleTab() {
         color: "var(--primary-soft)",
         flexShrink: 0
       }
-    }, "＋"))), cands.length === 0 && /*#__PURE__*/React.createElement("div", {
+    }, "\uFF0B"))), cands.length === 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--faint)",
         padding: "8px 2px"
       }
-    }, "足せるPOPがありません"))), items.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, "\u8DB3\u305B\u308BPOP\u304C\u3042\u308A\u307E\u305B\u3093"))), items.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         color: "var(--faint)",
@@ -6568,11 +6622,11 @@ function BundleTab() {
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, "まだPOPが入っていません"), /*#__PURE__*/React.createElement("div", {
+    }, "\u307E\u3060POP\u304C\u5165\u3063\u3066\u3044\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 6
       }
-    }, "「＋ POPを足す」から入れてください")) : /*#__PURE__*/React.createElement("div", {
+    }, "\u300C\uFF0B POP\u3092\u8DB3\u3059\u300D\u304B\u3089\u5165\u308C\u3066\u304F\u3060\u3055\u3044")) : /*#__PURE__*/React.createElement("div", {
       className: "pop-grid v-sm"
     }, items.map(it => {
       const p = popById(it.pop_id);
@@ -6618,7 +6672,7 @@ function BundleTab() {
         }
       }, p.product_name)), /*#__PURE__*/React.createElement("button", {
         onClick: () => delItem(it),
-        "aria-label": "この束から外す",
+        "aria-label": "\u3053\u306E\u675F\u304B\u3089\u5916\u3059",
         style: {
           position: "absolute",
           top: 4,
@@ -6634,7 +6688,7 @@ function BundleTab() {
           cursor: "pointer",
           lineHeight: 1
         }
-      }, "×"));
+      }, "\xD7"));
     }))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
       onClick: () => setPOpen(v => !v),
       style: {
@@ -6663,7 +6717,7 @@ function BundleTab() {
         ...o,
         title: e.target.value
       })),
-      placeholder: "名前（例：うなぎ縦A4）",
+      placeholder: "\u540D\u524D\uFF08\u4F8B\uFF1A\u3046\u306A\u304E\u7E26A4\uFF09",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -6682,7 +6736,7 @@ function BundleTab() {
         prompt: e.target.value
       })),
       rows: 6,
-      placeholder: "プロンプトを貼り付け",
+      placeholder: "\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8CBC\u308A\u4ED8\u3051",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -6710,7 +6764,7 @@ function BundleTab() {
         fontWeight: 900,
         cursor: "pointer"
       }
-    }, "保存する")), prompts.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, "\u4FDD\u5B58\u3059\u308B")), prompts.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         color: "var(--faint)",
@@ -6724,11 +6778,11 @@ function BundleTab() {
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, "まだプロンプトがありません"), /*#__PURE__*/React.createElement("div", {
+    }, "\u307E\u3060\u30D7\u30ED\u30F3\u30D7\u30C8\u304C\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 6
       }
-    }, "うまくいったプロンプトを残しておくと、来年そのまま使えます")) : /*#__PURE__*/React.createElement("div", {
+    }, "\u3046\u307E\u304F\u3044\u3063\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u6B8B\u3057\u3066\u304A\u304F\u3068\u3001\u6765\u5E74\u305D\u306E\u307E\u307E\u4F7F\u3048\u307E\u3059")) : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -6775,7 +6829,7 @@ function BundleTab() {
       }
     }, copied === pr.id ? "コピーした" : "コピー"), /*#__PURE__*/React.createElement("button", {
       onClick: () => delPrompt(pr),
-      "aria-label": "消す",
+      "aria-label": "\u6D88\u3059",
       style: {
         border: "none",
         background: "transparent",
@@ -6786,7 +6840,7 @@ function BundleTab() {
         padding: "0 2px",
         flexShrink: 0
       }
-    }, "×")), /*#__PURE__*/React.createElement("div", {
+    }, "\xD7")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
@@ -6885,7 +6939,7 @@ function BundleTab() {
         padding: "1px 7px",
         flexShrink: 0
       }
-    }, "来月")), b.note && /*#__PURE__*/React.createElement("span", {
+    }, "\u6765\u6708")), b.note && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
         fontSize: 11.5,
@@ -6910,7 +6964,7 @@ function BundleTab() {
         color: "var(--faint)",
         flexShrink: 0
       }
-    }, "›"));
+    }, "\u203A"));
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6924,7 +6978,7 @@ function BundleTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "行事カレンダー")), /*#__PURE__*/React.createElement("div", {
+  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -6937,16 +6991,17 @@ function BundleTab() {
       padding: "40px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    ref: chartBox,
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "12px 10px 8px",
       marginBottom: 12,
       overflowX: "auto",
       overflowY: "auto",
-      maxHeight: "58vh",
+      maxHeight: 228,
       WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -6962,10 +7017,11 @@ function BundleTab() {
       position: "sticky",
       top: 0,
       zIndex: 3,
-      background: "#fff",
+      background: "var(--card, #fff)",
       padding: "2px 0 4px",
-      boxShadow: "0 2px 0 #fff"
-    }
+      boxShadow: "0 2px 0 var(--card, #fff)"
+    },
+    "data-head": "1"
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "sticky",
@@ -7000,6 +7056,7 @@ function BundleTab() {
     return /*#__PURE__*/React.createElement("button", {
       key: b.id,
       onClick: () => openBundle(b),
+      "data-on": on ? "1" : undefined,
       style: {
         display: "grid",
         gridTemplateColumns: "84px repeat(12, 1fr)",
@@ -7072,7 +7129,7 @@ function BundleTab() {
       textAlign: "right",
       paddingRight: 4
     }
-  }, "今月"), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
+  }, "\u4ECA\u6708"), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
     key: m,
     style: {
       textAlign: "center",
@@ -7089,7 +7146,7 @@ function BundleTab() {
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setViewM(viewM === 1 ? 12 : viewM - 1),
-    "aria-label": "前の月",
+    "aria-label": "\u524D\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -7101,15 +7158,15 @@ function BundleTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "‹"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2039"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 13.5,
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, viewM, "月", viewM === NOW_M ? "（今月）" : ""), /*#__PURE__*/React.createElement("button", {
+  }, viewM, "\u6708", viewM === NOW_M ? "（今月）" : ""), /*#__PURE__*/React.createElement("button", {
     onClick: () => setViewM(viewM === 12 ? 1 : viewM + 1),
-    "aria-label": "次の月",
+    "aria-label": "\u6B21\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
       background: "#fff",
@@ -7121,7 +7178,7 @@ function BundleTab() {
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "›"), viewM !== NOW_M && /*#__PURE__*/React.createElement("button", {
+  }, "\u203A"), viewM !== NOW_M && /*#__PURE__*/React.createElement("button", {
     onClick: () => setViewM(NOW_M),
     style: {
       marginLeft: "auto",
@@ -7134,7 +7191,7 @@ function BundleTab() {
       color: "var(--primary)",
       cursor: "pointer"
     }
-  }, "今月にもどる")), viewList.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u4ECA\u6708\u306B\u3082\u3069\u308B")), viewList.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -7146,11 +7203,11 @@ function BundleTab() {
       borderRadius: 11,
       marginBottom: 14
     }
-  }, viewM, "月に決まった行事はありません", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+  }, viewM, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12
     }
-  }, "下の「いつでも使うもの」から選べます")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0B\u306E\u300C\u3044\u3064\u3067\u3082\u4F7F\u3046\u3082\u306E\u300D\u304B\u3089\u9078\u3079\u307E\u3059")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -7168,7 +7225,7 @@ function BundleTab() {
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "そろそろ準備（", nextM, "月）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u305D\u308D\u305D\u308D\u6E96\u5099\uFF08", nextM, "\u6708\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -7186,7 +7243,7 @@ function BundleTab() {
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "いつでも使うもの"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3044\u3064\u3067\u3082\u4F7F\u3046\u3082\u306E"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -7202,10 +7259,11 @@ function BundleTab() {
       lineHeight: 1.7,
       marginTop: 18
     }
-  }, "上の図の月を押すと、その月の行事に切り替わります。右の数字はPOPの枚数です。"))));
+  }, "\u4E0A\u306E\u56F3\u306E\u6708\u3092\u62BC\u3059\u3068\u3001\u305D\u306E\u6708\u306E\u884C\u4E8B\u306B\u5207\u308A\u66FF\u308F\u308A\u307E\u3059\u3002\u53F3\u306E\u6570\u5B57\u306FPOP\u306E\u679A\u6570\u3067\u3059\u3002"))));
 }
 ;
 Object.assign(window, {
+  prefetchBundles,
   BundleTab,
   OrderTab,
   CatalogTab,

@@ -2364,6 +2364,22 @@ function OrderTab() {
 
 
 // ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
+// 行事カレンダーの先読み（一覧画面から裏で呼ぶ）
+function prefetchBundles(force) {
+  if (!force && window.__bundleCache && Date.now() - window.__bundleCache.at < 5 * 60 * 1000) {
+    return Promise.resolve(window.__bundleCache);
+  }
+  if (window.__bundleLoading) return window.__bundleLoading;
+  window.__bundleLoading = Promise.all([api.listBundles(), api.listAllBundleItems()])
+    .then(([bs, cnt]) => {
+      const prev = window.__bundleCache || {};
+      window.__bundleCache = { bs: bs || [], cnt: cnt || [], ps: prev.ps, at: Date.now() };
+      return window.__bundleCache;
+    })
+    .finally(() => { window.__bundleLoading = null; });
+  return window.__bundleLoading;
+}
+
 function BundleTab() {
   const [sel, setSel] = useState(null);          // 開いているPOP詳細
   const [bundles, setBundles] = useState([]);
@@ -2385,23 +2401,50 @@ function BundleTab() {
   const [copied, setCopied] = useState("");
 
   const NOW_M = new Date().getMonth() + 1;
+  const chartBox = useRef(null);
 
   useEffect(() => {
-    let alive = true; setLoading(true);
+    let alive = true;
+    const apply = (c) => {
+      if (!alive || !c) return;
+      setBundles(c.bs || []);
+      const map = {};
+      (c.cnt || []).forEach(r => { map[r.bundle_id] = (map[r.bundle_id] || 0) + 1; });
+      setCounts(map);
+      if (c.ps) setPops(c.ps);
+    };
+    // 前に読んだものがあれば、すぐに出す
+    if (window.__bundleCache) { apply(window.__bundleCache); setLoading(false); }
+    else setLoading(true);
     (async () => {
       try {
-        const [bs, ps, cnt] = await Promise.all([api.listBundles(), api.listAll(), api.listAllBundleItems()]);
-        if (alive) {
-          setBundles(bs || []); setPops(ps || []);
-          const map = {};
-          (cnt || []).forEach(r => { map[r.bundle_id] = (map[r.bundle_id] || 0) + 1; });
-          setCounts(map);
-        }
+        // 行事と件数だけ先に（軽い）→ 表をすぐ出す
+        const c = await prefetchBundles(ver > 0);
+        apply(c);
       } catch(e) {}
       finally { if (alive) setLoading(false); }
+      // ポップ一覧は束を開いたときに使うので、あとから読む
+      try {
+        const ps = await api.listAll();
+        if (alive) setPops(ps || []);
+        if (window.__bundleCache) window.__bundleCache.ps = ps || [];
+      } catch(e) {}
     })();
     return () => { alive = false; };
   }, [ver]);
+
+  // 見ている月の行事が表の上に来るよう、自動で送る
+  useEffect(() => {
+    const box = chartBox.current; if (!box || loading) return;
+    const t = setTimeout(() => {
+      const first = box.querySelector('[data-on="1"]');
+      if (!first) { box.scrollTop = 0; return; }
+      const head = box.querySelector('[data-head="1"]');
+      const hh = head ? head.offsetHeight + 6 : 34;
+      box.scrollTo({ top: Math.max(0, first.offsetTop - hh - 4), behavior: "smooth" });
+    }, 60);
+    return () => clearTimeout(t);
+  }, [viewM, loading, bundles.length]);
 
   // 束を開く
   const openBundle = async (b) => {
@@ -2634,10 +2677,10 @@ function BundleTab() {
         ) : (
           <>
             {/* 年間の帯グラフ（月を押すと切り替わる） */}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 10px 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:"58vh", WebkitOverflowScrolling:"touch" }}>
+            <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 10px 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:228, WebkitOverflowScrolling:"touch" }}>
               <div style={{ minWidth:520 }}>
                 {/* 月の見出し＝押せる */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"#fff", padding:"2px 0 4px", boxShadow:"0 2px 0 #fff" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"var(--card, #fff)", padding:"2px 0 4px", boxShadow:"0 2px 0 var(--card, #fff)" }} data-head="1">
                   <div style={{ position:"sticky", left:0, zIndex:4, background:"#fff" }} />
                   {MONTH_ORDER.map((mm) => {
                     const m = String(mm);
@@ -2659,7 +2702,7 @@ function BundleTab() {
                   const on = b.months.includes(viewM);
                   const n = counts[b.id] || 0;
                   return (
-                    <button key={b.id} onClick={() => openBundle(b)}
+                    <button key={b.id} onClick={() => openBundle(b)} data-on={on ? "1" : undefined}
                       style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, width:"100%", alignItems:"center",
                         border:"none", background: on ? "var(--soft)" : "transparent", borderRadius:7, padding:"4px 2px", marginBottom:3, cursor:"pointer" }}>
                       <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, position:"sticky", left:0, zIndex:2, background: on ? "#e7f1fa" : "#fff", paddingRight:4 }}>
@@ -2747,4 +2790,4 @@ function BundleTab() {
   );
 }
 
-;Object.assign(window, { BundleTab, OrderTab, CatalogTab, CalendarTab, CompetitorTab, IndustryTab, SoubaTab });
+;Object.assign(window, { prefetchBundles, BundleTab, OrderTab, CatalogTab, CalendarTab, CompetitorTab, IndustryTab, SoubaTab });
