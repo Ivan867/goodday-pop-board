@@ -25,6 +25,7 @@ function BoardTab({
   const [showUp, setShowUp] = useState(false);
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
   const grpSwipe = React.useRef(null);
+  const [reloading, setReloading] = useState(false); // 更新ボタンの回転
   // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
@@ -598,7 +599,7 @@ function BoardTab({
       marginLeft: 8,
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
-      color: "#c39a3c",
+      color: "var(--primary-soft)",
       borderRadius: 9,
       padding: "7px 11px",
       cursor: "pointer",
@@ -619,6 +620,55 @@ function BoardTab({
     d: "M9 18h6M10 21h4"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: async () => {
+      if (reloading) return;
+      setReloading(true);
+      try {
+        await load();
+        try {
+          window.__bundleCache = null;
+        } catch (e) {}
+        try {
+          window.dispatchEvent(new CustomEvent("appToast", {
+            detail: "新しくしました"
+          }));
+        } catch (e) {}
+      } finally {
+        setTimeout(() => setReloading(false), 400);
+      }
+    },
+    "aria-label": "\u6700\u65B0\u306E\u72B6\u614B\u306B\u3059\u308B",
+    title: "\u66F4\u65B0",
+    disabled: reloading,
+    style: {
+      marginLeft: 8,
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "var(--primary-soft)",
+      borderRadius: 9,
+      padding: "7px 11px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      animation: reloading ? "spinR 0.8s linear infinite" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 12a8 8 0 11-2.3-5.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 4v5h-5"
   }))), /*#__PURE__*/React.createElement("button", {
     onClick: () => setDarkSave(!dark),
     "aria-pressed": dark,
