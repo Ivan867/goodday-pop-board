@@ -259,7 +259,10 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                     seen[pop.group_id] = head; list.push(head);
                   } else list.push(pop);
                 });
-                return list.map((pop, i) => (
+                // 2まい表示：縦長どうし・横長どうしを同じ段に
+                const cols = (typeof window !== "undefined" && window.innerWidth >= 620) ? 3 : 2;
+                const shown = view === "md" ? pairByShape(list, cols) : list;
+                return shown.map((pop, i) => (
                   <PopCard key={pop.id} pop={pop} index={i}
                     onClick={() => pop.__group ? setOpenGroup(pop) : setSel(pop)}
                     hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />
@@ -300,7 +303,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
             </div>
             <div style={{ maxWidth:1600, margin:"0 auto", padding:"12px 14px 120px" }}>
               <div className={"pop-grid v-" + view}>
-                {inGroup.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel}
+                {(view === "md" ? pairByShape(inGroup, (window.innerWidth >= 620 ? 3 : 2)) : inGroup).map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel}
                   hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
               </div>
             </div>

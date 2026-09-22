@@ -743,7 +743,10 @@ function BoardTab({
         list.push(head);
       } else list.push(pop);
     });
-    return list.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+    // 2まい表示：縦長どうし・横長どうしを同じ段に
+    const cols = typeof window !== "undefined" && window.innerWidth >= 620 ? 3 : 2;
+    const shown = view === "md" ? pairByShape(list, cols) : list;
+    return shown.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,
@@ -847,7 +850,7 @@ function BoardTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "pop-grid v-" + view
-    }, inGroup.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+    }, (view === "md" ? pairByShape(inGroup, window.innerWidth >= 620 ? 3 : 2) : inGroup).map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,

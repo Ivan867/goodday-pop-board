@@ -1811,6 +1811,60 @@ function PopDetail({
 }
 
 // ── Pop Card (shared) ──
+// 一覧の並べ替え：同じ形（縦長どうし・横長どうし）を同じ段にそろえる。
+// 近く（K件以内）に同じ形があれば1段ぶん前に寄せる。見つからなければ次のものと並べる。
+function popShape(p) {
+  const id = p.__imgId || p.id;
+  const d = p.img_w && p.img_h ? {
+    w: p.img_w,
+    h: p.img_h
+  } : (window.__popDims || {})[id] || null;
+  const rot = p.rotation === 90 || p.rotation === 270;
+  return d && !rot && d.w > d.h * 1.05 ? "L" : "P";
+}
+function pairByShape(list, cols, K) {
+  cols = cols || 2;
+  K = K || 6;
+  const rest = list.slice(),
+    out = [];
+  while (rest.length) {
+    const a = rest.shift(),
+      sa = popShape(a),
+      row = [a];
+    // 同じ形の相手を近くから探す
+    for (let i = 0; i < Math.min(K, rest.length) && row.length < cols;) {
+      if (popShape(rest[i]) === sa) {
+        row.push(rest.splice(i, 1)[0]);
+      } else i++;
+    }
+    // 足りなければ、続きのものでうめる
+    while (row.length < cols && rest.length) row.push(rest.shift());
+    const allLand = row.length === cols && row.every(x => popShape(x) === "L");
+    if (allLand) {
+      // 同じ段の横長は、いちばん背の高いものに枠の高さをそろえる（名前の位置がそろう）
+      const ars = row.map(x => {
+        const id = x.__imgId || x.id;
+        const d = x.img_w && x.img_h ? {
+          w: x.img_w,
+          h: x.img_h
+        } : (window.__popDims || {})[id] || {
+          w: 1.41,
+          h: 1
+        };
+        return d.w / d.h;
+      });
+      const rowAr = Math.min.apply(null, ars);
+      row.forEach(x => out.push({
+        ...x,
+        __pairLand: true,
+        __rowAr: rowAr
+      }));
+    } else {
+      row.forEach(x => out.push(x));
+    }
+  }
+  return out;
+}
 function PopCard({
   pop,
   index,
@@ -1886,7 +1940,7 @@ function PopCard({
     }
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "ucard" + (land ? " pc-land" : ""),
+    className: "ucard" + (land ? " pc-land" : "") + (land && pop.__pairLand ? " pc-pair-land" : ""),
     style: {
       borderRadius: 2,
       overflow: "hidden",
@@ -1894,7 +1948,7 @@ function PopCard({
       cursor: "pointer",
       animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`,
       ...(dims && !rotated ? {
-        "--nat-ar": `${dims.w} / ${dims.h}`
+        "--nat-ar": land && pop.__pairLand && pop.__rowAr ? String(pop.__rowAr) : `${dims.w} / ${dims.h}`
       } : {})
     },
     onClick: () => onClick(pop),
@@ -1997,5 +2051,7 @@ function PopCard({
 Object.assign(window, {
   PopCard,
   PopDetail,
-  UploadModal
+  UploadModal,
+  pairByShape,
+  popShape
 });
