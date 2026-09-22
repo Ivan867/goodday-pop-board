@@ -2539,13 +2539,13 @@ function BundleTab() {
               </button>
 
               {addOpen && (
-                <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:14 }}>
+                <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:14 }}>
                   <input value={q} onChange={e => setQ(e.target.value)} placeholder="品名でさがす"
                     style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, outline:"none", marginBottom:9, fontFamily:"inherit" }} />
                   <div style={{ maxHeight:260, overflowY:"auto", display:"flex", flexDirection:"column", gap:5 }}>
                     {cands.slice(0, 60).map(p => (
                       <button key={p.id} onClick={() => addPop(p)} disabled={busy}
-                        style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", border:"1px solid var(--line)", background:"#fff", borderRadius:8, padding:"6px 8px", cursor:"pointer" }}>
+                        style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, padding:"6px 8px", cursor:"pointer" }}>
                         <img src={p.image_url} alt="" style={{ width:32, height:44, objectFit:"cover", borderRadius:4, flexShrink:0, background:"var(--bg)" }} />
                         <span style={{ minWidth:0, flex:1 }}>
                           <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</span>
@@ -2572,7 +2572,7 @@ function BundleTab() {
                     return (
                       <div key={it.id} style={{ position:"relative" }}>
                         <button onClick={() => setSel(p)}
-                          style={{ display:"block", width:"100%", border:"1px solid var(--line)", background:"#fff", borderRadius:10, overflow:"hidden", cursor:"pointer", padding:0 }}>
+                          style={{ display:"block", width:"100%", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:10, overflow:"hidden", cursor:"pointer", padding:0 }}>
                           <img src={p.image_url} alt={p.product_name} style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"cover", display:"block", background:"var(--bg)" }} />
                           <span style={{ display:"block", fontSize:12, fontWeight:800, color:"var(--ink)", padding:"5px 6px", textAlign:"left", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</span>
                         </button>
@@ -2592,7 +2592,7 @@ function BundleTab() {
               </button>
 
               {pOpen && (
-                <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"12px", marginBottom:14 }}>
+                <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"12px", marginBottom:14 }}>
                   <input value={pForm.title} onChange={e => setPForm(o => ({ ...o, title:e.target.value }))} placeholder="名前（例：うなぎ縦A4）"
                     style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, outline:"none", marginBottom:8, fontFamily:"inherit" }} />
                   <textarea value={pForm.prompt} onChange={e => setPForm(o => ({ ...o, prompt:e.target.value }))} rows={6} placeholder="プロンプトを貼り付け"
@@ -2610,7 +2610,7 @@ function BundleTab() {
               ) : (
                 <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
                   {prompts.map(pr => (
-                    <div key={pr.id} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px" }}>
+                    <div key={pr.id} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
                         <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{pr.title || "（名前なし）"}</span>
                         <button onClick={() => copyPrompt(pr)}
@@ -2688,20 +2688,21 @@ function BundleTab() {
         ) : (
           <>
             {/* 年間の帯グラフ（月を押すと切り替わる） */}
-            <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"0 10px 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:228, WebkitOverflowScrolling:"touch" }}>
-              <div style={{ minWidth:520 }}>
+            <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"0 0 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:228, WebkitOverflowScrolling:"touch" }}>
+              <div style={{ minWidth:600 }}>
                 {/* 月の見出し＝押せる */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"var(--card, #fff)", padding:"12px 0 4px", boxShadow:"0 2px 0 var(--card, #fff)" }} data-head="1">
-                  <div style={{ position:"sticky", left:0, zIndex:4, background:"#fff" }} />
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"var(--card, #fff)", padding:"12px 2px 0", borderBottom:"1.5px solid var(--line)", boxShadow:"0 2px 0 var(--card, #fff)" }} data-head="1">
+                  <div style={{ position:"sticky", left:0, zIndex:4, background:"var(--card, #fff)", borderRight:"1px solid var(--line)" }} />
                   {MONTH_ORDER.map((mm) => {
                     const m = String(mm);
                     const isNow = mm === NOW_M, isView = mm === viewM;
                     return (
                       <button key={m} onClick={() => setViewM(mm)} aria-label={`${mm}月を見る`} data-month={mm}
-                        style={{ border:"none", background: isView ? "var(--primary)" : "#fff",
-                          color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--faint)",
-                          borderRadius:5, padding:"3px 0", fontSize:11.5, fontWeight:900, cursor:"pointer", lineHeight:1.3 }}>
-                        {m}
+                        style={{ border:"none", borderLeft:"1px solid var(--line)", borderRadius:0,
+                          background: isView ? "var(--primary)" : "var(--card, #fff)",
+                          color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
+                          padding:"5px 0 6px", fontSize:11.5, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
+                        {m}月
                       </button>
                     );
                   })}
@@ -2714,19 +2715,21 @@ function BundleTab() {
                   const n = counts[b.id] || 0;
                   return (
                     <button key={b.id} onClick={() => openBundle(b)} data-on={on ? "1" : undefined}
-                      style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, width:"100%", alignItems:"center",
-                        border:"none", background: on ? "var(--soft)" : "transparent", borderRadius:7, padding:"4px 2px", marginBottom:3, cursor:"pointer" }}>
-                      <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, position:"sticky", left:0, zIndex:2, background: on ? "#e7f1fa" : "#fff", paddingRight:4 }}>
+                      style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, width:"100%", alignItems:"stretch",
+                        border:"none", borderBottom:"1px solid var(--line)", background: on ? "var(--soft)" : "transparent", borderRadius:0, padding:"0 2px", margin:0, cursor:"pointer" }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, padding:"7px 4px", position:"sticky", left:0, zIndex:2, background: on ? "var(--soft)" : "var(--card, #fff)", paddingRight:4, borderRight:"1px solid var(--line)" }}>
                         <span style={{ fontSize:11.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
                         {n > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
                       </span>
                       {MONTH_ORDER.map((mm) => {
                         const m = String(mm), hit = b.months.includes(mm);
                         return (
-                          <span key={m} style={{ height:15, borderRadius:3,
-                            background: hit ? col : "var(--bg)",
-                            opacity: hit ? (mm === viewM ? 1 : 0.6) : (mm === viewM ? 0.55 : 1),
-                            outline: mm === NOW_M ? "1.5px solid var(--primary-soft)" : "none", outlineOffset:-1 }} />
+                          <span key={m} style={{ borderLeft:"1px solid var(--line)", display:"flex", alignItems:"center", padding:"0 3px",
+                            background: mm === viewM ? "rgba(74,122,176,0.08)" : "transparent" }}>
+                            <span style={{ display:"block", width:"100%", height:14, borderRadius:3,
+                              background: hit ? col : "transparent",
+                              opacity: hit ? (mm === viewM ? 1 : 0.65) : 1 }} />
+                          </span>
                         );
                       })}
                     </button>
@@ -2734,11 +2737,11 @@ function BundleTab() {
                 })}
 
                 {/* 今月の印 */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:2, marginTop:3 }}>
-                  <div style={{ fontSize:11.5, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:4 }}>今月</div>
-                  {MONTH_LABEL.map((m, i) => (
-                    <div key={m} style={{ textAlign:"center", fontSize:11.5, fontWeight:900, color:"var(--primary-soft)" }}>
-                      {(i+1) === NOW_M ? "▲" : ""}
+                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, padding:"0 2px", marginTop:3 }}>
+                  <div style={{ fontSize:11.5, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:6 }}>今月</div>
+                  {MONTH_ORDER.map((mm) => (
+                    <div key={mm} style={{ textAlign:"center", fontSize:11.5, fontWeight:900, color:"var(--primary-soft)" }}>
+                      {mm === NOW_M ? "▲" : ""}
                     </div>
                   ))}
                 </div>
@@ -2748,20 +2751,20 @@ function BundleTab() {
             {/* 選んだ月 */}
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:9 }}>
               <button onClick={() => setViewM(viewM === 1 ? 12 : viewM - 1)} aria-label="前の月"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
               <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>
                 {viewM}月{viewM === NOW_M ? "（今月）" : ""}
               </span>
               <button onClick={() => setViewM(viewM === 12 ? 1 : viewM + 1)} aria-label="次の月"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
               {viewM !== NOW_M && (
                 <button onClick={() => setViewM(NOW_M)}
-                  style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:800, color:"var(--primary)", cursor:"pointer" }}>今月にもどる</button>
+                  style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:800, color:"var(--primary)", cursor:"pointer" }}>今月にもどる</button>
               )}
             </div>
 
             {viewList.length === 0 ? (
-              <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 20px", fontSize:12.5, lineHeight:1.7, background:"#fff", border:"1px solid var(--line)", borderRadius:11, marginBottom:14 }}>
+              <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 20px", fontSize:12.5, lineHeight:1.7, background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, marginBottom:14 }}>
                 {viewM}月に決まった行事はありません<br/>
                 <span style={{ fontSize:12 }}>下の「いつでも使うもの」から選べます</span>
               </div>

@@ -6528,7 +6528,7 @@ function BundleTab() {
       }
     }, addOpen ? "とじる" : "＋ POPを足す"), addOpen && /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px",
@@ -6567,7 +6567,7 @@ function BundleTab() {
         gap: 9,
         textAlign: "left",
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 8,
         padding: "6px 8px",
         cursor: "pointer"
@@ -6651,7 +6651,7 @@ function BundleTab() {
           display: "block",
           width: "100%",
           border: "1px solid var(--line)",
-          background: "#fff",
+          background: "var(--card, #fff)",
           borderRadius: 10,
           overflow: "hidden",
           cursor: "pointer",
@@ -6714,7 +6714,7 @@ function BundleTab() {
       }
     }, pOpen ? "とじる" : "＋ プロンプトを足す"), pOpen && /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "12px",
@@ -6800,7 +6800,7 @@ function BundleTab() {
     }, prompts.map(pr => /*#__PURE__*/React.createElement("div", {
       key: pr.id,
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px"
@@ -7006,7 +7006,7 @@ function BundleTab() {
       background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
-      padding: "0 10px 8px",
+      padding: "0 0 8px",
       marginBottom: 12,
       overflowX: "auto",
       overflowY: "auto",
@@ -7015,19 +7015,20 @@ function BundleTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      minWidth: 520
+      minWidth: 600
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "84px repeat(12, 1fr)",
-      gap: 2,
+      gap: 0,
       marginBottom: 6,
       position: "sticky",
       top: 0,
       zIndex: 3,
       background: "var(--card, #fff)",
-      padding: "12px 0 4px",
+      padding: "12px 2px 0",
+      borderBottom: "1.5px solid var(--line)",
       boxShadow: "0 2px 0 var(--card, #fff)"
     },
     "data-head": "1"
@@ -7036,7 +7037,8 @@ function BundleTab() {
       position: "sticky",
       left: 0,
       zIndex: 4,
-      background: "#fff"
+      background: "var(--card, #fff)",
+      borderRight: "1px solid var(--line)"
     }
   }), MONTH_ORDER.map(mm => {
     const m = String(mm);
@@ -7049,16 +7051,18 @@ function BundleTab() {
       "data-month": mm,
       style: {
         border: "none",
-        background: isView ? "var(--primary)" : "#fff",
-        color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--faint)",
-        borderRadius: 5,
-        padding: "3px 0",
+        borderLeft: "1px solid var(--line)",
+        borderRadius: 0,
+        background: isView ? "var(--primary)" : "var(--card, #fff)",
+        color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
+        padding: "5px 0 6px",
         fontSize: 11.5,
         fontWeight: 900,
         cursor: "pointer",
-        lineHeight: 1.3
+        lineHeight: 1.3,
+        whiteSpace: "nowrap"
       }
-    }, m);
+    }, m, "\u6708");
   })), seasonal.map(b => {
     const col = colorOf(b);
     const on = b.months.includes(viewM);
@@ -7070,14 +7074,15 @@ function BundleTab() {
       style: {
         display: "grid",
         gridTemplateColumns: "84px repeat(12, 1fr)",
-        gap: 2,
+        gap: 0,
         width: "100%",
-        alignItems: "center",
+        alignItems: "stretch",
         border: "none",
+        borderBottom: "1px solid var(--line)",
         background: on ? "var(--soft)" : "transparent",
-        borderRadius: 7,
-        padding: "4px 2px",
-        marginBottom: 3,
+        borderRadius: 0,
+        padding: "0 2px",
+        margin: 0,
         cursor: "pointer"
       }
     }, /*#__PURE__*/React.createElement("span", {
@@ -7087,11 +7092,13 @@ function BundleTab() {
         gap: 4,
         minWidth: 0,
         paddingLeft: 4,
+        padding: "7px 4px",
         position: "sticky",
         left: 0,
         zIndex: 2,
-        background: on ? "#e7f1fa" : "#fff",
-        paddingRight: 4
+        background: on ? "var(--soft)" : "var(--card, #fff)",
+        paddingRight: 4,
+        borderRight: "1px solid var(--line)"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -7115,20 +7122,29 @@ function BundleTab() {
       return /*#__PURE__*/React.createElement("span", {
         key: m,
         style: {
-          height: 15,
-          borderRadius: 3,
-          background: hit ? col : "var(--bg)",
-          opacity: hit ? mm === viewM ? 1 : 0.6 : mm === viewM ? 0.55 : 1,
-          outline: mm === NOW_M ? "1.5px solid var(--primary-soft)" : "none",
-          outlineOffset: -1
+          borderLeft: "1px solid var(--line)",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 3px",
+          background: mm === viewM ? "rgba(74,122,176,0.08)" : "transparent"
         }
-      });
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "block",
+          width: "100%",
+          height: 14,
+          borderRadius: 3,
+          background: hit ? col : "transparent",
+          opacity: hit ? mm === viewM ? 1 : 0.65 : 1
+        }
+      }));
     }));
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "84px repeat(12, 1fr)",
-      gap: 2,
+      gap: 0,
+      padding: "0 2px",
       marginTop: 3
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -7137,17 +7153,17 @@ function BundleTab() {
       fontWeight: 800,
       color: "var(--faint)",
       textAlign: "right",
-      paddingRight: 4
+      paddingRight: 6
     }
-  }, "\u4ECA\u6708"), MONTH_LABEL.map((m, i) => /*#__PURE__*/React.createElement("div", {
-    key: m,
+  }, "\u4ECA\u6708"), MONTH_ORDER.map(mm => /*#__PURE__*/React.createElement("div", {
+    key: mm,
     style: {
       textAlign: "center",
       fontSize: 11.5,
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
-  }, i + 1 === NOW_M ? "▲" : ""))))), /*#__PURE__*/React.createElement("div", {
+  }, mm === NOW_M ? "▲" : ""))))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -7159,7 +7175,7 @@ function BundleTab() {
     "aria-label": "\u524D\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 7,
       width: 28,
       height: 28,
@@ -7179,7 +7195,7 @@ function BundleTab() {
     "aria-label": "\u6B21\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 7,
       width: 28,
       height: 28,
@@ -7193,7 +7209,7 @@ function BundleTab() {
     style: {
       marginLeft: "auto",
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 7,
       padding: "6px 12px",
       fontSize: 12,
@@ -7208,7 +7224,7 @@ function BundleTab() {
       padding: "26px 20px",
       fontSize: 12.5,
       lineHeight: 1.7,
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 11,
       marginBottom: 14
