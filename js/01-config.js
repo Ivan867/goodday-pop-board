@@ -23,8 +23,11 @@ const TAB_REGISTRY = [{
   key: "tool",
   icon: "✏️",
   label: "作成",
-  section: "毎日つかう"
-}, {
+  section: "毎日つかう",
+  hideInMenu: true
+},
+// カタログの中に移した
+{
   key: "request",
   icon: "📮",
   label: "お問い合わせ",
@@ -125,6 +128,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-18",
+  type: "改善",
+  title: "「作成」をカタログの中に移しました",
+  body: "メニューにあった「作成」を、カタログの「企画・行事」「普段の売場」の右に並べました。探してから作る流れが一つの画面でできます。"
+}, {
   date: "2026-09-18",
   type: "新機能",
   title: "アイデアのコーナーを作りました",

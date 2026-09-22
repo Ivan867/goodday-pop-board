@@ -1000,6 +1000,29 @@ function CatalogTab() {
 
   const selBase = { border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, fontWeight:700, color:"var(--text)", background:"#fff", outline:"none", width:"100%", boxSizing:"border-box", minHeight:40 };
 
+  // 3つの切り替え（企画・行事／普段の売場／作成）
+  const modeSwitch = (
+    <div style={{ display:"flex", gap:7, marginBottom:12 }}>
+      {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"]].map(([k,l]) => (
+        <button key={k} onClick={() => setPageModeSave(k)}
+          style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+            background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
+      ))}
+    </div>
+  );
+
+  if (pageMode === "tool") {
+    return (
+      <div>
+        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+          <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
+        </div>
+        <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 0" }}>{modeSwitch}</div>
+        <div style={{ paddingBottom:120 }}><PopToolTab /></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
@@ -1010,10 +1033,10 @@ function CatalogTab() {
 
         {/* ── 企画／普段の切り替え ── */}
         <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-          {[["event","企画・行事"],["daily","普段の売場"]].map(([k,l]) => (
+          {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"]].map(([k,l]) => (
             <button key={k} onClick={() => setPageModeSave(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                background: pageMode===k ? "var(--primary)" : "#fff", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
+                background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
           ))}
         </div>
 
