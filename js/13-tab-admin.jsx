@@ -308,6 +308,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "dev" && (window.DevTab ? React.createElement(window.DevTab, { embedded: true })
         : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>)}
 
+      {section === "rot" && <DimsBackfill />}
       {section === "rot" && <RotateAdmin />}
 
       {section === "req" && (
@@ -1876,6 +1877,41 @@ function RankingPanel({ onCreateFromPop }) {
         onLiked={(id, likes) => setPops(ps => ps.map(x => x.id === id ? { ...x, likes } : x))}
         onCreateFromPop={onCreateFromPop}
       />}
+    </div>
+  );
+}
+
+// ポップの縦横をまとめて測る（並べ方を最初から正しくするため・一度だけでよい）
+function DimsBackfill() {
+  const [st, setSt] = useState({ busy:false, done:0, total:0, msg:"" });
+  const run = async () => {
+    setSt({ busy:true, done:0, total:0, msg:"まだ測っていないものを探しています…" });
+    try {
+      const all = await api.listAll();
+      const todo = (all || []).filter(p => !p.img_w && p.image_url);
+      if (!todo.length) { setSt({ busy:false, done:0, total:0, msg:"すべて測り終わっています" }); return; }
+      let n = 0;
+      for (const p of todo) {
+        const d = await api.measureImage(p.image_url);
+        if (d && d.w && d.h) await api.setPopDims(p.id, d.w, d.h);
+        n++;
+        if (n % 5 === 0 || n === todo.length) setSt({ busy:true, done:n, total:todo.length, msg:"" });
+      }
+      setSt({ busy:false, done:n, total:todo.length, msg:`${n}件を測りました。一覧を開き直すと反映されます` });
+    } catch(e) { setSt({ busy:false, done:0, total:0, msg:"うまくいきませんでした" }); }
+  };
+  return (
+    <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"14px 15px", marginBottom:16 }}>
+      <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>ポップの縦長・横長を測る</div>
+      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.8, marginBottom:10 }}>
+        一覧で横長のポップを2列ぶんの幅で並べるために、形を記録します。一度やれば十分です（新しい投稿は自動で記録されます）。
+      </div>
+      <button onClick={run} disabled={st.busy}
+        style={{ width:"100%", border:"none", background: st.busy ? "#ccc" : "var(--primary)", color:"#fff",
+          borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+        {st.busy ? (st.total ? `測っています… ${st.done} / ${st.total}` : "準備しています…") : "まとめて測る"}
+      </button>
+      {st.msg && <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginTop:9, textAlign:"center" }}>{st.msg}</div>}
     </div>
   );
 }

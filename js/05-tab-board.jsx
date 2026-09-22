@@ -251,10 +251,11 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                         cur.image_url = pop.image_url;
                         cur.rotation  = pop.rotation;
                         cur.group_pos = pop.group_pos;
+                        cur.img_w = pop.img_w; cur.img_h = pop.img_h; cur.__imgId = pop.id;   // 絵の縦横も表紙のものに
                       }
                       return;
                     }
-                    const head = { ...pop, __count: 1, __group: true };
+                    const head = { ...pop, __count: 1, __group: true, __imgId: pop.id };
                     seen[pop.group_id] = head; list.push(head);
                   } else list.push(pop);
                 });

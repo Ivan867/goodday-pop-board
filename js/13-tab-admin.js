@@ -687,7 +687,7 @@ function AdminTab({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -5271,6 +5271,107 @@ function RankingPanel({
     } : x)),
     onCreateFromPop: onCreateFromPop
   }));
+}
+
+// ポップの縦横をまとめて測る（並べ方を最初から正しくするため・一度だけでよい）
+function DimsBackfill() {
+  const [st, setSt] = useState({
+    busy: false,
+    done: 0,
+    total: 0,
+    msg: ""
+  });
+  const run = async () => {
+    setSt({
+      busy: true,
+      done: 0,
+      total: 0,
+      msg: "まだ測っていないものを探しています…"
+    });
+    try {
+      const all = await api.listAll();
+      const todo = (all || []).filter(p => !p.img_w && p.image_url);
+      if (!todo.length) {
+        setSt({
+          busy: false,
+          done: 0,
+          total: 0,
+          msg: "すべて測り終わっています"
+        });
+        return;
+      }
+      let n = 0;
+      for (const p of todo) {
+        const d = await api.measureImage(p.image_url);
+        if (d && d.w && d.h) await api.setPopDims(p.id, d.w, d.h);
+        n++;
+        if (n % 5 === 0 || n === todo.length) setSt({
+          busy: true,
+          done: n,
+          total: todo.length,
+          msg: ""
+        });
+      }
+      setSt({
+        busy: false,
+        done: n,
+        total: todo.length,
+        msg: `${n}件を測りました。一覧を開き直すと反映されます`
+      });
+    } catch (e) {
+      setSt({
+        busy: false,
+        done: 0,
+        total: 0,
+        msg: "うまくいきませんでした"
+      });
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--card, #fff)",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: "14px 15px",
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 4
+    }
+  }, "\u30DD\u30C3\u30D7\u306E\u7E26\u9577\u30FB\u6A2A\u9577\u3092\u6E2C\u308B"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 10
+    }
+  }, "\u4E00\u89A7\u3067\u6A2A\u9577\u306E\u30DD\u30C3\u30D7\u30922\u5217\u3076\u3093\u306E\u5E45\u3067\u4E26\u3079\u308B\u305F\u3081\u306B\u3001\u5F62\u3092\u8A18\u9332\u3057\u307E\u3059\u3002\u4E00\u5EA6\u3084\u308C\u3070\u5341\u5206\u3067\u3059\uFF08\u65B0\u3057\u3044\u6295\u7A3F\u306F\u81EA\u52D5\u3067\u8A18\u9332\u3055\u308C\u307E\u3059\uFF09\u3002"), /*#__PURE__*/React.createElement("button", {
+    onClick: run,
+    disabled: st.busy,
+    style: {
+      width: "100%",
+      border: "none",
+      background: st.busy ? "#ccc" : "var(--primary)",
+      color: "#fff",
+      borderRadius: 10,
+      padding: "12px",
+      fontSize: 14,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, st.busy ? st.total ? `測っています… ${st.done} / ${st.total}` : "準備しています…" : "まとめて測る"), st.msg && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginTop: 9,
+      textAlign: "center"
+    }
+  }, st.msg));
 }
 ;
 Object.assign(window, {

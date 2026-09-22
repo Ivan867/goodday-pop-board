@@ -157,6 +157,7 @@ function UploadModal({
         done = 0;
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
+        const dims = await api.measureImage(it.file); // 縦長か横長かを先に記録しておく
         const image_url = await api.upload(it.file);
         const nm = single ? product.trim() : it.name.trim();
         last = await api.insert({
@@ -169,7 +170,9 @@ function UploadModal({
           comment: comment.trim(),
           group_id: gid,
           group_name: gname,
-          group_pos: done
+          group_pos: done,
+          img_w: dims ? dims.w : null,
+          img_h: dims ? dims.h : null
         });
         done++;
       }
@@ -1853,14 +1856,46 @@ function PopCard({
     }
   };
   const tint = CAT_TINT[pop.category] || CAT_TINT["その他"];
+  // 縦長か横長か（保存済み → 前に測ったもの → 読み込んで測る の順）
+  const cache = window.__popDims = window.__popDims || {};
+  const imgId = pop.__imgId || pop.id; // 表示している絵の持ち主（まとまりは表紙）
+  const [dims, setDims] = useState(() => pop.img_w && pop.img_h ? {
+    w: pop.img_w,
+    h: pop.img_h
+  } : cache[imgId] || null);
+  const rotated = pop.rotation === 90 || pop.rotation === 270;
+  const land = !!dims && !rotated && dims.w > dims.h * 1.05;
+  const onImgLoad = e => {
+    e.target.classList.add("ld");
+    const p = e.target.parentElement;
+    if (p) p.classList.remove("imgskel");
+    if (!dims) {
+      const w = e.target.naturalWidth,
+        h = e.target.naturalHeight;
+      if (w && h) {
+        cache[imgId] = {
+          w,
+          h
+        };
+        setDims({
+          w,
+          h
+        });
+        if (!pop.img_w) api.setPopDims(imgId, w, h); // 次からは最初から正しい形で並ぶ
+      }
+    }
+  };
   return /*#__PURE__*/React.createElement("div", {
-    className: "ucard",
+    className: "ucard" + (land ? " pc-land" : ""),
     style: {
       borderRadius: 2,
       overflow: "hidden",
       background: "var(--card, #fff)",
       cursor: "pointer",
-      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`
+      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`,
+      ...(dims && !rotated ? {
+        "--nat-ar": `${dims.w} / ${dims.h}`
+      } : {})
     },
     onClick: () => onClick(pop),
     onMouseEnter: e => {
@@ -1881,15 +1916,10 @@ function PopCard({
     src: pop.image_url,
     loading: "lazy",
     decoding: "async",
-    className: "fdin",
-    onLoad: e => {
-      e.target.classList.add("ld");
-      const p = e.target.parentElement;
-      if (p) p.classList.remove("imgskel");
-    },
+    className: "fdin pc-img-el",
+    onLoad: onImgLoad,
     style: {
       width: "100%",
-      aspectRatio: "1 / 1.414",
       objectFit: "contain",
       display: "block",
       background: "var(--card, #fff)",

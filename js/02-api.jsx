@@ -8,7 +8,7 @@ const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const h = (extra={}) => ({ "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, ...extra });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation,group_id,group_name,group_pos";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation,group_id,group_name,group_pos,img_w,img_h";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
@@ -155,6 +155,19 @@ const api = {
   },
   // アーカイブ済みのみ（アーカイブタブ用）。
   async listArchived() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.true&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`); },
+  // 画像の縦横を記録（まだ測っていないものだけ）
+  async setPopDims(id, w, h) {
+    try { await sbFetch(`/rest/v1/rpc/set_pop_dims`, { method:"POST", body:{ p_id:id, p_w:Math.round(w), p_h:Math.round(h) } }); } catch(e) {}
+  },
+  // 画像ファイルの縦横を測る
+  measureImage(src) {
+    return new Promise(res => {
+      const im = new Image();
+      im.onload = () => res({ w: im.naturalWidth, h: im.naturalHeight });
+      im.onerror = () => res(null);
+      im.src = typeof src === "string" ? src : URL.createObjectURL(src);
+    });
+  },
   async insert(data) { return sbOne(`/rest/v1/pops`, { method:"POST", body:data, prefer:"return=representation" }); },
   // POPのジャンルを設定（管理画面の選別用）。genre は文字列 or null（未分類）。
   async setGenre(id, genre) { await sbFetch(`/rest/v1/rpc/admin_set_genre`, { method:"POST", body:{ p_id:id, p_genre:genre, p_password: PW_CACHE.admin || "" } }); },
