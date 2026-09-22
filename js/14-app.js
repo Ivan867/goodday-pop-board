@@ -38,7 +38,12 @@ var LAZY_TABS = {
   trend: {
     file: "16-tab-trend",
     comp: "TrendTab"
-  } // トレンド（訴求の切り口）
+  },
+  // トレンド（訴求の切り口）
+  idea: {
+    file: "17-tab-idea",
+    comp: "IdeaTab"
+  } // アイデア（一覧には出さない）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -572,6 +577,8 @@ function App() {
     onSeedConsumed: () => setToolSeed(null)
   }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
+  }), tab === "idea" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "idea"
   }), tab === "search" && /*#__PURE__*/React.createElement(SearchTab, {
     key: "search" + dataVer,
     onCreateFromPop: handleCreateFromPop,

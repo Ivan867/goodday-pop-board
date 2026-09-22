@@ -37,6 +37,15 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
   const [bkDone, setBkDone] = useState("");
+  // アイデア（管理画面から投稿）
+  const [ideas, setIdeas] = useState([]);
+  const [idFiles, setIdFiles] = useState([]);     // { file, preview }
+  const [idTitle, setIdTitle] = useState("");
+  const [idMemo, setIdMemo] = useState("");
+  const [idTags, setIdTags] = useState("");
+  const [idBusy, setIdBusy] = useState(false);
+  const [idMsg, setIdMsg] = useState("");
+  const [idDel, setIdDel] = useState(null);
   const [grpAsk, setGrpAsk] = useState(false);    // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
@@ -79,10 +88,13 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const loadTrash = useCallback(async () => {
     try { setDelPops(await api.listDeleted() || []); } catch(e) { setDelPops([]); }
   }, []);
+  const loadIdeas = useCallback(async () => {
+    try { setIdeas(await api.listIdeas() || []); } catch(e) { setIdeas([]); }
+  }, []);
   const loadOpLogs = useCallback(async () => {
     try { setOpLogs(await api.listOpLogs(200) || []); } catch(e) { setOpLogs([]); }
   }, []);
-  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs]);
+  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadIdeas(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas]);
 
   const tryUnlock = async () => {
     if (gChecking) return;
@@ -246,6 +258,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["archive","アーカイブ",arCount,"#2f6fb0",<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>],
             ["trash","ゴミ箱",delPops.length||0,"#b3261e",<><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"/></>],
             ["oplog","操作の記録",opLogs.length||0,"#3f8f9e",<><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></>],
+            ["idea","アイデア",ideas.length||0,"#c39a3c",<><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"/></>],
             ["backup","控えを取る",null,"#3f9e63",<><path d="M12 3v11M8 10.5l4 4 4-4"/><path d="M4 16.5v2.5a1.5 1.5 0 001.5 1.5h13a1.5 1.5 0 001.5-1.5v-2.5"/></>],
             ["notice","お知らせ",null,"#c39a3c",<><path d="M4 9.5h4l7-4.5v14l-7-4.5H4z"/><path d="M18 9a4 4 0 010 6"/></>],
             ["pinned","ピン留め",pinnedCount,"#d1554f",<><path d="M12 17v4M8 3h8l-1 6 3 3v2H6v-2l3-3z"/></>],
@@ -425,6 +438,97 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         </div>
       )}
 
+      {section === "idea" && (() => {
+        const pick = (list) => {
+          const fs2 = Array.from(list || []).filter(f => /^image\//.test(f.type || ""));
+          setIdFiles(v => v.concat(fs2.map(f => ({ file:f, preview:URL.createObjectURL(f) }))));
+          setIdMsg("");
+        };
+        const submit = async () => {
+          if (!idFiles.length) { setIdMsg("画像を選んでください"); return; }
+          if (!idTitle.trim()) { setIdMsg("名前を入れてください"); return; }
+          setIdBusy(true); setIdMsg("");
+          try {
+            const urls = [];
+            for (let i = 0; i < idFiles.length; i++) {
+              setIdMsg(`画像を上げています… ${i+1}/${idFiles.length}`);
+              urls.push(await api.upload(idFiles[i].file));
+            }
+            const tags = idTags.split(/[、,\s]+/).map(x => x.trim()).filter(Boolean);
+            await api.addIdea(idTitle.trim(), idMemo.trim(), urls, tags);
+            setIdFiles([]); setIdTitle(""); setIdMemo(""); setIdTags("");
+            setIdMsg("のせました");
+            loadIdeas(); loadOpLogs();
+          } catch(e) { setIdMsg("のせられませんでした"); }
+          finally { setIdBusy(false); }
+        };
+        const inp = { width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10,
+          padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", background:"var(--card, #fff)", color:"var(--ink)" };
+        const lbl = { fontSize:12, fontWeight:800, color:"var(--sub)", margin:"12px 0 6px" };
+        return (
+          <div>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:6 }}>
+              ほかの売場を手がかりにAIで起こしたポップ・バナーなどをのせる場所です。<br/>
+              ここにのせたものは一覧には出ず、一覧の電球マークから見られます。
+            </div>
+
+            <label style={{ display:"block", border:"1.5px dashed var(--line)", borderRadius:12, padding:"18px 12px",
+              textAlign:"center", cursor:"pointer", background:"var(--card, #fff)", color:"var(--primary-soft)", fontSize:14, fontWeight:800, marginTop:10 }}>
+              ＋ 画像を選ぶ（何枚でも）
+              <input type="file" accept="image/*" multiple onChange={e => { const l = Array.from(e.target.files || []); e.target.value = ""; pick(l); }}
+                style={{ position:"absolute", opacity:0, width:1, height:1, pointerEvents:"none" }} />
+            </label>
+            {idFiles.length > 0 && (
+              <div style={{ display:"flex", gap:7, overflowX:"auto", padding:"10px 0 2px" }}>
+                {idFiles.map((f, i) => (
+                  <div key={i} style={{ position:"relative", flexShrink:0 }}>
+                    <img src={f.preview} alt="" style={{ width:70, height:90, objectFit:"cover", borderRadius:6, border:"1px solid var(--line)", display:"block" }} />
+                    <button onClick={() => setIdFiles(v => v.filter((_, k) => k !== i))} aria-label="外す"
+                      style={{ position:"absolute", top:-6, right:-6, width:22, height:22, borderRadius:11, border:"none",
+                        background:"#b3261e", color:"#fff", fontSize:13, fontWeight:900, cursor:"pointer", lineHeight:1 }}>×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={lbl}>名前（必須）</div>
+            <input value={idTitle} onChange={e => setIdTitle(e.target.value)} placeholder="例：さんまの炭火焼き 実演バナー" style={inp} />
+            <div style={lbl}>メモ（元にした売場・ねらいなど）</div>
+            <textarea value={idMemo} onChange={e => setIdMemo(e.target.value)} rows={3} placeholder="例：○○スーパーの秋の売場を参考に" style={{ ...inp, resize:"vertical", lineHeight:1.6 }} />
+            <div style={lbl}>タグ（読点で区切る）</div>
+            <input value={idTags} onChange={e => setIdTags(e.target.value)} placeholder="例：さんま、バナー、秋" style={inp} />
+
+            <button onClick={submit} disabled={idBusy}
+              style={{ width:"100%", border:"none", background: idBusy ? "#ccc" : "var(--primary)", color:"#fff",
+                borderRadius:12, padding:"14px", fontSize:15, fontWeight:900, cursor:"pointer", marginTop:16 }}>
+              {idBusy ? "のせています…" : "アイデアにのせる"}
+            </button>
+            {idMsg && <div style={{ marginTop:10, fontSize:13, fontWeight:800, textAlign:"center",
+              color: idMsg === "のせました" ? "#2c6b45" : idMsg.includes("…") ? "var(--sub)" : "#b3261e" }}>{idMsg}</div>}
+
+            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", margin:"24px 0 8px" }}>のせたもの（{ideas.length}）</div>
+            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+              {ideas.map(it => (
+                <div key={it.id} style={{ display:"flex", alignItems:"center", gap:10, background:"var(--card, #fff)",
+                  border:"1px solid var(--line)", borderRadius:10, padding:"8px 10px" }}>
+                  <img src={(it.images || [])[0]} alt="" style={{ width:44, height:56, objectFit:"cover", borderRadius:4, flexShrink:0, background:"var(--bg)" }} />
+                  <span style={{ flex:1, minWidth:0 }}>
+                    <span style={{ display:"block", fontSize:13.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.title}</span>
+                    <span style={{ display:"block", fontSize:11.5, color:"var(--faint)" }}>{fmtDate(it.created_at)} ／ {(it.images || []).length}枚</span>
+                  </span>
+                  {idDel === it.id ? (
+                    <button onClick={async () => { try { await api.deleteIdea(it.id); setIdDel(null); loadIdeas(); loadOpLogs(); } catch(e) { alert("消せませんでした"); } }}
+                      style={{ border:"none", background:"#b3261e", color:"#fff", borderRadius:8, padding:"7px 11px", fontSize:12.5, fontWeight:900, cursor:"pointer" }}>本当に消す</button>
+                  ) : (
+                    <button onClick={() => setIdDel(it.id)}
+                      style={{ border:"1px solid var(--line)", background:"transparent", color:"var(--sub)", borderRadius:8, padding:"7px 11px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>消す</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+      );})()}
+
       {section === "backup" && (() => {
         const run = async () => {
           setBkBusy(true); setBkDone(""); setBkMsg("はじめます…");
@@ -471,8 +575,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       );})()}
 
       {section === "oplog" && (() => {
-        const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた" };
-        const COLOR = { delete:"#c2691a", rename:"#2f6fb0", restore:"#3f9e63", purge:"#b3261e", group:"#6b4ea0" };
+        const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた", idea_add:"アイデアをのせた", idea_del:"アイデアを消した" };
+        const COLOR = { delete:"#c2691a", rename:"#2f6fb0", restore:"#3f9e63", purge:"#b3261e", group:"#6b4ea0", idea_add:"#c39a3c", idea_del:"#8a9099" };
         return (
           <div>
             <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>

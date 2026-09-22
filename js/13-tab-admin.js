@@ -44,6 +44,15 @@ function AdminTab({
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
   const [bkDone, setBkDone] = useState("");
+  // アイデア（管理画面から投稿）
+  const [ideas, setIdeas] = useState([]);
+  const [idFiles, setIdFiles] = useState([]); // { file, preview }
+  const [idTitle, setIdTitle] = useState("");
+  const [idMemo, setIdMemo] = useState("");
+  const [idTags, setIdTags] = useState("");
+  const [idBusy, setIdBusy] = useState(false);
+  const [idMsg, setIdMsg] = useState("");
+  const [idDel, setIdDel] = useState(null);
   const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
   const [grpName, setGrpName] = useState("");
   const [grpBusy, setGrpBusy] = useState(false);
@@ -99,6 +108,13 @@ function AdminTab({
       setDelPops([]);
     }
   }, []);
+  const loadIdeas = useCallback(async () => {
+    try {
+      setIdeas((await api.listIdeas()) || []);
+    } catch (e) {
+      setIdeas([]);
+    }
+  }, []);
   const loadOpLogs = useCallback(async () => {
     try {
       setOpLogs((await api.listOpLogs(200)) || []);
@@ -112,8 +128,9 @@ function AdminTab({
       loadReqs();
       loadTrash();
       loadOpLogs();
+      loadIdeas();
     }
-  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs]);
+  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas]);
   const tryUnlock = async () => {
     if (gChecking) return;
     setGChecking(true);
@@ -155,13 +172,13 @@ function AdminTab({
         color: "var(--ink)",
         marginBottom: 6
       }
-    }, "管理画面"), /*#__PURE__*/React.createElement("div", {
+    }, "\u7BA1\u7406\u753B\u9762"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: "var(--sub)",
         marginBottom: 18
       }
-    }, "パスワードを入力してください"), /*#__PURE__*/React.createElement("input", {
+    }, "\u30D1\u30B9\u30EF\u30FC\u30C9\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044"), /*#__PURE__*/React.createElement("input", {
       type: "password",
       value: gpw,
       autoFocus: true,
@@ -173,7 +190,7 @@ function AdminTab({
       onKeyDown: e => {
         if (e.key === "Enter") tryUnlock();
       },
-      placeholder: "パスワード",
+      placeholder: "\u30D1\u30B9\u30EF\u30FC\u30C9",
       disabled: gChecking,
       style: {
         width: "100%",
@@ -290,7 +307,7 @@ function AdminTab({
       color: view === v ? "#fff" : "#888",
       cursor: "pointer"
     }
-  }, label, "（", n, "）");
+  }, label, "\uFF08", n, "\uFF09");
 
   // ---- ジャンル選別 ----
   const activePops = pops.filter(p => !p.archived);
@@ -503,7 +520,7 @@ function AdminTab({
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "管理画面"), section === "home" ? /*#__PURE__*/React.createElement("div", {
+  }, "\u7BA1\u7406\u753B\u9762"), section === "home" ? /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))",
@@ -535,6 +552,10 @@ function AdminTab({
     r: "8.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 7.5V12l3 2"
+  }))], ["idea", "アイデア", ideas.length || 0, "#c39a3c", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M9 18h6M10 21h4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"
   }))], ["backup", "控えを取る", null, "#3f9e63", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M12 3v11M8 10.5l4 4 4-4"
   }), /*#__PURE__*/React.createElement("path", {
@@ -653,7 +674,7 @@ function AdminTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M15 5l-7 7 7 7"
-  })), "メニューへ"), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
+  })), "\u30E1\u30CB\u30E5\u30FC\u3078"), section === "notice" && /*#__PURE__*/React.createElement(NoticeAdmin, {
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
@@ -666,14 +687,14 @@ function AdminTab({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "読み込み中…")), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
       padding: "40px 0",
       fontSize: 14
     }
-  }, "読み込み中…") : reqs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : reqs.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 50,
@@ -685,13 +706,13 @@ function AdminTab({
       fontWeight: 700,
       color: "var(--sub)"
     }
-  }, "依頼はまだありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F9D\u983C\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       marginTop: 6,
       color: "var(--faint)"
     }
-  }, "「ポップ依頼」からみんなが投稿できます")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\u30DD\u30C3\u30D7\u4F9D\u983C\u300D\u304B\u3089\u307F\u3093\u306A\u304C\u6295\u7A3F\u3067\u304D\u307E\u3059")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -726,7 +747,7 @@ function AdminTab({
         padding: "2px 7px",
         borderRadius: 7
       }
-    }, "急ぎ"), done && /*#__PURE__*/React.createElement("span", {
+    }, "\u6025\u304E"), done && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "flex",
         alignItems: "center",
@@ -749,7 +770,7 @@ function AdminTab({
       strokeLinejoin: "round"
     }, /*#__PURE__*/React.createElement("path", {
       d: "M4 12.5l5 5L20 6.5"
-    })), "対応済み"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
+    })), "\u5BFE\u5FDC\u6E08\u307F"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11.5,
         fontWeight: 800,
@@ -773,7 +794,7 @@ function AdminTab({
         color: "var(--faint)",
         whiteSpace: "nowrap"
       }
-    }, fmtDate(r.created_at), " 受付")), /*#__PURE__*/React.createElement("div", {
+    }, fmtDate(r.created_at), " \u53D7\u4ED8")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: "var(--sub)",
@@ -861,19 +882,19 @@ function AdminTab({
       style: {
         fontWeight: 900
       }
-    }, "返答："), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
+    }, "\u8FD4\u7B54\uFF1A"), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: 8,
         fontSize: 11.5,
         color: "#6a9a7c"
       }
-    }, "（", fmtDate(r.replied_at), "）")), /*#__PURE__*/React.createElement("input", {
+    }, "\uFF08", fmtDate(r.replied_at), "\uFF09")), /*#__PURE__*/React.createElement("input", {
       value: replyDraft[r.id] ?? r.reply ?? "",
       onChange: e => setReplyDraft(v => ({
         ...v,
         [r.id]: e.target.value
       })),
-      placeholder: "返答メモ（例：来週作ります／すでに投稿済みです）",
+      placeholder: "\u8FD4\u7B54\u30E1\u30E2\uFF08\u4F8B\uFF1A\u6765\u9031\u4F5C\u308A\u307E\u3059\uFF0F\u3059\u3067\u306B\u6295\u7A3F\u6E08\u307F\u3067\u3059\uFF09",
       style: {
         width: "100%",
         boxSizing: "border-box",
@@ -915,7 +936,7 @@ function AdminTab({
         padding: "9px 14px",
         cursor: "pointer"
       }
-    }, "削除")));
+    }, "\u524A\u9664")));
   }))), section === "genre" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
@@ -923,7 +944,7 @@ function AdminTab({
       marginBottom: 14,
       lineHeight: 1.6
     }
-  }, "検索画面の左タブで使うジャンルを、ここで振り分けます。ボタンをタップで設定（同じものをもう一度タップで未分類に戻す）。公開中のPOPのみ表示。「除外」を選ぶと、そのPOPは検索結果に出なくなります（一覧には残り、左タブにも出ません）。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u691C\u7D22\u753B\u9762\u306E\u5DE6\u30BF\u30D6\u3067\u4F7F\u3046\u30B8\u30E3\u30F3\u30EB\u3092\u3001\u3053\u3053\u3067\u632F\u308A\u5206\u3051\u307E\u3059\u3002\u30DC\u30BF\u30F3\u3092\u30BF\u30C3\u30D7\u3067\u8A2D\u5B9A\uFF08\u540C\u3058\u3082\u306E\u3092\u3082\u3046\u4E00\u5EA6\u30BF\u30C3\u30D7\u3067\u672A\u5206\u985E\u306B\u623B\u3059\uFF09\u3002\u516C\u958B\u4E2D\u306EPOP\u306E\u307F\u8868\u793A\u3002\u300C\u9664\u5916\u300D\u3092\u9078\u3076\u3068\u3001\u305D\u306EPOP\u306F\u691C\u7D22\u7D50\u679C\u306B\u51FA\u306A\u304F\u306A\u308A\u307E\u3059\uFF08\u4E00\u89A7\u306B\u306F\u6B8B\u308A\u3001\u5DE6\u30BF\u30D6\u306B\u3082\u51FA\u307E\u305B\u3093\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -946,7 +967,7 @@ function AdminTab({
         borderRadius: 9,
         cursor: "pointer"
       }
-    }, g, "（", genreCount(g), "）");
+    }, g, "\uFF08", genreCount(g), "\uFF09");
   })), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
@@ -954,7 +975,7 @@ function AdminTab({
       padding: "40px 0",
       fontSize: 14
     }
-  }, "読み込み中…") : genreList.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : genreList.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -1033,7 +1054,284 @@ function AdminTab({
         whiteSpace: "nowrap"
       }
     }, g);
-  }))))))), section === "backup" && (() => {
+  }))))))), section === "idea" && (() => {
+    const pick = list => {
+      const fs2 = Array.from(list || []).filter(f => /^image\//.test(f.type || ""));
+      setIdFiles(v => v.concat(fs2.map(f => ({
+        file: f,
+        preview: URL.createObjectURL(f)
+      }))));
+      setIdMsg("");
+    };
+    const submit = async () => {
+      if (!idFiles.length) {
+        setIdMsg("画像を選んでください");
+        return;
+      }
+      if (!idTitle.trim()) {
+        setIdMsg("名前を入れてください");
+        return;
+      }
+      setIdBusy(true);
+      setIdMsg("");
+      try {
+        const urls = [];
+        for (let i = 0; i < idFiles.length; i++) {
+          setIdMsg(`画像を上げています… ${i + 1}/${idFiles.length}`);
+          urls.push(await api.upload(idFiles[i].file));
+        }
+        const tags = idTags.split(/[、,\s]+/).map(x => x.trim()).filter(Boolean);
+        await api.addIdea(idTitle.trim(), idMemo.trim(), urls, tags);
+        setIdFiles([]);
+        setIdTitle("");
+        setIdMemo("");
+        setIdTags("");
+        setIdMsg("のせました");
+        loadIdeas();
+        loadOpLogs();
+      } catch (e) {
+        setIdMsg("のせられませんでした");
+      } finally {
+        setIdBusy(false);
+      }
+    };
+    const inp = {
+      width: "100%",
+      boxSizing: "border-box",
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "11px 12px",
+      fontSize: 15,
+      outline: "none",
+      fontFamily: "inherit",
+      background: "var(--card, #fff)",
+      color: "var(--ink)"
+    };
+    const lbl = {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      margin: "12px 0 6px"
+    };
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        lineHeight: 1.8,
+        marginBottom: 6
+      }
+    }, "\u307B\u304B\u306E\u58F2\u5834\u3092\u624B\u304C\u304B\u308A\u306BAI\u3067\u8D77\u3053\u3057\u305F\u30DD\u30C3\u30D7\u30FB\u30D0\u30CA\u30FC\u306A\u3069\u3092\u306E\u305B\u308B\u5834\u6240\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u3053\u3053\u306B\u306E\u305B\u305F\u3082\u306E\u306F\u4E00\u89A7\u306B\u306F\u51FA\u305A\u3001\u4E00\u89A7\u306E\u96FB\u7403\u30DE\u30FC\u30AF\u304B\u3089\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("label", {
+      style: {
+        display: "block",
+        border: "1.5px dashed var(--line)",
+        borderRadius: 12,
+        padding: "18px 12px",
+        textAlign: "center",
+        cursor: "pointer",
+        background: "var(--card, #fff)",
+        color: "var(--primary-soft)",
+        fontSize: 14,
+        fontWeight: 800,
+        marginTop: 10
+      }
+    }, "\uFF0B \u753B\u50CF\u3092\u9078\u3076\uFF08\u4F55\u679A\u3067\u3082\uFF09", /*#__PURE__*/React.createElement("input", {
+      type: "file",
+      accept: "image/*",
+      multiple: true,
+      onChange: e => {
+        const l = Array.from(e.target.files || []);
+        e.target.value = "";
+        pick(l);
+      },
+      style: {
+        position: "absolute",
+        opacity: 0,
+        width: 1,
+        height: 1,
+        pointerEvents: "none"
+      }
+    })), idFiles.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 7,
+        overflowX: "auto",
+        padding: "10px 0 2px"
+      }
+    }, idFiles.map((f, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        position: "relative",
+        flexShrink: 0
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: f.preview,
+      alt: "",
+      style: {
+        width: 70,
+        height: 90,
+        objectFit: "cover",
+        borderRadius: 6,
+        border: "1px solid var(--line)",
+        display: "block"
+      }
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setIdFiles(v => v.filter((_, k) => k !== i)),
+      "aria-label": "\u5916\u3059",
+      style: {
+        position: "absolute",
+        top: -6,
+        right: -6,
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        border: "none",
+        background: "#b3261e",
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: 900,
+        cursor: "pointer",
+        lineHeight: 1
+      }
+    }, "\xD7")))), /*#__PURE__*/React.createElement("div", {
+      style: lbl
+    }, "\u540D\u524D\uFF08\u5FC5\u9808\uFF09"), /*#__PURE__*/React.createElement("input", {
+      value: idTitle,
+      onChange: e => setIdTitle(e.target.value),
+      placeholder: "\u4F8B\uFF1A\u3055\u3093\u307E\u306E\u70AD\u706B\u713C\u304D \u5B9F\u6F14\u30D0\u30CA\u30FC",
+      style: inp
+    }), /*#__PURE__*/React.createElement("div", {
+      style: lbl
+    }, "\u30E1\u30E2\uFF08\u5143\u306B\u3057\u305F\u58F2\u5834\u30FB\u306D\u3089\u3044\u306A\u3069\uFF09"), /*#__PURE__*/React.createElement("textarea", {
+      value: idMemo,
+      onChange: e => setIdMemo(e.target.value),
+      rows: 3,
+      placeholder: "\u4F8B\uFF1A\u25CB\u25CB\u30B9\u30FC\u30D1\u30FC\u306E\u79CB\u306E\u58F2\u5834\u3092\u53C2\u8003\u306B",
+      style: {
+        ...inp,
+        resize: "vertical",
+        lineHeight: 1.6
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: lbl
+    }, "\u30BF\u30B0\uFF08\u8AAD\u70B9\u3067\u533A\u5207\u308B\uFF09"), /*#__PURE__*/React.createElement("input", {
+      value: idTags,
+      onChange: e => setIdTags(e.target.value),
+      placeholder: "\u4F8B\uFF1A\u3055\u3093\u307E\u3001\u30D0\u30CA\u30FC\u3001\u79CB",
+      style: inp
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: submit,
+      disabled: idBusy,
+      style: {
+        width: "100%",
+        border: "none",
+        background: idBusy ? "#ccc" : "var(--primary)",
+        color: "#fff",
+        borderRadius: 12,
+        padding: "14px",
+        fontSize: 15,
+        fontWeight: 900,
+        cursor: "pointer",
+        marginTop: 16
+      }
+    }, idBusy ? "のせています…" : "アイデアにのせる"), idMsg && /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 10,
+        fontSize: 13,
+        fontWeight: 800,
+        textAlign: "center",
+        color: idMsg === "のせました" ? "#2c6b45" : idMsg.includes("…") ? "var(--sub)" : "#b3261e"
+      }
+    }, idMsg), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 800,
+        color: "var(--sub)",
+        margin: "24px 0 8px"
+      }
+    }, "\u306E\u305B\u305F\u3082\u306E\uFF08", ideas.length, "\uFF09"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 7
+      }
+    }, ideas.map(it => /*#__PURE__*/React.createElement("div", {
+      key: it.id,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        background: "var(--card, #fff)",
+        border: "1px solid var(--line)",
+        borderRadius: 10,
+        padding: "8px 10px"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: (it.images || [])[0],
+      alt: "",
+      style: {
+        width: 44,
+        height: 56,
+        objectFit: "cover",
+        borderRadius: 4,
+        flexShrink: 0,
+        background: "var(--bg)"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 13.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, it.title), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: 11.5,
+        color: "var(--faint)"
+      }
+    }, fmtDate(it.created_at), " \uFF0F ", (it.images || []).length, "\u679A")), idDel === it.id ? /*#__PURE__*/React.createElement("button", {
+      onClick: async () => {
+        try {
+          await api.deleteIdea(it.id);
+          setIdDel(null);
+          loadIdeas();
+          loadOpLogs();
+        } catch (e) {
+          alert("消せませんでした");
+        }
+      },
+      style: {
+        border: "none",
+        background: "#b3261e",
+        color: "#fff",
+        borderRadius: 8,
+        padding: "7px 11px",
+        fontSize: 12.5,
+        fontWeight: 900,
+        cursor: "pointer"
+      }
+    }, "\u672C\u5F53\u306B\u6D88\u3059") : /*#__PURE__*/React.createElement("button", {
+      onClick: () => setIdDel(it.id),
+      style: {
+        border: "1px solid var(--line)",
+        background: "transparent",
+        color: "var(--sub)",
+        borderRadius: 8,
+        padding: "7px 11px",
+        fontSize: 12.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "\u6D88\u3059")))));
+  })(), section === "backup" && (() => {
     const run = async () => {
       setBkBusy(true);
       setBkDone("");
@@ -1068,7 +1366,7 @@ function AdminTab({
         lineHeight: 1.9,
         marginBottom: 16
       }
-    }, "いまの中身をまとめて1つのファイルに書き出します。", /*#__PURE__*/React.createElement("br", null), "ポップの名前・カタログ・発注の品目・行事など、文字の情報が入ります。"), /*#__PURE__*/React.createElement("div", {
+    }, "\u3044\u307E\u306E\u4E2D\u8EAB\u3092\u307E\u3068\u3081\u30661\u3064\u306E\u30D5\u30A1\u30A4\u30EB\u306B\u66F8\u304D\u51FA\u3057\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u30DD\u30C3\u30D7\u306E\u540D\u524D\u30FB\u30AB\u30BF\u30ED\u30B0\u30FB\u767A\u6CE8\u306E\u54C1\u76EE\u30FB\u884C\u4E8B\u306A\u3069\u3001\u6587\u5B57\u306E\u60C5\u5831\u304C\u5165\u308A\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
       style: {
         background: "#fff6de",
         border: "1px solid #eeddad",
@@ -1079,7 +1377,7 @@ function AdminTab({
         lineHeight: 1.8,
         marginBottom: 18
       }
-    }, "写真そのものは入りません。写真はサーバーに置いたままです。", /*#__PURE__*/React.createElement("br", null), "月に一度など、ときどき取っておくと安心です。"), /*#__PURE__*/React.createElement("button", {
+    }, "\u5199\u771F\u305D\u306E\u3082\u306E\u306F\u5165\u308A\u307E\u305B\u3093\u3002\u5199\u771F\u306F\u30B5\u30FC\u30D0\u30FC\u306B\u7F6E\u3044\u305F\u307E\u307E\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u6708\u306B\u4E00\u5EA6\u306A\u3069\u3001\u3068\u304D\u3069\u304D\u53D6\u3063\u3066\u304A\u304F\u3068\u5B89\u5FC3\u3067\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
       onClick: run,
       disabled: bkBusy,
       style: {
@@ -1118,21 +1416,25 @@ function AdminTab({
         lineHeight: 1.8,
         marginTop: 18
       }
-    }, "取ったファイルは、パソコンや iCloud など手元に残しておいてください。", /*#__PURE__*/React.createElement("br", null), "もし中身が消えても、このファイルがあれば戻せます。"));
+    }, "\u53D6\u3063\u305F\u30D5\u30A1\u30A4\u30EB\u306F\u3001\u30D1\u30BD\u30B3\u30F3\u3084 iCloud \u306A\u3069\u624B\u5143\u306B\u6B8B\u3057\u3066\u304A\u3044\u3066\u304F\u3060\u3055\u3044\u3002", /*#__PURE__*/React.createElement("br", null), "\u3082\u3057\u4E2D\u8EAB\u304C\u6D88\u3048\u3066\u3082\u3001\u3053\u306E\u30D5\u30A1\u30A4\u30EB\u304C\u3042\u308C\u3070\u623B\u305B\u307E\u3059\u3002"));
   })(), section === "oplog" && (() => {
     const LABEL = {
       delete: "消した",
       rename: "名前を直した",
       restore: "戻した",
       purge: "完全に消した",
-      group: "まとめた"
+      group: "まとめた",
+      idea_add: "アイデアをのせた",
+      idea_del: "アイデアを消した"
     };
     const COLOR = {
       delete: "#c2691a",
       rename: "#2f6fb0",
       restore: "#3f9e63",
       purge: "#b3261e",
-      group: "#6b4ea0"
+      group: "#6b4ea0",
+      idea_add: "#c39a3c",
+      idea_del: "#8a9099"
     };
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1141,7 +1443,7 @@ function AdminTab({
         lineHeight: 1.8,
         marginBottom: 14
       }
-    }, "消したり名前を直したりした記録です。新しい順に200件まで見られます。"), opLogs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, "\u6D88\u3057\u305F\u308A\u540D\u524D\u3092\u76F4\u3057\u305F\u308A\u3057\u305F\u8A18\u9332\u3067\u3059\u3002\u65B0\u3057\u3044\u9806\u306B200\u4EF6\u307E\u3067\u898B\u3089\u308C\u307E\u3059\u3002"), opLogs.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         color: "var(--faint)",
@@ -1154,7 +1456,7 @@ function AdminTab({
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, "まだ記録がありません")) : /*#__PURE__*/React.createElement("div", {
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -1257,7 +1559,7 @@ function AdminTab({
         lineHeight: 1.8,
         marginBottom: 14
       }
-    }, "みんなが消した投稿です。一覧には出ませんが、ここから戻せます。"), delPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    }, "\u307F\u3093\u306A\u304C\u6D88\u3057\u305F\u6295\u7A3F\u3067\u3059\u3002\u4E00\u89A7\u306B\u306F\u51FA\u307E\u305B\u3093\u304C\u3001\u3053\u3053\u304B\u3089\u623B\u305B\u307E\u3059\u3002"), delPops.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         color: "var(--faint)",
@@ -1270,7 +1572,7 @@ function AdminTab({
         fontWeight: 800,
         color: "var(--sub)"
       }
-    }, "消された投稿はありません")) : /*#__PURE__*/React.createElement(React.Fragment, null, ids.length > 0 && /*#__PURE__*/React.createElement("div", {
+    }, "\u6D88\u3055\u308C\u305F\u6295\u7A3F\u306F\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement(React.Fragment, null, ids.length > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         position: "sticky",
         top: 0,
@@ -1288,7 +1590,7 @@ function AdminTab({
         fontWeight: 800,
         color: "var(--ink)"
       }
-    }, ids.length, "件 選択中"), /*#__PURE__*/React.createElement("button", {
+    }, ids.length, "\u4EF6 \u9078\u629E\u4E2D"), /*#__PURE__*/React.createElement("button", {
       onClick: () => setTrashSel({}),
       style: {
         marginLeft: "auto",
@@ -1301,7 +1603,7 @@ function AdminTab({
         fontWeight: 700,
         cursor: "pointer"
       }
-    }, "解除"), /*#__PURE__*/React.createElement("button", {
+    }, "\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
       onClick: doRestore,
       disabled: trashBusy,
       style: {
@@ -1314,7 +1616,7 @@ function AdminTab({
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "もどす"), /*#__PURE__*/React.createElement("button", {
+    }, "\u3082\u3069\u3059"), /*#__PURE__*/React.createElement("button", {
       onClick: doPurge,
       disabled: trashBusy,
       style: {
@@ -1327,7 +1629,7 @@ function AdminTab({
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "完全に消す")), /*#__PURE__*/React.createElement("div", {
+    }, "\u5B8C\u5168\u306B\u6D88\u3059")), /*#__PURE__*/React.createElement("div", {
       className: "pop-grid v-sm"
     }, delPops.map(pop => {
       const on = !!trashSel[pop.id];
@@ -1376,7 +1678,7 @@ function AdminTab({
           color: "var(--faint)",
           padding: "0 6px 6px"
         }
-      }, fmtDate(pop.deleted_at), " に削除"), on && /*#__PURE__*/React.createElement("span", {
+      }, fmtDate(pop.deleted_at), " \u306B\u524A\u9664"), on && /*#__PURE__*/React.createElement("span", {
         style: {
           position: "absolute",
           top: 6,
@@ -1392,7 +1694,7 @@ function AdminTab({
           fontSize: 13,
           fontWeight: 900
         }
-      }, "✓"));
+      }, "\u2713"));
     }))));
   })(), section === "archive" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1400,7 +1702,7 @@ function AdminTab({
       color: "var(--sub)",
       marginBottom: 14
     }
-  }, "写真をタップして選び、まとめてアーカイブ／公開に戻せます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5199\u771F\u3092\u30BF\u30C3\u30D7\u3057\u3066\u9078\u3073\u3001\u307E\u3068\u3081\u3066\u30A2\u30FC\u30AB\u30A4\u30D6\uFF0F\u516C\u958B\u306B\u623B\u305B\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       borderRadius: 10,
@@ -1415,7 +1717,7 @@ function AdminTab({
       padding: "40px 0",
       fontSize: 14
     }
-  }, "読み込み中…") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -1472,7 +1774,7 @@ function AdminTab({
         fontWeight: 900,
         lineHeight: 1
       }
-    }, "✓"), /*#__PURE__*/React.createElement("div", {
+    }, "\u2713"), /*#__PURE__*/React.createElement("div", {
       style: {
         padding: "6px 8px"
       }
@@ -1515,7 +1817,7 @@ function AdminTab({
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, selIds.length, "件 選択中"), /*#__PURE__*/React.createElement("button", {
+  }, selIds.length, "\u4EF6 \u9078\u629E\u4E2D"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setSel({}),
     style: {
       marginLeft: "auto",
@@ -1528,7 +1830,7 @@ function AdminTab({
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "解除"), /*#__PURE__*/React.createElement("button", {
+  }, "\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setGrpAsk(true);
       setGrpName("");
@@ -1544,7 +1846,7 @@ function AdminTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "まとめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u307E\u3068\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setDelAsk(true);
       setDelWord("");
@@ -1559,7 +1861,7 @@ function AdminTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "消す"), /*#__PURE__*/React.createElement("button", {
+  }, "\u6D88\u3059"), /*#__PURE__*/React.createElement("button", {
     onClick: apply,
     disabled: applying,
     style: {
@@ -1601,24 +1903,24 @@ function AdminTab({
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, selIds.length, "件をひとまとめにします"), /*#__PURE__*/React.createElement("div", {
+  }, selIds.length, "\u4EF6\u3092\u3072\u3068\u307E\u3068\u3081\u306B\u3057\u307E\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.8,
       marginBottom: 14
     }
-  }, "一覧には、この名前で1件だけ出るようになります。押すと中の全部が見られます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E00\u89A7\u306B\u306F\u3001\u3053\u306E\u540D\u524D\u30671\u4EF6\u3060\u3051\u51FA\u308B\u3088\u3046\u306B\u306A\u308A\u307E\u3059\u3002\u62BC\u3059\u3068\u4E2D\u306E\u5168\u90E8\u304C\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "まとまりの名前"), /*#__PURE__*/React.createElement("input", {
+  }, "\u307E\u3068\u307E\u308A\u306E\u540D\u524D"), /*#__PURE__*/React.createElement("input", {
     value: grpName,
     onChange: e => setGrpName(e.target.value),
-    placeholder: "例：9月8日の月曜販促",
+    placeholder: "\u4F8B\uFF1A9\u67088\u65E5\u306E\u6708\u66DC\u8CA9\u4FC3",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1637,7 +1939,7 @@ function AdminTab({
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "表紙にするポップ（一覧に出ます）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8868\u7D19\u306B\u3059\u308B\u30DD\u30C3\u30D7\uFF08\u4E00\u89A7\u306B\u51FA\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -1694,7 +1996,7 @@ function AdminTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: () => doGroup(grpName.trim(), grpCover),
     disabled: grpBusy || !grpName.trim(),
     style: {
@@ -1722,7 +2024,7 @@ function AdminTab({
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "まとまりを解除する（バラバラに戻す）"))), delAsk && /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3068\u307E\u308A\u3092\u89E3\u9664\u3059\u308B\uFF08\u30D0\u30E9\u30D0\u30E9\u306B\u623B\u3059\uFF09"))), delAsk && /*#__PURE__*/React.createElement("div", {
     onClick: () => !delBusy && setDelAsk(false),
     style: {
       position: "fixed",
@@ -1750,24 +2052,24 @@ function AdminTab({
       color: "#b3261e",
       marginBottom: 8
     }
-  }, selIds.length, "件を完全に消します"), /*#__PURE__*/React.createElement("div", {
+  }, selIds.length, "\u4EF6\u3092\u5B8C\u5168\u306B\u6D88\u3057\u307E\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--text)",
       lineHeight: 1.8,
       marginBottom: 14
     }
-  }, "選んだポップと、そこに付いたコメントも一緒に消えます。", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "一度消すと元に戻せません。"), /*#__PURE__*/React.createElement("br", null), "残しておきたいだけなら「アーカイブする」をお使いください。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9078\u3093\u3060\u30DD\u30C3\u30D7\u3068\u3001\u305D\u3053\u306B\u4ED8\u3044\u305F\u30B3\u30E1\u30F3\u30C8\u3082\u4E00\u7DD2\u306B\u6D88\u3048\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u4E00\u5EA6\u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement("br", null), "\u6B8B\u3057\u3066\u304A\u304D\u305F\u3044\u3060\u3051\u306A\u3089\u300C\u30A2\u30FC\u30AB\u30A4\u30D6\u3059\u308B\u300D\u3092\u304A\u4F7F\u3044\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "確認のため「削除」と入力してください"), /*#__PURE__*/React.createElement("input", {
+  }, "\u78BA\u8A8D\u306E\u305F\u3081\u300C\u524A\u9664\u300D\u3068\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044"), /*#__PURE__*/React.createElement("input", {
     value: delWord,
     onChange: e => setDelWord(e.target.value),
-    placeholder: "削除",
+    placeholder: "\u524A\u9664",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1798,7 +2100,7 @@ function AdminTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: doDelete,
     disabled: delBusy || delWord.trim() !== "削除",
     style: {
@@ -1818,14 +2120,14 @@ function AdminTab({
       color: "var(--sub)",
       marginBottom: 14
     }
-  }, "ホーム画面の一覧最上部に固定するPOPを選択できます"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u30DB\u30FC\u30E0\u753B\u9762\u306E\u4E00\u89A7\u6700\u4E0A\u90E8\u306B\u56FA\u5B9A\u3059\u308BPOP\u3092\u9078\u629E\u3067\u304D\u307E\u3059"), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
       padding: "40px 0",
       fontSize: 14
     }
-  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, pinnedPopId && /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, pinnedPopId && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff8f0",
       border: "2px solid var(--primary)",
@@ -1840,7 +2142,7 @@ function AdminTab({
       color: "var(--primary)",
       marginBottom: 6
     }
-  }, "📌 現在のピン留め"), pops.find(p => p.id === pinnedPopId) && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCCC \u73FE\u5728\u306E\u30D4\u30F3\u7559\u3081"), pops.find(p => p.id === pinnedPopId) && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1872,14 +2174,14 @@ function AdminTab({
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "外す"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u5916\u3059"))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "最近投稿したPOP"), /*#__PURE__*/React.createElement("div", {
+  }, "\u6700\u8FD1\u6295\u7A3F\u3057\u305FPOP"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
@@ -1911,19 +2213,19 @@ function AdminTab({
       justifyContent: "center",
       fontSize: 24
     }
-  }, "📌")))))), section === "memo" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCCC")))))), section === "memo" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
       marginBottom: 12
     }
-  }, "制作時の気づき・失敗点・工夫を箇条書きで記録。メモ内のPOP名は自動でリンクになります"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u5236\u4F5C\u6642\u306E\u6C17\u3065\u304D\u30FB\u5931\u6557\u70B9\u30FB\u5DE5\u592B\u3092\u7B87\u6761\u66F8\u304D\u3067\u8A18\u9332\u3002\u30E1\u30E2\u5185\u306EPOP\u540D\u306F\u81EA\u52D5\u3067\u30EA\u30F3\u30AF\u306B\u306A\u308A\u307E\u3059"), /*#__PURE__*/React.createElement("textarea", {
     value: memoText,
     onChange: e => {
       setMemoText(e.target.value);
       setMemoDirty(true);
     },
-    placeholder: "・商品名／キャンペーン名\n・用途／売場\n・メイン訴求\n・デザイン方向\n・修正した点\n・AIが失敗した点\n・次回流用できる点",
+    placeholder: "\u30FB\u5546\u54C1\u540D\uFF0F\u30AD\u30E3\u30F3\u30DA\u30FC\u30F3\u540D\n\u30FB\u7528\u9014\uFF0F\u58F2\u5834\n\u30FB\u30E1\u30A4\u30F3\u8A34\u6C42\n\u30FB\u30C7\u30B6\u30A4\u30F3\u65B9\u5411\n\u30FB\u4FEE\u6B63\u3057\u305F\u70B9\n\u30FBAI\u304C\u5931\u6557\u3057\u305F\u70B9\n\u30FB\u6B21\u56DE\u6D41\u7528\u3067\u304D\u308B\u70B9",
     style: {
       width: "100%",
       minHeight: 200,
@@ -2039,20 +2341,20 @@ function ArchiveTab({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "アーカイブ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30FC\u30AB\u30A4\u30D6"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
       marginBottom: 14
     }
-  }, "販売が終わったPOPの保管庫です。過去の参考にどうぞ。"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8CA9\u58F2\u304C\u7D42\u308F\u3063\u305FPOP\u306E\u4FDD\u7BA1\u5EAB\u3067\u3059\u3002\u904E\u53BB\u306E\u53C2\u8003\u306B\u3069\u3046\u305E\u3002"), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
       padding: "50px 0",
       fontSize: 14
     }
-  }, "読み込み中…") : pops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : pops.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 60,
@@ -2064,13 +2366,13 @@ function ArchiveTab({
       fontWeight: 700,
       color: "var(--sub)"
     }
-  }, "アーカイブはまだ空です"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30FC\u30AB\u30A4\u30D6\u306F\u307E\u3060\u7A7A\u3067\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       marginTop: 6,
       color: "var(--faint)"
     }
-  }, "管理画面からPOPをアーカイブできます")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u7BA1\u7406\u753B\u9762\u304B\u3089POP\u3092\u30A2\u30FC\u30AB\u30A4\u30D6\u3067\u304D\u307E\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
@@ -2078,7 +2380,7 @@ function ArchiveTab({
       marginBottom: 12,
       paddingLeft: 2
     }
-  }, "アーカイブ済み（", pops.length, "）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30FC\u30AB\u30A4\u30D6\u6E08\u307F\uFF08", pops.length, "\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(118px, 1fr))",
@@ -2104,7 +2406,7 @@ function ArchiveTab({
     }
   }), /*#__PURE__*/React.createElement("button", {
     onClick: e => openResForm(pop, e),
-    title: "資料に登録",
+    title: "\u8CC7\u6599\u306B\u767B\u9332",
     style: {
       position: "absolute",
       right: 5,
@@ -2118,7 +2420,7 @@ function ArchiveTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "資料へ"))))), resTarget && /*#__PURE__*/React.createElement("div", {
+  }, "\u8CC7\u6599\u3078"))))), resTarget && /*#__PURE__*/React.createElement("div", {
     onClick: () => setResTarget(null),
     style: {
       position: "fixed",
@@ -2148,14 +2450,14 @@ function ArchiveTab({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "資料に登録"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8CC7\u6599\u306B\u767B\u9332"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 12
     }
-  }, "このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。"), /*#__PURE__*/React.createElement("img", {
+  }, "\u3053\u306E\u30DD\u30C3\u30D7\u306E\u753B\u50CF\u3092\u8CC7\u6599\u3068\u3057\u3066\u767B\u9332\u3057\u307E\u3059\u3002\u300C\u4E00\u89A7\u306B\u8868\u793A\u3059\u308B\u300D\u3092\u5165\u308C\u306A\u3051\u308C\u3070\u3001\u7BA1\u7406\u753B\u9762\u304B\u3089\u3060\u3051\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("img", {
     src: resTarget.image_url,
     style: {
       width: "100%",
@@ -2166,7 +2468,7 @@ function ArchiveTab({
   }), /*#__PURE__*/React.createElement("input", {
     value: resTitle,
     onChange: e => setResTitle(e.target.value),
-    placeholder: "タイトル",
+    placeholder: "\u30BF\u30A4\u30C8\u30EB",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -2180,7 +2482,7 @@ function ArchiveTab({
   }), /*#__PURE__*/React.createElement("input", {
     value: resDesc,
     onChange: e => setResDesc(e.target.value),
-    placeholder: "説明（任意）",
+    placeholder: "\u8AAC\u660E\uFF08\u4EFB\u610F\uFF09",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -2206,7 +2508,7 @@ function ArchiveTab({
     type: "checkbox",
     checked: resVisible,
     onChange: e => setResVisible(e.target.checked)
-  }), "一覧に表示する（みんなが見られます）"), resMsg && /*#__PURE__*/React.createElement("div", {
+  }), "\u4E00\u89A7\u306B\u8868\u793A\u3059\u308B\uFF08\u307F\u3093\u306A\u304C\u898B\u3089\u308C\u307E\u3059\uFF09"), resMsg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
@@ -2231,7 +2533,7 @@ function ArchiveTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: saveAsResource,
     disabled: resBusy,
     style: {
@@ -2383,7 +2685,7 @@ function RequestTab() {
         color: "var(--ink)",
         marginBottom: 6
       }
-    }, "送信しました"), /*#__PURE__*/React.createElement("div", {
+    }, "\u9001\u4FE1\u3057\u307E\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: "var(--sub)",
@@ -2402,7 +2704,7 @@ function RequestTab() {
         padding: "12px 24px",
         cursor: "pointer"
       }
-    }, "続けて送信する")));
+    }, "\u7D9A\u3051\u3066\u9001\u4FE1\u3059\u308B")));
   }
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2418,13 +2720,13 @@ function RequestTab() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "お問い合わせ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u304A\u554F\u3044\u5408\u308F\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
       marginBottom: 14
     }
-  }, "POPの作成依頼、アプリや売場へのご要望、質問など、なんでもここからどうぞ。内容は担当者に届きます。"), /*#__PURE__*/React.createElement("div", {
+  }, "POP\u306E\u4F5C\u6210\u4F9D\u983C\u3001\u30A2\u30D7\u30EA\u3084\u58F2\u5834\u3078\u306E\u3054\u8981\u671B\u3001\u8CEA\u554F\u306A\u3069\u3001\u306A\u3093\u3067\u3082\u3053\u3053\u304B\u3089\u3069\u3046\u305E\u3002\u5185\u5BB9\u306F\u62C5\u5F53\u8005\u306B\u5C4A\u304D\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -2460,7 +2762,7 @@ function RequestTab() {
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, isPop ? /*#__PURE__*/React.createElement(React.Fragment, null, "商品名 ", /*#__PURE__*/React.createElement("span", {
+  }, isPop ? /*#__PURE__*/React.createElement(React.Fragment, null, "\u5546\u54C1\u540D ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
@@ -2471,18 +2773,18 @@ function RequestTab() {
     style: inp
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "店舗"), /*#__PURE__*/React.createElement("select", {
+  }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
     value: store,
     onChange: e => setStore(e.target.value),
     style: inp
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
-  }, "未指定"), STORES.map(s => /*#__PURE__*/React.createElement("option", {
+  }, "\u672A\u6307\u5B9A"), STORES.map(s => /*#__PURE__*/React.createElement("option", {
     key: s,
     value: s
   }, s)))), isPop && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "優先度"), /*#__PURE__*/React.createElement("div", {
+  }, "\u512A\u5148\u5EA6"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8
@@ -2507,7 +2809,7 @@ function RequestTab() {
     }, urgent ? "急ぎ" : "普通");
   }))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, isPop ? "要望・メモ" : /*#__PURE__*/React.createElement(React.Fragment, null, "内容 ", /*#__PURE__*/React.createElement("span", {
+  }, isPop ? "要望・メモ" : /*#__PURE__*/React.createElement(React.Fragment, null, "\u5185\u5BB9 ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
@@ -2550,7 +2852,7 @@ function RequestTab() {
       color: "var(--faint)",
       marginTop: 3
     }
-  }, "写真・Excel・PDF・Word・テキストなど（1つ", MAX_MB, "MBまで）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5199\u771F\u30FBExcel\u30FBPDF\u30FBWord\u30FB\u30C6\u30AD\u30B9\u30C8\u306A\u3069\uFF081\u3064", MAX_MB, "MB\u307E\u3067\uFF09"), /*#__PURE__*/React.createElement("input", {
     type: "file",
     multiple: true,
     disabled: upBusy,
@@ -2645,7 +2947,7 @@ function RequestTab() {
       padding: "0 3px",
       flexShrink: 0
     }
-  }, "×")))))), error && /*#__PURE__*/React.createElement("div", {
+  }, "\xD7")))))), error && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "#e01010",
@@ -2753,7 +3055,7 @@ function NoticeAdmin({
       color: "var(--faint)",
       padding: "30px 0"
     }
-  }, "読み込み中…");
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026");
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...card,
@@ -2761,7 +3063,7 @@ function NoticeAdmin({
       color: "var(--text)",
       lineHeight: 1.7
     }
-  }, "2種類のお知らせを、ここからON/OFFできます。①は不具合などの", /*#__PURE__*/React.createElement("b", null, "緊急のお知らせバナー"), "（メインページ上部に固定）、②はホーム画面下に出る", /*#__PURE__*/React.createElement("b", null, "案内メッセージ"), "（タップ／スクロールで消えるもの）です。保存すると、みんなの画面に反映されます。"), /*#__PURE__*/React.createElement("div", {
+  }, "2\u7A2E\u985E\u306E\u304A\u77E5\u3089\u305B\u3092\u3001\u3053\u3053\u304B\u3089ON/OFF\u3067\u304D\u307E\u3059\u3002\u2460\u306F\u4E0D\u5177\u5408\u306A\u3069\u306E", /*#__PURE__*/React.createElement("b", null, "\u7DCA\u6025\u306E\u304A\u77E5\u3089\u305B\u30D0\u30CA\u30FC"), "\uFF08\u30E1\u30A4\u30F3\u30DA\u30FC\u30B8\u4E0A\u90E8\u306B\u56FA\u5B9A\uFF09\u3001\u2461\u306F\u30DB\u30FC\u30E0\u753B\u9762\u4E0B\u306B\u51FA\u308B", /*#__PURE__*/React.createElement("b", null, "\u6848\u5185\u30E1\u30C3\u30BB\u30FC\u30B8"), "\uFF08\u30BF\u30C3\u30D7\uFF0F\u30B9\u30AF\u30ED\u30FC\u30EB\u3067\u6D88\u3048\u308B\u3082\u306E\uFF09\u3067\u3059\u3002\u4FDD\u5B58\u3059\u308B\u3068\u3001\u307F\u3093\u306A\u306E\u753B\u9762\u306B\u53CD\u6620\u3055\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2776,7 +3078,7 @@ function NoticeAdmin({
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "① 緊急お知らせバナーを表示する"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2460 \u7DCA\u6025\u304A\u77E5\u3089\u305B\u30D0\u30CA\u30FC\u3092\u8868\u793A\u3059\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setEnabled(v => !v),
     style: {
       width: 58,
@@ -2814,11 +3116,11 @@ function NoticeAdmin({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "お知らせ文"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u304A\u77E5\u3089\u305B\u6587"), /*#__PURE__*/React.createElement("textarea", {
     value: message,
     onChange: e => setMessage(e.target.value),
     rows: 4,
-    placeholder: "例：発注バーコードの印刷がWindowsで一部ずれる不具合のため、印刷機能を一時調整中です。MacやiPhoneでは利用できます。",
+    placeholder: "\u4F8B\uFF1A\u767A\u6CE8\u30D0\u30FC\u30B3\u30FC\u30C9\u306E\u5370\u5237\u304CWindows\u3067\u4E00\u90E8\u305A\u308C\u308B\u4E0D\u5177\u5408\u306E\u305F\u3081\u3001\u5370\u5237\u6A5F\u80FD\u3092\u4E00\u6642\u8ABF\u6574\u4E2D\u3067\u3059\u3002Mac\u3084iPhone\u3067\u306F\u5229\u7528\u3067\u304D\u307E\u3059\u3002",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -2838,7 +3140,7 @@ function NoticeAdmin({
       margin: "14px 0 6px",
       fontWeight: 700
     }
-  }, "プレビュー（実際の見え方）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC\uFF08\u5B9F\u969B\u306E\u898B\u3048\u65B9\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff4e5",
       border: "1px solid #ffc98a",
@@ -2857,7 +3159,7 @@ function NoticeAdmin({
       fontSize: 16,
       lineHeight: 1.3
     }
-  }, "⚠️"), /*#__PURE__*/React.createElement("span", {
+  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap",
       color: message.trim() ? "#8a4b00" : "#c79a6a"
@@ -2877,7 +3179,7 @@ function NoticeAdmin({
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "② ホーム画面の案内メッセージ"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2461 \u30DB\u30FC\u30E0\u753B\u9762\u306E\u6848\u5185\u30E1\u30C3\u30BB\u30FC\u30B8"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setTipEnabled(v => !v),
     style: {
       width: 58,
@@ -2915,18 +3217,18 @@ function NoticeAdmin({
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30BF\u30C3\u30D7\u307E\u305F\u306F\u30B9\u30AF\u30ED\u30FC\u30EB\u3067\u81EA\u52D5\u7684\u306B\u6D88\u3048\u308B\u3001\u30DB\u30FC\u30E0\u753B\u9762\u4E0B\u306E\u30D5\u30ED\u30FC\u30C6\u30A3\u30F3\u30B0\u6848\u5185\u3067\u3059\u3002\u300C\u5B63\u7BC0\u306E\u30DD\u30C3\u30D7\u306F\u81EA\u52D5\u3067\u30A2\u30FC\u30AB\u30A4\u30D6\u3055\u308C\u307E\u3059\u300D\u3068\u3044\u3063\u305F\u8EFD\u3044\u6848\u5185\u306B\u4F7F\u3044\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "案内文"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u6848\u5185\u6587"), /*#__PURE__*/React.createElement("textarea", {
     value: tipMessage,
     onChange: e => setTipMessage(e.target.value),
     rows: 2,
-    placeholder: "例：季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。",
+    placeholder: "\u4F8B\uFF1A\u5B63\u7BC0\u306E\u30DD\u30C3\u30D7\u3084\u6642\u671F\u304C\u904E\u304E\u305F\u30DD\u30C3\u30D7\u306F\u300C\u30A2\u30FC\u30AB\u30A4\u30D6\u300D\u306B\u53CE\u7D0D\u3055\u308C\u307E\u3059\u3002",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -2946,7 +3248,7 @@ function NoticeAdmin({
       margin: "14px 0 6px",
       fontWeight: 700
     }
-  }, "プレビュー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -2979,7 +3281,7 @@ function NoticeAdmin({
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "③ 新機能のお知らせバナー"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2462 \u65B0\u6A5F\u80FD\u306E\u304A\u77E5\u3089\u305B\u30D0\u30CA\u30FC"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setFeatEnabled(v => !v),
     style: {
       width: 58,
@@ -3017,18 +3319,18 @@ function NoticeAdmin({
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u65B0\u6A5F\u80FD\u3092\u8FFD\u52A0\u3057\u305F\u3068\u304D\u306B\u3001\u30DB\u30FC\u30E0\u753B\u9762\u306E\u4E0A\u90E8\u306B\u51FA\u3059\u6848\u5185\u3067\u3059\u3002\u5404\u81EA\u304C\u4E00\u5EA6\u300C\xD7\u300D\u3067\u9589\u3058\u308B\u3068\u3001\u305D\u306E\u4EBA\u306B\u306F\u518D\u8868\u793A\u3055\u308C\u307E\u305B\u3093\uFF08\u6587\u9762\u3092\u5909\u3048\u3066\u4FDD\u5B58\u3059\u308B\u3068\u3001\u307E\u305F\u5168\u54E1\u306B\u8868\u793A\u3055\u308C\u307E\u3059\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "お知らせ文"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u304A\u77E5\u3089\u305B\u6587"), /*#__PURE__*/React.createElement("textarea", {
     value: featMessage,
     onChange: e => setFeatMessage(e.target.value),
     rows: 2,
-    placeholder: "例：魚図鑑ができました！旬の魚や売り方のヒントが見られます。",
+    placeholder: "\u4F8B\uFF1A\u9B5A\u56F3\u9451\u304C\u3067\u304D\u307E\u3057\u305F\uFF01\u65EC\u306E\u9B5A\u3084\u58F2\u308A\u65B9\u306E\u30D2\u30F3\u30C8\u304C\u898B\u3089\u308C\u307E\u3059\u3002",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -3048,7 +3350,7 @@ function NoticeAdmin({
       color: "var(--text)",
       margin: "14px 0 6px"
     }
-  }, "タップで開く機能（任意）"), /*#__PURE__*/React.createElement("select", {
+  }, "\u30BF\u30C3\u30D7\u3067\u958B\u304F\u6A5F\u80FD\uFF08\u4EFB\u610F\uFF09"), /*#__PURE__*/React.createElement("select", {
     value: featTab,
     onChange: e => setFeatTab(e.target.value),
     style: {
@@ -3063,7 +3365,7 @@ function NoticeAdmin({
     }
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
-  }, "（移動しない）"), TAB_REGISTRY.filter(t => t.key !== "admin").map(t => /*#__PURE__*/React.createElement("option", {
+  }, "\uFF08\u79FB\u52D5\u3057\u306A\u3044\uFF09"), TAB_REGISTRY.filter(t => t.key !== "admin").map(t => /*#__PURE__*/React.createElement("option", {
     key: t.key,
     value: t.key
   }, t.label))), /*#__PURE__*/React.createElement("div", {
@@ -3073,7 +3375,7 @@ function NoticeAdmin({
       margin: "14px 0 6px",
       fontWeight: 700
     }
-  }, "プレビュー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -3086,7 +3388,7 @@ function NoticeAdmin({
     style: {
       fontSize: 20
     }
-  }, "🎉"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDF89"), /*#__PURE__*/React.createElement("div", {
     style: {
       minWidth: 0,
       flex: 1
@@ -3097,7 +3399,7 @@ function NoticeAdmin({
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
-  }, "新機能のお知らせ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u65B0\u6A5F\u80FD\u306E\u304A\u77E5\u3089\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
@@ -3113,7 +3415,7 @@ function NoticeAdmin({
       borderRadius: 8,
       padding: "4px 10px"
     }
-  }, "ひらく"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u3072\u3089\u304F"))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3122,14 +3424,14 @@ function NoticeAdmin({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "メニューに出すものをえらぶ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30E1\u30CB\u30E5\u30FC\u306B\u51FA\u3059\u3082\u306E\u3092\u3048\u3089\u3076"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 11,
       lineHeight: 1.6
     }
-  }, "チェックを外すと、メニューから消えます（「管理画面」は常に出ます）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30C1\u30A7\u30C3\u30AF\u3092\u5916\u3059\u3068\u3001\u30E1\u30CB\u30E5\u30FC\u304B\u3089\u6D88\u3048\u307E\u3059\uFF08\u300C\u7BA1\u7406\u753B\u9762\u300D\u306F\u5E38\u306B\u51FA\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -3206,21 +3508,21 @@ function NoticeAdmin({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "④ 下のボタンに赤い印をつける"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2463 \u4E0B\u306E\u30DC\u30BF\u30F3\u306B\u8D64\u3044\u5370\u3092\u3064\u3051\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0B\u306E\u30D0\u30FC\u306E\u30DC\u30BF\u30F3\u306B\u8D64\u3044\u4E38\u3068\u5439\u304D\u51FA\u3057\u3092\u51FA\u3057\u307E\u3059\u3002\u300C\u30AB\u30BF\u30ED\u30B0\u306B\u30CF\u30ED\u30FC\u30C7\u30A4\u3092\u8FFD\u52A0\u3057\u307E\u3057\u305F\u300D\u306E\u3088\u3046\u306B\u3001\u5BFE\u5FDC\u3057\u305F\u3053\u3068\u3092\u77E5\u3089\u305B\u305F\u3044\u6642\u306B\u3002\u4E00\u5EA6\u30BF\u30C3\u30D7\u3059\u308B\u3068\u6D88\u3048\u3001\u6307\u5B9A\u3057\u305F\u65E5\u6570\u304C\u904E\u304E\u3066\u3082\u81EA\u52D5\u3067\u6D88\u3048\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "どのボタンに付けるか"), /*#__PURE__*/React.createElement("select", {
+  }, "\u3069\u306E\u30DC\u30BF\u30F3\u306B\u4ED8\u3051\u308B\u304B"), /*#__PURE__*/React.createElement("select", {
     value: badgeTab,
     onChange: e => setBadgeTab(e.target.value),
     style: {
@@ -3236,23 +3538,23 @@ function NoticeAdmin({
     }
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
-  }, "（付けない）"), /*#__PURE__*/React.createElement("option", {
+  }, "\uFF08\u4ED8\u3051\u306A\u3044\uFF09"), /*#__PURE__*/React.createElement("option", {
     value: "board"
-  }, "一覧"), /*#__PURE__*/React.createElement("option", {
+  }, "\u4E00\u89A7"), /*#__PURE__*/React.createElement("option", {
     value: "catalog"
-  }, "カタログ"), /*#__PURE__*/React.createElement("option", {
+  }, "\u30AB\u30BF\u30ED\u30B0"), /*#__PURE__*/React.createElement("option", {
     value: "__more"
-  }, "メニュー")), /*#__PURE__*/React.createElement("div", {
+  }, "\u30E1\u30CB\u30E5\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "吹き出しの文言"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5439\u304D\u51FA\u3057\u306E\u6587\u8A00"), /*#__PURE__*/React.createElement("input", {
     value: badgeText,
     onChange: e => setBadgeText(e.target.value),
-    placeholder: "例：ハローデイ追加しました！",
+    placeholder: "\u4F8B\uFF1A\u30CF\u30ED\u30FC\u30C7\u30A4\u8FFD\u52A0\u3057\u307E\u3057\u305F\uFF01",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -3271,7 +3573,7 @@ function NoticeAdmin({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "表示する日数"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8868\u793A\u3059\u308B\u65E5\u6570"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -3291,14 +3593,14 @@ function NoticeAdmin({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, d, "日間"))), /*#__PURE__*/React.createElement("div", {
+  }, d, "\u65E5\u9593"))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 6,
       fontWeight: 700
     }
-  }, "プレビュー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary-soft)",
       borderRadius: 14,
@@ -3335,7 +3637,7 @@ function NoticeAdmin({
       fontSize: 13,
       fontWeight: 800
     }
-  }, "カタログ"), /*#__PURE__*/React.createElement("span", {
+  }, "\u30AB\u30BF\u30ED\u30B0"), /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: 2,
@@ -3427,7 +3729,7 @@ function RotateAdmin() {
       lineHeight: 1.6,
       marginBottom: 10
     }
-  }, "横向きになってしまったポップを、90度ずつ回して直せます。見た目だけを回す方式なので、投稿日は変わらず", /*#__PURE__*/React.createElement("b", null, "並び順もそのまま"), "です。"), /*#__PURE__*/React.createElement("label", {
+  }, "\u6A2A\u5411\u304D\u306B\u306A\u3063\u3066\u3057\u307E\u3063\u305F\u30DD\u30C3\u30D7\u3092\u300190\u5EA6\u305A\u3064\u56DE\u3057\u3066\u76F4\u305B\u307E\u3059\u3002\u898B\u305F\u76EE\u3060\u3051\u3092\u56DE\u3059\u65B9\u5F0F\u306A\u306E\u3067\u3001\u6295\u7A3F\u65E5\u306F\u5909\u308F\u3089\u305A", /*#__PURE__*/React.createElement("b", null, "\u4E26\u3073\u9806\u3082\u305D\u306E\u307E\u307E"), "\u3067\u3059\u3002"), /*#__PURE__*/React.createElement("label", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -3442,7 +3744,7 @@ function RotateAdmin() {
     type: "checkbox",
     checked: onlyRotated,
     onChange: e => setOnlyRotated(e.target.checked)
-  }), "回転させたものだけ表示"), msg && /*#__PURE__*/React.createElement("div", {
+  }), "\u56DE\u8EE2\u3055\u305B\u305F\u3082\u306E\u3060\u3051\u8868\u793A"), msg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "#b3261e",
@@ -3456,14 +3758,14 @@ function RotateAdmin() {
       padding: "30px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : shown.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : shown.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "36px 0",
       fontSize: 13
     }
-  }, "該当するポップがありません") : /*#__PURE__*/React.createElement("div", {
+  }, "\u8A72\u5F53\u3059\u308B\u30DD\u30C3\u30D7\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(132px, 1fr))",
@@ -3532,8 +3834,8 @@ function RotateAdmin() {
         fontWeight: 900,
         cursor: "pointer"
       },
-      title: "左に90度"
-    }, "↺"), /*#__PURE__*/React.createElement("button", {
+      title: "\u5DE6\u306B90\u5EA6"
+    }, "\u21BA"), /*#__PURE__*/React.createElement("button", {
       onClick: () => rotate(pop, 90),
       disabled: busyId === pop.id,
       style: {
@@ -3547,8 +3849,8 @@ function RotateAdmin() {
         fontWeight: 900,
         cursor: "pointer"
       },
-      title: "右に90度"
-    }, "↻"), rot !== 0 && /*#__PURE__*/React.createElement("button", {
+      title: "\u53F3\u306B90\u5EA6"
+    }, "\u21BB"), rot !== 0 && /*#__PURE__*/React.createElement("button", {
       onClick: () => rotate(pop, -rot),
       disabled: busyId === pop.id,
       style: {
@@ -3561,8 +3863,8 @@ function RotateAdmin() {
         fontWeight: 800,
         cursor: "pointer"
       },
-      title: "元に戻す"
-    }, "戻す")), rot !== 0 && /*#__PURE__*/React.createElement("div", {
+      title: "\u5143\u306B\u623B\u3059"
+    }, "\u623B\u3059")), rot !== 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 11.5,
         color: "var(--primary-soft)",
@@ -3570,7 +3872,7 @@ function RotateAdmin() {
         marginTop: 5,
         textAlign: "center"
       }
-    }, rot, "度"));
+    }, rot, "\u5EA6"));
   })));
 }
 
@@ -3742,7 +4044,7 @@ function CatalogAdmin() {
       lineHeight: 1.6,
       marginBottom: 12
     }
-  }, "各スーパーの予約カタログを登録します。写真やPDFをアップロードするか、WebカタログのURLを貼ってください。「表示」にしたものが予約カタログのページに並びます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5404\u30B9\u30FC\u30D1\u30FC\u306E\u4E88\u7D04\u30AB\u30BF\u30ED\u30B0\u3092\u767B\u9332\u3057\u307E\u3059\u3002\u5199\u771F\u3084PDF\u3092\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3059\u308B\u304B\u3001Web\u30AB\u30BF\u30ED\u30B0\u306EURL\u3092\u8CBC\u3063\u3066\u304F\u3060\u3055\u3044\u3002\u300C\u8868\u793A\u300D\u306B\u3057\u305F\u3082\u306E\u304C\u4E88\u7D04\u30AB\u30BF\u30ED\u30B0\u306E\u30DA\u30FC\u30B8\u306B\u4E26\u3073\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid var(--line)",
       borderRadius: 12,
@@ -3757,14 +4059,14 @@ function CatalogAdmin() {
       color: "var(--ink)",
       marginBottom: 10
     }
-  }, "カタログを追加"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30AB\u30BF\u30ED\u30B0\u3092\u8FFD\u52A0"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 5
     }
-  }, "スーパー名"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30B9\u30FC\u30D1\u30FC\u540D"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 5,
@@ -3787,7 +4089,7 @@ function CatalogAdmin() {
   }, st))), /*#__PURE__*/React.createElement("input", {
     value: STORES.includes(form.store) ? "" : form.store,
     onChange: e => setF("store", e.target.value),
-    placeholder: "上に無ければ入力（例：マルマン）",
+    placeholder: "\u4E0A\u306B\u7121\u3051\u308C\u3070\u5165\u529B\uFF08\u4F8B\uFF1A\u30DE\u30EB\u30DE\u30F3\uFF09",
     style: {
       ...inp,
       marginBottom: 10,
@@ -3841,7 +4143,7 @@ function CatalogAdmin() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "年"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5E74"), /*#__PURE__*/React.createElement("input", {
     value: form.year,
     onChange: e => setF("year", e.target.value.replace(/[^0-9]/g, "")),
     inputMode: "numeric",
@@ -3861,7 +4163,7 @@ function CatalogAdmin() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "時期"), /*#__PURE__*/React.createElement("select", {
+  }, "\u6642\u671F"), /*#__PURE__*/React.createElement("select", {
     value: form.season,
     onChange: e => setF("season", e.target.value),
     style: {
@@ -3882,7 +4184,7 @@ function CatalogAdmin() {
       color: "var(--sub)",
       marginBottom: 4
     }
-  }, "表紙の画像（任意・ページが消えても残ります）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u8868\u7D19\u306E\u753B\u50CF\uFF08\u4EFB\u610F\u30FB\u30DA\u30FC\u30B8\u304C\u6D88\u3048\u3066\u3082\u6B8B\u308A\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("input", {
     ref: thumbRef,
     type: "file",
     accept: "image/*",
@@ -3903,7 +4205,7 @@ function CatalogAdmin() {
   })), /*#__PURE__*/React.createElement("input", {
     value: form.title,
     onChange: e => setF("title", e.target.value),
-    placeholder: "カタログ名（例：お歳暮 2026）",
+    placeholder: "\u30AB\u30BF\u30ED\u30B0\u540D\uFF08\u4F8B\uFF1A\u304A\u6B73\u66AE 2026\uFF09",
     style: {
       ...inp,
       marginBottom: 8
@@ -3911,7 +4213,7 @@ function CatalogAdmin() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.note,
     onChange: e => setF("note", e.target.value),
-    placeholder: "メモ（例：締切 12/10）",
+    placeholder: "\u30E1\u30E2\uFF08\u4F8B\uFF1A\u7DE0\u5207 12/10\uFF09",
     style: {
       ...inp,
       marginBottom: 8
@@ -3919,7 +4221,7 @@ function CatalogAdmin() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.url,
     onChange: e => setF("url", e.target.value),
-    placeholder: "URL（ファイルを選ぶと自動で入ります）",
+    placeholder: "URL\uFF08\u30D5\u30A1\u30A4\u30EB\u3092\u9078\u3076\u3068\u81EA\u52D5\u3067\u5165\u308A\u307E\u3059\uFF09",
     style: {
       ...inp,
       marginBottom: 11,
@@ -3945,7 +4247,7 @@ function CatalogAdmin() {
     type: "checkbox",
     checked: form.visible,
     onChange: e => setF("visible", e.target.checked)
-  }), "みんなに表示する"), /*#__PURE__*/React.createElement("button", {
+  }), "\u307F\u3093\u306A\u306B\u8868\u793A\u3059\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: add,
     disabled: busy,
     style: {
@@ -3973,21 +4275,21 @@ function CatalogAdmin() {
       color: "var(--ink)",
       marginBottom: 9
     }
-  }, "登録済み（", list.length, "）"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u767B\u9332\u6E08\u307F\uFF08", list.length, "\uFF09"), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "26px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "32px 0",
       fontSize: 13
     }
-  }, "まだ登録がありません") : /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -4028,7 +4330,7 @@ function CatalogAdmin() {
       color: "var(--primary-soft)",
       fontSize: 17
     }
-  }, "📄"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCC4"), /*#__PURE__*/React.createElement("div", {
     style: {
       minWidth: 0,
       flex: 1
@@ -4099,7 +4401,7 @@ function CatalogAdmin() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "削除"))))));
+  }, "\u524A\u9664"))))));
 }
 
 // ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════
@@ -4262,7 +4564,7 @@ function ResourceAdmin() {
       lineHeight: 1.6,
       marginBottom: 12
     }
-  }, "PDF・画像はここからアップロードできます。スプレッドシートなどはURLを貼り付けてください。「表示」をオンにしたものが、一覧ページの資料カードに並びます。"), /*#__PURE__*/React.createElement("div", {
+  }, "PDF\u30FB\u753B\u50CF\u306F\u3053\u3053\u304B\u3089\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3067\u304D\u307E\u3059\u3002\u30B9\u30D7\u30EC\u30C3\u30C9\u30B7\u30FC\u30C8\u306A\u3069\u306FURL\u3092\u8CBC\u308A\u4ED8\u3051\u3066\u304F\u3060\u3055\u3044\u3002\u300C\u8868\u793A\u300D\u3092\u30AA\u30F3\u306B\u3057\u305F\u3082\u306E\u304C\u3001\u4E00\u89A7\u30DA\u30FC\u30B8\u306E\u8CC7\u6599\u30AB\u30FC\u30C9\u306B\u4E26\u3073\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid var(--line)",
       borderRadius: 12,
@@ -4277,7 +4579,7 @@ function ResourceAdmin() {
       color: "var(--ink)",
       marginBottom: 10
     }
-  }, "資料を追加"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8CC7\u6599\u3092\u8FFD\u52A0"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -4317,7 +4619,7 @@ function ResourceAdmin() {
   })), /*#__PURE__*/React.createElement("input", {
     value: form.title,
     onChange: e => setF("title", e.target.value),
-    placeholder: "タイトル（例：魚売場POP 10シリーズ）",
+    placeholder: "\u30BF\u30A4\u30C8\u30EB\uFF08\u4F8B\uFF1A\u9B5A\u58F2\u5834POP 10\u30B7\u30EA\u30FC\u30BA\uFF09",
     style: {
       ...inp,
       marginBottom: 8
@@ -4325,7 +4627,7 @@ function ResourceAdmin() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.description,
     onChange: e => setF("description", e.target.value),
-    placeholder: "説明（任意）",
+    placeholder: "\u8AAC\u660E\uFF08\u4EFB\u610F\uFF09",
     style: {
       ...inp,
       marginBottom: 8
@@ -4333,7 +4635,7 @@ function ResourceAdmin() {
   }), /*#__PURE__*/React.createElement("input", {
     value: form.url,
     onChange: e => setF("url", e.target.value),
-    placeholder: "URL（ファイルを選ぶと自動で入ります）",
+    placeholder: "URL\uFF08\u30D5\u30A1\u30A4\u30EB\u3092\u9078\u3076\u3068\u81EA\u52D5\u3067\u5165\u308A\u307E\u3059\uFF09",
     style: {
       ...inp,
       marginBottom: 10,
@@ -4359,7 +4661,7 @@ function ResourceAdmin() {
     type: "checkbox",
     checked: form.visible,
     onChange: e => setF("visible", e.target.checked)
-  }), "一覧に表示する"), /*#__PURE__*/React.createElement("button", {
+  }), "\u4E00\u89A7\u306B\u8868\u793A\u3059\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: add,
     disabled: busy,
     style: {
@@ -4393,7 +4695,7 @@ function ResourceAdmin() {
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "登録済み（", list.length, "）"), /*#__PURE__*/React.createElement("button", {
+  }, "\u767B\u9332\u6E08\u307F\uFF08", list.length, "\uFF09"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVer(v => v + 1),
     disabled: loading,
     style: {
@@ -4413,14 +4715,14 @@ function ResourceAdmin() {
       padding: "26px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "32px 0",
       fontSize: 13
     }
-  }, "まだ登録がありません") : /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -4479,7 +4781,7 @@ function ResourceAdmin() {
       textDecoration: "none",
       flexShrink: 0
     }
-  }, "開く")), /*#__PURE__*/React.createElement("div", {
+  }, "\u958B\u304F")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -4511,7 +4813,7 @@ function ResourceAdmin() {
       fontWeight: 800,
       cursor: i === 0 ? "default" : "pointer"
     }
-  }, "↑"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2191"), /*#__PURE__*/React.createElement("button", {
     onClick: () => move(r, 1),
     disabled: i === list.length - 1,
     style: {
@@ -4524,7 +4826,7 @@ function ResourceAdmin() {
       fontWeight: 800,
       cursor: i === list.length - 1 ? "default" : "pointer"
     }
-  }, "↓"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2193"), /*#__PURE__*/React.createElement("button", {
     onClick: () => del(r),
     style: {
       marginLeft: "auto",
@@ -4537,7 +4839,7 @@ function ResourceAdmin() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "削除"))))));
+  }, "\u524A\u9664"))))));
 }
 
 // ═══════════ DeviceStatsPanel：管理画面内の端末アクセス集計 ═══════════
@@ -4587,7 +4889,7 @@ function DeviceStatsPanel() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, /*#__PURE__*/React.createElement("span", null, label), /*#__PURE__*/React.createElement("span", null, n, "件（", total ? Math.round(n / total * 100) : 0, "%）")), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, label), /*#__PURE__*/React.createElement("span", null, n, "\u4EF6\uFF08", total ? Math.round(n / total * 100) : 0, "%\uFF09")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 8,
       background: "var(--chip)",
@@ -4615,7 +4917,7 @@ function DeviceStatsPanel() {
       color: "var(--sub)",
       lineHeight: 1.6
     }
-  }, "直近", total, "件のアクセスの内訳です（同じ端末は1日1回まで集計）。", /*#__PURE__*/React.createElement("br", null), "個人は特定していません。"), /*#__PURE__*/React.createElement("button", {
+  }, "\u76F4\u8FD1", total, "\u4EF6\u306E\u30A2\u30AF\u30BB\u30B9\u306E\u5185\u8A33\u3067\u3059\uFF08\u540C\u3058\u7AEF\u672B\u306F1\u65E51\u56DE\u307E\u3067\u96C6\u8A08\uFF09\u3002", /*#__PURE__*/React.createElement("br", null), "\u500B\u4EBA\u306F\u7279\u5B9A\u3057\u3066\u3044\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVer(v => v + 1),
     disabled: loading,
     style: {
@@ -4636,7 +4938,7 @@ function DeviceStatsPanel() {
       padding: "30px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : total === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : total === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -4644,14 +4946,14 @@ function DeviceStatsPanel() {
       fontSize: 13,
       lineHeight: 1.8
     }
-  }, "まだ記録がありません。") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 900,
       color: "var(--ink)",
       marginBottom: 10
     }
-  }, "機種"), platforms.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
+  }, "\u6A5F\u7A2E"), platforms.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
     key: k,
     label: k,
     n: n
@@ -4662,7 +4964,7 @@ function DeviceStatsPanel() {
       color: "var(--ink)",
       margin: "18px 0 10px"
     }
-  }, "ブラウザ"), browsers.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
+  }, "\u30D6\u30E9\u30A6\u30B6"), browsers.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
     key: k,
     label: k,
     n: n
@@ -4758,7 +5060,7 @@ function RankingPanel({
       color: "var(--sub)",
       lineHeight: 1.6
     }
-  }, "ポップの閲覧・使った回数・いいねの記録です。", /*#__PURE__*/React.createElement("br", null), "「最近」は直近", days, "日でよく見られたポップです。"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30DD\u30C3\u30D7\u306E\u95B2\u89A7\u30FB\u4F7F\u3063\u305F\u56DE\u6570\u30FB\u3044\u3044\u306D\u306E\u8A18\u9332\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u300C\u6700\u8FD1\u300D\u306F\u76F4\u8FD1", days, "\u65E5\u3067\u3088\u304F\u898B\u3089\u308C\u305F\u30DD\u30C3\u30D7\u3067\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVer(v => v + 1),
     disabled: loading,
     style: {
@@ -4821,7 +5123,7 @@ function RankingPanel({
       opacity: 0.75,
       marginTop: 2
     }
-  }, "計 ", totals[x.key])))), loading ? /*#__PURE__*/React.createElement("div", null, [0, 1, 2, 3, 4].map(i => /*#__PURE__*/React.createElement("div", {
+  }, "\u8A08 ", totals[x.key])))), loading ? /*#__PURE__*/React.createElement("div", null, [0, 1, 2, 3, 4].map(i => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
@@ -4874,7 +5176,7 @@ function RankingPanel({
       fontSize: 13,
       lineHeight: 1.8
     }
-  }, "まだ記録がありません。", /*#__PURE__*/React.createElement("br", null), "ポップが見られる・使われると、ここに順位が並びます。") : ranked.map((p, i) => {
+  }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002", /*#__PURE__*/React.createElement("br", null), "\u30DD\u30C3\u30D7\u304C\u898B\u3089\u308C\u308B\u30FB\u4F7F\u308F\u308C\u308B\u3068\u3001\u3053\u3053\u306B\u9806\u4F4D\u304C\u4E26\u3073\u307E\u3059\u3002") : ranked.map((p, i) => {
     const rs = rankStyle(i);
     return /*#__PURE__*/React.createElement("div", {
       key: p.id,

@@ -11,6 +11,7 @@ var LAZY_TABS = {
   request: { file:"13-tab-admin",   comp:"RequestTab" },   // お問い合わせ（管理ファイル内のため遅延経由で）
   archive: { file:"13-tab-admin",   comp:"ArchiveTab" },   // アーカイブ（同上）
   trend:   { file:"16-tab-trend",   comp:"TrendTab" },     // トレンド（訴求の切り口）
+  idea:    { file:"17-tab-idea",    comp:"IdeaTab" },      // アイデア（一覧には出さない）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -273,6 +274,7 @@ function App() {
       {tab==="order"   && <OrderTab />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="trend" && <LazyTab tabKey="trend" />}
+      {tab==="idea" && <LazyTab tabKey="idea" />}
       {tab==="search" && <SearchTab key={"search"+dataVer} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} />}
       {tab==="gne"    && <LazyTab tabKey="gne" compProps={{ onCreatePop: handleCreatePop }} />}
       {tab==="souba"  && <SoubaTab onCreatePop={handleCreatePop} />}

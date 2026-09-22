@@ -101,6 +101,22 @@ const api = {
       p_password: PW_CACHE.admin || "" } });
   },
 
+  // ── アイデア（一覧には出さない。投稿は管理画面から）──
+  async listIdeas() {
+    return sbJson(`/rest/v1/ideas?select=id,title,memo,images,tags,created_at&deleted_at=is.null&order=created_at.desc&limit=300`);
+  },
+  async addIdea(title, memo, images, tags) {
+    const r = await sbFetch(`/rest/v1/rpc/admin_add_idea`, { method:"POST", body:{
+      p_title: title, p_memo: memo || null, p_images: images, p_tags: tags || [], p_password: PW_CACHE.admin || "" } });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async deleteIdea(id) {
+    const r = await sbFetch(`/rest/v1/rpc/admin_delete_idea`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.admin || "" } });
+    if (!r.ok) throw new Error(await r.text());
+    return true;
+  },
+
   async listOpLogs(limit) {
     return sbJson(`/rest/v1/op_logs?select=*&order=created_at.desc&limit=${limit||200}`);
   },

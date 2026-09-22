@@ -591,6 +591,35 @@ function BoardTab({
   }), /*#__PURE__*/React.createElement("path", {
     d: "M3 10h18M8 3v4M16 3v4"
   }))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onFeatGo && onFeatGo("idea"),
+    "aria-label": "\u30A2\u30A4\u30C7\u30A2\u3092\u958B\u304F",
+    title: "\u30A2\u30A4\u30C7\u30A2",
+    style: {
+      marginLeft: 8,
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "#c39a3c",
+      borderRadius: 9,
+      padding: "7px 11px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M9 18h6M10 21h4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"
+  }))), /*#__PURE__*/React.createElement("button", {
     onClick: () => setDarkSave(!dark),
     "aria-pressed": dark,
     "aria-label": dark ? "明るい画面にする" : "暗い画面にする",

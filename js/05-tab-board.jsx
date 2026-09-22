@@ -199,6 +199,12 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
               </button>
 
+              <button onClick={() => onFeatGo && onFeatGo("idea")} aria-label="アイデアを開く" title="アイデア"
+                style={{ marginLeft:8, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"#c39a3c",
+                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center", flexShrink:0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"/></svg>
+              </button>
+
               <button onClick={() => setDarkSave(!dark)} aria-pressed={dark}
                 aria-label={dark ? "明るい画面にする" : "暗い画面にする"}
                 style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)",
