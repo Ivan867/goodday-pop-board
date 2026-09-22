@@ -683,10 +683,11 @@ function PopCard({ pop, index, onClick, hasComment }) {
           {hasComment && <div style={{ background:"rgba(194,78,0,0.9)", color:"white", fontSize:12, fontWeight:900, padding:"2px 7px", borderRadius:20 }}>コメント</div>}
         </div>
       </div>
-      <div className="pc-body" style={{ padding:"9px 12px", display:"flex", alignItems:"center", gap:6 }}>
-        <div className="pc-name" style={{ fontWeight:800, fontSize:"var(--pc-name-size, 13px)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}</div>
-        <div className="pc-meta" style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", flexShrink:0 }}>{pop.store_name}</div>
-        <div className="pc-meta" style={{ fontSize:12, background:tint.bg, padding:"2px 8px", borderRadius:20, fontWeight:800, color:tint.tx, whiteSpace:"nowrap", flexShrink:0 }}>{pop.category}</div>
+      <div className="pc-body" style={{ padding:"9px 11px 10px" }}>
+        <div className="pc-name" style={{ fontWeight:800, fontSize:"var(--pc-name-size, 13px)", lineHeight:1.4,
+          whiteSpace:"normal", overflowWrap:"anywhere", wordBreak:"break-word", color:"var(--ink)" }}>
+          {pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}
+        </div>
       </div>
     </div>
   );
