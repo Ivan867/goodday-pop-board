@@ -209,9 +209,9 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-      gap: 7,
-      marginBottom: 9,
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gap: 8,
+      marginBottom: 10,
       maxWidth: 520
     }
   }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
@@ -244,24 +244,6 @@ function BoardTab({
     rx: "2.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M7 9.5h6M7 14h10"
-  }))], ["order", "店舗支援", false, /*#__PURE__*/React.createElement("svg", {
-    key: "e",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "4.5",
-    y: "10.5",
-    width: "15",
-    height: "10",
-    rx: "2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M8 10.5V7a4 4 0 018 0v3.5"
   }))], ["search", "検索", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
@@ -286,21 +268,22 @@ function BoardTab({
     className: "hig-pill",
     style: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      gap: 3,
+      gap: 6,
       border: primary ? "none" : "1px solid var(--line)",
       background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)",
       color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)",
-      borderRadius: 12,
-      padding: "8px 3px",
+      borderRadius: 11,
+      padding: "9px 4px",
+      minHeight: 44,
       cursor: "pointer",
       boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)"
     }
   }, icon, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 14,
       fontWeight: 800,
       color: primary ? "#fff" : "var(--ink)",
       whiteSpace: "nowrap"
@@ -463,15 +446,18 @@ function BoardTab({
     style: {
       display: "flex",
       alignItems: "center",
-      marginBottom: 9
+      justifyContent: "space-between",
+      gap: 4,
+      marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 2,
       background: "var(--chip)",
-      borderRadius: 8,
-      padding: 2
+      borderRadius: 10,
+      padding: 3,
+      flexShrink: 0
     }
   }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
     key: v,
@@ -482,29 +468,29 @@ function BoardTab({
       border: "none",
       background: textSize === v ? "var(--card, #fff)" : "transparent",
       color: textSize === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 6,
-      padding: "3px 12px",
-      fontSize: idx === 0 ? 12 : 17,
+      borderRadius: 7,
+      padding: 0,
+      height: 36,
+      fontSize: idx === 0 ? 13 : 19,
       fontWeight: 800,
       cursor: "pointer",
-      minWidth: 34,
-      lineHeight: 1.4,
+      minWidth: "min(34px, 8.5vw)",
+      lineHeight: 1,
       boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
     }
   }, l))), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginLeft: 8,
       display: "flex",
       gap: 3,
       background: "var(--chip)",
-      borderRadius: 9,
+      borderRadius: 10,
       padding: 3,
       flexShrink: 0
     }
   }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
-    width: "15",
-    height: "15",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -531,8 +517,8 @@ function BoardTab({
     height: "8"
   }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
     key: "4",
-    width: "15",
-    height: "15",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -547,15 +533,19 @@ function BoardTab({
     key: k,
     onClick: () => setViewSave(k),
     title: label,
+    "aria-label": label,
     style: {
       border: "none",
-      background: view === k ? "#fff" : "transparent",
-      color: view === k ? "var(--primary)" : "var(--sub)",
+      background: view === k ? "var(--card, #fff)" : "transparent",
+      color: view === k ? "var(--primary-soft)" : "var(--sub)",
       borderRadius: 7,
-      padding: "5px 8px",
+      width: "min(40px, 10vw)",
+      height: 36,
+      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
   }, icon))), /*#__PURE__*/React.createElement("button", {
@@ -563,20 +553,22 @@ function BoardTab({
     "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u3092\u958B\u304F",
     title: "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC",
     style: {
-      marginLeft: 10,
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
-      borderRadius: 9,
-      padding: "7px 11px",
+      borderRadius: 10,
+      width: "min(42px, 10.5vw)",
+      height: 42,
+      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "19",
+    height: "19",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -596,20 +588,22 @@ function BoardTab({
     "aria-label": "\u30A2\u30A4\u30C7\u30A2\u3092\u958B\u304F",
     title: "\u30A2\u30A4\u30C7\u30A2",
     style: {
-      marginLeft: 8,
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
-      borderRadius: 9,
-      padding: "7px 11px",
+      borderRadius: 10,
+      width: "min(42px, 10.5vw)",
+      height: 42,
+      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "19",
+    height: "19",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -642,20 +636,22 @@ function BoardTab({
     title: "\u66F4\u65B0",
     disabled: reloading,
     style: {
-      marginLeft: 8,
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
-      borderRadius: 9,
-      padding: "7px 11px",
+      borderRadius: 10,
+      width: "min(42px, 10.5vw)",
+      height: 42,
+      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
+      justifyContent: "center",
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "19",
+    height: "19",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -674,20 +670,22 @@ function BoardTab({
     "aria-pressed": dark,
     "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
     style: {
-      marginLeft: "auto",
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
-      borderRadius: 9,
-      padding: "7px 11px",
+      borderRadius: 10,
+      width: "min(42px, 10.5vw)",
+      height: 42,
+      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
-      color: "var(--sub)",
+      justifyContent: "center",
+      color: "var(--primary-soft)",
       flexShrink: 0
     }
   }, dark ? /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "19",
+    height: "19",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -701,8 +699,8 @@ function BoardTab({
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
   })) : /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "19",
+    height: "19",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",

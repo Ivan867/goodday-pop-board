@@ -35,7 +35,7 @@ const TAB_REGISTRY = [{
 }, {
   key: "order",
   icon: "🔒",
-  label: "管理",
+  label: "店舗支援",
   section: "毎日つかう"
 }, {
   key: "barcode",
@@ -51,8 +51,11 @@ const TAB_REGISTRY = [{
   key: "trend",
   icon: "📈",
   label: "トレンド",
-  section: "ツール"
-}, {
+  section: "ツール",
+  hideInMenu: true
+},
+// カタログの中に移した
+{
   key: "archive",
   icon: "🗄",
   label: "アーカイブ",
@@ -128,6 +131,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-18",
+  type: "改善",
+  title: "一覧の上を整理しました",
+  body: "上のボタンを「投稿・入力支援・検索」の3つにし、低く・文字を大きくしました。その下の切り替えボタンは大きくして等間隔に並べています。「店舗支援」はメニューに、「トレンド」はカタログの中に移しました。"
+}, {
   date: "2026-09-18",
   type: "改善",
   title: "一覧に更新ボタンを付けました",

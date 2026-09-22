@@ -13,10 +13,10 @@ const TAB_REGISTRY = [
   { key:"bundle",     icon:"📅", label:"行事カレンダー",     section:"毎日つかう" },
   { key:"tool",       icon:"✏️", label:"作成",               section:"毎日つかう", hideInMenu:true },   // カタログの中に移した
   { key:"request",    icon:"📮", label:"お問い合わせ",       section:"毎日つかう" },
-  { key:"order",      icon:"🔒", label:"管理",               section:"毎日つかう" },
+  { key:"order",      icon:"🔒", label:"店舗支援",           section:"毎日つかう" },
   { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
   { key:"gne",        icon:"🅖", label:"入力支援",           section:"ツール" },
-  { key:"trend",      icon:"📈", label:"トレンド",           section:"ツール" },
+  { key:"trend",      icon:"📈", label:"トレンド",           section:"ツール", hideInMenu:true },   // カタログの中に移した
   { key:"archive",    icon:"🗄", label:"アーカイブ",         section:"管理" },
   { key:"admin",      icon:"🔒", label:"管理画面",           section:"管理" },
 ];
@@ -41,6 +41,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-18", type:"改善", title:"一覧の上を整理しました", body:"上のボタンを「投稿・入力支援・検索」の3つにし、低く・文字を大きくしました。その下の切り替えボタンは大きくして等間隔に並べています。「店舗支援」はメニューに、「トレンド」はカタログの中に移しました。" },
   { date:"2026-09-18", type:"改善", title:"一覧に更新ボタンを付けました", body:"一覧の上の電球マークの右に、くるっと回る矢印を置きました。押すと最新のポップを読み直します。ボタンの色もほかとそろえました。" },
   { date:"2026-09-18", type:"改善", title:"「作成」をカタログの中に移しました", body:"メニューにあった「作成」を、カタログの「企画・行事」「普段の売場」の右に並べました。探してから作る流れが一つの画面でできます。" },
   { date:"2026-09-18", type:"新機能", title:"アイデアのコーナーを作りました", body:"一覧の上の電球マークから開けます。ほかの売場を手がかりに起こしたポップやバナーの案が見られます。ここにのせたものは一覧には出ません。のせるのは管理画面からです。" },

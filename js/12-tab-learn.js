@@ -2606,21 +2606,48 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
       flex: 1,
       border: "1px solid var(--line)",
       borderRadius: 10,
-      padding: "11px 6px",
-      fontSize: 13,
+      padding: "11px 2px",
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer",
+      whiteSpace: "nowrap",
       background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l)));
+  if (pageMode === "trend") {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "var(--primary)",
+        padding: "9px 16px",
+        color: "#fff"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16.5,
+        fontWeight: 800,
+        letterSpacing: "-0.3px"
+      }
+    }, "\u30AB\u30BF\u30ED\u30B0")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 1600,
+        margin: "0 auto",
+        padding: "14px 16px 0"
+      }
+    }, modeSwitch), window.LazyTab ? React.createElement(window.LazyTab, {
+      tabKey: "trend",
+      compProps: {
+        embedded: true
+      }
+    }) : null);
+  }
   if (pageMode === "tool") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2670,17 +2697,18 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
       flex: 1,
       border: "1px solid var(--line)",
       borderRadius: 10,
-      padding: "11px 6px",
-      fontSize: 13,
+      padding: "11px 2px",
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer",
+      whiteSpace: "nowrap",
       background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }

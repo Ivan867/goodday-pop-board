@@ -6,7 +6,9 @@ var {
 } = React;
 
 // ===== トレンド：魚種ごとの「今使える訴求文脈」を見る・貯める =====
-function TrendTab() {
+function TrendTab({
+  embedded
+} = {}) {
   const [species, setSpecies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sel, setSel] = useState(null); // 選んだ魚種
@@ -98,9 +100,9 @@ function TrendTab() {
     style: {
       maxWidth: 900,
       margin: "0 auto",
-      padding: "10px 16px 120px"
+      padding: embedded ? "0 16px 120px" : "10px 16px 120px"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, !embedded && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
       color: "#fff",
@@ -114,13 +116,13 @@ function TrendTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "トレンド"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30C8\u30EC\u30F3\u30C9"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       opacity: 0.85,
       marginTop: 3
     }
-  }, "魚ごとに、いま使える売り文句をためておく場所です")), /*#__PURE__*/React.createElement("div", {
+  }, "\u9B5A\u3054\u3068\u306B\u3001\u3044\u307E\u4F7F\u3048\u308B\u58F2\u308A\u6587\u53E5\u3092\u305F\u3081\u3066\u304A\u304F\u5834\u6240\u3067\u3059")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 2,
@@ -152,7 +154,7 @@ function TrendTab() {
       padding: "44px 0",
       fontSize: 13
     }
-  }, "読み込んでいます…") : tab === "week" ? top.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u3093\u3067\u3044\u307E\u3059\u2026") : tab === "week" ? top.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -166,11 +168,11 @@ function TrendTab() {
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, "まだ何もありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u4F55\u3082\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6
     }
-  }, "「魚から見る」で魚を選んで、気づいたことを足してください")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\u9B5A\u304B\u3089\u898B\u308B\u300D\u3067\u9B5A\u3092\u9078\u3093\u3067\u3001\u6C17\u3065\u3044\u305F\u3053\u3068\u3092\u8DB3\u3057\u3066\u304F\u3060\u3055\u3044")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -245,7 +247,7 @@ function TrendTab() {
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M15 5l-7 7 7 7"
-  })), "魚を選びなおす"), /*#__PURE__*/React.createElement("div", {
+  })), "\u9B5A\u3092\u9078\u3073\u306A\u304A\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...card,
       marginBottom: 12
@@ -272,24 +274,24 @@ function TrendTab() {
       borderRadius: 6,
       padding: "3px 8px"
     }
-  }, "いまが旬")), (sel.season_months || []).length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "\u3044\u307E\u304C\u65EC")), (sel.season_months || []).length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "旬：", sel.season_months.join("・"), "月"), (sel.common_cuts || []).length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "\u65EC\uFF1A", sel.season_months.join("・"), "\u6708"), (sel.common_cuts || []).length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "売り方：", sel.common_cuts.join("／")), (sel.common_dishes || []).length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "\u58F2\u308A\u65B9\uFF1A", sel.common_cuts.join("／")), (sel.common_dishes || []).length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, "料理：", sel.common_dishes.join("／")), sel.note && /*#__PURE__*/React.createElement("div", {
+  }, "\u6599\u7406\uFF1A", sel.common_dishes.join("／")), sel.note && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--faint)",
@@ -308,7 +310,7 @@ function TrendTab() {
       color: "var(--sub)",
       marginBottom: 9
     }
-  }, "ためた切り口"), /*#__PURE__*/React.createElement("div", {
+  }, "\u305F\u3081\u305F\u5207\u308A\u53E3"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -336,21 +338,21 @@ function TrendTab() {
       color: "var(--sub)",
       marginBottom: 9
     }
-  }, "これまでのことば"), detailBusy ? /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u308C\u307E\u3067\u306E\u3053\u3068\u3070"), detailBusy ? /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--faint)",
       padding: "14px 0",
       textAlign: "center"
     }
-  }, "読み込んでいます…") : signals.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u3093\u3067\u3044\u307E\u3059\u2026") : signals.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--faint)",
       padding: "14px 0",
       textAlign: "center"
     }
-  }, "まだありません。下から足してください") : /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u3042\u308A\u307E\u305B\u3093\u3002\u4E0B\u304B\u3089\u8DB3\u3057\u3066\u304F\u3060\u3055\u3044") : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -398,10 +400,10 @@ function TrendTab() {
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "＋ この魚の切り口を足す")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+  }, "\uFF0B \u3053\u306E\u9B5A\u306E\u5207\u308A\u53E3\u3092\u8DB3\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
     value: q,
     onChange: e => setQ(e.target.value),
-    placeholder: "魚の名前でさがす（ぶり・ハマチ・鰤 など）",
+    placeholder: "\u9B5A\u306E\u540D\u524D\u3067\u3055\u304C\u3059\uFF08\u3076\u308A\u30FB\u30CF\u30DE\u30C1\u30FB\u9C24 \u306A\u3069\uFF09",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -448,7 +450,7 @@ function TrendTab() {
         fontWeight: 900,
         color: "#2c6b45"
       }
-    }, "いまが旬"));
+    }, "\u3044\u307E\u304C\u65EC"));
   })), shown.length === 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
@@ -456,7 +458,7 @@ function TrendTab() {
       padding: "40px 0",
       fontSize: 13
     }
-  }, "見つかりませんでした")), addOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F")), addOpen && /*#__PURE__*/React.createElement("div", {
     onClick: () => !addBusy && setAddOpen(false),
     style: {
       position: "fixed",
@@ -484,24 +486,24 @@ function TrendTab() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "切り口を足す", sel ? `（${sel.canonical_name}）` : ""), /*#__PURE__*/React.createElement("div", {
+  }, "\u5207\u308A\u53E3\u3092\u8DB3\u3059", sel ? `（${sel.canonical_name}）` : ""), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--sub)",
       lineHeight: 1.7,
       marginBottom: 14
     }
-  }, "売場で気づいたこと、お客様の声、使えそうな言い回しなど"), /*#__PURE__*/React.createElement("div", {
+  }, "\u58F2\u5834\u3067\u6C17\u3065\u3044\u305F\u3053\u3068\u3001\u304A\u5BA2\u69D8\u306E\u58F0\u3001\u4F7F\u3048\u305D\u3046\u306A\u8A00\u3044\u56DE\u3057\u306A\u3069"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "ことば"), /*#__PURE__*/React.createElement("input", {
+  }, "\u3053\u3068\u3070"), /*#__PURE__*/React.createElement("input", {
     value: term,
     onChange: e => setTerm(e.target.value),
-    placeholder: "例：寒ブリ 脂のりが最高",
+    placeholder: "\u4F8B\uFF1A\u5BD2\u30D6\u30EA \u8102\u306E\u308A\u304C\u6700\u9AD8",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -520,10 +522,10 @@ function TrendTab() {
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "調理法・季節（あれば・読点で区切る）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u8ABF\u7406\u6CD5\u30FB\u5B63\u7BC0\uFF08\u3042\u308C\u3070\u30FB\u8AAD\u70B9\u3067\u533A\u5207\u308B\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: ctx,
     onChange: e => setCtx(e.target.value),
-    placeholder: "例：刺身、しゃぶしゃぶ、年末",
+    placeholder: "\u4F8B\uFF1A\u523A\u8EAB\u3001\u3057\u3083\u3076\u3057\u3083\u3076\u3001\u5E74\u672B",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -542,7 +544,7 @@ function TrendTab() {
       color: "var(--sub)",
       marginBottom: 6
     }
-  }, "パスワード"), /*#__PURE__*/React.createElement("input", {
+  }, "\u30D1\u30B9\u30EF\u30FC\u30C9"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     inputMode: "numeric",
     value: pw,
@@ -587,7 +589,7 @@ function TrendTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "やめる"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
     onClick: submitNote,
     disabled: addBusy || !term.trim(),
     style: {

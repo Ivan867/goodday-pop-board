@@ -1,7 +1,7 @@
 var { useState, useEffect, useCallback, useRef } = React;
 
 // ===== トレンド：魚種ごとの「今使える訴求文脈」を見る・貯める =====
-function TrendTab() {
+function TrendTab({ embedded } = {}) {
   const [species, setSpecies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sel, setSel] = useState(null);          // 選んだ魚種
@@ -71,11 +71,11 @@ function TrendTab() {
   });
 
   return (
-    <div style={{ maxWidth:900, margin:"0 auto", padding:"10px 16px 120px" }}>
-      <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
+    <div style={{ maxWidth:900, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
+      {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>トレンド</div>
         <div style={{ fontSize:11.5, opacity:0.85, marginTop:3 }}>魚ごとに、いま使える売り文句をためておく場所です</div>
-      </div>
+      </div>}
 
       {/* 切り替え */}
       <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:9, padding:3, marginBottom:14 }}>

@@ -117,18 +117,17 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     <>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 185px" }}>
         {/* よく使う機能へのショートカット */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4, minmax(0, 1fr))", gap:7, marginBottom:9, maxWidth:520 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:8, marginBottom:10, maxWidth:520 }}>
           {[
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
             ["gne", "入力支援", false, <svg key="b" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></svg>],
 
-            ["order", "店舗支援", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>],
             ["search", "検索", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>],
           ].map(([key, label, primary, icon]) => (
             <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:12, padding:"8px 3px", cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+              style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
-              <span style={{ fontSize:11.5, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
+              <span style={{ fontSize:14, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
             </button>
           ))}
         </div>
@@ -175,35 +174,35 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           </div>
         ) : (
           <>
-            <div style={{ display:"flex", alignItems:"center", marginBottom:9 }}>
-              <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:8, padding:2 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:4, marginBottom:10 }}>
+              <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:10, padding:3, flexShrink:0 }}>
                 {[["md","A"],["lg","A"]].map(([v,l], idx) => (
                   <button key={v} onClick={() => setTextSizeSave(v)} aria-pressed={textSize===v} aria-label={idx === 0 ? "文字を中くらいにする" : "文字を大きくする"}
                     style={{ border:"none", background: textSize===v ? "var(--card, #fff)" : "transparent", color: textSize===v ? "var(--ink)" : "var(--sub)",
-                      borderRadius:6, padding:"3px 12px", fontSize: idx === 0 ? 12 : 17, fontWeight:800, cursor:"pointer", minWidth:34, lineHeight:1.4,
+                      borderRadius:7, padding:0, height:36, fontSize: idx === 0 ? 13 : 19, fontWeight:800, cursor:"pointer", minWidth:"min(34px, 8.5vw)", lineHeight:1,
                       boxShadow: textSize===v ? "0 1px 2px rgba(0,0,0,0.12)" : "none" }}>{l}</button>
                 ))}
               </div>
-              <div style={{ marginLeft:8, display:"flex", gap:3, background:"var(--chip)", borderRadius:9, padding:3, flexShrink:0 }}>
+              <div style={{ display:"flex", gap:3, background:"var(--chip)", borderRadius:10, padding:3, flexShrink:0 }}>
                 {[
-                  ["md", "2まい", <svg key="3" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
-                  ["lg", "1まい", <svg key="4" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
+                  ["md", "2まい", <svg key="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
+                  ["lg", "1まい", <svg key="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
                 ].map(([k, label, icon]) => (
                   <button key={k} onClick={() => setViewSave(k)} title={label}
-                    style={{ border:"none", background: view===k ? "#fff" : "transparent", color: view===k ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
+                    aria-label={label} style={{ border:"none", background: view===k ? "var(--card, #fff)" : "transparent", color: view===k ? "var(--primary-soft)" : "var(--sub)", borderRadius:7, width:"min(40px, 10vw)", height:36, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
                 ))}
               </div>
 
               <button onClick={() => onFeatGo && onFeatGo("bundle")} aria-label="行事カレンダーを開く" title="行事カレンダー"
-                style={{ marginLeft:10, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
-                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center", flexShrink:0 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
+                  borderRadius:10, width:"min(42px, 10.5vw)", height:42, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
               </button>
 
               <button onClick={() => onFeatGo && onFeatGo("idea")} aria-label="アイデアを開く" title="アイデア"
-                style={{ marginLeft:8, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
-                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center", flexShrink:0 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"/></svg>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
+                  borderRadius:10, width:"min(42px, 10.5vw)", height:42, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"/></svg>
               </button>
 
               <button onClick={async () => {
@@ -216,9 +215,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                   } finally { setTimeout(() => setReloading(false), 400); }
                 }}
                 aria-label="最新の状態にする" title="更新" disabled={reloading}
-                style={{ marginLeft:8, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
-                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center", flexShrink:0 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
+                  borderRadius:10, width:"min(42px, 10.5vw)", height:42, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                   style={{ animation: reloading ? "spinR 0.8s linear infinite" : "none" }}>
                   <path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/>
                 </svg>
@@ -226,13 +225,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
               <button onClick={() => setDarkSave(!dark)} aria-pressed={dark}
                 aria-label={dark ? "明るい画面にする" : "暗い画面にする"}
-                style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)",
-                  borderRadius:9, padding:"7px 11px", cursor:"pointer", display:"flex", alignItems:"center",
-                  color:"var(--sub)", flexShrink:0 }}>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)",
+                  borderRadius:10, width:"min(42px, 10.5vw)", height:42, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                  color:"var(--primary-soft)", flexShrink:0 }}>
                 {dark ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
                 ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>
                 )}
               </button>
             </div>

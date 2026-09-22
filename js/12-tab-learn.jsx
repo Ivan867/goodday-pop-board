@@ -1003,13 +1003,25 @@ function CatalogTab() {
   // 3つの切り替え（企画・行事／普段の売場／作成）
   const modeSwitch = (
     <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-      {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"]].map(([k,l]) => (
+      {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"],["trend","トレンド"]].map(([k,l]) => (
         <button key={k} onClick={() => setPageModeSave(k)}
-          style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+          style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
             background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
       ))}
     </div>
   );
+
+  if (pageMode === "trend") {
+    return (
+      <div>
+        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+          <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
+        </div>
+        <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 0" }}>{modeSwitch}</div>
+        {window.LazyTab ? React.createElement(window.LazyTab, { tabKey:"trend", compProps:{ embedded:true } }) : null}
+      </div>
+    );
+  }
 
   if (pageMode === "tool") {
     return (
@@ -1033,9 +1045,9 @@ function CatalogTab() {
 
         {/* ── 企画／普段の切り替え ── */}
         <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-          {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"]].map(([k,l]) => (
+          {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"],["trend","トレンド"]].map(([k,l]) => (
             <button key={k} onClick={() => setPageModeSave(k)}
-              style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
+              style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
                 background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
           ))}
         </div>

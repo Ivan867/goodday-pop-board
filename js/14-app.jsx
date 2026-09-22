@@ -411,4 +411,4 @@ class ErrBoundary extends React.Component {
 ReactDOM.render(<ErrBoundary><App /></ErrBoundary>, document.getElementById("root"));
 
 
-;Object.assign(window, { App });
+;Object.assign(window, { App, LazyTab });
