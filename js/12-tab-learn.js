@@ -6336,14 +6336,23 @@ function BundleTab() {
     if (!box || loading) return;
     const t = setTimeout(() => {
       const first = box.querySelector('[data-on="1"]');
-      if (!first) {
-        box.scrollTop = 0;
-        return;
-      }
       const head = box.querySelector('[data-head="1"]');
-      const hh = head ? head.offsetHeight + 6 : 34;
+      const hh = head ? head.getBoundingClientRect().height : 34;
+      let top = 0;
+      if (first) {
+        const d = first.getBoundingClientRect().top - box.getBoundingClientRect().top;
+        top = Math.max(0, box.scrollTop + d - hh - 4);
+      }
+      // 横も、見ている月の列が真ん中あたりに来るように
+      let left = box.scrollLeft;
+      const col = box.querySelector('[data-month="' + viewM + '"]');
+      if (col) {
+        const dx = col.getBoundingClientRect().left - box.getBoundingClientRect().left;
+        left = Math.max(0, box.scrollLeft + dx - box.clientWidth / 2 + col.offsetWidth / 2 + 42);
+      }
       box.scrollTo({
-        top: Math.max(0, first.offsetTop - hh - 4),
+        top,
+        left,
         behavior: "smooth"
       });
     }, 60);
@@ -6997,7 +7006,7 @@ function BundleTab() {
       background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
-      padding: "12px 10px 8px",
+      padding: "0 10px 8px",
       marginBottom: 12,
       overflowX: "auto",
       overflowY: "auto",
@@ -7018,7 +7027,7 @@ function BundleTab() {
       top: 0,
       zIndex: 3,
       background: "var(--card, #fff)",
-      padding: "2px 0 4px",
+      padding: "12px 0 4px",
       boxShadow: "0 2px 0 var(--card, #fff)"
     },
     "data-head": "1"
@@ -7037,6 +7046,7 @@ function BundleTab() {
       key: m,
       onClick: () => setViewM(mm),
       "aria-label": `${mm}月を見る`,
+      "data-month": mm,
       style: {
         border: "none",
         background: isView ? "var(--primary)" : "#fff",
