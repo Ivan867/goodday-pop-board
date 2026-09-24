@@ -30,13 +30,39 @@ function BoardTab({
   const [drawer, setDrawer] = useState(false);
   const [fGenre, setFGenre] = useState("");
   const [qText, setQText] = useState("");
+  const [species, setSpecies] = useState([]);
+  const [fSp, setFSp] = useState(null); // 魚でしぼる
+  const loadSpecies = () => {
+    if (species.length || window.__speciesCache) {
+      if (!species.length) setSpecies(window.__speciesCache);
+      return;
+    }
+    api.listSpecies().then(r => {
+      window.__speciesCache = r || [];
+      setSpecies(r || []);
+    }).catch(() => {});
+  };
+  // いまの一覧に何件あるかを数えて、多い順に出す
+  const spCounts = React.useMemo(() => {
+    if (!species.length) return [];
+    const texts = pops.map(p => normJa([p.product_name, p.group_name, p.comment].filter(Boolean).join(" ")));
+    return species.map(sp => {
+      const al = (sp.aliases || []).concat([sp.canonical_name]).map(normJa).filter(a => a.length >= 2 || /[\u4e00-\u9faf]/.test(a));
+      const n = texts.filter(t => al.some(a => t.includes(a))).length;
+      return {
+        sp,
+        n
+      };
+    }).filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 14);
+  }, [species, pops]);
   const clearFilters = () => {
     setFGenre("");
     setQText("");
     setFStore("");
     setFCat("");
+    setFSp(null);
   };
-  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0);
+  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0) + (fSp ? 1 : 0);
   // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
@@ -177,7 +203,10 @@ function BoardTab({
     return a;
   }, {});
   const qn = normJa(qText.trim());
-  const filtered = pops.filter(p => (!fStore || p.store_name === fStore) && (!fCat || p.category === fCat) && (!fGenre || p.genre === fGenre) && (!qn || [p.product_name, p.group_name, p.comment, p.author, p.store_name].some(x => x && normJa(String(x)).includes(qn)))).sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
+  const filtered = pops.filter(p => (!fStore || p.store_name === fStore) && (!fCat || p.category === fCat) && (!fGenre || p.genre === fGenre) && (!qn || [p.product_name, p.group_name, p.comment, p.author, p.store_name].some(x => x && normJa(String(x)).includes(qn))) && (!fSp || (() => {
+    const t = normJa([p.product_name, p.group_name, p.comment].filter(Boolean).join(" "));
+    return (fSp.aliases || []).concat([fSp.canonical_name]).map(normJa).filter(a => a.length >= 2 || /[\u4e00-\u9faf]/.test(a)).some(a => t.includes(a));
+  })())).sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
   const handleHubClick = () => {
     if (!radialChanged) {
       setRadialOpen(v => !v);
@@ -238,7 +267,7 @@ function BoardTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  }))], ["search", "検索", false, /*#__PURE__*/React.createElement("svg", {
+  }))], ["search", "さがす", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
     height: "18",
@@ -257,7 +286,10 @@ function BoardTab({
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
-      if (key === "__upload") setShowUp(true);else if (key === "search") setDrawer(true);else if (onFeatGo) onFeatGo(key);
+      if (key === "__upload") setShowUp(true);else if (key === "search") {
+        setDrawer(true);
+        loadSpecies();
+      } else if (onFeatGo) onFeatGo(key);
     },
     className: "hig-pill",
     style: {
@@ -928,7 +960,50 @@ function BoardTab({
       color: "var(--ink)",
       marginBottom: 16
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u9B5A\u3067\u3055\u304C\u3059"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, spCounts.map(({
+    sp,
+    n
+  }) => {
+    const on = fSp && fSp.id === sp.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: sp.id,
+      onClick: () => setFSp(on ? null : sp),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 12px",
+        fontSize: 13,
+        fontWeight: 800,
+        display: "flex",
+        alignItems: "center",
+        gap: 5
+      }
+    }, sp.canonical_name, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        fontWeight: 900,
+        opacity: 0.7
+      }
+    }, n));
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,

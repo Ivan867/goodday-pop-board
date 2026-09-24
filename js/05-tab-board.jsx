@@ -15,8 +15,25 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [drawer, setDrawer] = useState(false);
   const [fGenre, setFGenre] = useState("");
   const [qText, setQText] = useState("");
-  const clearFilters = () => { setFGenre(""); setQText(""); setFStore(""); setFCat(""); };
-  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0);
+  const [species, setSpecies] = useState([]);
+  const [fSp, setFSp] = useState(null);            // 魚でしぼる
+  const loadSpecies = () => {
+    if (species.length || window.__speciesCache) { if (!species.length) setSpecies(window.__speciesCache); return; }
+    api.listSpecies().then(r => { window.__speciesCache = r || []; setSpecies(r || []); }).catch(() => {});
+  };
+  // いまの一覧に何件あるかを数えて、多い順に出す
+  const spCounts = React.useMemo(() => {
+    if (!species.length) return [];
+    const texts = pops.map(p => normJa([p.product_name, p.group_name, p.comment].filter(Boolean).join(" ")));
+    return species.map(sp => {
+      const al = (sp.aliases || []).concat([sp.canonical_name]).map(normJa).filter(a => a.length >= 2 || /[\u4e00-\u9faf]/.test(a));
+      const n = texts.filter(t => al.some(a => t.includes(a))).length;
+      return { sp, n };
+    }).filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 14);
+  }, [species, pops]);
+
+  const clearFilters = () => { setFGenre(""); setQText(""); setFStore(""); setFCat(""); setFSp(null); };
+  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0) + (fSp ? 1 : 0);
   // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
@@ -108,7 +125,12 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
       (!fCat || p.category === fCat) &&
       (!fGenre || p.genre === fGenre) &&
       (!qn || [p.product_name, p.group_name, p.comment, p.author, p.store_name]
-        .some(x => x && normJa(String(x)).includes(qn)))
+        .some(x => x && normJa(String(x)).includes(qn))) &&
+      (!fSp || (() => {
+        const t = normJa([p.product_name, p.group_name, p.comment].filter(Boolean).join(" "));
+        return (fSp.aliases || []).concat([fSp.canonical_name]).map(normJa)
+          .filter(a => a.length >= 2 || /[\u4e00-\u9faf]/.test(a)).some(a => t.includes(a));
+      })())
     ).sort((a,b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
 
   const handleHubClick = () => {
@@ -134,9 +156,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           {[
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
 
-            ["search", "検索", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>],
+            ["search", "さがす", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>],
           ].map(([key, label, primary, icon]) => (
-            <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (key === "search") setDrawer(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
+            <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
               style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
               <span style={{ fontSize:14, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
@@ -344,6 +366,27 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:11,
                   padding:"12px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
                   background:"var(--card, #fff)", color:"var(--ink)", marginBottom:16 }} />
+
+              {spCounts.length > 0 && (
+                <>
+                  <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>魚でさがす</div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                    {spCounts.map(({ sp, n }) => {
+                      const on = fSp && fSp.id === sp.id;
+                      return (
+                        <button key={sp.id} onClick={() => setFSp(on ? null : sp)} aria-pressed={on}
+                          style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                            background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                            borderRadius:999, padding:"8px 12px", fontSize:13, fontWeight:800,
+                            display:"flex", alignItems:"center", gap:5 }}>
+                          {sp.canonical_name}
+                          <span style={{ fontSize:11, fontWeight:900, opacity:0.7 }}>{n}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
 
               <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
               <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
