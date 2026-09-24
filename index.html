@@ -100,6 +100,27 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 /* 1まい表示は、すべて元の形のまま（余白なし） */
 .pop-grid.v-lg .ucard .pc-img-el { aspect-ratio: var(--nat-ar, 1 / 1.414); }
 
+/* 一覧の上の並び：スマホは小さめ、PC・タブレットでは大きく */
+.board-top { max-width: 520px; }
+.board-tools { max-width: 520px; }
+.bt-btn { width: min(42px, 10.5vw); height: 42px; }
+.bt-seg { height: 36px; min-width: min(34px, 8.5vw); }
+.bt-a-s { font-size: 13px; }
+.bt-a-l { font-size: 19px; }
+@media (min-width: 700px) {
+  .board-top { max-width: 700px; }
+  .board-tools { max-width: 700px; }
+  .bt-btn { width: 54px; height: 54px; border-radius: 12px; }
+  .bt-btn svg { width: 24px; height: 24px; }
+  .bt-seg { height: 46px; min-width: 54px; }
+  .bt-seg svg { width: 22px; height: 22px; }
+  .bt-a-s { font-size: 16px; }
+  .bt-a-l { font-size: 24px; }
+  .board-top button { min-height: 54px !important; height: 54px; font-size: 15.5px; }
+  .board-top button span { font-size: 15.5px !important; }
+  .board-top button svg { width: 20px; height: 20px; }
+}
+
 /* キーボードで操作したときに、どこを選んでいるか分かるように */
 :focus-visible { outline: 3px solid #4a7ab0; outline-offset: 2px; border-radius: 6px; }
 .menu-item:focus-visible { outline-offset: 4px; }
@@ -301,21 +322,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260918p"></script>
-<script src="js/02-api.js?v=20260918p"></script>
-<script src="js/03-utils.js?v=20260918p"></script>
-<script src="js/04-shared.js?v=20260918p"></script>
-<script src="js/05-tab-board.js?v=20260918p"></script>
-<script src="js/06-tab-create.js?v=20260918p"></script>
-<script src="js/07-tab-floor.js?v=20260918p"></script>
-<script src="js/09-tab-info.js?v=20260918p"></script>
-<script src="js/11-tab-check-fish.js?v=20260918p"></script>
-<script src="js/12-tab-learn.js?v=20260918p"></script>
-<script src="js/14-app.js?v=20260918p"></script>
+<script src="js/01-config.js?v=20260918q"></script>
+<script src="js/02-api.js?v=20260918q"></script>
+<script src="js/03-utils.js?v=20260918q"></script>
+<script src="js/04-shared.js?v=20260918q"></script>
+<script src="js/05-tab-board.js?v=20260918q"></script>
+<script src="js/06-tab-create.js?v=20260918q"></script>
+<script src="js/07-tab-floor.js?v=20260918q"></script>
+<script src="js/09-tab-info.js?v=20260918q"></script>
+<script src="js/11-tab-check-fish.js?v=20260918q"></script>
+<script src="js/12-tab-learn.js?v=20260918q"></script>
+<script src="js/14-app.js?v=20260918q"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260918p";
+window.APP_VER = "20260918q";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

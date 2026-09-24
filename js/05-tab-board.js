@@ -207,12 +207,12 @@ function BoardTab({
       padding: "9px 16px 185px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "board-top",
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
       gap: 8,
-      marginBottom: 10,
-      maxWidth: 520
+      marginBottom: 10
     }
   }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
     key: "d",
@@ -443,6 +443,7 @@ function BoardTab({
       fontSize: 13
     }
   }, "\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u30DC\u30BF\u30F3\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046\uFF01")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "board-tools",
     style: {
       display: "flex",
       alignItems: "center",
@@ -464,17 +465,15 @@ function BoardTab({
     onClick: () => setTextSizeSave(v),
     "aria-pressed": textSize === v,
     "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
+    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
     style: {
       border: "none",
       background: textSize === v ? "var(--card, #fff)" : "transparent",
       color: textSize === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 7,
       padding: 0,
-      height: 36,
-      fontSize: idx === 0 ? 13 : 19,
       fontWeight: 800,
       cursor: "pointer",
-      minWidth: "min(34px, 8.5vw)",
       lineHeight: 1,
       boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
     }
@@ -534,13 +533,12 @@ function BoardTab({
     onClick: () => setViewSave(k),
     title: label,
     "aria-label": label,
+    className: "bt-seg",
     style: {
       border: "none",
       background: view === k ? "var(--card, #fff)" : "transparent",
       color: view === k ? "var(--primary-soft)" : "var(--sub)",
       borderRadius: 7,
-      width: "min(40px, 10vw)",
-      height: 36,
       padding: 0,
       cursor: "pointer",
       display: "flex",
@@ -557,15 +555,14 @@ function BoardTab({
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
       borderRadius: 10,
-      width: "min(42px, 10.5vw)",
-      height: 42,
       padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       flexShrink: 0
-    }
+    },
+    className: "bt-btn"
   }, /*#__PURE__*/React.createElement("svg", {
     width: "19",
     height: "19",
@@ -592,15 +589,14 @@ function BoardTab({
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
       borderRadius: 10,
-      width: "min(42px, 10.5vw)",
-      height: 42,
       padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       flexShrink: 0
-    }
+    },
+    className: "bt-btn"
   }, /*#__PURE__*/React.createElement("svg", {
     width: "19",
     height: "19",
@@ -640,15 +636,14 @@ function BoardTab({
       background: "var(--card, #fff)",
       color: "var(--primary-soft)",
       borderRadius: 10,
-      width: "min(42px, 10.5vw)",
-      height: 42,
       padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       flexShrink: 0
-    }
+    },
+    className: "bt-btn"
   }, /*#__PURE__*/React.createElement("svg", {
     width: "19",
     height: "19",
@@ -673,8 +668,6 @@ function BoardTab({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       borderRadius: 10,
-      width: "min(42px, 10.5vw)",
-      height: 42,
       padding: 0,
       cursor: "pointer",
       display: "flex",
@@ -682,7 +675,8 @@ function BoardTab({
       justifyContent: "center",
       color: "var(--primary-soft)",
       flexShrink: 0
-    }
+    },
+    className: "bt-btn"
   }, dark ? /*#__PURE__*/React.createElement("svg", {
     width: "19",
     height: "19",
