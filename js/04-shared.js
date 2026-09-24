@@ -937,7 +937,7 @@ function PopDetail({
     style: {
       flex: 1,
       minWidth: 0,
-      minHeight: small ? 40 : 54,
+      minHeight: small ? 40 : 52,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -960,7 +960,7 @@ function PopDetail({
     fill: active && fillWhenActive ? activeColor || "var(--primary)" : "none"
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: small ? 11 : 11.5,
+      fontSize: small ? 11 : 11,
       fontWeight: 800,
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -1644,13 +1644,13 @@ function PopDetail({
   }, deleting ? "確認中…" : "削除する"))))), /*#__PURE__*/React.createElement("div", {
     style: {
       borderBottom: "1px solid var(--line)",
-      padding: "8px 10px 10px",
+      padding: "7px 8px 8px",
       flex: "0 0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 8
+      gap: 6
     }
   }, /*#__PURE__*/React.createElement(BarBtn, {
     onClick: handleUsed,
@@ -1673,13 +1673,7 @@ function PopDetail({
     },
     icon: "edit",
     label: "\u4F5C\u6210"
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      marginTop: 7
-    }
-  }, /*#__PURE__*/React.createElement(BarBtn, {
+  }), /*#__PURE__*/React.createElement(BarBtn, {
     onClick: () => {
       setShowDelConfirm(true);
       setPwInput("");
@@ -1687,16 +1681,15 @@ function PopDetail({
     },
     icon: "trash",
     label: "\u6D88\u3059",
-    small: true,
     danger: true
   }))), /*#__PURE__*/React.createElement("div", {
     id: "pd-comments",
     style: {
-      padding: "12px 16px calc(16px + env(safe-area-inset-bottom))",
+      padding: "8px 14px calc(10px + env(safe-area-inset-bottom))",
       flex: "0 1 auto",
       overflowY: "auto",
       WebkitOverflowScrolling: "touch",
-      minHeight: 96
+      minHeight: 44
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setCOpen(v => !v),
@@ -1708,9 +1701,10 @@ function PopDetail({
       width: "100%",
       border: "none",
       background: "transparent",
-      padding: "2px 0",
+      padding: "3px 0",
       cursor: "pointer",
-      marginBottom: cOpen ? 10 : 0
+      marginBottom: cOpen ? 9 : 0,
+      minHeight: 34
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
