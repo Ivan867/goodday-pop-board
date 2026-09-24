@@ -488,7 +488,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <div id="pd-sheet" style={{ background:"var(--card, #fff)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, height:"min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))", display:"flex", flexDirection:"column", overflow:"hidden", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
-        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flex:"1 1 auto", minHeight:0, transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
+        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flex:"1 1 auto", minHeight:0, paddingTop:5, transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url}
             onTouchStart={onPinchStart} onTouchMove={onPinchMove} onTouchEnd={onPinchEnd}
