@@ -768,6 +768,7 @@ function BoardTab({
         if (Math.abs(dx) > 70 && Math.abs(dy) < 60 && Date.now() - st.t < 700) setOpenGroup(null);
         grpSwipe.current = null;
       },
+      className: "fs-top",
       style: {
         position: "fixed",
         inset: 0,

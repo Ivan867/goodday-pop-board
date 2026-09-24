@@ -286,7 +286,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
               if (Math.abs(dx) > 70 && Math.abs(dy) < 60 && Date.now() - st.t < 700) setOpenGroup(null);
               grpSwipe.current = null;
             }}
-            style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
+            className="fs-top" style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
             <div style={{ position:"sticky", top:0, zIndex:2, background:"var(--primary)", color:"#fff", padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
               <button onClick={() => setOpenGroup(null)} aria-label="もどる"
                 style={{ border:"none", background:"rgba(255,255,255,0.22)", color:"#fff", borderRadius:999, padding:"7px 14px 7px 10px",

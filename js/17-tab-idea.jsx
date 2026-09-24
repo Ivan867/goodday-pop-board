@@ -69,7 +69,7 @@ function IdeaTab() {
 
       {open && (
         <div onClick={() => setOpen(null)}
-          style={{ position:"fixed", inset:0, zIndex:1200, background:"rgba(10,16,24,0.92)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
+          className="fs-top" style={{ position:"fixed", inset:0, zIndex:1200, background:"rgba(10,16,24,0.92)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
           <div onClick={e => e.stopPropagation()} style={{ maxWidth:760, margin:"0 auto", padding:"14px 14px 60px" }}>
             <button onClick={() => setOpen(null)} aria-label="もどる"
               style={{ position:"sticky", top:10, zIndex:2, display:"flex", alignItems:"center", gap:5, border:"none",

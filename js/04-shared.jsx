@@ -121,7 +121,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }}>
-      <div style={{ background:"white", borderRadius:"22px 22px 0 0", padding:"8px 22px calc(20px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
+      <div style={{ background:"white", borderRadius:"22px 22px 0 0", padding:"8px 22px calc(20px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
         <div style={{ width:40, height:5, background:"var(--line)", borderRadius:3, margin:"6px auto 16px" }} />
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
           <div style={{ fontSize:21, fontWeight:900 }}>ポップをアップロード</div>
@@ -485,7 +485,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
   return (
     <div data-popdetail="1" style={{ position:"fixed", inset:0, background:"rgba(15,25,38,0.62)", backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
-      <div id="pd-sheet" style={{ background:"var(--card, #fff)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, height:"92vh", display:"flex", flexDirection:"column", overflow:"hidden", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
+      <div id="pd-sheet" style={{ background:"var(--card, #fff)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, height:"min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))", display:"flex", flexDirection:"column", overflow:"hidden", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
         <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flex:"1 1 auto", minHeight:0, transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>

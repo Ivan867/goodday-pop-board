@@ -168,6 +168,7 @@ function IdeaTab() {
     }, fmt(it.created_at))));
   })), open && /*#__PURE__*/React.createElement("div", {
     onClick: () => setOpen(null),
+    className: "fs-top",
     style: {
       position: "fixed",
       inset: 0,

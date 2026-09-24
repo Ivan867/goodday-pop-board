@@ -206,7 +206,7 @@ function UploadModal({
       padding: "8px 22px calc(20px + env(safe-area-inset-bottom))",
       width: "100%",
       maxWidth: 560,
-      maxHeight: "92vh",
+      maxHeight: "min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))",
       overflowY: "auto",
       animation: "sheetUp .32s cubic-bezier(.16,1,.3,1)"
     }
@@ -1040,7 +1040,7 @@ function PopDetail({
       borderRadius: "22px 22px 0 0",
       width: "100%",
       maxWidth: 560,
-      height: "92vh",
+      height: "min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))",
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",

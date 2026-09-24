@@ -121,6 +121,9 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
   .board-top button svg { width: 20px; height: 20px; }
 }
 
+/* 画面いっぱいに出るものは、上の時計・切り欠きにかからないようにする */
+.fs-top { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
+
 /* キーボードで操作したときに、どこを選んでいるか分かるように */
 :focus-visible { outline: 3px solid #4a7ab0; outline-offset: 2px; border-radius: 6px; }
 .menu-item:focus-visible { outline-offset: 4px; }
@@ -322,21 +325,21 @@ setTimeout(function(){
 }, 8000);
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260918t"></script>
-<script src="js/02-api.js?v=20260918t"></script>
-<script src="js/03-utils.js?v=20260918t"></script>
-<script src="js/04-shared.js?v=20260918t"></script>
-<script src="js/05-tab-board.js?v=20260918t"></script>
-<script src="js/06-tab-create.js?v=20260918t"></script>
-<script src="js/07-tab-floor.js?v=20260918t"></script>
-<script src="js/09-tab-info.js?v=20260918t"></script>
-<script src="js/11-tab-check-fish.js?v=20260918t"></script>
-<script src="js/12-tab-learn.js?v=20260918t"></script>
-<script src="js/14-app.js?v=20260918t"></script>
+<script src="js/01-config.js?v=20260918u"></script>
+<script src="js/02-api.js?v=20260918u"></script>
+<script src="js/03-utils.js?v=20260918u"></script>
+<script src="js/04-shared.js?v=20260918u"></script>
+<script src="js/05-tab-board.js?v=20260918u"></script>
+<script src="js/06-tab-create.js?v=20260918u"></script>
+<script src="js/07-tab-floor.js?v=20260918u"></script>
+<script src="js/09-tab-info.js?v=20260918u"></script>
+<script src="js/11-tab-check-fish.js?v=20260918u"></script>
+<script src="js/12-tab-learn.js?v=20260918u"></script>
+<script src="js/14-app.js?v=20260918u"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260918t";
+window.APP_VER = "20260918u";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
