@@ -458,7 +458,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   // 画像の下の操作ボタン
   const BarBtn = ({ onClick, icon, label, active, activeColor, fillWhenActive, primary, small, danger }) => (
     <button onClick={onClick} aria-label={label} aria-pressed={active ? true : undefined}
-      style={{ flex:1, minWidth:0, minHeight: small ? 42 : 56, display:"flex", flexDirection:"column",
+      style={{ flex:1, minWidth:0, minHeight: small ? 40 : 54, display:"flex", flexDirection:"column",
         alignItems:"center", justifyContent:"center", gap:4, cursor:"pointer",
         border: active ? `1.5px solid ${activeColor || "var(--primary)"}` : "1px solid var(--line)",
         background: active ? (activeColor ? activeColor + "14" : "var(--soft)") : (primary ? "var(--soft)" : "var(--card, #fff)"),
@@ -487,12 +487,12 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <div id="pd-sheet" style={{ background:"#fff", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)", WebkitOverflowScrolling:"touch" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
-        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"52vh", maxHeight:"64vh", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
+        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"38vh", maxHeight:"calc(92vh - 176px)", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url}
             onTouchStart={onPinchStart} onTouchMove={onPinchMove} onTouchEnd={onPinchEnd}
             onDoubleClick={() => zoom > 1 ? resetZoom() : setZoom(2)}
-            style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "64vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "64vh", objectFit:"contain", display:"block",
+            style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "56vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "calc(92vh - 176px)", objectFit:"contain", display:"block",
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` + (pop.rotation ? ` rotate(${pop.rotation}deg)` : ""),
               transition: pinch.current ? "none" : "transform .25s ease",
               touchAction:"none", willChange:"transform" }} />
@@ -620,7 +620,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         </div>
 
         {/* 操作バー（画像の下） */}
-        <div style={{ borderBottom:"1px solid var(--line)", padding:"10px 10px 12px" }}>
+        <div style={{ borderBottom:"1px solid var(--line)", padding:"8px 10px 10px" }}>
           <div style={{ display:"flex", gap:8 }}>
             <BarBtn onClick={handleUsed} active={used} icon={used ? "check" : "hand"}
               label={used ? `使った ${usedCount}` : "使った"} primary />
@@ -629,17 +629,15 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             {onCreateFromPop && <BarBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
             <BarBtn onClick={handleLike} active={liked} activeColor="#e0245e" icon="heart" label="いいね" fillWhenActive />
           </div>
-          <div style={{ display:"flex", gap:8, marginTop:8 }}>
-            <BarBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }}
-              icon="chat" label={comments.length ? `コメント ${comments.length}` : "コメント"} small />
+          <div style={{ display:"flex", gap:8, marginTop:7 }}>
             <BarBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管する" small />
             <BarBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="消す" small danger />
           </div>
         </div>
 
         {/* コメント欄（画像の下・シート内） */}
-        <div id="pd-comments" style={{ padding:"14px 16px calc(18px + env(safe-area-inset-bottom))" }}>
-          <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>コメント {comments.length > 0 && <span style={{ color:"var(--faint)", fontWeight:600 }}>{comments.length}件</span>}</div>
+        <div id="pd-comments" style={{ padding:"12px 16px calc(16px + env(safe-area-inset-bottom))" }}>
+          <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>コメント {comments.length > 0 && <span style={{ color:"var(--faint)", fontWeight:600 }}>{comments.length}件</span>}</div>
           {comments.length > 0 && (
             <div style={{ display:"flex", flexDirection:"column", gap:15, marginBottom:16 }}>
               {comments.map(c => (

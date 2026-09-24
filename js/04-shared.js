@@ -936,7 +936,7 @@ function PopDetail({
     style: {
       flex: 1,
       minWidth: 0,
-      minHeight: small ? 42 : 56,
+      minHeight: small ? 40 : 54,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -1056,8 +1056,8 @@ function PopDetail({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "52vh",
-      maxHeight: "64vh",
+      minHeight: "38vh",
+      maxHeight: "calc(92vh - 176px)",
       transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)",
       opacity: slideAnim === "up" ? 0.25 : 1,
       transition: "transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease"
@@ -1082,8 +1082,8 @@ function PopDetail({
     onTouchEnd: onPinchEnd,
     onDoubleClick: () => zoom > 1 ? resetZoom() : setZoom(2),
     style: {
-      maxWidth: pop.rotation === 90 || pop.rotation === 270 ? "64vh" : "100%",
-      maxHeight: pop.rotation === 90 || pop.rotation === 270 ? "100%" : "64vh",
+      maxWidth: pop.rotation === 90 || pop.rotation === 270 ? "56vh" : "100%",
+      maxHeight: pop.rotation === 90 || pop.rotation === 270 ? "100%" : "calc(92vh - 176px)",
       objectFit: "contain",
       display: "block",
       transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` + (pop.rotation ? ` rotate(${pop.rotation}deg)` : ""),
@@ -1642,7 +1642,7 @@ function PopDetail({
   }, deleting ? "確認中…" : "削除する"))))), /*#__PURE__*/React.createElement("div", {
     style: {
       borderBottom: "1px solid var(--line)",
-      padding: "10px 10px 12px"
+      padding: "8px 10px 10px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1681,19 +1681,9 @@ function PopDetail({
     style: {
       display: "flex",
       gap: 8,
-      marginTop: 8
+      marginTop: 7
     }
   }, /*#__PURE__*/React.createElement(BarBtn, {
-    onClick: () => {
-      const el = document.getElementById("pd-comments");
-      if (el) el.scrollIntoView({
-        behavior: "smooth"
-      });
-    },
-    icon: "chat",
-    label: comments.length ? `コメント ${comments.length}` : "コメント",
-    small: true
-  }), /*#__PURE__*/React.createElement(BarBtn, {
     onClick: () => {
       setShowArcConfirm(true);
       setPwInput("");
@@ -1715,14 +1705,14 @@ function PopDetail({
   }))), /*#__PURE__*/React.createElement("div", {
     id: "pd-comments",
     style: {
-      padding: "14px 16px calc(18px + env(safe-area-inset-bottom))"
+      padding: "12px 16px calc(16px + env(safe-area-inset-bottom))"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 900,
       color: "var(--ink)",
-      marginBottom: 12
+      marginBottom: 10
     }
   }, "\u30B3\u30E1\u30F3\u30C8 ", comments.length > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
