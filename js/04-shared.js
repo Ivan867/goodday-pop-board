@@ -1060,7 +1060,7 @@ function PopDetail({
       justifyContent: "center",
       flex: "1 1 auto",
       minHeight: 0,
-      paddingTop: 5,
+      paddingTop: 15,
       transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)",
       opacity: slideAnim === "up" ? 0.25 : 1,
       transition: "transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease"
