@@ -39,6 +39,7 @@ function AdminTab({
   const [delBusy, setDelBusy] = useState(false);
   const [delPops, setDelPops] = useState([]); // 消された投稿
   const [trashSel, setTrashSel] = useState({}); // ゴミ箱での選択
+  const [trashOpen, setTrashOpen] = useState(null); // ゴミ箱で開いているポップ
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -1417,7 +1418,18 @@ function AdminTab({
         marginTop: 18
       }
     }, "\u53D6\u3063\u305F\u30D5\u30A1\u30A4\u30EB\u306F\u3001\u30D1\u30BD\u30B3\u30F3\u3084 iCloud \u306A\u3069\u624B\u5143\u306B\u6B8B\u3057\u3066\u304A\u3044\u3066\u304F\u3060\u3055\u3044\u3002", /*#__PURE__*/React.createElement("br", null), "\u3082\u3057\u4E2D\u8EAB\u304C\u6D88\u3048\u3066\u3082\u3001\u3053\u306E\u30D5\u30A1\u30A4\u30EB\u304C\u3042\u308C\u3070\u623B\u305B\u307E\u3059\u3002"));
-  })(), section === "oplog" && (() => {
+  })(), trashOpen && /*#__PURE__*/React.createElement(PopDetail, {
+    pop: trashOpen,
+    onClose: () => setTrashOpen(null),
+    onDelete: () => {
+      setTrashOpen(null);
+      loadTrash();
+    },
+    onLiked: () => {},
+    onCommented: () => {},
+    navList: delPops,
+    onNav: p => setTrashOpen(p)
+  }), section === "oplog" && (() => {
     const LABEL = {
       delete: "消した",
       rename: "名前を直した",
@@ -1633,20 +1645,16 @@ function AdminTab({
       className: "pop-grid v-sm"
     }, delPops.map(pop => {
       const on = !!trashSel[pop.id];
-      return /*#__PURE__*/React.createElement("button", {
+      return /*#__PURE__*/React.createElement("div", {
         key: pop.id,
-        onClick: () => setTrashSel(v => ({
-          ...v,
-          [pop.id]: !v[pop.id]
-        })),
+        onClick: () => setTrashOpen(pop),
         style: {
           position: "relative",
           border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
-          background: "#fff",
+          background: "var(--card, #fff)",
           borderRadius: 10,
           overflow: "hidden",
           cursor: "pointer",
-          padding: 0,
           textAlign: "left"
         }
       }, /*#__PURE__*/React.createElement("img", {
@@ -1655,46 +1663,56 @@ function AdminTab({
         style: {
           width: "100%",
           aspectRatio: "1/1.414",
-          objectFit: "cover",
+          objectFit: "contain",
           display: "block",
-          background: "var(--bg)",
-          opacity: 0.65
+          background: "var(--card, #fff)",
+          opacity: 0.75
         }
       }), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 12,
+          fontSize: 12.5,
           fontWeight: 800,
           color: "var(--ink)",
-          padding: "5px 6px 2px",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
+          padding: "6px 7px 2px",
+          lineHeight: 1.4
         }
       }, pop.product_name), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
           fontSize: 11.5,
           color: "var(--faint)",
-          padding: "0 6px 6px"
+          padding: "0 7px 7px"
         }
-      }, fmtDate(pop.deleted_at), " \u306B\u524A\u9664"), on && /*#__PURE__*/React.createElement("span", {
+      }, fmtDate(pop.deleted_at), " \u306B\u524A\u9664"), /*#__PURE__*/React.createElement("button", {
+        onClick: e => {
+          e.stopPropagation();
+          setTrashSel(v => ({
+            ...v,
+            [pop.id]: !v[pop.id]
+          }));
+        },
+        "aria-label": on ? "選ぶのをやめる" : "選ぶ",
+        "aria-pressed": on,
         style: {
           position: "absolute",
           top: 6,
           right: 6,
-          background: "var(--primary)",
-          color: "#fff",
+          width: 28,
+          height: 28,
           borderRadius: "50%",
-          width: 22,
-          height: 22,
+          cursor: "pointer",
+          border: on ? "none" : "1.5px solid rgba(255,255,255,0.9)",
+          background: on ? "var(--primary)" : "rgba(20,25,35,0.45)",
+          color: "#fff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 13,
-          fontWeight: 900
+          fontSize: 14,
+          fontWeight: 900,
+          padding: 0
         }
-      }, "\u2713"));
+      }, on ? "✓" : ""));
     }))));
   })(), section === "archive" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {

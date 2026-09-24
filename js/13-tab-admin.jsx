@@ -32,6 +32,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [delBusy, setDelBusy] = useState(false);
   const [delPops, setDelPops] = useState([]);      // 消された投稿
   const [trashSel, setTrashSel] = useState({});    // ゴミ箱での選択
+  const [trashOpen, setTrashOpen] = useState(null);  // ゴミ箱で開いているポップ
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -575,6 +576,13 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           </div>
       );})()}
 
+      {trashOpen && (
+        <PopDetail pop={trashOpen} onClose={() => setTrashOpen(null)}
+          onDelete={() => { setTrashOpen(null); loadTrash(); }}
+          onLiked={() => {}} onCommented={() => {}}
+          navList={delPops} onNav={(p) => setTrashOpen(p)} />
+      )}
+
       {section === "oplog" && (() => {
         const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた", idea_add:"アイデアをのせた", idea_del:"アイデアを消した" };
         const COLOR = { delete:"#c2691a", rename:"#2f6fb0", restore:"#3f9e63", purge:"#b3261e", group:"#6b4ea0", idea_add:"#c39a3c", idea_del:"#8a9099" };
@@ -650,14 +658,21 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   {delPops.map(pop => {
                     const on = !!trashSel[pop.id];
                     return (
-                      <button key={pop.id} onClick={() => setTrashSel(v => ({ ...v, [pop.id]: !v[pop.id] }))}
+                      <div key={pop.id} onClick={() => setTrashOpen(pop)}
                         style={{ position:"relative", border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
-                          background:"#fff", borderRadius:10, overflow:"hidden", cursor:"pointer", padding:0, textAlign:"left" }}>
-                        <img src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"cover", display:"block", background:"var(--bg)", opacity:0.65 }} />
-                        <span style={{ display:"block", fontSize:12, fontWeight:800, color:"var(--ink)", padding:"5px 6px 2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{pop.product_name}</span>
-                        <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", padding:"0 6px 6px" }}>{fmtDate(pop.deleted_at)} に削除</span>
-                        {on && <span style={{ position:"absolute", top:6, right:6, background:"var(--primary)", color:"#fff", borderRadius:"50%", width:22, height:22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:900 }}>✓</span>}
-                      </button>
+                          background:"var(--card, #fff)", borderRadius:10, overflow:"hidden", cursor:"pointer", textAlign:"left" }}>
+                        <img src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", display:"block", background:"var(--card, #fff)", opacity:0.75 }} />
+                        <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", padding:"6px 7px 2px", lineHeight:1.4 }}>{pop.product_name}</span>
+                        <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", padding:"0 7px 7px" }}>{fmtDate(pop.deleted_at)} に削除</span>
+                        <button onClick={(e) => { e.stopPropagation(); setTrashSel(v => ({ ...v, [pop.id]: !v[pop.id] })); }}
+                          aria-label={on ? "選ぶのをやめる" : "選ぶ"} aria-pressed={on}
+                          style={{ position:"absolute", top:6, right:6, width:28, height:28, borderRadius:"50%", cursor:"pointer",
+                            border: on ? "none" : "1.5px solid rgba(255,255,255,0.9)",
+                            background: on ? "var(--primary)" : "rgba(20,25,35,0.45)", color:"#fff",
+                            display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:900, padding:0 }}>
+                          {on ? "✓" : ""}
+                        </button>
+                      </div>
                     );
                   })}
                 </div>
