@@ -11,6 +11,12 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
   const grpSwipe = React.useRef(null);
   const [reloading, setReloading] = useState(false);   // 更新ボタンの回転
+  // 右から出る絞り込み（タグ・店舗・ことば）
+  const [drawer, setDrawer] = useState(false);
+  const [fGenre, setFGenre] = useState("");
+  const [qText, setQText] = useState("");
+  const clearFilters = () => { setFGenre(""); setQText(""); setFStore(""); setFCat(""); };
+  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0);
   // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
@@ -96,7 +102,14 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
   }, [radialOpen]);
 
   const counts = pops.reduce((a,p) => { a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
-  const filtered = pops.filter(p => (!fStore||p.store_name===fStore) && (!fCat||p.category===fCat)).sort((a,b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
+  const qn = normJa(qText.trim());
+  const filtered = pops.filter(p =>
+      (!fStore || p.store_name === fStore) &&
+      (!fCat || p.category === fCat) &&
+      (!fGenre || p.genre === fGenre) &&
+      (!qn || [p.product_name, p.group_name, p.comment, p.author, p.store_name]
+        .some(x => x && normJa(String(x)).includes(qn)))
+    ).sort((a,b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
 
   const handleHubClick = () => {
     if (!radialChanged) { setRadialOpen(v=>!v); return; }   // 未選択時は開閉トグル（写真を広く見たい時用）
@@ -117,14 +130,13 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     <>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 185px" }}>
         {/* よく使う機能へのショートカット */}
-        <div className="board-top" style={{ display:"grid", gridTemplateColumns:"repeat(3, minmax(0, 1fr))", gap:8, marginBottom:10 }}>
+        <div className="board-top" style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:8, marginBottom:10 }}>
           {[
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
-            ["gne", "入力支援", false, <svg key="b" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></svg>],
 
             ["search", "検索", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>],
           ].map(([key, label, primary, icon]) => (
-            <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
+            <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (key === "search") setDrawer(true); else if (onFeatGo) onFeatGo(key); }} className="hig-pill"
               style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {icon}
               <span style={{ fontSize:14, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
@@ -310,6 +322,86 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           </div>
         );
       })()}
+      {/* 右から出る絞り込み */}
+      {drawer && (
+        <div onClick={() => setDrawer(false)}
+          style={{ position:"fixed", inset:0, zIndex:1250, background:"rgba(12,18,26,0.5)" }}>
+          <div onClick={e => e.stopPropagation()} className="fs-top"
+            style={{ position:"absolute", top:0, right:0, bottom:0, width:"min(360px, 88vw)",
+              background:"var(--card, #fff)", boxShadow:"-6px 0 24px rgba(10,20,35,0.25)",
+              display:"flex", flexDirection:"column", animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)" }}>
+
+            <div style={{ display:"flex", alignItems:"center", gap:8, padding:"12px 14px 10px", borderBottom:"1px solid var(--line)" }}>
+              <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>さがす</span>
+              <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)" }}>{filtered.length}件</span>
+              <button onClick={() => setDrawer(false)} aria-label="閉じる"
+                style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--sub)",
+                  borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
+            </div>
+
+            <div style={{ flex:"1 1 auto", overflowY:"auto", padding:"12px 14px 20px", WebkitOverflowScrolling:"touch" }}>
+              <input value={qText} onChange={e => setQText(e.target.value)} placeholder="ことばでさがす（さんま・刺身 など）"
+                style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:11,
+                  padding:"12px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
+                  background:"var(--card, #fff)", color:"var(--ink)", marginBottom:16 }} />
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+                  const on = fGenre === v;
+                  const c = GENRE_COLORS[v];
+                  return (
+                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
+                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>お店</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                {[["", "全店"]].concat(STORES.map(x => [x, x])).map(([v, l]) => {
+                  const on = fStore === v;
+                  return (
+                    <button key={l} onClick={() => setFStore(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+                  const on = fCat === v;
+                  return (
+                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display:"flex", gap:8, padding:"10px 14px calc(12px + env(safe-area-inset-bottom))", borderTop:"1px solid var(--line)" }}>
+              <button onClick={clearFilters} disabled={!filterCount}
+                style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)",
+                  color: filterCount ? "var(--text)" : "var(--faint)", borderRadius:11, padding:"13px",
+                  fontSize:14, fontWeight:800, cursor:"pointer" }}>ぜんぶ解除</button>
+              <button onClick={() => setDrawer(false)}
+                style={{ flex:1.4, border:"none", background:"var(--primary)", color:"#fff",
+                  borderRadius:11, padding:"13px", fontSize:14.5, fontWeight:900, cursor:"pointer" }}>
+                {filtered.length}件を見る
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showUp && <UploadModal currentStore={currentStore} onClose={()=>setShowUp(false)} onSuccess={pop=>{setPops(p=>[pop,...p]);setShowUp(false);}} />}
       {radialOpen && (
         <div onClick={()=>{ setRadialOpen(false); setRadialChanged(false); }}

@@ -26,6 +26,17 @@ function BoardTab({
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
   const grpSwipe = React.useRef(null);
   const [reloading, setReloading] = useState(false); // 更新ボタンの回転
+  // 右から出る絞り込み（タグ・店舗・ことば）
+  const [drawer, setDrawer] = useState(false);
+  const [fGenre, setFGenre] = useState("");
+  const [qText, setQText] = useState("");
+  const clearFilters = () => {
+    setFGenre("");
+    setQText("");
+    setFStore("");
+    setFCat("");
+  };
+  const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0);
   // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
@@ -165,7 +176,8 @@ function BoardTab({
     a[p.store_name] = (a[p.store_name] || 0) + 1;
     return a;
   }, {});
-  const filtered = pops.filter(p => (!fStore || p.store_name === fStore) && (!fCat || p.category === fCat)).sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
+  const qn = normJa(qText.trim());
+  const filtered = pops.filter(p => (!fStore || p.store_name === fStore) && (!fCat || p.category === fCat) && (!fGenre || p.genre === fGenre) && (!qn || [p.product_name, p.group_name, p.comment, p.author, p.store_name].some(x => x && normJa(String(x)).includes(qn)))).sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
   const handleHubClick = () => {
     if (!radialChanged) {
       setRadialOpen(v => !v);
@@ -210,7 +222,7 @@ function BoardTab({
     className: "board-top",
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
       gap: 8,
       marginBottom: 10
     }
@@ -226,24 +238,6 @@ function BoardTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  }))], ["gne", "入力支援", false, /*#__PURE__*/React.createElement("svg", {
-    key: "b",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "4.5",
-    width: "18",
-    height: "15",
-    rx: "2.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M7 9.5h6M7 14h10"
   }))], ["search", "検索", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
@@ -263,7 +257,7 @@ function BoardTab({
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
-      if (key === "__upload") setShowUp(true);else if (onFeatGo) onFeatGo(key);
+      if (key === "__upload") setShowUp(true);else if (key === "search") setDrawer(true);else if (onFeatGo) onFeatGo(key);
     },
     className: "hig-pill",
     style: {
@@ -852,7 +846,216 @@ function BoardTab({
       onClick: setSel,
       hasComment: (pop.comment_count || 0) > 0 || commentedIds.has(pop.id)
     })))));
-  })(), showUp && /*#__PURE__*/React.createElement(UploadModal, {
+  })(), drawer && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setDrawer(false),
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 1250,
+      background: "rgba(12,18,26,0.5)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    className: "fs-top",
+    style: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      width: "min(360px, 88vw)",
+      background: "var(--card, #fff)",
+      boxShadow: "-6px 0 24px rgba(10,20,35,0.25)",
+      display: "flex",
+      flexDirection: "column",
+      animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "12px 14px 10px",
+      borderBottom: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, "\u3055\u304C\u3059"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--sub)"
+    }
+  }, filtered.length, "\u4EF6"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setDrawer(false),
+    "aria-label": "\u9589\u3058\u308B",
+    style: {
+      marginLeft: "auto",
+      border: "none",
+      background: "var(--chip)",
+      color: "var(--sub)",
+      borderRadius: 9,
+      width: 34,
+      height: 34,
+      cursor: "pointer",
+      fontSize: 15,
+      fontWeight: 900
+    }
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: "1 1 auto",
+      overflowY: "auto",
+      padding: "12px 14px 20px",
+      WebkitOverflowScrolling: "touch"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: qText,
+    onChange: e => setQText(e.target.value),
+    placeholder: "\u3053\u3068\u3070\u3067\u3055\u304C\u3059\uFF08\u3055\u3093\u307E\u30FB\u523A\u8EAB \u306A\u3069\uFF09",
+    style: {
+      width: "100%",
+      boxSizing: "border-box",
+      border: "1.5px solid var(--line)",
+      borderRadius: 11,
+      padding: "12px 13px",
+      fontSize: 15,
+      outline: "none",
+      fontFamily: "inherit",
+      background: "var(--card, #fff)",
+      color: "var(--ink)",
+      marginBottom: 16
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+    const on = fGenre === v;
+    const c = GENRE_COLORS[v];
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFGenre(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
+        color: on ? "#fff" : c ? c.text : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u304A\u5E97"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, [["", "全店"]].concat(STORES.map(x => [x, x])).map(([v, l]) => {
+    const on = fStore === v;
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFStore(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+    const on = fCat === v;
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFCat(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      padding: "10px 14px calc(12px + env(safe-area-inset-bottom))",
+      borderTop: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: clearFilters,
+    disabled: !filterCount,
+    style: {
+      flex: 1,
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: filterCount ? "var(--text)" : "var(--faint)",
+      borderRadius: 11,
+      padding: "13px",
+      fontSize: 14,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "\u305C\u3093\u3076\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setDrawer(false),
+    style: {
+      flex: 1.4,
+      border: "none",
+      background: "var(--primary)",
+      color: "#fff",
+      borderRadius: 11,
+      padding: "13px",
+      fontSize: 14.5,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, filtered.length, "\u4EF6\u3092\u898B\u308B")))), showUp && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUp(false),
     onSuccess: pop => {
