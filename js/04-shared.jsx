@@ -237,6 +237,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
   const [comments, setComments] = useState([]);
+  const [cOpen, setCOpen] = useState(false);      // コメントを開いているか
   const [cStore, setCStore] = useState("バイヤー");
   const [cText, setCText] = useState("");
   const [cSubmitting, setCSubmitting] = useState(false);
@@ -484,15 +485,15 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
   return (
     <div data-popdetail="1" style={{ position:"fixed", inset:0, background:"rgba(15,25,38,0.62)", backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
-      <div id="pd-sheet" style={{ background:"#fff", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)", WebkitOverflowScrolling:"touch" }} onClick={e=>e.stopPropagation()}>
+      <div id="pd-sheet" style={{ background:"var(--card, #fff)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, height:"92vh", display:"flex", flexDirection:"column", overflow:"hidden", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
 
         {/* 画像エリア（ショート風・シート内で大きく） */}
-        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", minHeight:"38vh", maxHeight:"calc(92vh - 176px)", transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
+        <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flex:"1 1 auto", minHeight:0, transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
           <img src={pop.image_url}
             onTouchStart={onPinchStart} onTouchMove={onPinchMove} onTouchEnd={onPinchEnd}
             onDoubleClick={() => zoom > 1 ? resetZoom() : setZoom(2)}
-            style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "56vh" : "100%", maxHeight: (pop.rotation === 90 || pop.rotation === 270) ? "100%" : "calc(92vh - 176px)", objectFit:"contain", display:"block",
+            style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "56vh" : "100%", maxHeight: "100%", objectFit:"contain", display:"block",
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` + (pop.rotation ? ` rotate(${pop.rotation}deg)` : ""),
               transition: pinch.current ? "none" : "transform .25s ease",
               touchAction:"none", willChange:"transform" }} />
@@ -620,7 +621,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         </div>
 
         {/* 操作バー（画像の下） */}
-        <div style={{ borderBottom:"1px solid var(--line)", padding:"8px 10px 10px" }}>
+        <div style={{ borderBottom:"1px solid var(--line)", padding:"8px 10px 10px", flex:"0 0 auto" }}>
           <div style={{ display:"flex", gap:8 }}>
             <BarBtn onClick={handleUsed} active={used} icon={used ? "check" : "hand"}
               label={used ? `使った ${usedCount}` : "使った"} primary />
@@ -636,9 +637,17 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         </div>
 
         {/* コメント欄（画像の下・シート内） */}
-        <div id="pd-comments" style={{ padding:"12px 16px calc(16px + env(safe-area-inset-bottom))" }}>
-          <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>コメント {comments.length > 0 && <span style={{ color:"var(--faint)", fontWeight:600 }}>{comments.length}件</span>}</div>
-          {comments.length > 0 && (
+        <div id="pd-comments" style={{ padding:"12px 16px calc(16px + env(safe-area-inset-bottom))", flex:"0 1 auto", overflowY:"auto", WebkitOverflowScrolling:"touch", minHeight:96 }}>
+          <button onClick={() => setCOpen(v => !v)} aria-expanded={cOpen}
+            style={{ display:"flex", alignItems:"center", gap:7, width:"100%", border:"none", background:"transparent",
+              padding:"2px 0", cursor:"pointer", marginBottom: cOpen ? 10 : 0 }}>
+            <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>コメント</span>
+            {comments.length > 0 && <span style={{ fontSize:12.5, fontWeight:800, color:"#fff", background:"var(--primary-soft)", borderRadius:9, padding:"1px 8px" }}>{comments.length}</span>}
+            <span style={{ marginLeft:"auto", display:"flex", color:"var(--faint)", transform: cOpen ? "rotate(90deg)" : "none", transition:"transform .15s" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
+          </button>
+          {cOpen && comments.length > 0 && (
             <div style={{ display:"flex", flexDirection:"column", gap:15, marginBottom:16 }}>
               {comments.map(c => (
                 <div key={c.id} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
@@ -654,7 +663,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               ))}
             </div>
           )}
-          <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
+          {cOpen && <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
             <select value={cStore} onChange={e=>setCStore(e.target.value)}
               style={{ padding:"10px 8px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:12.5, outline:"none", background:"#fff", flexShrink:0, maxWidth:110 }}>
               {STORES.map(s=><option key={s}>{s}</option>)}
@@ -663,8 +672,8 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               style={{ flex:1, padding:"10px 11px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:13.5, resize:"none", fontFamily:"inherit", outline:"none", lineHeight:1.5, maxHeight:90 }} />
             <button onClick={handleAddComment} disabled={cSubmitting}
               style={{ background:"var(--primary)", color:"#fff", border:"none", borderRadius:9, padding:"10px 15px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1, flexShrink:0 }}>{cSubmitting ? "…" : "送信"}</button>
-          </div>
-          {cError && <div style={{ fontSize:12, color:"var(--primary)", marginTop:6 }}>{cError}</div>}
+          </div>}
+          {cOpen && cError && <div style={{ fontSize:12, color:"var(--primary)", marginTop:6 }}>{cError}</div>}
         </div>
       </div>
     </div>

@@ -575,6 +575,7 @@ function PopDetail({
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState("");
   const [comments, setComments] = useState([]);
+  const [cOpen, setCOpen] = useState(false); // コメントを開いているか
   const [cStore, setCStore] = useState("バイヤー");
   const [cText, setCText] = useState("");
   const [cSubmitting, setCSubmitting] = useState(false);
@@ -1035,14 +1036,15 @@ function PopDetail({
   }, /*#__PURE__*/React.createElement("div", {
     id: "pd-sheet",
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: "22px 22px 0 0",
       width: "100%",
       maxWidth: 560,
-      maxHeight: "92vh",
-      overflowY: "auto",
-      animation: "sheetUp .32s cubic-bezier(.16,1,.3,1)",
-      WebkitOverflowScrolling: "touch"
+      height: "92vh",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      animation: "sheetUp .32s cubic-bezier(.16,1,.3,1)"
     },
     onClick: e => e.stopPropagation()
   }, /*#__PURE__*/React.createElement("div", {
@@ -1056,8 +1058,8 @@ function PopDetail({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "38vh",
-      maxHeight: "calc(92vh - 176px)",
+      flex: "1 1 auto",
+      minHeight: 0,
       transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)",
       opacity: slideAnim === "up" ? 0.25 : 1,
       transition: "transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease"
@@ -1083,7 +1085,7 @@ function PopDetail({
     onDoubleClick: () => zoom > 1 ? resetZoom() : setZoom(2),
     style: {
       maxWidth: pop.rotation === 90 || pop.rotation === 270 ? "56vh" : "100%",
-      maxHeight: pop.rotation === 90 || pop.rotation === 270 ? "100%" : "calc(92vh - 176px)",
+      maxHeight: "100%",
       objectFit: "contain",
       display: "block",
       transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` + (pop.rotation ? ` rotate(${pop.rotation}deg)` : ""),
@@ -1642,7 +1644,8 @@ function PopDetail({
   }, deleting ? "確認中…" : "削除する"))))), /*#__PURE__*/React.createElement("div", {
     style: {
       borderBottom: "1px solid var(--line)",
-      padding: "8px 10px 10px"
+      padding: "8px 10px 10px",
+      flex: "0 0 auto"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1705,21 +1708,61 @@ function PopDetail({
   }))), /*#__PURE__*/React.createElement("div", {
     id: "pd-comments",
     style: {
-      padding: "12px 16px calc(16px + env(safe-area-inset-bottom))"
+      padding: "12px 16px calc(16px + env(safe-area-inset-bottom))",
+      flex: "0 1 auto",
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch",
+      minHeight: 96
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setCOpen(v => !v),
+    "aria-expanded": cOpen,
     style: {
-      fontSize: 13,
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      width: "100%",
+      border: "none",
+      background: "transparent",
+      padding: "2px 0",
+      cursor: "pointer",
+      marginBottom: cOpen ? 10 : 0
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13.5,
       fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 10
+      color: "var(--ink)"
     }
-  }, "\u30B3\u30E1\u30F3\u30C8 ", comments.length > 0 && /*#__PURE__*/React.createElement("span", {
+  }, "\u30B3\u30E1\u30F3\u30C8"), comments.length > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
-      color: "var(--faint)",
-      fontWeight: 600
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "#fff",
+      background: "var(--primary-soft)",
+      borderRadius: 9,
+      padding: "1px 8px"
     }
-  }, comments.length, "\u4EF6")), comments.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, comments.length), /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: "auto",
+      display: "flex",
+      color: "var(--faint)",
+      transform: cOpen ? "rotate(90deg)" : "none",
+      transition: "transform .15s"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M9 6l6 6-6 6"
+  })))), cOpen && comments.length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -1777,7 +1820,7 @@ function PopDetail({
       lineHeight: 1.65,
       whiteSpace: "pre-wrap"
     }
-  }, c.comment))))), /*#__PURE__*/React.createElement("div", {
+  }, c.comment))))), cOpen && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1830,7 +1873,7 @@ function PopDetail({
       opacity: cSubmitting ? 0.6 : 1,
       flexShrink: 0
     }
-  }, cSubmitting ? "…" : "送信")), cError && /*#__PURE__*/React.createElement("div", {
+  }, cSubmitting ? "…" : "送信")), cOpen && cError && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--primary)",
