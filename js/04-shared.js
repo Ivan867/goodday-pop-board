@@ -918,6 +918,55 @@ function PopDetail({
       d: "M2.5 4.5h19v4h-19zM9.5 12.5h5"
     }))
   };
+  // 画像の下の操作ボタン
+  const BarBtn = ({
+    onClick,
+    icon,
+    label,
+    active,
+    activeColor,
+    fillWhenActive,
+    primary,
+    small,
+    danger
+  }) => /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    "aria-label": label,
+    "aria-pressed": active ? true : undefined,
+    style: {
+      flex: 1,
+      minWidth: 0,
+      minHeight: small ? 42 : 56,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 4,
+      cursor: "pointer",
+      border: active ? `1.5px solid ${activeColor || "var(--primary)"}` : "1px solid var(--line)",
+      background: active ? activeColor ? activeColor + "14" : "var(--soft)" : primary ? "var(--soft)" : "var(--card, #fff)",
+      color: active ? activeColor || "var(--primary)" : danger ? "#b3261e" : "var(--text)",
+      borderRadius: 11,
+      padding: small ? "6px 4px" : "8px 4px"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      lineHeight: 1
+    }
+  }, /*#__PURE__*/React.createElement(Ico, {
+    d: ICONS[icon],
+    fill: active && fillWhenActive ? activeColor || "var(--primary)" : "none"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: small ? 11 : 11.5,
+      fontWeight: 800,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      maxWidth: "100%"
+    }
+  }, label));
   const ActionBtn = ({
     onClick,
     disabled,
@@ -1092,96 +1141,13 @@ function PopDetail({
       backdropFilter: "blur(4px)",
       zIndex: 6
     }
-  }, navIdx + 1, " / ", navList.length), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
-    style: {
-      position: "absolute",
-      bottom: 14,
-      left: 14,
-      background: "rgba(0,0,0,0.55)",
-      border: "none",
-      color: "#fff",
-      fontSize: 18,
-      width: 44,
-      height: 44,
-      borderRadius: 12,
-      cursor: "pointer",
-      backdropFilter: "blur(4px)",
-      zIndex: 6,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  }, "\u2715"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      right: 11,
-      bottom: 16,
-      display: "flex",
-      flexDirection: "column",
-      gap: 13,
-      zIndex: 5
-    }
-  }, /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: handleLike,
-    active: liked,
-    activeColor: "#e0245e",
-    fillWhenActive: true,
-    icon: "heart",
-    label: "\u3044\u3044\u306D"
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: handleUsed,
-    active: used,
-    activeColor: "#2f6fb0",
-    icon: used ? "check" : "hand",
-    label: used ? `使った ${usedCount}` : "使った"
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: () => {
-      const el = document.getElementById("pd-comments");
-      if (el) el.scrollIntoView({
-        behavior: "smooth"
-      });
-    },
-    icon: "chat",
-    label: String(comments.length)
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: handleDownload,
-    icon: "save",
-    label: "\u4FDD\u5B58"
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: () => setShowPrint(true),
-    icon: "print",
-    label: "\u5370\u5237"
-  }), onCreateFromPop && /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: () => {
-      onCreateFromPop(pop);
-      onClose();
-    },
-    icon: "edit",
-    label: "\u4F5C\u6210"
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: () => {
-      setShowArcConfirm(true);
-      setPwInput("");
-      setPwError("");
-    },
-    icon: "box",
-    label: "\u4FDD\u7BA1"
-  }), /*#__PURE__*/React.createElement(ActionBtn, {
-    onClick: () => {
-      setShowDelConfirm(true);
-      setPwInput("");
-      setPwError("");
-    },
-    icon: "trash",
-    label: "\u524A\u9664"
-  })), /*#__PURE__*/React.createElement("div", {
+  }, navIdx + 1, " / ", navList.length), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       left: 0,
-      right: 64,
+      right: 0,
       bottom: 0,
-      padding: "36px 14px 14px 68px",
+      padding: "36px 14px 14px",
       background: "linear-gradient(to top, rgba(0,0,0,0.72), transparent)",
       zIndex: 4
     }
@@ -1674,6 +1640,79 @@ function PopDetail({
       opacity: deleting ? 0.6 : 1
     }
   }, deleting ? "確認中…" : "削除する"))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderBottom: "1px solid var(--line)",
+      padding: "10px 10px 12px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: handleUsed,
+    active: used,
+    icon: used ? "check" : "hand",
+    label: used ? `使った ${usedCount}` : "使った",
+    primary: true
+  }), /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: handleDownload,
+    icon: "save",
+    label: "\u4FDD\u5B58"
+  }), /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: () => setShowPrint(true),
+    icon: "print",
+    label: "\u5370\u5237"
+  }), onCreateFromPop && /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: () => {
+      onCreateFromPop(pop);
+      onClose();
+    },
+    icon: "edit",
+    label: "\u4F5C\u6210"
+  }), /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: handleLike,
+    active: liked,
+    activeColor: "#e0245e",
+    icon: "heart",
+    label: "\u3044\u3044\u306D",
+    fillWhenActive: true
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: () => {
+      const el = document.getElementById("pd-comments");
+      if (el) el.scrollIntoView({
+        behavior: "smooth"
+      });
+    },
+    icon: "chat",
+    label: comments.length ? `コメント ${comments.length}` : "コメント",
+    small: true
+  }), /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: () => {
+      setShowArcConfirm(true);
+      setPwInput("");
+      setPwError("");
+    },
+    icon: "box",
+    label: "\u4FDD\u7BA1\u3059\u308B",
+    small: true
+  }), /*#__PURE__*/React.createElement(BarBtn, {
+    onClick: () => {
+      setShowDelConfirm(true);
+      setPwInput("");
+      setPwError("");
+    },
+    icon: "trash",
+    label: "\u6D88\u3059",
+    small: true,
+    danger: true
+  }))), /*#__PURE__*/React.createElement("div", {
     id: "pd-comments",
     style: {
       padding: "14px 16px calc(18px + env(safe-area-inset-bottom))"

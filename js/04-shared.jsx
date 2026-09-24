@@ -455,6 +455,23 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
     trash: <><path d="M4 7h16M9 7V5a1.5 1.5 0 013 0v0a1.5 1.5 0 013 0v2M6 7l1 12.5A1.5 1.5 0 008.5 21h7A1.5 1.5 0 0017 19.5L18 7" /></>,
     box: <><path d="M3 8.5h18v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5z" /><path d="M2.5 4.5h19v4h-19zM9.5 12.5h5" /></>,
   };
+  // 画像の下の操作ボタン
+  const BarBtn = ({ onClick, icon, label, active, activeColor, fillWhenActive, primary, small, danger }) => (
+    <button onClick={onClick} aria-label={label} aria-pressed={active ? true : undefined}
+      style={{ flex:1, minWidth:0, minHeight: small ? 42 : 56, display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"center", gap:4, cursor:"pointer",
+        border: active ? `1.5px solid ${activeColor || "var(--primary)"}` : "1px solid var(--line)",
+        background: active ? (activeColor ? activeColor + "14" : "var(--soft)") : (primary ? "var(--soft)" : "var(--card, #fff)"),
+        color: active ? (activeColor || "var(--primary)") : (danger ? "#b3261e" : "var(--text)"),
+        borderRadius:11, padding: small ? "6px 4px" : "8px 4px" }}>
+      <span style={{ display:"flex", lineHeight:1 }}>
+        <Ico d={ICONS[icon]} fill={active && fillWhenActive ? (activeColor || "var(--primary)") : "none"} />
+      </span>
+      <span style={{ fontSize: small ? 11 : 11.5, fontWeight:800, whiteSpace:"nowrap",
+        overflow:"hidden", textOverflow:"ellipsis", maxWidth:"100%" }}>{label}</span>
+    </button>
+  );
+
   const ActionBtn = ({ onClick, disabled, active, icon, label, activeColor, fillWhenActive }) => (
     <button onClick={onClick} disabled={disabled}
       style={{ border:"none", background:"transparent", cursor: disabled?"default":"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3, padding:0 }}>
@@ -493,22 +510,10 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <span style={{ position:"absolute", top:14, right:14, background:"rgba(0,0,0,0.4)", color:"#fff", fontSize:12, fontWeight:800, padding:"3px 9px", borderRadius:12, backdropFilter:"blur(4px)", zIndex:6 }}>{navIdx + 1} / {navList.length}</span>
           )}
 
-          <button onClick={onClose} style={{ position:"absolute", bottom:14, left:14, background:"rgba(0,0,0,0.55)", border:"none", color:"#fff", fontSize:18, width:44, height:44, borderRadius:12, cursor:"pointer", backdropFilter:"blur(4px)", zIndex:6, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-
-          {/* 右側 縦積みアクション */}
-          <div style={{ position:"absolute", right:11, bottom:16, display:"flex", flexDirection:"column", gap:13, zIndex:5 }}>
-            <ActionBtn onClick={handleLike} active={liked} activeColor="#e0245e" fillWhenActive icon="heart" label="いいね" />
-            <ActionBtn onClick={handleUsed} active={used} activeColor="#2f6fb0" icon={used ? "check" : "hand"} label={used ? `使った ${usedCount}` : "使った"} />
-            <ActionBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }} icon="chat" label={String(comments.length)} />
-            <ActionBtn onClick={handleDownload} icon="save" label="保存" />
-            <ActionBtn onClick={() => setShowPrint(true)} icon="print" label="印刷" />
-            {onCreateFromPop && <ActionBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
-            <ActionBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管" />
-            <ActionBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="削除" />
-          </div>
+          
 
           {/* 左下 情報オーバーレイ */}
-          <div style={{ position:"absolute", left:0, right:64, bottom:0, padding:"36px 14px 14px 68px", background:"linear-gradient(to top, rgba(0,0,0,0.72), transparent)", zIndex:4 }}>
+          <div style={{ position:"absolute", left:0, right:0, bottom:0, padding:"36px 14px 14px", background:"linear-gradient(to top, rgba(0,0,0,0.72), transparent)", zIndex:4 }}>
             <button onClick={openRename} aria-label="商品名を直す"
               style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, textAlign:"left" }}>
               <span style={{ fontSize:18, fontWeight:900, color:"#fff", textShadow:"0 1px 4px rgba(0,0,0,0.6)", lineHeight:1.3 }}>{pop.product_name}</span>
@@ -612,6 +617,24 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               </div>
             </div>
           )}
+        </div>
+
+        {/* 操作バー（画像の下） */}
+        <div style={{ borderBottom:"1px solid var(--line)", padding:"10px 10px 12px" }}>
+          <div style={{ display:"flex", gap:8 }}>
+            <BarBtn onClick={handleUsed} active={used} icon={used ? "check" : "hand"}
+              label={used ? `使った ${usedCount}` : "使った"} primary />
+            <BarBtn onClick={handleDownload} icon="save" label="保存" />
+            <BarBtn onClick={() => setShowPrint(true)} icon="print" label="印刷" />
+            {onCreateFromPop && <BarBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
+            <BarBtn onClick={handleLike} active={liked} activeColor="#e0245e" icon="heart" label="いいね" fillWhenActive />
+          </div>
+          <div style={{ display:"flex", gap:8, marginTop:8 }}>
+            <BarBtn onClick={() => { const el = document.getElementById("pd-comments"); if (el) el.scrollIntoView({ behavior:"smooth" }); }}
+              icon="chat" label={comments.length ? `コメント ${comments.length}` : "コメント"} small />
+            <BarBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管する" small />
+            <BarBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="消す" small danger />
+          </div>
         </div>
 
         {/* コメント欄（画像の下・シート内） */}
