@@ -628,10 +628,8 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <BarBtn onClick={handleDownload} icon="save" label="保存" />
             <BarBtn onClick={() => setShowPrint(true)} icon="print" label="印刷" />
             {onCreateFromPop && <BarBtn onClick={() => { onCreateFromPop(pop); onClose(); }} icon="edit" label="作成" />}
-            <BarBtn onClick={handleLike} active={liked} activeColor="#e0245e" icon="heart" label="いいね" fillWhenActive />
           </div>
           <div style={{ display:"flex", gap:8, marginTop:7 }}>
-            <BarBtn onClick={() => { setShowArcConfirm(true); setPwInput(""); setPwError(""); }} icon="box" label="保管する" small />
             <BarBtn onClick={() => { setShowDelConfirm(true); setPwInput(""); setPwError(""); }} icon="trash" label="消す" small danger />
           </div>
         </div>

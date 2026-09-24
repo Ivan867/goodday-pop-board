@@ -1673,13 +1673,6 @@ function PopDetail({
     },
     icon: "edit",
     label: "\u4F5C\u6210"
-  }), /*#__PURE__*/React.createElement(BarBtn, {
-    onClick: handleLike,
-    active: liked,
-    activeColor: "#e0245e",
-    icon: "heart",
-    label: "\u3044\u3044\u306D",
-    fillWhenActive: true
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1687,15 +1680,6 @@ function PopDetail({
       marginTop: 7
     }
   }, /*#__PURE__*/React.createElement(BarBtn, {
-    onClick: () => {
-      setShowArcConfirm(true);
-      setPwInput("");
-      setPwError("");
-    },
-    icon: "box",
-    label: "\u4FDD\u7BA1\u3059\u308B",
-    small: true
-  }), /*#__PURE__*/React.createElement(BarBtn, {
     onClick: () => {
       setShowDelConfirm(true);
       setPwInput("");
