@@ -960,7 +960,131 @@ function BoardTab({
       color: "var(--ink)",
       marginBottom: 16
     }
-  }), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+    const on = fGenre === v;
+    const c = GENRE_COLORS[v];
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFGenre(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
+        color: on ? "#fff" : c ? c.text : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+    const on = fCat === v;
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFCat(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+    const on = fGenre === v;
+    const c = GENRE_COLORS[v];
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFGenre(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
+        color: on ? "#fff" : c ? c.text : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+    const on = fCat === v;
+    return /*#__PURE__*/React.createElement("button", {
+      key: l,
+      onClick: () => setFCat(v),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800
+      }
+    }, l);
+  })), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -1010,32 +1134,73 @@ function BoardTab({
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 18
+      gap: 6
     }
-  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-    const on = fGenre === v;
-    const c = GENRE_COLORS[v];
+  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+    const on = fCat === v;
     return /*#__PURE__*/React.createElement("button", {
       key: l,
-      onClick: () => setFGenre(v),
+      onClick: () => setFCat(v),
       "aria-pressed": on,
       style: {
         border: on ? "none" : "1px solid var(--line)",
         cursor: "pointer",
-        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
-        color: on ? "#fff" : c ? c.text : "var(--text)",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
         borderRadius: 999,
         padding: "8px 13px",
         fontSize: 13,
         fontWeight: 800
       }
     }, l);
-  })), /*#__PURE__*/React.createElement("div", {
+  })), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u9B5A\u3067\u3055\u304C\u3059"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 18
+    }
+  }, spCounts.map(({
+    sp,
+    n
+  }) => {
+    const on = fSp && fSp.id === sp.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: sp.id,
+      onClick: () => setFSp(on ? null : sp),
+      "aria-pressed": on,
+      style: {
+        border: on ? "none" : "1px solid var(--line)",
+        cursor: "pointer",
+        background: on ? "var(--primary)" : "var(--card, #fff)",
+        color: on ? "#fff" : "var(--text)",
+        borderRadius: 999,
+        padding: "8px 12px",
+        fontSize: 13,
+        fontWeight: 800,
+        display: "flex",
+        alignItems: "center",
+        gap: 5
+      }
+    }, sp.canonical_name, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        fontWeight: 900,
+        opacity: 0.7
+      }
+    }, n));
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 800,
@@ -1054,36 +1219,6 @@ function BoardTab({
     return /*#__PURE__*/React.createElement("button", {
       key: l,
       onClick: () => setFStore(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6
-    }
-  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-    const on = fCat === v;
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFCat(v),
       "aria-pressed": on,
       style: {
         border: on ? "none" : "1px solid var(--line)",

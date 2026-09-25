@@ -367,6 +367,62 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                   padding:"12px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
                   background:"var(--card, #fff)", color:"var(--ink)", marginBottom:16 }} />
 
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+                  const on = fGenre === v;
+                  const c = GENRE_COLORS[v];
+                  return (
+                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
+                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+                  const on = fCat === v;
+                  return (
+                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
+                  const on = fGenre === v;
+                  const c = GENRE_COLORS[v];
+                  return (
+                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
+                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+                  const on = fCat === v;
+                  return (
+                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
+                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
+                  );
+                })}
+              </div>
+
               {spCounts.length > 0 && (
                 <>
                   <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>魚でさがす</div>
@@ -388,20 +444,39 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 </>
               )}
 
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-                  const on = fGenre === v;
-                  const c = GENRE_COLORS[v];
+              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
+                  const on = fCat === v;
                   return (
-                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
+                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
                       style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
-                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
+                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
                         borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
                   );
                 })}
               </div>
+
+              {spCounts.length > 0 && (
+                <>
+                  <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>魚でさがす</div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                    {spCounts.map(({ sp, n }) => {
+                      const on = fSp && fSp.id === sp.id;
+                      return (
+                        <button key={sp.id} onClick={() => setFSp(on ? null : sp)} aria-pressed={on}
+                          style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
+                            background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
+                            borderRadius:999, padding:"8px 12px", fontSize:13, fontWeight:800,
+                            display:"flex", alignItems:"center", gap:5 }}>
+                          {sp.canonical_name}
+                          <span style={{ fontSize:11, fontWeight:900, opacity:0.7 }}>{n}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
 
               <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>お店</div>
               <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
@@ -416,18 +491,6 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                 })}
               </div>
 
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-                  const on = fCat === v;
-                  return (
-                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
             </div>
 
             <div style={{ display:"flex", gap:8, padding:"10px 14px calc(12px + env(safe-area-inset-bottom))", borderTop:"1px solid var(--line)" }}>
