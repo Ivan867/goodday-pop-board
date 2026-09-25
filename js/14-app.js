@@ -701,11 +701,11 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      alignItems: "center",
-      justifyContent: "space-around",
-      gap: 2,
+      alignItems: "stretch",
+      justifyContent: "space-between",
+      gap: 6,
       width: "100%",
-      maxWidth: 1600,
+      maxWidth: 760,
       background: "var(--primary)",
       border: "none",
       borderRadius: "22px 22px 0 0",
@@ -765,8 +765,8 @@ function App() {
     };
     const NAV_SVG = {
       board: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -779,8 +779,8 @@ function App() {
         d: "M5 9.5V20h14V9.5"
       })),
       search: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -795,8 +795,8 @@ function App() {
         d: "M20 20l-3.5-3.5"
       })),
       more: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -807,8 +807,8 @@ function App() {
         d: "M4 7h16M4 12h16M4 17h16"
       })),
       catalog: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -821,8 +821,8 @@ function App() {
         d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
       })),
       close: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -833,8 +833,8 @@ function App() {
         d: "M6 6l12 12M18 6L6 18"
       })),
       bundle: /*#__PURE__*/React.createElement("svg", {
-        width: "18",
-        height: "18",
+        width: "22",
+        height: "22",
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: "currentColor",
@@ -851,7 +851,7 @@ function App() {
         d: "M3.5 10h17M8 3v4M16 3v4"
       }))
     };
-    const navIcon = key === "board" ? NAV_SVG.board : key === "bundle" ? NAV_SVG.bundle : key === "catalog" ? NAV_SVG.catalog : key === "search" ? NAV_SVG.search : NAV_SVG.more;
+    const navIcon = key === "board" ? NAV_SVG.board : key === "bundle" ? NAV_SVG.bundle : key === "catalog" ? NAV_SVG.catalog : key === "search" || key === "__search" ? NAV_SVG.search : NAV_SVG.more;
     const navLabel = more ? moreOpen ? "閉じる" : "メニュー" : label;
     const showBadge = badgeOn && key === notice.badge_tab;
     return /*#__PURE__*/React.createElement("button", {
@@ -865,15 +865,18 @@ function App() {
       title: navLabel,
       style: {
         position: "relative",
+        flex: 1,
+        minWidth: 0,
         border: "none",
         cursor: "pointer",
-        padding: "5px 13px 4px",
+        padding: "7px 6px 6px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 2,
+        gap: 4,
         borderRadius: 16,
+        minHeight: 52,
         background: active ? "#fff" : "transparent",
         color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.94)",
         transition: "background .2s"
@@ -886,7 +889,7 @@ function App() {
       }
     }, moreOpen && more ? NAV_SVG.close : navIcon), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 13,
         fontWeight: 800,
         letterSpacing: "0.01em",
         lineHeight: 1,
@@ -944,39 +947,52 @@ function App() {
       background: "rgba(0,0,0,0.28)"
     }
   }), /*#__PURE__*/React.createElement("div", {
+    className: "fs-top",
     style: {
       position: "fixed",
       left: 0,
-      right: 0,
+      top: 0,
       bottom: 0,
       zIndex: 202,
+      width: "min(320px, 86vw)",
       background: "var(--bg)",
-      borderRadius: "22px 22px 0 0",
-      boxShadow: "0 -8px 30px rgba(0,0,0,0.18)",
-      animation: "sheetUp .28s cubic-bezier(.32,.72,.28,1)",
-      padding: "10px 16px calc(92px + env(safe-area-inset-bottom))"
+      boxShadow: "6px 0 24px rgba(10,20,35,0.25)",
+      overflowY: "auto",
+      animation: "drawerL .24s cubic-bezier(.16,1,.3,1)",
+      padding: "14px 14px calc(20px + env(safe-area-inset-bottom))"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: 40,
-      height: 4.5,
-      background: "var(--line)",
-      borderRadius: 3,
-      margin: "0 auto 12px"
+      display: "flex",
+      alignItems: "center",
+      marginBottom: 14
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13,
+      fontSize: 16,
       fontWeight: 900,
-      color: "var(--sub)",
-      marginBottom: 12,
-      paddingLeft: 2
+      color: "var(--ink)"
     }
-  }, "\u30E1\u30CB\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30E1\u30CB\u30E5\u30FC"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setMoreOpen(false),
+    "aria-label": "\u9589\u3058\u308B",
+    style: {
+      marginLeft: "auto",
+      border: "none",
+      background: "var(--chip)",
+      color: "var(--sub)",
+      borderRadius: 9,
+      width: 34,
+      height: 34,
+      cursor: "pointer",
+      fontSize: 15,
+      fontWeight: 900
+    }
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(3, 1fr)",
-      gap: "14px 8px"
+      gap: "12px 8px"
     }
   }, TAB_REGISTRY.filter(o => !o.hideInMenu && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
