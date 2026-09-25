@@ -571,7 +571,59 @@ function App() {
     style: {
       whiteSpace: "pre-wrap"
     }
-  }, notice.message))), tab === "board" && /*#__PURE__*/React.createElement(BoardTab, {
+  }, notice.message))), tab !== "board" && /*#__PURE__*/React.createElement("div", {
+    className: "fs-top",
+    style: {
+      position: "sticky",
+      top: 0,
+      zIndex: 150,
+      background: "var(--bg)",
+      padding: "8px 14px 6px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setTab("board");
+      setMoreOpen(false);
+    },
+    "aria-label": "\u4E00\u89A7\u306B\u3082\u3069\u308B",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "var(--sub)",
+      borderRadius: 10,
+      padding: "8px 14px 8px 10px",
+      fontSize: 13.5,
+      fontWeight: 800,
+      cursor: "pointer",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  })), "\u3082\u3069\u308B"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "var(--faint)",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, (TAB_REGISTRY.find(t => t.key === tab) || {}).label || "")), tab === "board" && /*#__PURE__*/React.createElement(BoardTab, {
     currentStore: currentStore,
     actionsRef: boardActions,
     onCreateFromPop: handleCreateFromPop,
@@ -1019,7 +1071,7 @@ function App() {
     style: {
       width: "100%",
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      background: tab === o.key ? "var(--soft)" : "var(--card, #fff)",
+      background: tab === o.key ? "var(--soft)" : "var(--menu-row, #fff)",
       borderRadius: 12,
       padding: "11px 13px",
       cursor: "pointer",

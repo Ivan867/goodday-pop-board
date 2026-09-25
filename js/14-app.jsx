@@ -274,6 +274,23 @@ function App() {
           </div>
         </div>
       )}
+      {/* 一覧以外の画面には「もどる」を出す */}
+      {tab !== "board" && (
+        <div className="fs-top" style={{ position:"sticky", top:0, zIndex:150, background:"var(--bg)",
+          padding:"8px 14px 6px", display:"flex", alignItems:"center", gap:10 }}>
+          <button onClick={() => { setTab("board"); setMoreOpen(false); }} aria-label="一覧にもどる"
+            style={{ display:"flex", alignItems:"center", gap:5, border:"1px solid var(--line)",
+              background:"var(--card, #fff)", color:"var(--sub)", borderRadius:10,
+              padding:"8px 14px 8px 10px", fontSize:13.5, fontWeight:800, cursor:"pointer", flexShrink:0 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+            もどる
+          </button>
+          <span style={{ fontSize:13, fontWeight:800, color:"var(--faint)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+            {(TAB_REGISTRY.find(t => t.key === tab) || {}).label || ""}
+          </span>
+        </div>
+      )}
+
       {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} feat={{ enabled: notice.feat_enabled, message: notice.feat_message, tab: notice.feat_tab, ver: notice.feat_ver }} onFeatGo={(t)=>setTab(t)} />}
       {tab==="barcode" && <LazyTab tabKey="barcode" />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
@@ -379,7 +396,7 @@ function App() {
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
                   className="menu-item"
                   style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-                    background: tab===o.key ? "var(--soft)" : "var(--card, #fff)", borderRadius:12,
+                    background: tab===o.key ? "var(--soft)" : "var(--menu-row, #fff)", borderRadius:12,
                     padding:"11px 13px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:12, minHeight:54 }}>
                   <span style={{ position:"relative", width:34, height:34, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
