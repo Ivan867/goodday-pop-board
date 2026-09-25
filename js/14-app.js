@@ -224,6 +224,17 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false); // さがす（右のドロワー）が開いているか
+  useEffect(() => {
+    const on = () => setSearchOpen(true),
+      off = () => setSearchOpen(false);
+    window.addEventListener("searchOpened", on);
+    window.addEventListener("searchClosed", off);
+    return () => {
+      window.removeEventListener("searchOpened", on);
+      window.removeEventListener("searchClosed", off);
+    };
+  }, []);
   const [showToTop, setShowToTop] = useState(false);
   const [popDetailOpen, setPopDetailOpen] = useState(false);
   useEffect(() => {
@@ -733,7 +744,7 @@ function App() {
     more,
     filter
   }) => {
-    const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : !action && tab === key && !moreOpen;
+    const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : !action && tab === key && !moreOpen;
     const onClick = action ? () => {
       setRadialOpen(false);
       setTab("board");
@@ -950,15 +961,15 @@ function App() {
     className: "fs-top",
     style: {
       position: "fixed",
-      left: 0,
+      right: 0,
       top: 0,
       bottom: 0,
       zIndex: 202,
       width: "min(320px, 86vw)",
       background: "var(--bg)",
-      boxShadow: "6px 0 24px rgba(10,20,35,0.25)",
+      boxShadow: "-6px 0 24px rgba(10,20,35,0.25)",
       overflowY: "auto",
-      animation: "drawerL .24s cubic-bezier(.16,1,.3,1)",
+      animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)",
       padding: "14px 14px calc(20px + env(safe-area-inset-bottom))"
     }
   }, /*#__PURE__*/React.createElement("div", {

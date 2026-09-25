@@ -81,6 +81,13 @@ function App() {
   const [showUpload, setShowUpload] = useState(false);
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);   // さがす（右のドロワー）が開いているか
+  useEffect(() => {
+    const on = () => setSearchOpen(true), off = () => setSearchOpen(false);
+    window.addEventListener("searchOpened", on);
+    window.addEventListener("searchClosed", off);
+    return () => { window.removeEventListener("searchOpened", on); window.removeEventListener("searchClosed", off); };
+  }, []);
   const [showToTop, setShowToTop] = useState(false);
   const [popDetailOpen, setPopDetailOpen] = useState(false);
   useEffect(() => {
@@ -310,7 +317,7 @@ function App() {
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, display:"flex", justifyContent:"center", padding:0, pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"stretch", justifyContent:"space-between", gap:6, width:"100%", maxWidth:760, background:"var(--primary)", border:"none", borderRadius:"22px 22px 0 0", boxShadow:"0 -2px 14px rgba(20,40,70,0.16)", padding:"6px 8px 7px", pointerEvents:"auto" }}>
         {[tabs[0], { key:"__search", icon:"🔍", label:"さがす", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
+          const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -356,9 +363,9 @@ function App() {
         <>
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
-          <div className="fs-top" style={{ position:"fixed", left:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
-            background:"var(--bg)", boxShadow:"6px 0 24px rgba(10,20,35,0.25)", overflowY:"auto",
-            animation:"drawerL .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(20px + env(safe-area-inset-bottom))" }}>
+          <div className="fs-top" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
+            background:"var(--bg)", boxShadow:"-6px 0 24px rgba(10,20,35,0.25)", overflowY:"auto",
+            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(20px + env(safe-area-inset-bottom))" }}>
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
               <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
               <button onClick={()=>setMoreOpen(false)} aria-label="閉じる"

@@ -18,6 +18,9 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
     window.addEventListener("openSearch", open);
     return () => window.removeEventListener("openSearch", open);
   }, []);
+  useEffect(() => {
+    try { window.dispatchEvent(new CustomEvent(drawer ? "searchOpened" : "searchClosed")); } catch(e) {}
+  }, [drawer]);
   const [fGenre, setFGenre] = useState("");
   const [qText, setQText] = useState("");
   const [species, setSpecies] = useState([]);
