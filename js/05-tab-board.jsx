@@ -361,147 +361,61 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
             </div>
 
-            <div style={{ flex:"1 1 auto", overflowY:"auto", padding:"12px 14px 20px", WebkitOverflowScrolling:"touch" }}>
+            <div style={{ flex:"1 1 auto", overflowY:"auto", padding:"14px 14px 20px", WebkitOverflowScrolling:"touch" }}>
               <input value={qText} onChange={e => setQText(e.target.value)} placeholder="ことばでさがす（さんま・刺身 など）"
                 style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:11,
                   padding:"12px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
-                  background:"var(--card, #fff)", color:"var(--ink)", marginBottom:16 }} />
+                  background:"var(--card, #fff)", color:"var(--ink)", marginBottom:18 }} />
 
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-                  const on = fGenre === v;
-                  const c = GENRE_COLORS[v];
-                  return (
-                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
-                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-                  const on = fCat === v;
-                  return (
-                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>ジャンル</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                {[["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-                  const on = fGenre === v;
-                  const c = GENRE_COLORS[v];
-                  return (
-                    <button key={l} onClick={() => setFGenre(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? (c ? c.solid : "var(--primary)") : (c ? c.soft : "var(--card, #fff)"),
-                        color: on ? "#fff" : (c ? c.text : "var(--text)"),
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-                  const on = fCat === v;
-                  return (
-                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
-              {spCounts.length > 0 && (
-                <>
-                  <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>魚でさがす</div>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                    {spCounts.map(({ sp, n }) => {
-                      const on = fSp && fSp.id === sp.id;
+              {[
+                { key:"genre", title:"ジャンルで絞り込む",
+                  items: GENRES.map(g => ({ v:g, l:g })), cur: fGenre, set: setFGenre },
+                { key:"cat", title:"種類で絞り込む",
+                  items: CATEGORIES.map(c => ({ v:c, l:c })), cur: fCat, set: setFCat },
+                { key:"fish", title:"魚で絞り込む",
+                  items: spCounts.map(({ sp, n }) => ({ v:sp.id, l:sp.canonical_name, n, sp })),
+                  cur: fSp ? fSp.id : "", set: (v, it) => setFSp(it && it.sp ? it.sp : null) },
+                { key:"store", title:"お店で絞り込む",
+                  items: STORES.map(x => ({ v:x, l:x })), cur: fStore, set: setFStore },
+              ].filter(sec => sec.items.length).map(sec => (
+                <div key={sec.key} style={{ marginBottom:20 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:7, paddingBottom:9, marginBottom:11,
+                    borderBottom:"1px solid var(--line)" }}>
+                    <span style={{ width:4, height:15, borderRadius:2, background:"var(--primary-soft)" }} />
+                    <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{sec.title}</span>
+                  </div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
+                    {sec.items.map(it => {
+                      const on = sec.cur === it.v;
                       return (
-                        <button key={sp.id} onClick={() => setFSp(on ? null : sp)} aria-pressed={on}
-                          style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                            background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                            borderRadius:999, padding:"8px 12px", fontSize:13, fontWeight:800,
-                            display:"flex", alignItems:"center", gap:5 }}>
-                          {sp.canonical_name}
-                          <span style={{ fontSize:11, fontWeight:900, opacity:0.7 }}>{n}</span>
+                        <button key={it.v} onClick={() => sec.set(on ? "" : it.v, on ? null : it)} aria-pressed={on}
+                          style={{ display:"flex", alignItems:"center", gap:7, cursor:"pointer",
+                            border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
+                            background: on ? "var(--soft)" : "var(--card, #fff)",
+                            color: on ? "var(--soft-text)" : "var(--text)",
+                            borderRadius:9, padding:"8px 12px 8px 9px", fontSize:13, fontWeight:700 }}>
+                          <span style={{ width:15, height:15, borderRadius:"50%", flexShrink:0,
+                            border: on ? "5px solid var(--primary-soft)" : "1.5px solid var(--line)",
+                            background:"var(--card, #fff)", boxSizing:"border-box" }} />
+                          {it.l}
+                          {it.n != null && <span style={{ fontSize:11, fontWeight:900, opacity:0.6 }}>{it.n}</span>}
                         </button>
                       );
                     })}
                   </div>
-                </>
-              )}
-
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>種類</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                {[["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-                  const on = fCat === v;
-                  return (
-                    <button key={l} onClick={() => setFCat(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
-              {spCounts.length > 0 && (
-                <>
-                  <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>魚でさがす</div>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                    {spCounts.map(({ sp, n }) => {
-                      const on = fSp && fSp.id === sp.id;
-                      return (
-                        <button key={sp.id} onClick={() => setFSp(on ? null : sp)} aria-pressed={on}
-                          style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                            background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                            borderRadius:999, padding:"8px 12px", fontSize:13, fontWeight:800,
-                            display:"flex", alignItems:"center", gap:5 }}>
-                          {sp.canonical_name}
-                          <span style={{ fontSize:11, fontWeight:900, opacity:0.7 }}>{n}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>お店</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
-                {[["", "全店"]].concat(STORES.map(x => [x, x])).map(([v, l]) => {
-                  const on = fStore === v;
-                  return (
-                    <button key={l} onClick={() => setFStore(v)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", cursor:"pointer",
-                        background: on ? "var(--primary)" : "var(--card, #fff)", color: on ? "#fff" : "var(--text)",
-                        borderRadius:999, padding:"8px 13px", fontSize:13, fontWeight:800 }}>{l}</button>
-                  );
-                })}
-              </div>
-
+                </div>
+              ))}
             </div>
 
             <div style={{ display:"flex", gap:8, padding:"10px 14px calc(12px + env(safe-area-inset-bottom))", borderTop:"1px solid var(--line)" }}>
               <button onClick={clearFilters} disabled={!filterCount}
                 style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)",
                   color: filterCount ? "var(--text)" : "var(--faint)", borderRadius:11, padding:"13px",
-                  fontSize:14, fontWeight:800, cursor:"pointer" }}>ぜんぶ解除</button>
+                  fontSize:14, fontWeight:800, cursor:"pointer" }}>絞り込みを解除</button>
               <button onClick={() => setDrawer(false)}
                 style={{ flex:1.4, border:"none", background:"var(--primary)", color:"#fff",
                   borderRadius:11, padding:"13px", fontSize:14.5, fontWeight:900, cursor:"pointer" }}>
-                {filtered.length}件を見る
+                絞り込む（{filtered.length}件）
               </button>
             </div>
           </div>

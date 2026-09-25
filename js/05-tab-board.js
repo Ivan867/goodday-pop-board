@@ -940,7 +940,7 @@ function BoardTab({
     style: {
       flex: "1 1 auto",
       overflowY: "auto",
-      padding: "12px 14px 20px",
+      padding: "14px 14px 20px",
       WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("input", {
@@ -958,280 +958,119 @@ function BoardTab({
       fontFamily: "inherit",
       background: "var(--card, #fff)",
       color: "var(--ink)",
-      marginBottom: 16
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
       marginBottom: 18
     }
-  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-    const on = fGenre === v;
-    const c = GENRE_COLORS[v];
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFGenre(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
-        color: on ? "#fff" : c ? c.text : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), /*#__PURE__*/React.createElement("div", {
+  }), [{
+    key: "genre",
+    title: "ジャンルで絞り込む",
+    items: GENRES.map(g => ({
+      v: g,
+      l: g
+    })),
+    cur: fGenre,
+    set: setFGenre
+  }, {
+    key: "cat",
+    title: "種類で絞り込む",
+    items: CATEGORIES.map(c => ({
+      v: c,
+      l: c
+    })),
+    cur: fCat,
+    set: setFCat
+  }, {
+    key: "fish",
+    title: "魚で絞り込む",
+    items: spCounts.map(({
+      sp,
+      n
+    }) => ({
+      v: sp.id,
+      l: sp.canonical_name,
+      n,
+      sp
+    })),
+    cur: fSp ? fSp.id : "",
+    set: (v, it) => setFSp(it && it.sp ? it.sp : null)
+  }, {
+    key: "store",
+    title: "お店で絞り込む",
+    items: STORES.map(x => ({
+      v: x,
+      l: x
+    })),
+    cur: fStore,
+    set: setFStore
+  }].filter(sec => sec.items.length).map(sec => /*#__PURE__*/React.createElement("div", {
+    key: sec.key,
     style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
+      marginBottom: 20
     }
-  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      paddingBottom: 9,
+      marginBottom: 11,
+      borderBottom: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 4,
+      height: 15,
+      borderRadius: 2,
+      background: "var(--primary-soft)"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, sec.title)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
-      gap: 6
+      gap: 7
     }
-  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-    const on = fCat === v;
+  }, sec.items.map(it => {
+    const on = sec.cur === it.v;
     return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFCat(v),
+      key: it.v,
+      onClick: () => sec.set(on ? "" : it.v, on ? null : it),
       "aria-pressed": on,
       style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 18
-    }
-  }, [["", "すべて"]].concat(GENRES.map(g => [g, g])).map(([v, l]) => {
-    const on = fGenre === v;
-    const c = GENRE_COLORS[v];
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFGenre(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? c ? c.solid : "var(--primary)" : c ? c.soft : "var(--card, #fff)",
-        color: on ? "#fff" : c ? c.text : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6
-    }
-  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-    const on = fCat === v;
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFCat(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u9B5A\u3067\u3055\u304C\u3059"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 18
-    }
-  }, spCounts.map(({
-    sp,
-    n
-  }) => {
-    const on = fSp && fSp.id === sp.id;
-    return /*#__PURE__*/React.createElement("button", {
-      key: sp.id,
-      onClick: () => setFSp(on ? null : sp),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 12px",
-        fontSize: 13,
-        fontWeight: 800,
         display: "flex",
         alignItems: "center",
-        gap: 5
+        gap: 7,
+        cursor: "pointer",
+        border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
+        background: on ? "var(--soft)" : "var(--card, #fff)",
+        color: on ? "var(--soft-text)" : "var(--text)",
+        borderRadius: 9,
+        padding: "8px 12px 8px 9px",
+        fontSize: 13,
+        fontWeight: 700
       }
-    }, sp.canonical_name, /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 15,
+        height: 15,
+        borderRadius: "50%",
+        flexShrink: 0,
+        border: on ? "5px solid var(--primary-soft)" : "1.5px solid var(--line)",
+        background: "var(--card, #fff)",
+        boxSizing: "border-box"
+      }
+    }), it.l, it.n != null && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 11,
         fontWeight: 900,
-        opacity: 0.7
+        opacity: 0.6
       }
-    }, n));
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u7A2E\u985E"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6
-    }
-  }, [["", "すべて"]].concat(CATEGORIES.map(x => [x, x])).map(([v, l]) => {
-    const on = fCat === v;
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFCat(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  })), spCounts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u9B5A\u3067\u3055\u304C\u3059"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 18
-    }
-  }, spCounts.map(({
-    sp,
-    n
-  }) => {
-    const on = fSp && fSp.id === sp.id;
-    return /*#__PURE__*/React.createElement("button", {
-      key: sp.id,
-      onClick: () => setFSp(on ? null : sp),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 12px",
-        fontSize: 13,
-        fontWeight: 800,
-        display: "flex",
-        alignItems: "center",
-        gap: 5
-      }
-    }, sp.canonical_name, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        fontWeight: 900,
-        opacity: 0.7
-      }
-    }, n));
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      marginBottom: 8
-    }
-  }, "\u304A\u5E97"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 18
-    }
-  }, [["", "全店"]].concat(STORES.map(x => [x, x])).map(([v, l]) => {
-    const on = fStore === v;
-    return /*#__PURE__*/React.createElement("button", {
-      key: l,
-      onClick: () => setFStore(v),
-      "aria-pressed": on,
-      style: {
-        border: on ? "none" : "1px solid var(--line)",
-        cursor: "pointer",
-        background: on ? "var(--primary)" : "var(--card, #fff)",
-        color: on ? "#fff" : "var(--text)",
-        borderRadius: 999,
-        padding: "8px 13px",
-        fontSize: 13,
-        fontWeight: 800
-      }
-    }, l);
-  }))), /*#__PURE__*/React.createElement("div", {
+    }, it.n));
+  }))))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1252,7 +1091,7 @@ function BoardTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "\u305C\u3093\u3076\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
+  }, "\u7D5E\u308A\u8FBC\u307F\u3092\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setDrawer(false),
     style: {
       flex: 1.4,
@@ -1265,7 +1104,7 @@ function BoardTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, filtered.length, "\u4EF6\u3092\u898B\u308B")))), showUp && /*#__PURE__*/React.createElement(UploadModal, {
+  }, "\u7D5E\u308A\u8FBC\u3080\uFF08", filtered.length, "\u4EF6\uFF09")))), showUp && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUp(false),
     onSuccess: pop => {
