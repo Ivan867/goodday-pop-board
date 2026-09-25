@@ -5,7 +5,9 @@ var {
   useCallback,
   useRef
 } = React;
-function IdeaTab() {
+function IdeaTab({
+  embedded
+} = {}) {
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -39,9 +41,9 @@ function IdeaTab() {
     style: {
       maxWidth: 1100,
       margin: "0 auto",
-      padding: "10px 16px 120px"
+      padding: embedded ? "0 16px 120px" : "10px 16px 120px"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, !embedded && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
       color: "#fff",

@@ -248,12 +248,11 @@ function BoardTab({
       padding: "9px 16px 185px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "board-head"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "board-top",
     style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-      gap: 8,
-      marginBottom: 10
+      display: "contents"
     }
   }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
     key: "d",
@@ -291,7 +290,7 @@ function BoardTab({
         loadSpecies();
       } else if (onFeatGo) onFeatGo(key);
     },
-    className: "hig-pill",
+    className: "hig-pill " + (key === "__upload" ? "bh-post" : "bh-search"),
     style: {
       display: "flex",
       flexDirection: "row",
@@ -314,7 +313,188 @@ function BoardTab({
       color: primary ? "#fff" : "var(--ink)",
       whiteSpace: "nowrap"
     }
-  }, label)))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }, label)))), /*#__PURE__*/React.createElement("div", {
+    className: "board-tools",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 4,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 2,
+      background: "var(--chip)",
+      borderRadius: 10,
+      padding: 3,
+      flexShrink: 0
+    }
+  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    onClick: () => setTextSizeSave(v),
+    "aria-pressed": textSize === v,
+    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
+    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
+    style: {
+      border: "none",
+      background: textSize === v ? "var(--card, #fff)" : "transparent",
+      color: textSize === v ? "var(--ink)" : "var(--sub)",
+      borderRadius: 7,
+      padding: 0,
+      fontWeight: 800,
+      cursor: "pointer",
+      lineHeight: 1,
+      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
+    }
+  }, l))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 3,
+      background: "var(--chip)",
+      borderRadius: 10,
+      padding: 3,
+      flexShrink: 0
+    }
+  }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
+    key: "3",
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13",
+    y: "3",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "13",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13",
+    y: "13",
+    width: "8",
+    height: "8"
+  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
+    key: "4",
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "18",
+    height: "18",
+    rx: "1.5"
+  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setViewSave(k),
+    title: label,
+    "aria-label": label,
+    className: "bt-seg",
+    style: {
+      border: "none",
+      background: view === k ? "var(--card, #fff)" : "transparent",
+      color: view === k ? "var(--primary-soft)" : "var(--sub)",
+      borderRadius: 7,
+      padding: 0,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+    }
+  }, icon))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onFeatGo && onFeatGo("bundle"),
+    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u3092\u958B\u304F",
+    title: "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC",
+    style: {
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "var(--primary-soft)",
+      borderRadius: 10,
+      padding: 0,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    },
+    className: "bt-btn"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "5",
+    width: "18",
+    height: "16",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 10h18M8 3v4M16 3v4"
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setDarkSave(!dark),
+    "aria-pressed": dark,
+    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
+    style: {
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      borderRadius: 10,
+      padding: 0,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "var(--primary-soft)",
+      flexShrink: 0
+    },
+    className: "bt-btn"
+  }, dark ? /*#__PURE__*/React.createElement("svg", {
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "4.2"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+  })) : /*#__PURE__*/React.createElement("svg", {
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
+  }))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
@@ -469,267 +649,6 @@ function BoardTab({
       fontSize: 13
     }
   }, "\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u30DC\u30BF\u30F3\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046\uFF01")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "board-tools",
-    style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 4,
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 2,
-      background: "var(--chip)",
-      borderRadius: 10,
-      padding: 3,
-      flexShrink: 0
-    }
-  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
-    key: v,
-    onClick: () => setTextSizeSave(v),
-    "aria-pressed": textSize === v,
-    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
-    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
-    style: {
-      border: "none",
-      background: textSize === v ? "var(--card, #fff)" : "transparent",
-      color: textSize === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      fontWeight: 800,
-      cursor: "pointer",
-      lineHeight: 1,
-      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
-    }
-  }, l))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 3,
-      background: "var(--chip)",
-      borderRadius: 10,
-      padding: 3,
-      flexShrink: 0
-    }
-  }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
-    key: "3",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "3",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "13",
-    width: "8",
-    height: "8"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "13",
-    width: "8",
-    height: "8"
-  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
-    key: "4",
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "18",
-    height: "18",
-    rx: "1.5"
-  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => setViewSave(k),
-    title: label,
-    "aria-label": label,
-    className: "bt-seg",
-    style: {
-      border: "none",
-      background: view === k ? "var(--card, #fff)" : "transparent",
-      color: view === k ? "var(--primary-soft)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
-    }
-  }, icon))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => onFeatGo && onFeatGo("bundle"),
-    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u3092\u958B\u304F",
-    title: "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: "var(--primary-soft)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "5",
-    width: "18",
-    height: "16",
-    rx: "2.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M3 10h18M8 3v4M16 3v4"
-  }))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => onFeatGo && onFeatGo("idea"),
-    "aria-label": "\u30A2\u30A4\u30C7\u30A2\u3092\u958B\u304F",
-    title: "\u30A2\u30A4\u30C7\u30A2",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: "var(--primary-soft)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M9 18h6M10 21h4"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"
-  }))), /*#__PURE__*/React.createElement("button", {
-    onClick: async () => {
-      if (reloading) return;
-      setReloading(true);
-      try {
-        await load();
-        try {
-          window.__bundleCache = null;
-        } catch (e) {}
-        try {
-          window.dispatchEvent(new CustomEvent("appToast", {
-            detail: "新しくしました"
-          }));
-        } catch (e) {}
-      } finally {
-        setTimeout(() => setReloading(false), 400);
-      }
-    },
-    "aria-label": "\u6700\u65B0\u306E\u72B6\u614B\u306B\u3059\u308B",
-    title: "\u66F4\u65B0",
-    disabled: reloading,
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: "var(--primary-soft)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      animation: reloading ? "spinR 0.8s linear infinite" : "none"
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 12a8 8 0 11-2.3-5.6"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 4v5h-5"
-  }))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDarkSave(!dark),
-    "aria-pressed": dark,
-    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "var(--primary-soft)",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, dark ? /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "12",
-    cy: "12",
-    r: "4.2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-  })) : /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
-  })))), /*#__PURE__*/React.createElement("div", {
     className: "pop-grid v-" + view
   }, (() => {
     // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）

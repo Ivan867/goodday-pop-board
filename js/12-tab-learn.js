@@ -2606,7 +2606,7 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"], ["idea", "アイデア"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
@@ -2622,6 +2622,32 @@ function CatalogTab() {
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l)));
+  if (pageMode === "idea") {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "var(--primary)",
+        padding: "9px 16px",
+        color: "#fff"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16.5,
+        fontWeight: 800,
+        letterSpacing: "-0.3px"
+      }
+    }, "\u30AB\u30BF\u30ED\u30B0")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 1600,
+        margin: "0 auto",
+        padding: "14px 16px 0"
+      }
+    }, modeSwitch), window.LazyTab ? React.createElement(window.LazyTab, {
+      tabKey: "idea",
+      compProps: {
+        embedded: true
+      }
+    }) : null);
+  }
   if (pageMode === "trend") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2697,7 +2723,7 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"], ["idea", "アイデア"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {

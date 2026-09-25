@@ -1,7 +1,7 @@
 /* GoodDay 鮮魚共有 — 17-tab-idea （アイデア：見るだけ。投稿は管理画面から） */
 var { useState, useEffect, useCallback, useRef } = React;
 
-function IdeaTab() {
+function IdeaTab({ embedded } = {}) {
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -26,11 +26,11 @@ function IdeaTab() {
   const imgs = (it) => Array.isArray(it.images) ? it.images : [];
 
   return (
-    <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 16px 120px" }}>
-      <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
+    <div style={{ maxWidth:1100, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
+      {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>アイデア</div>
         <div style={{ fontSize:11.5, opacity:0.85, marginTop:3 }}>ほかの売場を手がかりに起こした、ポップや売場の案です</div>
-      </div>
+      </div>}
 
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="さがす（さんま・刺身・バナー など）"
         style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:11,
