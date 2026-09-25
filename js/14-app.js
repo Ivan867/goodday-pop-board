@@ -744,7 +744,7 @@ function App() {
     more,
     filter
   }) => {
-    const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : !action && tab === key && !moreOpen;
+    const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : !action && tab === key && !moreOpen && !searchOpen;
     const onClick = action ? () => {
       setRadialOpen(false);
       setTab("board");
@@ -966,8 +966,10 @@ function App() {
       bottom: 0,
       zIndex: 202,
       width: "min(320px, 86vw)",
-      background: "var(--bg)",
-      boxShadow: "-6px 0 24px rgba(10,20,35,0.25)",
+      background: "var(--drawer-bg)",
+      backdropFilter: "blur(14px)",
+      WebkitBackdropFilter: "blur(14px)",
+      boxShadow: "-6px 0 24px rgba(10,20,35,0.22)",
       overflowY: "auto",
       animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)",
       padding: "14px 14px calc(20px + env(safe-area-inset-bottom))"
@@ -1001,9 +1003,9 @@ function App() {
     }
   }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: "12px 8px"
+      display: "flex",
+      flexDirection: "column",
+      gap: 7
     }
   }, TAB_REGISTRY.filter(o => !o.hideInMenu && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
@@ -1015,29 +1017,28 @@ function App() {
     "aria-current": tab === o.key ? "page" : undefined,
     className: "menu-item",
     style: {
-      border: "none",
-      background: "none",
-      padding: "6px 2px",
+      width: "100%",
+      border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
+      background: tab === o.key ? "var(--soft)" : "var(--card, #fff)",
+      borderRadius: 12,
+      padding: "11px 13px",
       cursor: "pointer",
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "row",
       alignItems: "center",
-      gap: 7,
-      minHeight: 44
+      gap: 12,
+      minHeight: 54
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       position: "relative",
-      width: 58,
-      height: 58,
-      borderRadius: 18,
-      background: tab === o.key ? "var(--soft)" : "#fff",
+      width: 34,
+      height: 34,
+      flexShrink: 0,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)",
-      border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      boxShadow: tab === o.key ? "none" : "0 1px 4px rgba(20,40,70,0.06)"
+      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)"
     }
   }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1054,13 +1055,32 @@ function App() {
     }
   }, o.badge)), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13.5,
-      fontWeight: 700,
-      color: tab === o.key ? "var(--primary)" : "var(--text)",
-      lineHeight: 1.25,
-      textAlign: "center"
+      flex: 1,
+      minWidth: 0,
+      fontSize: 14.5,
+      fontWeight: 800,
+      color: tab === o.key ? "var(--primary)" : "var(--ink)",
+      lineHeight: 1.3,
+      textAlign: "left",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
     }
-  }, o.label)))))), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
+  }, o.label), /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "var(--faint)",
+    strokeWidth: "2.3",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M9 6l6 6-6 6"
+  }))))))), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUpload(false),
     onSuccess: () => {

@@ -340,7 +340,7 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
           style={{ position:"fixed", inset:0, zIndex:1250, background:"rgba(12,18,26,0.5)" }}>
           <div onClick={e => e.stopPropagation()} className="fs-top"
             style={{ position:"absolute", top:0, right:0, bottom:0, width:"min(360px, 88vw)",
-              background:"var(--card, #fff)", boxShadow:"-6px 0 24px rgba(10,20,35,0.25)",
+              background:"var(--drawer-bg, #fff)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)", boxShadow:"-6px 0 24px rgba(10,20,35,0.22)",
               display:"flex", flexDirection:"column", animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)" }}>
 
             <div style={{ display:"flex", alignItems:"center", gap:8, padding:"12px 14px 10px", borderBottom:"1px solid var(--line)" }}>

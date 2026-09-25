@@ -317,7 +317,7 @@ function App() {
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, display:"flex", justifyContent:"center", padding:0, pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"stretch", justifyContent:"space-between", gap:6, width:"100%", maxWidth:760, background:"var(--primary)", border:"none", borderRadius:"22px 22px 0 0", boxShadow:"0 -2px 14px rgba(20,40,70,0.16)", padding:"6px 8px 7px", pointerEvents:"auto" }}>
         {[tabs[0], { key:"__search", icon:"🔍", label:"さがす", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : (!action && tab===key && !moreOpen);
+          const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : (!action && tab===key && !moreOpen && !searchOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
@@ -364,7 +364,8 @@ function App() {
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
           <div className="fs-top" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
-            background:"var(--bg)", boxShadow:"-6px 0 24px rgba(10,20,35,0.25)", overflowY:"auto",
+            background:"var(--drawer-bg)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)",
+            boxShadow:"-6px 0 24px rgba(10,20,35,0.22)", overflowY:"auto",
             animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(20px + env(safe-area-inset-bottom))" }}>
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
               <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
@@ -372,17 +373,20 @@ function App() {
                 style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--sub)",
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"12px 8px" }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
               {TAB_REGISTRY.filter(o => !o.hideInMenu && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
                   className="menu-item"
-                  style={{ border:"none", background:"none", padding:"6px 2px", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:7, minHeight:44 }}>
-                  <span style={{ position:"relative", width:58, height:58, borderRadius:18, background: tab===o.key ? "var(--soft)" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)", boxShadow: tab===o.key ? "none" : "0 1px 4px rgba(20,40,70,0.06)" }}>
+                  style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
+                    background: tab===o.key ? "var(--soft)" : "var(--card, #fff)", borderRadius:12,
+                    padding:"11px 13px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:12, minHeight:54 }}>
+                  <span style={{ position:"relative", width:34, height:34, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
                     {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
                   </span>
-                  <span style={{ fontSize:13.5, fontWeight:700, color: tab===o.key ? "var(--primary)" : "var(--text)", lineHeight:1.25, textAlign:"center" }}>{o.label}</span>
+                  <span style={{ flex:1, minWidth:0, fontSize:14.5, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--ink)", lineHeight:1.3, textAlign:"left", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{o.label}</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M9 6l6 6-6 6"/></svg>
                 </button>
               ))}
             </div>

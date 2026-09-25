@@ -823,8 +823,10 @@ function BoardTab({
       right: 0,
       bottom: 0,
       width: "min(360px, 88vw)",
-      background: "var(--card, #fff)",
-      boxShadow: "-6px 0 24px rgba(10,20,35,0.25)",
+      background: "var(--drawer-bg, #fff)",
+      backdropFilter: "blur(14px)",
+      WebkitBackdropFilter: "blur(14px)",
+      boxShadow: "-6px 0 24px rgba(10,20,35,0.22)",
       display: "flex",
       flexDirection: "column",
       animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)"
