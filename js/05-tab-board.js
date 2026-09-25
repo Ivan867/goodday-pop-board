@@ -28,6 +28,14 @@ function BoardTab({
   const [reloading, setReloading] = useState(false); // 更新ボタンの回転
   // 右から出る絞り込み（タグ・店舗・ことば）
   const [drawer, setDrawer] = useState(false);
+  useEffect(() => {
+    const open = () => {
+      setDrawer(true);
+      loadSpecies();
+    };
+    window.addEventListener("openSearch", open);
+    return () => window.removeEventListener("openSearch", open);
+  }, []);
   const [fGenre, setFGenre] = useState("");
   const [qText, setQText] = useState("");
   const [species, setSpecies] = useState([]);
@@ -266,7 +274,7 @@ function BoardTab({
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M12 5v14M5 12h14"
-  }))], ["search", "さがす", false, /*#__PURE__*/React.createElement("svg", {
+  }))], ["catalog", "カタログ", false, /*#__PURE__*/React.createElement("svg", {
     key: "e",
     width: "18",
     height: "18",
@@ -276,12 +284,8 @@ function BoardTab({
     strokeWidth: "2.1",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "11",
-    cy: "11",
-    r: "7"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 20l-3.6-3.6"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h7v14H4zM13 5.5h7v14h-7z"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {

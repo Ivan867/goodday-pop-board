@@ -34,6 +34,7 @@ const MENU_ICON = (() => {
     archive: P(<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>),
     admin:   P(<><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></>),
     trend:   P(<><path d="M3.5 17l5-5 3.5 3.5 6-6.5"/><path d="M14.5 9h4v4"/></>),
+    __search: P(<><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></>),
   };
 })();
 
@@ -308,11 +309,13 @@ function App() {
 
       <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, display:"flex", justifyContent:"center", padding:0, pointerEvents:"none" }}>
        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-around", gap:2, width:"100%", maxWidth:1600, background:"var(--primary)", border:"none", borderRadius:"22px 22px 0 0", boxShadow:"0 -2px 14px rgba(20,40,70,0.16)", padding:"6px 8px 7px", pointerEvents:"auto" }}>
-        {[tabs[0], { key:"catalog", icon:"📖", label:"カタログ", color:"#b8860b" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
+        {[tabs[0], { key:"__search", icon:"🔍", label:"さがす", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
           const active = filter ? radialOpen : more ? TAB_REGISTRY.some(t => t.key === tab) : (!action && tab===key && !moreOpen);
           const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
             : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
             : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
+            : key==="__search" ? () => { setMoreOpen(false); setRadialOpen(false); setTab("board");
+                setTimeout(() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e) {} }, 60); }
             : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
             : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
           const NAV_SVG = {

@@ -126,6 +126,13 @@ const MENU_ICON = (() => {
       d: "M3.5 17l5-5 3.5 3.5 6-6.5"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M14.5 9h4v4"
+    }))),
+    __search: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+      cx: "11",
+      cy: "11",
+      r: "7"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M20 20l-3.7-3.7"
     })))
   };
 })();
@@ -707,10 +714,10 @@ function App() {
       pointerEvents: "auto"
     }
   }, [tabs[0], {
-    key: "catalog",
-    icon: "📖",
-    label: "カタログ",
-    color: "#b8860b"
+    key: "__search",
+    icon: "🔍",
+    label: "さがす",
+    color: "#3f7cb0"
   }, {
     key: "__more",
     icon: "≡",
@@ -738,6 +745,15 @@ function App() {
     } : more ? () => {
       setRadialOpen(false);
       setMoreOpen(v => !v);
+    } : key === "__search" ? () => {
+      setMoreOpen(false);
+      setRadialOpen(false);
+      setTab("board");
+      setTimeout(() => {
+        try {
+          window.dispatchEvent(new CustomEvent("openSearch"));
+        } catch (e) {}
+      }, 60);
     } : key === "search" ? () => {
       setMoreOpen(false);
       setTab("search");
