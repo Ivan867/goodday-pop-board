@@ -380,10 +380,10 @@ function App() {
         <>
           <div onClick={()=>setMoreOpen(false)}
             style={{ position:"fixed", inset:0, zIndex:201, background:"rgba(0,0,0,0.28)" }} />
-          <div className="fs-top" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
+          <div className="fs-top menu-drawer" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
             background:"var(--drawer-bg)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)",
             boxShadow:"-6px 0 24px rgba(10,20,35,0.22)", overflowY:"auto",
-            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(88px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
+            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(88px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
               <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
               <button onClick={()=>setMoreOpen(false)} aria-label="閉じる"

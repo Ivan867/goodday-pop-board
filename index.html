@@ -134,6 +134,8 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
   .board-head .bh-post, .board-head .bh-search { min-height: 56px !important; height: 56px; }
   .board-tools > * { height: 56px; }
   .board-head .board-tools { max-width: 520px; }
+  /* ブラウザでは投稿ボタンと高さの中心をそろえる（下の余白を消す） */
+  .board-head .board-tools { margin-bottom: 0 !important; }
   .bt-btn { width: auto !important; height: 56px !important; border-radius: 12px; }
   .bt-btn svg { width: 24px; height: 24px; }
   .bt-seg { height: 100% !important; min-width: 0 !important; }
@@ -147,6 +149,11 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 
 /* 画面いっぱいに出るものは、上の時計・切り欠きにかからないようにする */
 .fs-top { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
+/* 右から出るメニュー：上の時計・切り欠きに「メニュー」と✕がかぶらないようにする */
+.menu-drawer { padding-top: calc(env(safe-area-inset-top, 0px) + 14px) !important; }
+@media (max-width: 699px) {
+  .menu-drawer { padding-top: max(29px, calc(env(safe-area-inset-top, 0px) + 14px)) !important; }
+}
 
 /* キーボードで操作したときに、どこを選んでいるか分かるように */
 :focus-visible { outline: 3px solid #4a7ab0; outline-offset: 2px; border-radius: 6px; }
@@ -363,7 +370,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260919k";
+window.APP_VER = "20260919m";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

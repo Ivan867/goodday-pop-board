@@ -520,7 +520,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               <span style={{ fontSize:18, fontWeight:900, color:"#fff", textShadow:"0 1px 4px rgba(0,0,0,0.6)", lineHeight:1.3 }}>{pop.product_name}</span>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.75, flexShrink:0 }}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
             </button>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,0.9)", marginTop:3, textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>🏪 {pop.store_name}　·　{pop.category}{pop.author ? `　·　${pop.author}` : ""}</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.9)", marginTop:3, textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>{pop.store_name}　·　{pop.category}{pop.author ? `　·　${pop.author}` : ""}</div>
             {pop.comment && <div style={{ fontSize:12, color:"rgba(255,255,255,0.92)", marginTop:6, lineHeight:1.6, textShadow:"0 1px 3px rgba(0,0,0,0.6)", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{pop.comment}</div>}
           </div>
 

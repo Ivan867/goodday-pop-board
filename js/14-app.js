@@ -1010,7 +1010,7 @@ function App() {
       background: "rgba(0,0,0,0.28)"
     }
   }), /*#__PURE__*/React.createElement("div", {
-    className: "fs-top",
+    className: "fs-top menu-drawer",
     style: {
       position: "fixed",
       right: 0,
@@ -1024,7 +1024,9 @@ function App() {
       boxShadow: "-6px 0 24px rgba(10,20,35,0.22)",
       overflowY: "auto",
       animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)",
-      padding: "14px 14px calc(88px + env(safe-area-inset-bottom))",
+      paddingLeft: 14,
+      paddingRight: 14,
+      paddingBottom: "calc(88px + env(safe-area-inset-bottom))",
       display: "flex",
       flexDirection: "column"
     }

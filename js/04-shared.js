@@ -1199,7 +1199,7 @@ function PopDetail({
       marginTop: 3,
       textShadow: "0 1px 3px rgba(0,0,0,0.6)"
     }
-  }, "\uD83C\uDFEA ", pop.store_name, "\u3000\xB7\u3000", pop.category, pop.author ? `　·　${pop.author}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
+  }, pop.store_name, "\u3000\xB7\u3000", pop.category, pop.author ? `　·　${pop.author}` : ""), pop.comment && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "rgba(255,255,255,0.92)",
