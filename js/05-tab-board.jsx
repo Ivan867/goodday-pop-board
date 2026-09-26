@@ -2,7 +2,7 @@
 var { useState, useEffect, useCallback, useRef } = React;
 
 // ═══════════ TABS：機能タブ（Board / Search / 各ツール…） ═══════════
-function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen, tipEnabled, tipMessage, feat, onFeatGo }) {
+function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop, radialOpen, setRadialOpen, tipEnabled, tipMessage, feat, onFeatGo }) {
   const [pops, setPops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fStore, setFStore] = useState("");
@@ -158,17 +158,22 @@ function BoardTab({ currentStore, actionsRef, onCreateFromPop, radialOpen, setRa
 
   return (
     <>
-      <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 185px" }}>
+      <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 110px" }}>
         {/* よく使う機能へのショートカット */}
         <div className="board-head">
         <div className="board-top" style={{ display:"contents" }}>
           {[
+            ["__menu", "メニュー", false, <svg key="m" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>],
+
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
 
             ["catalog", "カタログ", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></svg>],
           ].map(([key, label, primary, icon]) => (
-            <button key={key} onClick={() => { if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className={"hig-pill " + (key === "__upload" ? "bh-post" : "bh-search")}
-              style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+            <button key={key} onClick={() => { if (key === "__menu") { onMenu && onMenu(); } else if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className={"hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : "bh-search")}
+              style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", position:"relative", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+              {key === "__menu" && menuBadge && (
+                <span style={{ position:"absolute", top:6, right:7, width:9, height:9, borderRadius:"50%", background:"#e0555f" }} />
+              )}
               {icon}
               <span style={{ fontSize:14, fontWeight:800, color: primary ? "#fff" : "var(--ink)", whiteSpace:"nowrap" }}>{label}</span>
             </button>

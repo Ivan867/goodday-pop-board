@@ -291,7 +291,7 @@ function App() {
         </div>
       )}
 
-      {tab==="board"  && <BoardTab currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} feat={{ enabled: notice.feat_enabled, message: notice.feat_message, tab: notice.feat_tab, ver: notice.feat_ver }} onFeatGo={(t)=>setTab(t)} />}
+      {tab==="board"  && <BoardTab onMenu={()=>{ if (badgeOn) clearBadge(); setRadialOpen(false); setMoreOpen(true); }} menuBadge={badgeOn} currentStore={currentStore} actionsRef={boardActions} onCreateFromPop={handleCreateFromPop} radialOpen={radialOpen} setRadialOpen={setRadialOpen} tipEnabled={notice.tip_enabled} tipMessage={notice.tip_message} feat={{ enabled: notice.feat_enabled, message: notice.feat_message, tab: notice.feat_tab, ver: notice.feat_ver }} onFeatGo={(t)=>setTab(t)} />}
       {tab==="barcode" && <LazyTab tabKey="barcode" />}
       {tab==="floor"  && <FloorPhotoTab key={"floor"+dataVer} />}
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
@@ -331,50 +331,19 @@ function App() {
         </div>
       )}
 
-      <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:205, display:"flex", justifyContent:"center", padding:0, pointerEvents:"none" }}>
-       <div style={{ display:"flex", alignItems:"stretch", justifyContent:"space-between", gap:6, width:"100%", maxWidth:760, background:"var(--primary)", border:"none", borderRadius:"22px 22px 0 0", boxShadow:"0 -2px 14px rgba(20,40,70,0.16)", padding:"6px 8px 7px", pointerEvents:"auto" }}>
-        {[tabs[0], { key:"__search", icon:"🔍", label:"さがす", color:"#3f7cb0" }, { key:"__more", icon:"≡", label:"メニュー", color:"#6b7280", more:true }].map(({key,icon,label,color,action,more,filter})=>{
-          const active = filter ? radialOpen : more ? moreOpen : key === "__search" ? searchOpen : (!action && tab===key && !moreOpen && !searchOpen);
-          const onClick = action ? () => { setRadialOpen(false); setTab("board"); setShowUpload(true); }
-            : filter ? () => { setMoreOpen(false); setTab("board"); setRadialOpen(v=>!v); }
-            : more ? () => { setRadialOpen(false); setMoreOpen(v=>!v); }
-            : key==="__search" ? () => { setMoreOpen(false); setRadialOpen(false); setTab("board");
-                setTimeout(() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e) {} }, 60); }
-            : key==="search" ? () => { setMoreOpen(false); setTab("search"); setRadialOpen(v=>!v); }
-            : () => { setMoreOpen(false); setRadialOpen(false); setTab(key); };
-          const NAV_SVG = {
-            board: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>,
-            search: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>,
-            more: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>,
-            catalog: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>,
-            close: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>,
-            bundle: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>,
-          };
-          const navIcon = key==="board" ? NAV_SVG.board : key==="bundle" ? NAV_SVG.bundle : key==="catalog" ? NAV_SVG.catalog : (key==="search" || key==="__search") ? NAV_SVG.search : NAV_SVG.more;
-          const navLabel = more ? (moreOpen ? "閉じる" : "メニュー") : label;
-          const showBadge = badgeOn && key === notice.badge_tab;
-            return (
-            <button key={key} onClick={() => { if (showBadge) clearBadge(); onClick(); }} className="hig-pill" aria-label={navLabel} title={navLabel}
-              style={{ position:"relative", flex:1, minWidth:0, border:"none", cursor:"pointer", padding:"7px 6px 6px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4, borderRadius:16, minHeight:52, background: active ? "#fff" : "transparent", color: active ? "var(--primary-soft)" : "rgba(255,255,255,0.94)", transition:"background .2s" }}>
-              <span style={{ display:"flex", lineHeight:1, opacity: active ? 1 : 0.95 }}>{moreOpen && more ? NAV_SVG.close : navIcon}</span>
-              <span style={{ fontSize:13, fontWeight:800, letterSpacing:"0.01em", lineHeight:1, whiteSpace:"nowrap" }}>{navLabel}</span>
-
-              {showBadge && (
-                <>
-                  <span style={{ position:"absolute", top:6, right:12, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px var(--primary-soft)" }} />
-                  {notice.badge_text && (
-                    <span style={{ position:"absolute", bottom:"calc(100% + 9px)", left:"50%", transform: bubbleShow ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(6px)", background:"#e0555f", color:"#fff", fontSize:11, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap", boxShadow:"0 3px 10px rgba(0,0,0,0.22)", pointerEvents:"none", opacity: bubbleShow ? 1 : 0, visibility: bubbleShow ? "visible" : "hidden", transition:"opacity .5s ease, transform .5s ease, visibility 0s linear .5s" }}>
-                      {notice.badge_text}
-                      <span style={{ position:"absolute", top:"100%", left:"50%", transform:"translateX(-50%)", width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderTop:"5px solid #e0555f" }} />
-                    </span>
-                  )}
-                </>
-              )}
-            </button>
-          );
-        })}
-       </div>
-      </div>
+      {tab === "board" && !searchOpen && !moreOpen && (
+        <button onClick={() => { setMoreOpen(false); setRadialOpen(false);
+            try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e) {} }}
+          className="hig-pill" aria-label="さがす" title="さがす"
+          style={{ position:"fixed", right:16, bottom:"calc(20px + env(safe-area-inset-bottom, 0px))", zIndex:205,
+            width:66, height:66, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"var(--primary)", color:"#fff",
+            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1,
+            boxShadow:"0 5px 18px rgba(10,20,35,0.34)" }}>
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.3" fill="var(--primary)"/><circle cx="15" cy="12" r="2.3" fill="var(--primary)"/><circle cx="8" cy="18" r="2.3" fill="var(--primary)"/></svg>
+          <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:"0.02em", lineHeight:1 }}>さがす</span>
+        </button>
+      )}
 
       {moreOpen && (
         <>
@@ -383,7 +352,7 @@ function App() {
           <div className="fs-top menu-drawer" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
             background:"var(--drawer-bg)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)",
             boxShadow:"-6px 0 24px rgba(10,20,35,0.22)", overflowY:"auto",
-            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(88px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
+            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(18px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
               <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
               <button onClick={()=>setMoreOpen(false)} aria-label="閉じる"

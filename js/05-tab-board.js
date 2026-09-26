@@ -8,6 +8,8 @@ var {
 
 // ═══════════ TABS：機能タブ（Board / Search / 各ツール…） ═══════════
 function BoardTab({
+  onMenu,
+  menuBadge,
   currentStore,
   actionsRef,
   onCreateFromPop,
@@ -258,7 +260,7 @@ function BoardTab({
     style: {
       maxWidth: 1600,
       margin: "0 auto",
-      padding: "9px 16px 185px"
+      padding: "9px 16px 110px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "board-head"
@@ -267,7 +269,19 @@ function BoardTab({
     style: {
       display: "contents"
     }
-  }, [["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
+  }, [["__menu", "メニュー", false, /*#__PURE__*/React.createElement("svg", {
+    key: "m",
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 7h16M4 12h16M4 17h16"
+  }))], ["__upload", "投稿", false, /*#__PURE__*/React.createElement("svg", {
     key: "d",
     width: "19",
     height: "19",
@@ -294,12 +308,14 @@ function BoardTab({
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
-      if (key === "__upload") setShowUp(true);else if (key === "search") {
+      if (key === "__menu") {
+        onMenu && onMenu();
+      } else if (key === "__upload") setShowUp(true);else if (key === "search") {
         setDrawer(true);
         loadSpecies();
       } else if (onFeatGo) onFeatGo(key);
     },
-    className: "hig-pill " + (key === "__upload" ? "bh-post" : "bh-search"),
+    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : "bh-search"),
     style: {
       display: "flex",
       flexDirection: "row",
@@ -313,9 +329,20 @@ function BoardTab({
       padding: "9px 4px",
       minHeight: 44,
       cursor: "pointer",
+      position: "relative",
       boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)"
     }
-  }, icon, /*#__PURE__*/React.createElement("span", {
+  }, key === "__menu" && menuBadge && /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      top: 6,
+      right: 7,
+      width: 9,
+      height: 9,
+      borderRadius: "50%",
+      background: "#e0555f"
+    }
+  }), icon, /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 14,
       fontWeight: 800,
