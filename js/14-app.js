@@ -763,31 +763,22 @@ function App() {
         window.dispatchEvent(new CustomEvent("openSearch"));
       } catch (e) {}
     },
-    className: "hig-pill",
+    className: "hig-pill fab-search",
     "aria-label": "\u3055\u304C\u3059",
     title: "\u3055\u304C\u3059",
     style: {
       position: "fixed",
-      right: 16,
-      bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
       zIndex: 205,
-      width: 66,
-      height: 66,
-      borderRadius: "50%",
       border: "none",
       cursor: "pointer",
       background: "var(--primary)",
       color: "#fff",
       display: "flex",
-      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      gap: 1,
-      boxShadow: "0 5px 18px rgba(10,20,35,0.34)"
+      boxShadow: "0 6px 20px rgba(10,20,35,0.36)"
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "25",
-    height: "25",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -810,14 +801,7 @@ function App() {
     cy: "18",
     r: "2.3",
     fill: "var(--primary)"
-  })), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 10.5,
-      fontWeight: 800,
-      letterSpacing: "0.02em",
-      lineHeight: 1
-    }
-  }, "\u3055\u304C\u3059")), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("span", null, "\u3055\u304C\u3059")), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     onClick: () => setMoreOpen(false),
     style: {
       position: "fixed",

@@ -334,14 +334,13 @@ function App() {
       {tab === "board" && !searchOpen && !moreOpen && (
         <button onClick={() => { setMoreOpen(false); setRadialOpen(false);
             try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e) {} }}
-          className="hig-pill" aria-label="さがす" title="さがす"
-          style={{ position:"fixed", right:16, bottom:"calc(20px + env(safe-area-inset-bottom, 0px))", zIndex:205,
-            width:66, height:66, borderRadius:"50%", border:"none", cursor:"pointer",
+          className="hig-pill fab-search" aria-label="さがす" title="さがす"
+          style={{ position:"fixed", zIndex:205, border:"none", cursor:"pointer",
             background:"var(--primary)", color:"#fff",
-            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1,
-            boxShadow:"0 5px 18px rgba(10,20,35,0.34)" }}>
-          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.3" fill="var(--primary)"/><circle cx="15" cy="12" r="2.3" fill="var(--primary)"/><circle cx="8" cy="18" r="2.3" fill="var(--primary)"/></svg>
-          <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:"0.02em", lineHeight:1 }}>さがす</span>
+            display:"flex", alignItems:"center", justifyContent:"center",
+            boxShadow:"0 6px 20px rgba(10,20,35,0.36)" }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.3" fill="var(--primary)"/><circle cx="15" cy="12" r="2.3" fill="var(--primary)"/><circle cx="8" cy="18" r="2.3" fill="var(--primary)"/></svg>
+          <span>さがす</span>
         </button>
       )}
 

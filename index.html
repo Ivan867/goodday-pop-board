@@ -152,6 +152,19 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 /* 画面いっぱいに出るものは、上の時計・切り欠きにかからないようにする */
 .fs-top { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
 /* 右から出るメニュー：上の時計・切り欠きに「メニュー」と✕がかぶらないようにする */
+/* 右下の「さがす」ボタン。スマホは丸、パソコンは横長にする */
+.fab-search { right: 16px; bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  width: 76px; height: 76px; border-radius: 50%;
+  flex-direction: column; gap: 2px; padding: 0; }
+.fab-search svg { width: 29px; height: 29px; }
+.fab-search span { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
+@media (min-width: 700px) {
+  .fab-search { right: 28px; bottom: 28px;
+    width: auto; height: 62px; border-radius: 999px;
+    flex-direction: row; gap: 10px; padding: 0 28px; }
+  .fab-search svg { width: 26px; height: 26px; }
+  .fab-search span { font-size: 16px; }
+}
 .menu-drawer { padding-top: calc(env(safe-area-inset-top, 0px) + 14px) !important; }
 @media (max-width: 699px) {
   .menu-drawer { padding-top: max(29px, calc(env(safe-area-inset-top, 0px) + 14px)) !important; }
@@ -372,7 +385,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260919n";
+window.APP_VER = "20260919o";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
