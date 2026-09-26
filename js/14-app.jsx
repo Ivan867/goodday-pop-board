@@ -383,26 +383,32 @@ function App() {
           <div className="fs-top" style={{ position:"fixed", right:0, top:0, bottom:0, zIndex:202, width:"min(320px, 86vw)",
             background:"var(--drawer-bg)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)",
             boxShadow:"-6px 0 24px rgba(10,20,35,0.22)", overflowY:"auto",
-            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(20px + env(safe-area-inset-bottom))" }}>
+            animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", padding:"14px 14px calc(88px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
               <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
               <button onClick={()=>setMoreOpen(false)} aria-label="閉じる"
                 style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--sub)",
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
-              {TAB_REGISTRY.filter(o => !o.hideInMenu && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).map(o=>(
+            <div style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
+              {(() => {
+                const ORDER = ["search","archive","gne","order","barcode","request","admin"];
+                return TAB_REGISTRY
+                  .filter(o => !o.hideInMenu && ORDER.includes(o.key)
+                    && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
+                  .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+              })().map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
                   className="menu-item"
                   style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
                     background: tab===o.key ? "var(--soft)" : "var(--menu-row, #fff)", borderRadius:12,
-                    padding:"11px 13px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:12, minHeight:54 }}>
-                  <span style={{ position:"relative", width:34, height:34, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
+                    padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13, flex:"1 1 0", minHeight:56 }}>
+                  <span style={{ position:"relative", width:38, height:38, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
                     {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
                   </span>
-                  <span style={{ flex:1, minWidth:0, fontSize:14.5, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--ink)", lineHeight:1.3, textAlign:"left", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{o.label}</span>
+                  <span style={{ flex:1, minWidth:0, fontSize:17, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--ink)", lineHeight:1.3, textAlign:"left", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{o.label}</span>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M9 6l6 6-6 6"/></svg>
                 </button>
               ))}

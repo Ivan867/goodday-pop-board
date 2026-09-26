@@ -1024,7 +1024,9 @@ function App() {
       boxShadow: "-6px 0 24px rgba(10,20,35,0.22)",
       overflowY: "auto",
       animation: "drawerIn .24s cubic-bezier(.16,1,.3,1)",
-      padding: "14px 14px calc(20px + env(safe-area-inset-bottom))"
+      padding: "14px 14px calc(88px + env(safe-area-inset-bottom))",
+      display: "flex",
+      flexDirection: "column"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1055,11 +1057,16 @@ function App() {
     }
   }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
+      flex: "1 1 auto",
       display: "flex",
       flexDirection: "column",
-      gap: 7
+      gap: 8,
+      minHeight: 0
     }
-  }, TAB_REGISTRY.filter(o => !o.hideInMenu && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).map(o => /*#__PURE__*/React.createElement("button", {
+  }, (() => {
+    const ORDER = ["search", "archive", "gne", "order", "barcode", "request", "admin"];
+    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+  })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
     onClick: () => {
       setTab(o.key);
@@ -1073,19 +1080,20 @@ function App() {
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
       background: tab === o.key ? "var(--soft)" : "var(--menu-row, #fff)",
       borderRadius: 12,
-      padding: "11px 13px",
+      padding: "10px 14px",
       cursor: "pointer",
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      gap: 12,
-      minHeight: 54
+      gap: 13,
+      flex: "1 1 0",
+      minHeight: 56
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       position: "relative",
-      width: 34,
-      height: 34,
+      width: 38,
+      height: 38,
       flexShrink: 0,
       display: "flex",
       alignItems: "center",
@@ -1109,7 +1117,7 @@ function App() {
     style: {
       flex: 1,
       minWidth: 0,
-      fontSize: 14.5,
+      fontSize: 17,
       fontWeight: 800,
       color: tab === o.key ? "var(--primary)" : "var(--ink)",
       lineHeight: 1.3,
