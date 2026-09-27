@@ -167,7 +167,6 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
             ["__upload", "投稿", false, <svg key="d" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>],
 
-            ["catalog", "カタログ", false, <svg key="e" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></svg>],
           ].map(([key, label, primary, icon]) => (
             <button key={key} onClick={() => { if (key === "__menu") { onMenu && onMenu(); } else if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className={"hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : "bh-search")}
               style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", position:"relative", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>

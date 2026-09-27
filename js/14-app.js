@@ -43,12 +43,7 @@ var LAZY_TABS = {
   idea: {
     file: "17-tab-idea",
     comp: "IdeaTab"
-  },
-  // アイデア（一覧には出さない）
-  popgen: {
-    file: "18-tab-popgen",
-    comp: "PopGenTab"
-  } // POPプロンプト作成
+  } // アイデア（一覧には出さない）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -92,19 +87,6 @@ const MENU_ICON = (() => {
     }), /*#__PURE__*/React.createElement("path", {
       d: "M4 7l8 6 8-6"
     }))),
-    popgen: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
-      x: "3",
-      y: "4.5",
-      width: "18",
-      height: "15",
-      rx: "2"
-    }), /*#__PURE__*/React.createElement("path", {
-      d: "M3 15l5-4.5 4 3.5 3-2.5 6 5"
-    }), /*#__PURE__*/React.createElement("circle", {
-      cx: "8.5",
-      cy: "9",
-      r: "1.4"
-    }))),
     order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
       x: "4",
       y: "10.5",
@@ -116,6 +98,11 @@ const MENU_ICON = (() => {
     }))),
     barcode: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"
+    }))),
+    catalog: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
     }))),
     gne: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
       x: "3",
@@ -884,7 +871,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "gne", "popgen", "order", "barcode", "request", "admin"];
+    const ORDER = ["search", "archive", "catalog", "gne", "order", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,

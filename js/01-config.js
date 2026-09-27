@@ -43,14 +43,14 @@ const TAB_REGISTRY = [{
   label: "バーコード",
   section: "ツール"
 }, {
+  key: "catalog",
+  icon: "📖",
+  label: "カタログ",
+  section: "ツール"
+}, {
   key: "gne",
   icon: "🅖",
   label: "入力支援",
-  section: "ツール"
-}, {
-  key: "popgen",
-  icon: "🖼",
-  label: "POPプロンプト",
   section: "ツール"
 }, {
   key: "trend",
@@ -136,6 +136,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-27",
+  type: "改善",
+  title: "カタログをメニューの中に移しました",
+  body: "一覧の上にあったカタログのボタンを、メニューの中の入力支援の上に移しました。上に残るのは投稿とメニューの2つです。POPプロンプトは取りやめました。"
+}, {
   date: "2026-09-27",
   type: "改善",
   title: "上のメニューとカタログの位置を入れ替えました",

@@ -15,8 +15,8 @@ const TAB_REGISTRY = [
   { key:"request",    icon:"📮", label:"お問い合わせ",       section:"毎日つかう" },
   { key:"order",      icon:"🔒", label:"店舗支援",           section:"毎日つかう" },
   { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
+  { key:"catalog",    icon:"📖", label:"カタログ",           section:"ツール" },
   { key:"gne",        icon:"🅖", label:"入力支援",           section:"ツール" },
-  { key:"popgen",     icon:"🖼", label:"POPプロンプト",     section:"ツール" },
   { key:"trend",      icon:"📈", label:"トレンド",           section:"ツール", hideInMenu:true },   // カタログの中に移した
   { key:"archive",    icon:"🗄", label:"アーカイブ",         section:"管理" },
   { key:"admin",      icon:"🔒", label:"管理画面",           section:"管理" },
@@ -42,6 +42,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-27", type:"改善", title:"カタログをメニューの中に移しました", body:"一覧の上にあったカタログのボタンを、メニューの中の入力支援の上に移しました。上に残るのは投稿とメニューの2つです。POPプロンプトは取りやめました。" },
   { date:"2026-09-27", type:"改善", title:"上のメニューとカタログの位置を入れ替えました", body:"一覧の上のボタンを、左からカタログ・投稿・メニューの並びにしました。" },
   { date:"2026-09-27", type:"新機能", title:"メニューに「POPプロンプト」を追加しました", body:"魚の名前を入れると、画像生成AIにそのまま貼れるプロンプトを作ります。産地・売り方・行事を足すこともできます。作ったらコピーして、お使いの画像生成AIに貼り付けてください。" },
   { date:"2026-09-27", type:"改善", title:"「さがす」ボタンを大きくしました", body:"スマホでは丸いボタンをひとまわり大きくしました。パソコンで見たときは、丸ではなく文字の入った横長のボタンになります。" },
