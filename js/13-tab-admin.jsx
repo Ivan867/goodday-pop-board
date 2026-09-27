@@ -7,6 +7,9 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [gpw, setGpw] = useState("");
   const [gErr, setGErr] = useState("");
   const [gChecking, setGChecking] = useState(false);
+  const [gKeyMode, setGKeyMode] = useState(false);   // 数字キーで入れる（逃げ道）
+  const [gBoot, setGBoot] = useState("");            // 起動メッセージを1文字ずつ
+  const [gFlash, setGFlash] = useState(0);           // 押した点を光らせる
   const [section, setSection] = useState("home"); // home（タイル一覧）| 各画面
 
   // アーカイブ管理用
@@ -97,6 +100,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   }, []);
   useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadIdeas(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas]);
 
+  useEffect(() => {
+    if (unlocked) return;
+    const t = "> 接続中 ... OK\n> 端末を確認 ... OK\n> 認証待ち";
+    let i = 0;
+    const iv = setInterval(() => { i += 1; setGBoot(t.slice(0, i)); if (i >= t.length) clearInterval(iv); }, 16);
+    return () => clearInterval(iv);
+  }, [unlocked]);
+
   const tryUnlock = async () => {
     if (gChecking) return;
     setGChecking(true); setGErr("");
@@ -116,20 +127,86 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   };
 
   if (!unlocked) {
+    const DOTS = [1,2,3,4,5,6,7,8,9];
+    const tapDot = (n) => {
+      if (gChecking) return;
+      setGpw(v => (v.length >= 12 ? v : v + n));
+      setGErr(""); setGFlash(n);
+      setTimeout(() => setGFlash(0), 170);
+      try { navigator.vibrate && navigator.vibrate(12); } catch(e) {}
+    };
+    const CY = "#22d3ee";
     return (
-      <div style={{ maxWidth:420, margin:"0 auto", padding:"60px 20px", animation:"fadeUp .3s ease" }}>
-        <div style={{ background:"var(--card, #fff)", borderRadius:16, boxShadow:"0 2px 14px rgba(0,0,0,0.07)", padding:24, textAlign:"center" }}>
-          
-          <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>管理画面</div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:18 }}>パスワードを入力してください</div>
-          <input type="password" value={gpw} autoFocus inputMode="numeric"
-            onChange={e => { setGpw(e.target.value); setGErr(""); }}
-            onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-            placeholder="パスワード" disabled={gChecking}
-            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"12px", fontSize:16, textAlign:"center", outline:"none", marginBottom: gErr ? 8 : 16 }} />
-          {gErr && <div style={{ fontSize:13, color:"var(--primary)", fontWeight:700, marginBottom:12 }}>{gErr}</div>}
-          <button onClick={tryUnlock} disabled={gChecking}
-            style={{ width:"100%", border:"none", background: gChecking ? "#f0b48a" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor: gChecking ? "default" : "pointer" }}>{gChecking ? "確認中…" : "解錠する"}</button>
+      <div style={{ minHeight:"70vh", display:"flex", alignItems:"flex-start", justifyContent:"center",
+        padding:"30px 16px 60px", animation:"fadeUp .3s ease" }}>
+        <div style={{ position:"relative", width:"100%", maxWidth:360, border:"1px solid #16394b", borderRadius:5,
+          background:"linear-gradient(180deg, rgba(10,22,32,0.96), rgba(5,12,18,0.96))", padding:"20px 18px 22px",
+          boxShadow:"0 0 0 1px rgba(34,211,238,0.08), 0 0 40px rgba(34,211,238,0.10)", overflow:"hidden",
+          fontFamily:'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>
+
+          {/* 走査線 */}
+          <div aria-hidden="true" style={{ position:"absolute", inset:0, pointerEvents:"none",
+            background:"repeating-linear-gradient(0deg, rgba(125,227,244,0.035) 0 1px, transparent 1px 3px)" }} />
+
+          <div style={{ fontSize:10, letterSpacing:"0.22em", color:"#2a5f75" }}>USHIO // SEAFOOD NET</div>
+          <div style={{ fontSize:16, fontWeight:700, color:"#bfefff", letterSpacing:"0.06em", marginTop:3 }}>
+            管理画面 <span style={{ color:CY }}>ACCESS</span>
+          </div>
+          <div style={{ fontSize:10.5, color:"#2f6a80", lineHeight:1.85, minHeight:58, margin:"10px 0 6px", whiteSpace:"pre-line" }}>{gBoot}</div>
+
+          {/* 入力した数だけ点が増える（数字は出さない） */}
+          <div style={{ display:"flex", justifyContent:"center", gap:7, height:16, marginBottom:10 }}>
+            {gpw.split("").map((_, i) => (
+              <span key={i} style={{ width:8, height:8, borderRadius:"50%", background:CY, boxShadow:"0 0 8px "+CY }} />
+            ))}
+          </div>
+
+          {!gKeyMode ? (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:14, width:236, margin:"0 auto",
+              justifyItems:"center" }}>
+              {DOTS.map(n => (
+                <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking}
+                  style={{ width:56, height:56, borderRadius:"50%", cursor:"pointer", padding:0,
+                    border:"1.5px solid " + (gFlash === n ? "#9beefc" : "#1d5568"),
+                    background: gFlash === n ? CY : "#0d2330",
+                    boxShadow: gFlash === n ? "0 0 16px "+CY+", 0 0 34px rgba(34,211,238,0.5)" : "none",
+                    transition:"background .12s, box-shadow .12s, border-color .12s" }} />
+              ))}
+            </div>
+          ) : (
+            <input type="password" value={gpw} autoFocus inputMode="numeric"
+              onChange={e => { setGpw(e.target.value); setGErr(""); }}
+              onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
+              placeholder="パスワード" disabled={gChecking}
+              style={{ width:"100%", boxSizing:"border-box", border:"1px solid #16394b", background:"#0a1620",
+                color:CY, borderRadius:4, padding:"13px", fontSize:16, textAlign:"center", outline:"none",
+                fontFamily:"inherit", letterSpacing:"0.3em" }} />
+          )}
+
+          <div role="status" aria-live="polite" style={{ minHeight:20, marginTop:14, textAlign:"center",
+            fontSize:11.5, letterSpacing:"0.08em", lineHeight:1.6,
+            color: gErr ? "#fb7185" : "#2f6a80", animation: gErr ? "fadeUp .2s ease" : "none" }}>
+            {gErr ? "ACCESS DENIED — " + gErr : ""}
+          </div>
+
+          <button onClick={tryUnlock} disabled={gChecking || !gpw}
+            style={{ width:"100%", marginTop:10, borderRadius:4, padding:"13px", fontSize:14, fontWeight:700,
+              letterSpacing:"0.12em", fontFamily:"inherit",
+              border:"1px solid " + (gpw ? CY : "#16394b"),
+              background: gpw && !gChecking ? "rgba(34,211,238,0.14)" : "transparent",
+              color: gpw ? CY : "#2a5f75", cursor: gChecking || !gpw ? "default" : "pointer" }}>
+            {gChecking ? "確認中 ..." : "UNLOCK"}
+          </button>
+
+          <div style={{ display:"flex", justifyContent:"center", gap:18, marginTop:14 }}>
+            <button onClick={() => { setGpw(""); setGErr(""); }}
+              style={{ border:"none", background:"transparent", color:"#2f6a80", fontSize:11,
+                textDecoration:"underline", cursor:"pointer", fontFamily:"inherit" }}>やり直す</button>
+            <button onClick={() => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }}
+              style={{ border:"none", background:"transparent", color:"#2f6a80", fontSize:11,
+                textDecoration:"underline", cursor:"pointer", fontFamily:"inherit" }}>
+              {gKeyMode ? "点で入れる" : "数字で入れる"}</button>
+          </div>
         </div>
       </div>
     );
