@@ -327,11 +327,17 @@ function App() {
         setToastBad(false);
       }, 5000);
     };
+    const goBoard = () => {
+      setTab("board");
+      setMoreOpen(false);
+    };
     window.addEventListener("appToast", h);
     window.addEventListener("apiError", bad);
+    window.addEventListener("goBoard", goBoard);
     return () => {
       window.removeEventListener("appToast", h);
       window.removeEventListener("apiError", bad);
+      window.removeEventListener("goBoard", goBoard);
     };
   }, []);
   const [pullY, setPullY] = useState(0);

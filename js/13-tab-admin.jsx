@@ -183,11 +183,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
   if (!unlocked) {
     const DOTS = [1,2,3,4,5,6,7,8,9];
-    const PIN_LEN = 4;                                   // ここまで押したら自動で送る
-    const AM  = "#f0a44a";     // 琥珀（手前の光）
-    const AMB = "#ffdcae";     // 明るい琥珀（文字）
-    const DIM = "#8a6a45";     // 落とした琥珀
-    const NODE = [[18,18],[50,18],[82,18],[18,50],[50,50],[82,50],[18,82],[50,82],[82,82]];
+    const PIN_LEN = 4;
+    const AM  = "#f0a44a";
+    const AMB = "#ffdcae";
+    const DIM = "#8a6a45";
     const tapDot = (n) => {
       if (gChecking || gOK) return;
       setGErr(""); setGFlash(n);
@@ -199,131 +198,99 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         return nv;
       });
     };
+    const goBack = () => { try { window.dispatchEvent(new CustomEvent("goBoard")); } catch(e) {} };
 
     return (
-      <div style={{ position:"fixed", zIndex:100, left:0, right:0, bottom:0,
-        top:"calc(env(safe-area-inset-top, 0px) + 52px)",
-        overflow:"hidden", touchAction:"none",
-        background:"radial-gradient(120% 90% at 50% 18%, #123033 0%, #0a181c 45%, #050d0f 100%)",
-        display:"flex", alignItems:"center", justifyContent:"center", padding:"16px" }}>
+      <div style={{ position:"fixed", inset:0, zIndex:210, overflow:"hidden", touchAction:"none",
+        background:"radial-gradient(120% 90% at 50% 26%, #123033 0%, #0a181c 45%, #050d0f 100%)",
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+        fontFamily:'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>
 
-        {/* 降るカタカナ */}
         <RainCanvas />
-        {/* 霧と周辺の落ち込み */}
         <div aria-hidden="true" style={{ position:"absolute", inset:0, pointerEvents:"none",
-          background:"radial-gradient(60% 42% at 50% 34%, rgba(240,164,74,0.16), transparent 70%), radial-gradient(100% 70% at 50% 100%, rgba(0,0,0,0.65), transparent 60%)" }} />
+          background:"radial-gradient(52% 38% at 50% 44%, rgba(240,164,74,0.15), transparent 72%), radial-gradient(100% 62% at 50% 100%, rgba(0,0,0,0.6), transparent 62%)" }} />
 
-        <div className="g-panel" style={{ position:"relative", zIndex:2, width:"100%", maxWidth:352,
-          border:"1px solid rgba(240,164,74,0.22)", borderRadius:2,
-          background:"linear-gradient(180deg, rgba(16,28,31,0.80), rgba(8,16,19,0.88))",
-          backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)",
-          padding:"26px 22px 20px", overflow:"hidden",
-          boxShadow:"0 0 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,220,174,0.07)",
-          fontFamily:'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>
+        {/* 一覧へ戻る（小さく、隅に） */}
+        <button onClick={goBack} aria-label="一覧にもどる"
+          style={{ position:"absolute", zIndex:4, left:14, top:"calc(env(safe-area-inset-top, 0px) + 12px)",
+            border:"none", background:"transparent", color:DIM, fontSize:12, letterSpacing:"0.12em",
+            cursor:"pointer", fontFamily:"inherit", padding:"8px 6px" }}>‹ もどる</button>
 
-          <div aria-hidden="true" className="g-sweep" />
-          {[["tl","2px 0 0 2px",{top:8,left:8}],["tr","2px 2px 0 0",{top:8,right:8}],
-            ["bl","0 0 0 2px",{bottom:8,left:8}],["br","0 2px 2px 0",{bottom:8,right:8}]
-           ].map(([k,bw,pos]) => (
-            <div key={k} aria-hidden="true" className="g-corner" style={{ ...pos, borderWidth:bw }} />
-          ))}
+        <div style={{ position:"relative", zIndex:3, display:"flex", flexDirection:"column", alignItems:"center",
+          padding:"0 20px" }}>
 
-          <div style={{ fontSize:9.5, letterSpacing:"0.34em", color:DIM }}>USHIO — SEAFOOD DIVISION</div>
-          <div style={{ fontSize:25, fontWeight:400, color:AMB, letterSpacing:"0.14em", marginTop:7, lineHeight:1.15,
-            textShadow:"0 0 24px rgba(240,164,74,0.45)" }}>АВТОРИЗАЦИЯ</div>
-          <div style={{ fontSize:9.5, letterSpacing:"0.3em", color:DIM, marginTop:5 }}>ADMINISTRATOR ACCESS</div>
-          <div style={{ height:1, background:"linear-gradient(90deg, rgba(240,164,74,0.5), transparent)", margin:"13px 0 11px" }} />
+          <div style={{ fontSize:26, color:AMB, letterSpacing:"0.16em", lineHeight:1.1,
+            textShadow:"0 0 26px rgba(240,164,74,0.5)" }}>АВТОРИЗАЦИЯ</div>
 
-          <div style={{ fontSize:10, color:DIM, lineHeight:1.95, minHeight:56, whiteSpace:"pre-line" }}>
-            {gBoot}<span className="g-blink" style={{ display:"inline-block", width:6, height:10, background:AM, marginLeft:3, verticalAlign:"-1px" }} />
-          </div>
-
-          <div style={{ display:"flex", justifyContent:"center", gap:9, height:14, margin:"6px 0 14px" }}>
+          <div style={{ display:"flex", gap:10, marginTop:26, marginBottom:26, height:9 }}>
             {[0,1,2,3].map(i => (
-              <span key={i} style={{ width:7, height:7, borderRadius:"50%", transition:"all .18s",
+              <span key={i} style={{ width:8, height:8, borderRadius:"50%", transition:"all .18s",
                 background: i < gpw.length ? AM : "transparent",
-                border: i < gpw.length ? "none" : "1px solid rgba(240,164,74,0.28)",
-                boxShadow: i < gpw.length ? "0 0 10px "+AM : "none" }} />
+                border: i < gpw.length ? "none" : "1px solid rgba(240,164,74,0.30)",
+                boxShadow: i < gpw.length ? "0 0 11px "+AM : "none" }} />
             ))}
           </div>
 
           {!gKeyMode ? (
-            <div style={{ position:"relative", width:224, margin:"0 auto" }}>
-              <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"
-                style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none", opacity:.45 }}>
-                {[[0,2],[3,5],[6,8],[0,6],[1,7],[2,8]].map(([a,b],i) => (
-                  <line key={"l"+i} x1={NODE[a][0]} y1={NODE[a][1]} x2={NODE[b][0]} y2={NODE[b][1]}
-                    stroke="rgba(240,164,74,0.20)" strokeWidth="0.5" />
-                ))}
-              </svg>
-              <div style={{ position:"relative", display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:13,
-                justifyItems:"center" }}>
-                {DOTS.map(n => (
-                  <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking || gOK}
-                    style={{ position:"relative", width:54, height:54, borderRadius:"50%", cursor:"pointer", padding:0,
-                      border:"1px solid " + (gFlash === n ? AMB : "rgba(240,164,74,0.30)"),
-                      background: gFlash === n ? AM : "rgba(240,164,74,0.05)",
-                      boxShadow: gFlash === n ? "0 0 18px "+AM+", 0 0 42px rgba(240,164,74,0.55)" : "inset 0 0 12px rgba(240,164,74,0.06)",
-                      transition:"background .14s, box-shadow .14s, border-color .14s" }}>
-                    {gFlash === n && <span aria-hidden="true" className="g-ripple" />}
-                  </button>
-                ))}
-              </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20, justifyItems:"center" }}>
+              {DOTS.map(n => (
+                <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking || gOK}
+                  style={{ position:"relative", width:58, height:58, borderRadius:"50%", cursor:"pointer", padding:0,
+                    border:"1px solid " + (gFlash === n ? AMB : "rgba(240,164,74,0.32)"),
+                    background: gFlash === n ? AM : "rgba(240,164,74,0.045)",
+                    boxShadow: gFlash === n ? "0 0 20px "+AM+", 0 0 46px rgba(240,164,74,0.5)" : "none",
+                    transition:"background .14s, box-shadow .14s, border-color .14s" }}>
+                  {gFlash === n && <span aria-hidden="true" className="g-ripple" />}
+                </button>
+              ))}
             </div>
           ) : (
             <input type="password" value={gpw} autoFocus inputMode="numeric"
               onChange={e => { setGpw(e.target.value); setGErr(""); }}
               onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
               placeholder="パスワード" disabled={gChecking}
-              style={{ width:"100%", boxSizing:"border-box", border:"1px solid rgba(240,164,74,0.3)",
-                background:"rgba(240,164,74,0.05)", color:AMB, borderRadius:2, padding:"13px", fontSize:16,
-                textAlign:"center", outline:"none", fontFamily:"inherit", letterSpacing:"0.3em" }} />
-          )}
-
-          {gOK && (
-            <div aria-hidden="true" style={{ position:"absolute", inset:0, zIndex:3, display:"flex",
-              alignItems:"center", justifyContent:"center", background:"rgba(8,16,19,0.9)", animation:"fadeUp .18s ease" }}>
-              <div style={{ color:AMB, fontSize:14, letterSpacing:"0.34em",
-                textShadow:"0 0 26px rgba(240,164,74,0.9)" }}>承 認</div>
-            </div>
+              style={{ width:236, boxSizing:"border-box", border:"none",
+                borderBottom:"1px solid rgba(240,164,74,0.4)", background:"transparent", color:AMB,
+                padding:"12px 0", fontSize:18, textAlign:"center", outline:"none",
+                fontFamily:"inherit", letterSpacing:"0.4em" }} />
           )}
 
           <div role="status" aria-live="polite" className={gErr ? "g-shake" : ""}
-            style={{ minHeight:19, marginTop:15, textAlign:"center", fontSize:11, letterSpacing:"0.06em",
-              lineHeight:1.6, color: gErr ? "#e8806f" : DIM }}>
+            style={{ minHeight:18, marginTop:26, textAlign:"center", fontSize:11.5, letterSpacing:"0.06em",
+              color: gErr ? "#e8806f" : DIM }}>
             {gChecking ? "照合中 ..." : (gErr || "")}
           </div>
 
           {(gKeyMode || gChecking) && (
             <button onClick={tryUnlock} disabled={gChecking || !gpw}
-              style={{ width:"100%", marginTop:8, borderRadius:2, padding:"13px", fontSize:13,
-                letterSpacing:"0.2em", fontFamily:"inherit",
-                border:"1px solid " + (gpw ? "rgba(240,164,74,0.55)" : "rgba(240,164,74,0.2)"),
+              style={{ marginTop:10, borderRadius:2, padding:"11px 34px", fontSize:13, letterSpacing:"0.2em",
+                fontFamily:"inherit", border:"1px solid rgba(240,164,74,0.5)",
                 background: gpw && !gChecking ? "rgba(240,164,74,0.12)" : "transparent",
                 color: gpw ? AMB : DIM, cursor: gChecking || !gpw ? "default" : "pointer" }}>
               {gChecking ? "照合中 ..." : "解 錠"}
             </button>
           )}
-
-          <div style={{ display:"flex", justifyContent:"center", gap:20, marginTop:14 }}>
-            {[["やり直す", () => { setGpw(""); setGErr(""); }],
-              [gKeyMode ? "点で入れる" : "数字で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
-             ].map(([t, fn]) => (
-              <button key={t} onClick={fn}
-                style={{ border:"none", background:"transparent", color:DIM, fontSize:10.5,
-                  letterSpacing:"0.1em", textDecoration:"underline", cursor:"pointer", fontFamily:"inherit" }}>{t}</button>
-            ))}
-          </div>
-
-          <div aria-hidden="true" style={{ display:"flex", alignItems:"center", gap:7, marginTop:18,
-            paddingTop:11, borderTop:"1px solid rgba(240,164,74,0.12)", fontSize:8.5,
-            letterSpacing:"0.2em", color:DIM }}>
-            <span className="g-blink" style={{ width:5, height:5, borderRadius:"50%", background:AM,
-              boxShadow:"0 0 7px "+AM, flexShrink:0 }} />
-            <span>LINK SECURE</span>
-            <span style={{ marginLeft:"auto" }}>VER {(window.APP_VER || "").toUpperCase()}</span>
-          </div>
         </div>
+
+        <div style={{ position:"absolute", zIndex:3, left:0, right:0,
+          bottom:"calc(env(safe-area-inset-bottom, 0px) + 22px)",
+          display:"flex", justifyContent:"center", gap:24 }}>
+          {[["やり直す", () => { setGpw(""); setGErr(""); }],
+            [gKeyMode ? "点で入れる" : "数字で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
+           ].map(([t, fn]) => (
+            <button key={t} onClick={fn}
+              style={{ border:"none", background:"transparent", color:DIM, fontSize:11,
+                letterSpacing:"0.1em", cursor:"pointer", fontFamily:"inherit", padding:"6px 4px" }}>{t}</button>
+          ))}
+        </div>
+
+        {gOK && (
+          <div aria-hidden="true" style={{ position:"absolute", inset:0, zIndex:6, display:"flex",
+            alignItems:"center", justifyContent:"center", background:"rgba(5,13,15,0.92)", animation:"fadeUp .18s ease" }}>
+            <div style={{ color:AMB, fontSize:16, letterSpacing:"0.4em",
+              textShadow:"0 0 28px rgba(240,164,74,0.9)" }}>承 認</div>
+          </div>
+        )}
       </div>
     );
   }

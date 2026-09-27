@@ -142,9 +142,11 @@ function App() {
       setToast("保存できませんでした。電波を確かめて、もう一度お試しください");
       setTimeout(() => { setToast(null); setToastBad(false); }, 5000);
     };
+    const goBoard = () => { setTab("board"); setMoreOpen(false); };
     window.addEventListener("appToast", h);
     window.addEventListener("apiError", bad);
-    return () => { window.removeEventListener("appToast", h); window.removeEventListener("apiError", bad); };
+    window.addEventListener("goBoard", goBoard);
+    return () => { window.removeEventListener("appToast", h); window.removeEventListener("apiError", bad); window.removeEventListener("goBoard", goBoard); };
   }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
