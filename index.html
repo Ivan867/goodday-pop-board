@@ -151,7 +151,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .fs-top { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
 /* 右から出るメニュー：上の時計・切り欠きに「メニュー」と✕がかぶらないようにする */
 /* 右下の「さがす」ボタン。スマホは丸、パソコンは横長にする */
-.fab-search { right: 16px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+.fab-search { right: 16px; bottom: max(8px, env(safe-area-inset-bottom, 0px));
   width: auto; min-width: 124px; height: 54px; border-radius: 999px;
   flex-direction: row; gap: 8px; padding: 0 20px; }
 .fab-search svg { width: 23px; height: 23px; }
@@ -383,7 +383,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260919v";
+window.APP_VER = "20260919w";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
