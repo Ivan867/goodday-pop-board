@@ -12,6 +12,7 @@ var LAZY_TABS = {
   archive: { file:"13-tab-admin",   comp:"ArchiveTab" },   // アーカイブ（同上）
   trend:   { file:"16-tab-trend",   comp:"TrendTab" },     // トレンド（訴求の切り口）
   idea:    { file:"17-tab-idea",    comp:"IdeaTab" },      // アイデア（一覧には出さない）
+  popgen:  { file:"18-tab-popgen",  comp:"PopGenTab" },   // POPプロンプト作成
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -28,6 +29,7 @@ const MENU_ICON = (() => {
     bundle:  P(<><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></>),
     tool:    P(<><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></>),
     request: P(<><path d="M4 5.5h16v13H4z"/><path d="M4 7l8 6 8-6"/></>),
+    popgen:  P(<><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9" r="1.4"/></>),
     order:   P(<><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></>),
     barcode: P(<><path d="M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"/></>),
     gne:     P(<><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></>),
@@ -360,7 +362,7 @@ function App() {
             </div>
             <div style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","archive","gne","order","barcode","request","admin"];
+                const ORDER = ["search","archive","gne","popgen","order","barcode","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
