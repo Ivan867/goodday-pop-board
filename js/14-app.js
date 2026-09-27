@@ -348,7 +348,7 @@ function App() {
     const onScroll = () => {
       const y = Math.min(el.scrollTop, FADE_RANGE);
       setScrollP(y / FADE_RANGE);
-      setShowToTop(el.scrollTop > 400);
+      setShowToTop(el.scrollTop > 240);
     };
     el.addEventListener("scroll", onScroll, {
       passive: true
@@ -687,7 +687,7 @@ function App() {
     compProps: {
       onCreateFromPop: handleCreateFromPop
     }
-  }), tab === "dev" && /*#__PURE__*/React.createElement(DevTab, null), showToTop && !moreOpen && !radialOpen && !popDetailOpen && /*#__PURE__*/React.createElement("button", {
+  }), tab === "dev" && /*#__PURE__*/React.createElement(DevTab, null), showToTop && tab !== "board" && !moreOpen && !radialOpen && !popDetailOpen && /*#__PURE__*/React.createElement("button", {
     onClick: () => scrollerTop(true),
     "aria-label": "\u4E0A\u3078\u623B\u308B",
     style: {
@@ -762,6 +762,10 @@ function App() {
     }
   }, toast))), tab === "board" && !searchOpen && !moreOpen && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
+      if (showToTop) {
+        scrollerTop(true);
+        return;
+      }
       setMoreOpen(false);
       setRadialOpen(false);
       try {
@@ -769,8 +773,8 @@ function App() {
       } catch (e) {}
     },
     className: "hig-pill fab-search",
-    "aria-label": "\u3055\u304C\u3059",
-    title: "\u3055\u304C\u3059",
+    "aria-label": showToTop ? "上へ" : "さがす",
+    title: showToTop ? "上へ" : "さがす",
     style: {
       position: "fixed",
       zIndex: 205,
@@ -783,7 +787,18 @@ function App() {
       justifyContent: "center",
       boxShadow: "0 6px 20px rgba(10,20,35,0.36)"
     }
-  }, /*#__PURE__*/React.createElement("svg", {
+  }, showToTop ? /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 19V5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M5 12l7-7 7 7"
+  })) : /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -806,7 +821,7 @@ function App() {
     cy: "18",
     r: "2.3",
     fill: "var(--primary)"
-  })), /*#__PURE__*/React.createElement("span", null, "\u3055\u304C\u3059")), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("span", null, showToTop ? "上へ" : "さがす")), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     onClick: () => setMoreOpen(false),
     style: {
       position: "fixed",
