@@ -1000,13 +1000,13 @@ function CatalogTab() {
 
   const selBase = { border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, fontWeight:700, color:"var(--text)", background:"#fff", outline:"none", width:"100%", boxSizing:"border-box", minHeight:40 };
 
-  // 3つの切り替え（企画・行事／普段の売場／作成）
+  // 切り替え（競合他社の企画行事／競合他社の売場／作成／トレンド／アイデア）
   const modeSwitch = (
     <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-      {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"],["trend","トレンド"],["idea","アイデア"]].map(([k,l]) => (
+      {[["event",["競合他社","企画行事"]],["daily",["競合他社","の売場"]],["tool",["作成"]],["trend",["トレンド"]],["idea",["アイデア"]]].map(([k,l]) => (
         <button key={k} onClick={() => setPageModeSave(k)}
-          style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
-            background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
+          style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", lineHeight:1.35,
+            background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
       ))}
     </div>
   );
@@ -1055,12 +1055,12 @@ function CatalogTab() {
 
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 140px" }}>
 
-        {/* ── 企画／普段の切り替え ── */}
+        {/* ── 競合他社の企画行事／売場 の切り替え ── */}
         <div style={{ display:"flex", gap:7, marginBottom:12 }}>
-          {[["event","企画・行事"],["daily","普段の売場"],["tool","作成"],["trend","トレンド"],["idea","アイデア"]].map(([k,l]) => (
+          {[["event",["競合他社","企画行事"]],["daily",["競合他社","の売場"]],["tool",["作成"]],["trend",["トレンド"]],["idea",["アイデア"]]].map(([k,l]) => (
             <button key={k} onClick={() => setPageModeSave(k)}
-              style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
-                background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l}</button>
+              style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", lineHeight:1.35,
+                background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
           ))}
         </div>
 

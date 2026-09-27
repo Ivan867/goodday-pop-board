@@ -2599,14 +2599,14 @@ function CatalogTab() {
     minHeight: 40
   };
 
-  // 3つの切り替え（企画・行事／普段の売場／作成）
+  // 切り替え（競合他社の企画行事／競合他社の売場／作成／トレンド／アイデア）
   const modeSwitch = /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"], ["idea", "アイデア"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", ["競合他社", "企画行事"]], ["daily", ["競合他社", "の売場"]], ["tool", ["作成"]], ["trend", ["トレンド"]], ["idea", ["アイデア"]]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
@@ -2617,11 +2617,13 @@ function CatalogTab() {
       fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer",
-      whiteSpace: "nowrap",
+      lineHeight: 1.35,
       background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
-  }, l)));
+  }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
+    key: i
+  }, i > 0 && /*#__PURE__*/React.createElement("br", null), t)))));
   if (pageMode === "idea") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2723,7 +2725,7 @@ function CatalogTab() {
       gap: 7,
       marginBottom: 12
     }
-  }, [["event", "企画・行事"], ["daily", "普段の売場"], ["tool", "作成"], ["trend", "トレンド"], ["idea", "アイデア"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["event", ["競合他社", "企画行事"]], ["daily", ["競合他社", "の売場"]], ["tool", ["作成"]], ["trend", ["トレンド"]], ["idea", ["アイデア"]]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setPageModeSave(k),
     style: {
@@ -2734,11 +2736,13 @@ function CatalogTab() {
       fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer",
-      whiteSpace: "nowrap",
+      lineHeight: 1.35,
       background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
-  }, l))), /*#__PURE__*/React.createElement("div", {
+  }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
+    key: i
+  }, i > 0 && /*#__PURE__*/React.createElement("br", null), t))))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       border: "1px solid var(--line)",
