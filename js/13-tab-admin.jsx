@@ -10,6 +10,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [gKeyMode, setGKeyMode] = useState(false);   // 数字キーで入れる（逃げ道）
   const [gBoot, setGBoot] = useState("");            // 起動メッセージを1文字ずつ
   const [gFlash, setGFlash] = useState(0);           // 押した点を光らせる
+  const [gOK, setGOK] = useState(false);             // 解錠できたときの一瞬の表示
   const [section, setSection] = useState("home"); // home（タイル一覧）| 各画面
 
   // アーカイブ管理用
@@ -108,16 +109,17 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     return () => clearInterval(iv);
   }, [unlocked]);
 
-  const tryUnlock = async () => {
+  const tryUnlockWith = async (pw) => {
     if (gChecking) return;
     setGChecking(true); setGErr("");
     try {
-      const r = await api.verifyPasswordEx("admin", gpw);
-      if (r.ok) { setUnlocked(true); setGErr(""); }
+      const r = await api.verifyPasswordEx("admin", pw);
+      if (r.ok) { setGErr(""); setGOK(true); setTimeout(() => setUnlocked(true), 620); }
       else {
         setGErr(r.locked
           ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください`
           : (r.left > 0 ? `パスワードが違います（あと${r.left}回）` : "パスワードが違います"));
+        setGpw("");
       }
     } catch (e) {
       setGErr("通信に失敗しました。電波を確認してください");
@@ -125,34 +127,50 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       setGChecking(false);
     }
   };
+  const tryUnlock = () => tryUnlockWith(gpw);
 
   if (!unlocked) {
     const DOTS = [1,2,3,4,5,6,7,8,9];
+    const PIN_LEN = 4;                                   // ここまで押したら自動で送る（合図の桁数）
     const tapDot = (n) => {
-      if (gChecking) return;
-      setGpw(v => (v.length >= 12 ? v : v + n));
+      if (gChecking || gOK) return;
       setGErr(""); setGFlash(n);
       setTimeout(() => setGFlash(0), 170);
       try { navigator.vibrate && navigator.vibrate(12); } catch(e) {}
+      setGpw(v => {
+        const nv = (v.length >= 12 ? v : v + n);
+        if (nv.length === PIN_LEN) setTimeout(() => tryUnlockWith(nv), 200);   // 最後の光を見せてから
+        return nv;
+      });
     };
     const CY = "#22d3ee";
+    // 点の位置（3×3）。背後の配線を描くのに使う
+    const NODE = [[18,18],[50,18],[82,18],[18,50],[50,50],[82,50],[18,82],[50,82],[82,82]];
     return (
       <div style={{ minHeight:"70vh", display:"flex", alignItems:"flex-start", justifyContent:"center",
         padding:"30px 16px 60px", animation:"fadeUp .3s ease" }}>
-        <div style={{ position:"relative", width:"100%", maxWidth:360, border:"1px solid #16394b", borderRadius:5,
+        <div className="g-panel" style={{ position:"relative", width:"100%", maxWidth:360, border:"1px solid #16394b", borderRadius:5,
           background:"linear-gradient(180deg, rgba(10,22,32,0.96), rgba(5,12,18,0.96))", padding:"20px 18px 22px",
           boxShadow:"0 0 0 1px rgba(34,211,238,0.08), 0 0 40px rgba(34,211,238,0.10)", overflow:"hidden",
           fontFamily:'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>
 
-          {/* 走査線 */}
+          {/* 走査線・流れるビーム・四隅のかぎ括弧 */}
           <div aria-hidden="true" style={{ position:"absolute", inset:0, pointerEvents:"none",
             background:"repeating-linear-gradient(0deg, rgba(125,227,244,0.035) 0 1px, transparent 1px 3px)" }} />
+          <div aria-hidden="true" className="g-sweep" />
+          {[["top","left","2px 0 0 2px",{top:7,left:7}],["top","right","2px 2px 0 0",{top:7,right:7}],
+            ["bottom","left","0 0 0 2px",{bottom:7,left:7}],["bottom","right","0 2px 2px 0",{bottom:7,right:7}]
+           ].map(([a,b,bw,pos]) => (
+            <div key={a+b} aria-hidden="true" className="g-corner" style={{ ...pos, borderWidth:bw }} />
+          ))}
 
           <div style={{ fontSize:10, letterSpacing:"0.22em", color:"#2a5f75" }}>USHIO // SEAFOOD NET</div>
           <div style={{ fontSize:16, fontWeight:700, color:"#bfefff", letterSpacing:"0.06em", marginTop:3 }}>
             管理画面 <span style={{ color:CY }}>ACCESS</span>
           </div>
-          <div style={{ fontSize:10.5, color:"#2f6a80", lineHeight:1.85, minHeight:58, margin:"10px 0 6px", whiteSpace:"pre-line" }}>{gBoot}</div>
+          <div style={{ fontSize:10.5, color:"#2f6a80", lineHeight:1.85, minHeight:58, margin:"10px 0 6px", whiteSpace:"pre-line" }}>
+            {gBoot}<span className="g-blink" style={{ display:"inline-block", width:7, height:11, background:CY, marginLeft:3, verticalAlign:"-1px" }} />
+          </div>
 
           {/* 入力した数だけ点が増える（数字は出さない） */}
           <div style={{ display:"flex", justifyContent:"center", gap:7, height:16, marginBottom:10 }}>
@@ -162,16 +180,31 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           </div>
 
           {!gKeyMode ? (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:14, width:236, margin:"0 auto",
-              justifyItems:"center" }}>
-              {DOTS.map(n => (
-                <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking}
-                  style={{ width:56, height:56, borderRadius:"50%", cursor:"pointer", padding:0,
-                    border:"1.5px solid " + (gFlash === n ? "#9beefc" : "#1d5568"),
-                    background: gFlash === n ? CY : "#0d2330",
-                    boxShadow: gFlash === n ? "0 0 16px "+CY+", 0 0 34px rgba(34,211,238,0.5)" : "none",
-                    transition:"background .12s, box-shadow .12s, border-color .12s" }} />
-              ))}
+            <div style={{ position:"relative", width:236, margin:"0 auto" }}>
+              {/* 背後の配線 */}
+              <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"
+                style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none", opacity:.5 }}>
+                {[[0,2],[3,5],[6,8],[0,6],[1,7],[2,8]].map(([a,b],i) => (
+                  <line key={"l"+i} x1={NODE[a][0]} y1={NODE[a][1]} x2={NODE[b][0]} y2={NODE[b][1]}
+                    stroke="#14384a" strokeWidth="0.6" />
+                ))}
+                {NODE.map((p,i) => (
+                  <circle key={"c"+i} cx={p[0]} cy={p[1]} r="1.1" fill="#1d5568" />
+                ))}
+              </svg>
+              <div style={{ position:"relative", display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:14,
+                justifyItems:"center" }}>
+                {DOTS.map(n => (
+                  <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking || gOK}
+                    style={{ position:"relative", width:56, height:56, borderRadius:"50%", cursor:"pointer", padding:0,
+                      border:"1.5px solid " + (gFlash === n ? "#9beefc" : "#1d5568"),
+                      background: gFlash === n ? CY : "#0d2330",
+                      boxShadow: gFlash === n ? "0 0 16px "+CY+", 0 0 34px rgba(34,211,238,0.5)" : "none",
+                      transition:"background .12s, box-shadow .12s, border-color .12s" }}>
+                    {gFlash === n && <span aria-hidden="true" className="g-ripple" />}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <input type="password" value={gpw} autoFocus inputMode="numeric"
@@ -183,20 +216,29 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 fontFamily:"inherit", letterSpacing:"0.3em" }} />
           )}
 
+          {gOK && (
+            <div aria-hidden="true" style={{ position:"absolute", inset:0, zIndex:3, display:"flex",
+              alignItems:"center", justifyContent:"center", background:"rgba(4,20,26,0.88)",
+              animation:"fadeUp .18s ease" }}>
+              <div style={{ color:"#4ade80", fontSize:15, fontWeight:700, letterSpacing:"0.18em",
+                textShadow:"0 0 16px rgba(74,222,128,0.8)" }}>ACCESS GRANTED</div>
+            </div>
+          )}
+
           <div role="status" aria-live="polite" style={{ minHeight:20, marginTop:14, textAlign:"center",
             fontSize:11.5, letterSpacing:"0.08em", lineHeight:1.6,
-            color: gErr ? "#fb7185" : "#2f6a80", animation: gErr ? "fadeUp .2s ease" : "none" }}>
+            color: gErr ? "#fb7185" : "#2f6a80" }} className={gErr ? "g-shake" : ""}>
             {gErr ? "ACCESS DENIED — " + gErr : ""}
           </div>
 
-          <button onClick={tryUnlock} disabled={gChecking || !gpw}
+          {(gKeyMode || gChecking) && <button onClick={tryUnlock} disabled={gChecking || !gpw}
             style={{ width:"100%", marginTop:10, borderRadius:4, padding:"13px", fontSize:14, fontWeight:700,
               letterSpacing:"0.12em", fontFamily:"inherit",
               border:"1px solid " + (gpw ? CY : "#16394b"),
               background: gpw && !gChecking ? "rgba(34,211,238,0.14)" : "transparent",
               color: gpw ? CY : "#2a5f75", cursor: gChecking || !gpw ? "default" : "pointer" }}>
             {gChecking ? "確認中 ..." : "UNLOCK"}
-          </button>
+          </button>}
 
           <div style={{ display:"flex", justifyContent:"center", gap:18, marginTop:14 }}>
             <button onClick={() => { setGpw(""); setGErr(""); }}
@@ -206,6 +248,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               style={{ border:"none", background:"transparent", color:"#2f6a80", fontSize:11,
                 textDecoration:"underline", cursor:"pointer", fontFamily:"inherit" }}>
               {gKeyMode ? "点で入れる" : "数字で入れる"}</button>
+          </div>
+
+          <div aria-hidden="true" style={{ display:"flex", alignItems:"center", gap:7, marginTop:16,
+            paddingTop:10, borderTop:"1px solid #102b39", fontSize:9, letterSpacing:"0.16em", color:"#26576b" }}>
+            <span className="g-blink" style={{ width:6, height:6, borderRadius:"50%", background:"#4ade80",
+              boxShadow:"0 0 7px #4ade80", flexShrink:0 }} />
+            <span>LINK SECURE</span>
+            <span style={{ marginLeft:"auto" }}>VER {(window.APP_VER || "").toUpperCase()}</span>
           </div>
         </div>
       </div>
