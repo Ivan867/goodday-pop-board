@@ -157,7 +157,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .fab-search svg { width: 29px; height: 29px; }
 .fab-search span { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
 @media (min-width: 700px) {
-  .fab-search { right: 28px; bottom: 28px;
+  .fab-search { right: 28px; bottom: 18px;
     width: auto; min-width: 142px; height: 62px; border-radius: 999px;
     flex-direction: row; gap: 10px; padding: 0 28px; }
   .fab-search svg { width: 26px; height: 26px; }
@@ -383,7 +383,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260919t";
+window.APP_VER = "20260919u";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
