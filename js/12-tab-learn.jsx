@@ -31,18 +31,18 @@ function CalendarTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:1600, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
         </div>
       </div>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
-          <button onClick={prevM} style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>‹</button>
+          <button onClick={prevM} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>‹</button>
           <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)" }}>{ym.y}年 {ym.m+1}月</div>
-          <button onClick={nextM} style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>›</button>
+          <button onClick={nextM} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>›</button>
         </div>
 
-        <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:14, padding:"10px 8px 8px", marginBottom:16 }}>
+        <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, padding:"10px 8px 8px", marginBottom:16 }}>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", marginBottom:4 }}>
             {jp.map((w,i) => (
               <div key={w} style={{ textAlign:"center", fontSize:12, fontWeight:800, padding:"4px 0", color: i===0?"#c0392b":i===6?"#2f6fb0":"var(--sub)" }}>{w}</div>
@@ -59,8 +59,8 @@ function CalendarTab() {
               return (
                 <div key={i} style={{ minHeight:52, borderRadius:8, padding:"3px 2px", background: isToday ? "var(--soft)" : (hol ? "#fdeeee" : "transparent"), border: isToday ? "1.5px solid var(--primary)" : "1px solid transparent", display:"flex", flexDirection:"column", alignItems:"center" }}>
                   <span style={{ fontSize:12.5, fontWeight: isToday?900:700, color: dayColor }}>{d}</span>
-                  {ev ? <span style={{ fontSize:11.5, fontWeight:800, color:"var(--soft-text)", lineHeight:1.15, textAlign:"center", marginTop:1 }}>{ev.name.length>4?ev.name.slice(0,4):ev.name}</span>
-                    : hol ? <span style={{ fontSize:11.5, fontWeight:800, color:"#c0392b", lineHeight:1.1, textAlign:"center", marginTop:1 }}>{hol.length>4?hol.slice(0,4):hol}</span> : null}
+                  {ev ? <span style={{ fontSize:12.5, fontWeight:800, color:"var(--soft-text)", lineHeight:1.15, textAlign:"center", marginTop:1 }}>{ev.name.length>4?ev.name.slice(0,4):ev.name}</span>
+                    : hol ? <span style={{ fontSize:12.5, fontWeight:800, color:"#c0392b", lineHeight:1.1, textAlign:"center", marginTop:1 }}>{hol.length>4?hol.slice(0,4):hol}</span> : null}
                 </div>
               );
             })}
@@ -69,15 +69,15 @@ function CalendarTab() {
 
         <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>{ym.m+1}月の行事</div>
         {monthEvents.length === 0 ? (
-          <div style={{ fontSize:12.5, color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"16px", textAlign:"center" }}>この月の登録行事はありません</div>
+          <div style={{ fontSize:12.5, color:"var(--sub)", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"16px", textAlign:"center" }}>この月の登録行事はありません</div>
         ) : monthEvents.map((e,i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"11px 13px", marginBottom:8 }}>
+          <div key={i} style={{ display:"flex", alignItems:"center", gap:10, background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"11px 13px", marginBottom:8 }}>
             <div style={{ flexShrink:0, width:44, textAlign:"center" }}>
               <div style={{ fontSize:16, fontWeight:900, color: e.holiday ? "#c0392b" : "var(--primary)", lineHeight:1 }}>{e.date.getDate()}</div>
-              <div style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700 }}>{jp[e.date.getDay()]}</div>
+              <div style={{ fontSize:12.5, color:"var(--sub)", fontWeight:700 }}>{jp[e.date.getDay()]}</div>
             </div>
             <div style={{ minWidth:0, flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{e.name}{e.holiday && <span style={{ fontSize:11.5, fontWeight:800, color:"#c0392b", background:"#fdeeee", borderRadius:6, padding:"1px 7px", marginLeft:7 }}>祝日</span>}</div>
+              <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{e.name}{e.holiday && <span style={{ fontSize:12.5, fontWeight:800, color:"#c0392b", background:"#fdeeee", borderRadius:6, padding:"1px 7px", marginLeft:7 }}>祝日</span>}</div>
               {e.food && <div style={{ fontSize:12, color:"var(--soft-text)", marginTop:2 }}>💡 {e.food}</div>}
             </div>
           </div>
@@ -131,7 +131,7 @@ function CompetitorTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:1600, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>競合情報</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>競合情報</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>鮮魚が強い15店舗を4タイプで整理。売り方のヒントに</div>
         </div>
       </div>
@@ -145,10 +145,10 @@ function CompetitorTab() {
             <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.7, marginBottom:11, background:"var(--soft)", borderRadius:10, padding:"9px 11px" }}>{g.note}</div>
             {g.rows.map(r => (
               <a key={r.name} href={r.url} target="_blank" rel="noopener noreferrer"
-                style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                style={{ display:"block", textDecoration:"none", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
                   <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)" }}>{r.name}</span>
-                  <span style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
+                  <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
                   <span style={{ marginLeft:"auto", color:"var(--faint)", fontSize:17 }}>↗</span>
                 </div>
                 <div style={{ fontSize:12, color:"var(--text)", lineHeight:1.65 }}>{r.desc}</div>
@@ -247,7 +247,7 @@ function IndustryTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:1600, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>業界情報</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>業界情報</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>最新記事と、鮮魚が強い15店舗の売り方</div>
         </div>
       </div>
@@ -268,7 +268,7 @@ function IndustryTab() {
         <>
 
         {/* 鮮魚ニュースへのショートカット（Googleニュース検索） */}
-        <div className="ucard" style={{ background:"#fff", borderRadius:16, padding:"13px 15px", marginBottom:20 }}>
+        <div className="ucard" style={{ background:"var(--card, #fff)", borderRadius:16, padding:"13px 15px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
             <span style={{ fontSize:19 }}>🗞</span>
             <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)" }}>鮮魚ニュースを探す</span>
@@ -286,7 +286,7 @@ function IndustryTab() {
               ["山陰の水産", "島根 水産 漁"],
             ].map(([label, q]) => (
               <a key={label} href={"https://news.google.com/search?q=" + encodeURIComponent(q) + "&hl=ja&gl=JP&ceid=JP%3Aja"} target="_blank" rel="noopener noreferrer"
-                style={{ textDecoration:"none", fontSize:12.5, fontWeight:800, color:"#4a7ab0", background:"var(--soft)", border:"1px solid #cfe2f3", borderRadius:999, padding:"7px 13px" }}>{label}</a>
+                style={{ textDecoration:"none", fontSize:12.5, fontWeight:800, color:"var(--primary-soft)", background:"var(--soft)", border:"1px solid #cfe2f3", borderRadius:999, padding:"7px 13px" }}>{label}</a>
             ))}
           </div>
         </div>
@@ -299,7 +299,7 @@ function IndustryTab() {
                 style={{ display:"flex", alignItems:"center", gap:9, textDecoration:"none", marginBottom:9 }}>
                 <span style={{ fontSize:20, flexShrink:0 }}>{site.emoji}</span>
                 <div style={{ minWidth:0, flex:1 }}>
-                  <span style={{ display:"inline-block", fontSize:11.5, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px" }}>{site.tag}</span>
+                  <span style={{ display:"inline-block", fontSize:12.5, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px" }}>{site.tag}</span>
                   <div style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3 }}>{site.name}</div>
                 </div>
                 <span style={{ color:"var(--faint)", fontSize:18, flexShrink:0 }}>↗</span>
@@ -308,7 +308,7 @@ function IndustryTab() {
               {st.status === "loading" && (
                 <div>
                   {[0,1,2].map(i => (
-                    <div key={i} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                    <div key={i} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
                       <div className="sk" style={{ width:"85%", height:12, borderRadius:6 }} />
                       <div className="sk" style={{ width:"55%", height:10, borderRadius:6, marginTop:8 }} />
                     </div>
@@ -318,16 +318,16 @@ function IndustryTab() {
 
               {st.status === "error" && (
                 <a href={site.home} target="_blank" rel="noopener noreferrer"
-                  style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"14px 14px", color:"var(--text)", fontSize:12.5, lineHeight:1.7 }}>
+                  style={{ display:"block", textDecoration:"none", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"14px 14px", color:"var(--text)", fontSize:12.5, lineHeight:1.7 }}>
                   最新記事を読み込めませんでした。<span style={{ color:site.color, fontWeight:800 }}>サイトを開く →</span>
                 </a>
               )}
 
               {st.status === "ok" && st.items.map((it, i) => (
                 <a key={i} href={it.link} target="_blank" rel="noopener noreferrer"
-                  style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                  style={{ display:"block", textDecoration:"none", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
                   <div style={{ display:"flex", gap:8, alignItems:"baseline" }}>
-                    {fmtDate(it.pubDate) && <span style={{ fontSize:11.5, fontWeight:800, color:site.color, flexShrink:0 }}>{fmtDate(it.pubDate)}</span>}
+                    {fmtDate(it.pubDate) && <span style={{ fontSize:12.5, fontWeight:800, color:site.color, flexShrink:0 }}>{fmtDate(it.pubDate)}</span>}
                     <span style={{ fontSize:13, fontWeight:800, color:"var(--ink)", lineHeight:1.45 }}>{it.title}</span>
                   </div>
                   {strip(it.description) && <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginTop:5 }}>{strip(it.description)}</div>}
@@ -345,9 +345,9 @@ function IndustryTab() {
             <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>いまの業界の動き</div>
             <div style={{ fontSize:12, color:"var(--sub)", marginBottom:14, lineHeight:1.6 }}>各社の予約カタログや発表から拾った傾向です</div>
             {trends.map(t => (
-              <div key={t.id} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:13, padding:"13px 14px", marginBottom:10 }}>
+              <div key={t.id} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:13, padding:"13px 14px", marginBottom:10 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8, flexWrap:"wrap" }}>
-                  {t.season && <span style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:6, padding:"2px 8px" }}>{t.season}{t.year ? " " + t.year : ""}</span>}
+                  {t.season && <span style={{ fontSize:12.5, fontWeight:900, color:"var(--primary-soft)", background:"var(--soft)", borderRadius:6, padding:"2px 8px" }}>{t.season}{t.year ? " " + t.year : ""}</span>}
                   <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)", lineHeight:1.4, flex:"1 1 100%" }}>{t.title}</span>
                 </div>
                 <ul style={{ margin:0, paddingLeft:17, listStyle:"none" }}>
@@ -358,7 +358,7 @@ function IndustryTab() {
                     </li>
                   ))}
                 </ul>
-                {t.source && <div style={{ fontSize:11.5, color:"var(--faint)", fontWeight:800, marginTop:8 }}>出典：{t.source}</div>}
+                {t.source && <div style={{ fontSize:12.5, color:"var(--faint)", fontWeight:800, marginTop:8 }}>出典：{t.source}</div>}
               </div>
             ))}
           </>
@@ -376,10 +376,10 @@ function IndustryTab() {
             <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.7, marginBottom:11, background:"var(--soft)", borderRadius:10, padding:"9px 11px" }}>{g.note}</div>
             {g.rows.map(r => (
               <a key={r.name} href={r.url} target="_blank" rel="noopener noreferrer"
-                style={{ display:"block", textDecoration:"none", background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
+                style={{ display:"block", textDecoration:"none", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:8 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
                   <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)" }}>{r.name}</span>
-                  <span style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
+                  <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 6px" }}>注目度 {r.pri <= 5 ? "★★★" : r.pri <= 10 ? "★★" : "★"}</span>
                   <span style={{ marginLeft:"auto", color:"var(--faint)", fontSize:17 }}>↗</span>
                 </div>
                 <div style={{ fontSize:12, color:"var(--text)", lineHeight:1.65 }}>{r.desc}</div>
@@ -443,7 +443,7 @@ function SoubaTab({ onCreatePop }) {
   const profit = sellValid ? sell - Math.round(C) : null;
   const sellTax = sellValid ? Math.ceil(sell * 1.08) : null;
 
-  const card = { background:"#fff", borderRadius:16, padding:20, marginBottom:16, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" };
+  const card = { background:"var(--card, #fff)", borderRadius:16, padding:20, marginBottom:16, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" };
   const lbl = { fontSize:12, color:"var(--sub)", marginBottom:6 };
   const inp = { width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"12px", fontSize:18, fontWeight:800, textAlign:"center", outline:"none" };
   const cell = (t, v, c) => (
@@ -457,7 +457,7 @@ function SoubaTab({ onCreatePop }) {
     <div className="min-vh" style={{ background:"var(--bg)", paddingBottom:100 }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"16px" }}>
         <div style={{ maxWidth:560, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>便利機能</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>便利機能</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場の計算をぜんぶここで。入力するだけでパッと答え</div>
           <div style={{ display:"flex", gap:6, marginTop:12, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:2 }}>
             {[["souba","相場計算"],["arari","粗利"],["budomari","歩留まり"],["nebiki","値引き"],["gram","グラム"],["shio","立て塩"]].map(([k,l]) => (
@@ -503,7 +503,7 @@ function SoubaTab({ onCreatePop }) {
                   {copied ? "✓ コピーしました" : "POP用の文言をコピー"}
                 </button>
                 {cheaper && onCreatePop && (
-                  <button onClick={()=>onCreatePop({ appeal: phrase })} style={{ marginTop:8, width:"100%", border:"1px solid #3f83c4", background:"#fff", color:"#2f6fb0", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+                  <button onClick={()=>onCreatePop({ appeal: phrase })} style={{ marginTop:8, width:"100%", border:"1px solid #3f83c4", background:"var(--card, #fff)", color:"#2f6fb0", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
                     このおトク文でPOPを作成 →
                   </button>
                 )}
@@ -535,7 +535,7 @@ function SoubaTab({ onCreatePop }) {
               {cell("利益額", `${profit}円`, "#2f6fb0")}
             </div>
             {onCreatePop && (
-              <button onClick={()=>onCreatePop({ price: `${sell}円（税込${sellTax}円）` })} style={{ marginTop:10, width:"100%", border:"1px solid #b8860b", background:"#fff", color:"#8B6914", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
+              <button onClick={()=>onCreatePop({ price: `${sell}円（税込${sellTax}円）` })} style={{ marginTop:10, width:"100%", border:"1px solid #b8860b", background:"var(--card, #fff)", color:"#8B6914", borderRadius:10, padding:"10px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
                 この売価でPOPを作成 →
               </button>
             )}
@@ -938,25 +938,25 @@ function CatalogTab() {
             color:"#fff", background:g.color, borderRadius:8, padding: compact ? "7px 0" : "9px 0", whiteSpace:"nowrap" }}>画像で探す</a>
         <a href={buildYahooUrl(c)} target="_blank" rel="noopener noreferrer" title="Yahoo!画像検索で探す" aria-label="Yahoo!画像検索で探す"
           style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
-            color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>Y!</a>
+            color:"var(--sub)", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>Y!</a>
         <a href={buildBingUrl(c)} target="_blank" rel="noopener noreferrer" title="Bing画像検索で探す" aria-label="Bing画像検索で探す"
           style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
-            color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>B</a>
+            color:"var(--sub)", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>B</a>
         {pageMode === "daily" && (
           <a href={buildPinterestUrl(c)} target="_blank" rel="noopener noreferrer" title="Pinterestで探す" aria-label="Pinterestで探す"
             style={{ flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", textDecoration:"none",
-              color:"var(--sub)", background:"#fff", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>P</a>
+              color:"var(--sub)", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:8, padding: compact ? "0 9px" : "0 11px", fontSize: compact ? 10 : 11, fontWeight:900, letterSpacing:"-0.2px" }}>P</a>
         )}
       </div>
     );
 
     if (cview === "list") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
+        <div className="ucard" style={{ background:"var(--card, #fff)", borderRadius:9, padding:"8px 10px 8px 12px", borderLeft:`4px solid ${g.color}`, display:"flex", alignItems:"center", gap:10 }}>
           <FavBtn size={14} />
           <div style={{ minWidth:0, flex:1 }}>
             <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.store}</div>
-            {c.area && <div style={{ fontSize:11.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
+            {c.area && <div style={{ fontSize:12.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</div>}
           </div>
           <div style={{ width:96, flexShrink:0 }}><SearchBtn compact /></div>
         </div>
@@ -965,7 +965,7 @@ function CatalogTab() {
 
     if (cview === "sm") {
       return (
-        <div className="ucard" style={{ background:"#fff", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
+        <div className="ucard" style={{ background:"var(--card, #fff)", borderRadius:9, padding:"9px 10px 9px 12px", borderLeft:`4px solid ${g.color}` }}>
           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:7 }}>
             <FavBtn size={14} />
             <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
@@ -976,21 +976,21 @@ function CatalogTab() {
     }
 
     return (
-      <div className="ucard" style={{ background:"#fff", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${g.color}` }}>
+      <div className="ucard" style={{ background:"var(--card, #fff)", borderRadius:10, padding:"10px 11px 10px 13px", borderLeft:`4px solid ${g.color}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
           <span style={{ fontSize: cview === "lg" ? 16 : 15, fontWeight:900, color:"var(--ink)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", flex:1, minWidth:0 }}>{c.store}</span>
           <FavBtn size={16} />
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:6 }}>
-          {c.area && <span style={{ fontSize:11.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</span>}
-          {c.stores_count ? <span style={{ fontSize:11.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.stores_count}店</span> : null}
-          {c.revenue ? <span style={{ fontSize:11.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.revenue}</span> : null}
+          {c.area && <span style={{ fontSize:12.5, color:"var(--faint)", fontWeight:800 }}>{c.area}</span>}
+          {c.stores_count ? <span style={{ fontSize:12.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.stores_count}店</span> : null}
+          {c.revenue ? <span style={{ fontSize:12.5, fontWeight:800, color:g.color, background:g.color + "12", borderRadius:5, padding:"1px 6px" }}>{c.revenue}</span> : null}
         </div>
-        {c.strength && <div style={{ fontSize:11.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:6 }}>{c.strength}</div>}
+        {c.strength && <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.6, background:"var(--bg)", borderRadius:8, padding:"7px 9px", marginBottom:6 }}>{c.strength}</div>}
         {cview === "lg" && (c.store_scale || c.systems) && (
           <div style={{ marginBottom:8 }}>
-            {c.store_scale && <div style={{ display:"flex", gap:5, fontSize:11.5, lineHeight:1.55, marginBottom:3 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>規模</span><span style={{ color:"var(--sub)" }}>{c.store_scale}</span></div>}
-            {c.systems && <div style={{ display:"flex", gap:5, fontSize:11.5, lineHeight:1.55 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>仕組み</span><span style={{ color:"var(--sub)" }}>{c.systems}</span></div>}
+            {c.store_scale && <div style={{ display:"flex", gap:5, fontSize:12.5, lineHeight:1.55, marginBottom:3 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>規模</span><span style={{ color:"var(--sub)" }}>{c.store_scale}</span></div>}
+            {c.systems && <div style={{ display:"flex", gap:5, fontSize:12.5, lineHeight:1.55 }}><span style={{ fontWeight:900, color:g.color, flexShrink:0 }}>仕組み</span><span style={{ color:"var(--sub)" }}>{c.systems}</span></div>}
           </div>
         )}
         <SearchBtn />
@@ -998,7 +998,7 @@ function CatalogTab() {
     );
   };
 
-  const selBase = { border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, fontWeight:700, color:"var(--text)", background:"#fff", outline:"none", width:"100%", boxSizing:"border-box", minHeight:40 };
+  const selBase = { border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:13, fontWeight:700, color:"var(--text)", background:"var(--card, #fff)", outline:"none", width:"100%", boxSizing:"border-box", minHeight:40 };
 
   // 切り替え（競合他社の企画行事／競合他社の売場／作成／トレンド／アイデア）
   const modeSwitch = (
@@ -1065,7 +1065,7 @@ function CatalogTab() {
         </div>
 
         {/* ── 共通の検索条件 ── */}
-        <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:10, padding:"12px 13px", marginBottom:12 }}>
+        <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:10, padding:"12px 13px", marginBottom:12 }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:9, gap:8 }}>
             <span style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", letterSpacing:"-0.2px" }}>{pageMode === "daily" ? "何を見たいですか？" : "検索条件をまとめて指定"}</span>
             <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2, flexShrink:0 }}>
@@ -1084,7 +1084,7 @@ function CatalogTab() {
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:8, marginBottom:8 }}>
             {pageMode === "daily" ? (
               <label style={{ display:"block" }}>
-                <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>見たいもの</span>
+                <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>見たいもの</span>
                 <select value={dailyTarget} onChange={e => setDailyTarget(e.target.value)} style={selBase}>
                   {DAILY_TARGET_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                 </select>
@@ -1092,25 +1092,25 @@ function CatalogTab() {
             ) : (
             <>
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索対象年</span>
+              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索対象年</span>
               <select value={searchYear} onChange={e => setSearchYear(Number(e.target.value))} style={selBase}>
                 {YEAR_OPTS.map(y => <option key={y} value={y}>{y}年</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</span>
+              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</span>
               <select value={season} onChange={e => setSeason(e.target.value)} style={selBase}>
                 {CAT_SEASON_OPTS.map(sn => <option key={sn} value={sn}>{sn}</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>商品ジャンル</span>
+              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>商品ジャンル</span>
               <select value={genre} onChange={e => setGenre(e.target.value)} style={selBase}>
                 {CAT_GENRE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索のしかた</span>
+              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索のしかた</span>
               <select value={mode} onChange={e => setModeSave(e.target.value)} style={selBase}>
                 {CAT_MODE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
@@ -1118,7 +1118,7 @@ function CatalogTab() {
             </>
             )}
             <label style={{ display:"block" }}>
-              <span style={{ display:"block", fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>追加検索ワード</span>
+              <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>追加検索ワード</span>
               <span style={{ position:"relative", display:"block" }}>
                 <input value={extraWords} onChange={e => setExtraWords(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); }}
@@ -1142,8 +1142,8 @@ function CatalogTab() {
                   <button key={ws.key} onClick={() => setOpenWordSet(on ? "" : ws.key)} aria-expanded={on}
                     style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"4px 11px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
                     {ws.label}
-                    {used > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:11.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{used}</span>}
-                    <span style={{ fontSize:11.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block", transition:"transform .2s" }}>▼</span>
+                    {used > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{used}</span>}
+                    <span style={{ fontSize:12.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block", transition:"transform .2s" }}>▼</span>
                   </button>
                 );
               })}
@@ -1217,7 +1217,7 @@ function CatalogTab() {
                         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9, paddingLeft:2 }}>
                           <span style={{ width:4, height:15, borderRadius:2, background:g.color, flexShrink:0 }} />
                           <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{g.label}</span>
-                          <span style={{ fontSize:11.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
+                          <span style={{ fontSize:12.5, fontWeight:900, color:g.color, background:g.color + "16", borderRadius:999, padding:"2px 9px" }}>{rows.length}</span>
                         </div>
                         <div className={"cat-grid c-" + cview}>{rows.map(c => <Card key={c.id} c={c} />)}</div>
                       </div>
@@ -1654,7 +1654,7 @@ function OrderTab() {
               aria-label="番号"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:11, padding:"14px",
                 fontSize:22, textAlign:"center", outline:"none", fontFamily:"inherit",
-                color:"transparent", caretColor:"transparent", textShadow:"none", background:"#fff" }} />
+                color:"transparent", caretColor:"transparent", textShadow:"none", background:"var(--card, #fff)" }} />
             {pw.length > 0 && (
               <span style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
                 pointerEvents:"none", fontSize:13, fontWeight:800, color:"var(--sub)" }}>入力中</span>
@@ -1719,10 +1719,10 @@ function OrderTab() {
                           style={{ flex:1, border: sel ? "none" : "1px solid var(--line)",
                             background: sel ? "var(--primary)" : "#fff", color: sel ? "#fff" : (i===6 ? "#d1554f" : i===5 ? "#3b7dd8" : "var(--text)"),
                             borderRadius:10, padding:"7px 0 6px", cursor:"pointer", position:"relative" }}>
-                          <span style={{ display:"block", fontSize:11.5, fontWeight:800, opacity: sel ? 0.85 : 0.7 }}>{OI_WDAY[d.getDay()]}</span>
+                          <span style={{ display:"block", fontSize:12.5, fontWeight:800, opacity: sel ? 0.85 : 0.7 }}>{OI_WDAY[d.getDay()]}</span>
                           <span style={{ display:"block", fontSize:16, fontWeight:900, lineHeight:1.25 }}>{d.getDate()}</span>
                           {n > 0 && (
-                            <span style={{ display:"block", fontSize:11.5, fontWeight:900, marginTop:1,
+                            <span style={{ display:"block", fontSize:12.5, fontWeight:900, marginTop:1,
                               color: sel ? "#fff" : "var(--primary-soft)", opacity: sel ? 0.9 : 1 }}>{n}</span>
                           )}
                           {tod && !sel && <span style={{ position:"absolute", top:3, right:4, width:5, height:5, borderRadius:"50%", background:"#e0a020" }} />}
@@ -1733,12 +1733,12 @@ function OrderTab() {
 
                   <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
                     <button onClick={() => { const d = new Date(pickDay); d.setDate(d.getDate() - 7); setPickDay(d); }} aria-label="前の週"
-                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
                     <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>
                       {pickDay.getMonth()+1}月{pickDay.getDate()}日（{wd}）{isToday ? "・今日" : ""}
                     </span>
                     <button onClick={() => { const d = new Date(pickDay); d.setDate(d.getDate() + 7); setPickDay(d); }} aria-label="次の週"
-                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:26, height:26, fontSize:13, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
                     {mine.length > 0 && (
                       <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color: doneN === mine.length ? "#3f9e63" : "var(--sub)" }}>
                         {doneN} / {mine.length} 済み
@@ -1774,15 +1774,15 @@ function OrderTab() {
 
                               {r.thumb
                                 ? <img src={r.thumb} alt="" style={{ width:48, height:48, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--bg)", opacity: on ? 0.55 : 1 }} />
-                                : <span style={{ width:48, height:48, borderRadius:8, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11.5, color:"var(--faint)" }}>写真なし</span>}
+                                : <span style={{ width:48, height:48, borderRadius:8, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, color:"var(--faint)" }}>写真なし</span>}
 
                               <div style={{ minWidth:0, flex:1 }}>
                                 <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                                   textDecoration: on ? "line-through" : "none", opacity: on ? 0.6 : 1 }}>{r.item_name}</div>
-                                <div style={{ fontSize:11.5, color:"var(--faint)", marginTop:2 }}>
+                                <div style={{ fontSize:12.5, color:"var(--faint)", marginTop:2 }}>
                                   {[r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")}
                                 </div>
-                                {r.memo && <div style={{ fontSize:11.5, color:"#c07a1a", fontWeight:700, marginTop:3 }}>{r.memo}</div>}
+                                {r.memo && <div style={{ fontSize:12.5, color:"#c07a1a", fontWeight:700, marginTop:3 }}>{r.memo}</div>}
                               </div>
 
                               <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
@@ -1791,14 +1791,14 @@ function OrderTab() {
                                   inputMode="decimal" aria-label={`${r.item_name}の数量`}
                                   style={{ width:52, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:8, padding:"8px 4px",
                                     fontSize:15, fontWeight:900, textAlign:"center", outline:"none", fontFamily:"inherit", color:"var(--ink)" }} />
-                                <span style={{ fontSize:11.5, color:"var(--faint)", width:26 }}>{r.unit || ""}</span>
+                                <span style={{ fontSize:12.5, color:"var(--faint)", width:26 }}>{r.unit || ""}</span>
                               </div>
                             </div>
                           );
                         })}
                       </div>
 
-                      <div style={{ fontSize:11.5, color:"var(--faint)", lineHeight:1.7, marginTop:16 }}>
+                      <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:16 }}>
                         上の日付を押すと、その日の発注が出ます。数量はその場で直せます。
                       </div>
                     </>
@@ -1844,14 +1844,14 @@ function OrderTab() {
                   {/* 週の切り替え */}
                   <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
                     <button onClick={() => { const d = new Date(wkStart); d.setDate(d.getDate() - 7); setWkStart(d); }} aria-label="前の週"
-                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
                     <span style={{ fontSize:13, fontWeight:900, color:"var(--ink)" }}>
                       {wkStart.getMonth()+1}/{wkStart.getDate()}〜{(() => { const e = new Date(wkStart); e.setDate(e.getDate()+6); return `${e.getMonth()+1}/${e.getDate()}`; })()}
                     </span>
                     <button onClick={() => { const d = new Date(wkStart); d.setDate(d.getDate() + 7); setWkStart(d); }} aria-label="次の週"
-                      style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
                     <button onClick={() => setWkStart(mondayOf(new Date()))}
-                      style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>今週</button>
+                      style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>今週</button>
                   </div>
 
                   {/* 曜日を選ぶ */}
@@ -1867,17 +1867,17 @@ function OrderTab() {
                             color: sel ? "#fff" : (dnum===0 ? "#d1554f" : dnum===6 ? "#3b7dd8" : "var(--text)"),
                             borderRadius:10, padding:"7px 0 6px", cursor:"pointer" }}>
                           <span style={{ display:"block", fontSize:12, fontWeight:900 }}>{OI_WDAY[dnum]}</span>
-                          <span style={{ display:"block", fontSize:11.5, fontWeight:800, opacity:0.75, marginTop:1 }}>{d.getDate()}</span>
-                          {n > 0 && <span style={{ display:"block", fontSize:11.5, fontWeight:900, marginTop:2, color: sel ? "#fff" : "var(--primary-soft)" }}>{n}</span>}
+                          <span style={{ display:"block", fontSize:12.5, fontWeight:800, opacity:0.75, marginTop:1 }}>{d.getDate()}</span>
+                          {n > 0 && <span style={{ display:"block", fontSize:12.5, fontWeight:900, marginTop:2, color: sel ? "#fff" : "var(--primary-soft)" }}>{n}</span>}
                         </button>
                       );
                     })}
                   </div>
 
                   {/* この曜日に入っているもの */}
-                  <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
+                  <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
                     <div style={{ fontSize:12, fontWeight:900, color:"var(--ink)", marginBottom: onDay.length ? 9 : 0 }}>
-                      {wd}曜に発注するもの {onDay.length > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:"var(--primary-soft)" }}>{onDay.length}件</span>}
+                      {wd}曜に発注するもの {onDay.length > 0 && <span style={{ fontSize:12.5, fontWeight:900, color:"var(--primary-soft)" }}>{onDay.length}件</span>}
                     </div>
                     {onDay.length === 0 ? (
                       <div style={{ fontSize:12, color:"var(--faint)", lineHeight:1.6, marginTop:6 }}>下から品目を押すと、この曜日に入ります</div>
@@ -1889,21 +1889,21 @@ function OrderTab() {
                             <span style={{ flex:1, minWidth:0 }}>
                               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.item_name}</span>
                               {(r.maker || r.price != null || r.life_days != null) && (
-                                <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                                <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                                   {[r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")}
                                 </span>
                               )}
                             </span>
                             <button onClick={() => { const v = Number(r[dk] || 0) - 1; setCell(r, dk, v <= 0 ? "" : String(v)); }}
                               aria-label={`${r.item_name}を1へらす`}
-                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
+                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>−</button>
                             <input value={r[dk] == null ? "" : String(r[dk])} onChange={e => setCell(r, dk, e.target.value.replace(/[^0-9.]/g, ""))}
                               inputMode="decimal" aria-label={`${r.item_name}の数量`}
                               style={{ width:42, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:7, padding:"6px 2px", fontSize:14, fontWeight:900, textAlign:"center", outline:"none", fontFamily:"inherit" }} />
                             <button onClick={() => setCell(r, dk, String(Number(r[dk] || 0) + 1))}
                               aria-label={`${r.item_name}を1ふやす`}
-                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>＋</button>
-                            <span style={{ fontSize:11.5, color:"var(--faint)", width:22, flexShrink:0 }}>{r.unit || ""}</span>
+                              style={{ width:28, height:28, flexShrink:0, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:7, fontSize:16, fontWeight:900, cursor:"pointer", lineHeight:1, padding:0, display:"flex", alignItems:"center", justifyContent:"center" }}>＋</button>
+                            <span style={{ fontSize:12.5, color:"var(--faint)", width:22, flexShrink:0 }}>{r.unit || ""}</span>
                             <button onClick={() => setCell(r, dk, "")} aria-label="この曜日から外す"
                               style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:15, fontWeight:900, cursor:"pointer", padding:"0 2px", flexShrink:0 }}>×</button>
                           </div>
@@ -1914,7 +1914,7 @@ function OrderTab() {
 
                   {/* 品目を押して入れる */}
                   {active.length > 0 && (
-                    <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
+                    <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
                       <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:9 }}>押すと{wd}曜に入ります</div>
                       <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:9 }}>
                         {cats.map(c => {
@@ -1926,8 +1926,8 @@ function OrderTab() {
                               style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff",
                                 color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                               {c}
-                              {n > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:11.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{n}</span>}
-                              <span style={{ fontSize:11.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block" }}>▼</span>
+                              {n > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{n}</span>}
+                              <span style={{ fontSize:12.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block" }}>▼</span>
                             </button>
                           );
                         })}
@@ -1950,7 +1950,7 @@ function OrderTab() {
                                 {it.thumb && <img src={it.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0 }} />}
                                 <span style={{ minWidth:0, flex:1 }}>
                                   <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</span>
-                                  <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", marginTop:1 }}>
+                                  <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", marginTop:1 }}>
                                     {[it.maker, it.life_days != null ? `D+${it.life_days}` : null].filter(Boolean).join(" ／ ")}
                                   </span>
                                 </span>
@@ -1964,7 +1964,7 @@ function OrderTab() {
                   )}
 
                   {/* 全体の補足 */}
-                  <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
+                  <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", marginBottom:12 }}>
                     <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:7 }}>全体の補足（紙に出ます）</div>
                     <textarea value={sheetNote} onChange={e => setSheetNote(e.target.value)} onBlur={saveNote} rows={2}
                       placeholder="例：数量は目安です。売れ行きを見て調整してください。"
@@ -1973,7 +1973,7 @@ function OrderTab() {
 
                   {/* 実績として記録する */}
                   {recCount() > 0 && (
-                    <div style={{ background:"#fff", border:"1.5px solid #cfe0d8", borderRadius:11, padding:"12px 13px", marginBottom:12 }}>
+                    <div style={{ background:"var(--card, #fff)", border:"1.5px solid #cfe0d8", borderRadius:11, padding:"12px 13px", marginBottom:12 }}>
                       <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>過ぎた日を記録に残す</div>
                       <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:10 }}>
                         日が過ぎた分（{recCount()}件）を実績として残します。数量が違っていたら、先に上で直してください。
@@ -1992,7 +1992,7 @@ function OrderTab() {
                   <div style={{ display:"flex", gap:8 }}>
                     {rows.length === 0 && (
                       <button onClick={copyPrevWeek} disabled={sheetBusy}
-                        style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:11, padding:"13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>前の週をコピー</button>
+                        style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:11, padding:"13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>前の週をコピー</button>
                     )}
                     {rows.length > 0 && (
                       <button onClick={() => window.print()}
@@ -2009,14 +2009,14 @@ function OrderTab() {
           <>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
               <button onClick={() => { const d = new Date(wkStart); d.setDate(d.getDate() - 7); setWkStart(d); }} aria-label="前の週"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
               <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>
                 {wkStart.getMonth()+1}/{wkStart.getDate()}〜{(() => { const e = new Date(wkStart); e.setDate(e.getDate()+6); return `${e.getMonth()+1}/${e.getDate()}`; })()}
               </span>
               <button onClick={() => { const d = new Date(wkStart); d.setDate(d.getDate() + 7); setWkStart(d); }} aria-label="次の週"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:30, height:30, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
               <button onClick={() => setWkStart(mondayOf(new Date()))}
-                style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>今週</button>
+                style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>今週</button>
             </div>
 
             {rows.length === 0 ? (
@@ -2027,7 +2027,7 @@ function OrderTab() {
             ) : (
               <>
                 {/* 画面のプレビュー */}
-                <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"13px", marginBottom:14 }}>
+                <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"13px", marginBottom:14 }}>
                   <div style={{ fontSize:12, fontWeight:900, color:"var(--sub)", marginBottom:11 }}>印刷される内容</div>
                   {SHEET_DAYS.map(([k, l], i) => {
                     const day = rows.filter(r => r[k] != null && r[k] !== "");
@@ -2035,7 +2035,7 @@ function OrderTab() {
                       <div key={k} style={{ marginBottom:11 }}>
                         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:5 }}>
                           <span style={{ fontSize:12.5, fontWeight:900, color: i===6 ? "#d1554f" : i===5 ? "#3b7dd8" : "var(--ink)" }}>{l}曜</span>
-                          <span style={{ fontSize:11.5, color:"var(--faint)" }}>{day.length}件</span>
+                          <span style={{ fontSize:12.5, color:"var(--faint)" }}>{day.length}件</span>
                         </div>
                         {day.length === 0 ? (
                           <div style={{ fontSize:12, color:"var(--faint)", paddingLeft:4 }}>—</div>
@@ -2058,7 +2058,7 @@ function OrderTab() {
                   style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:900, cursor:"pointer" }}>
                   1週間分を印刷する（A4）
                 </button>
-                <div style={{ fontSize:11.5, color:"var(--faint)", lineHeight:1.7, marginTop:12 }}>
+                <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:12 }}>
                   曜日ごとに分かれた表が出ます。チェック欄と数量の記入欄があるので、そのまま現場で使えます。
                 </div>
               </>
@@ -2086,8 +2086,8 @@ function OrderTab() {
                   return (
                     <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer"
                       style={{ display:"flex", alignItems:"center", gap:11, textDecoration:"none",
-                        background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"13px 14px" }}>
-                      <span style={{ flexShrink:0, background:k.bg, color:k.c, fontSize:11.5, fontWeight:900,
+                        background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"13px 14px" }}>
+                      <span style={{ flexShrink:0, background:k.bg, color:k.c, fontSize:12.5, fontWeight:900,
                         borderRadius:7, padding:"5px 9px", minWidth:42, textAlign:"center" }}>{k.t}</span>
                       <span style={{ flex:1, minWidth:0, fontSize:14.5, fontWeight:700, color:"var(--ink)",
                         overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.title}</span>
@@ -2104,10 +2104,10 @@ function OrderTab() {
             {/* 月の切り替え */}
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:11 }}>
               <button onClick={() => setCursor(new Date(y, mo - 1, 1))} aria-label="前の月"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:34, height:34, fontSize:15, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:34, height:34, fontSize:15, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
               <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>{y}年{mo + 1}月</span>
               <button onClick={() => setCursor(new Date(y, mo + 1, 1))} aria-label="次の月"
-                style={{ border:"1px solid var(--line)", background:"#fff", borderRadius:8, width:34, height:34, fontSize:15, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:8, width:34, height:34, fontSize:15, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
               <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:"var(--sub)" }}>
                 {monthCount}回 / {monthQty > 0 ? monthQty : 0}
               </span>
@@ -2116,17 +2116,17 @@ function OrderTab() {
             {/* 品目でしぼる */}
             {active.length > 0 && (
               <select value={focusItem} onChange={e => setFocusItem(e.target.value)}
-                style={{ ...inp, marginBottom:11, fontSize:12.5, background:"#fff" }}>
+                style={{ ...inp, marginBottom:11, fontSize:12.5, background:"var(--card, #fff)" }}>
                 <option value="">すべての品目</option>
                 {active.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
               </select>
             )}
 
             {/* カレンダー */}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"10px", marginBottom:12 }}>
+            <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"10px", marginBottom:12 }}>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(7, 1fr)", gap:3, marginBottom:4 }}>
                 {OI_WDAY.map((w, i) => (
-                  <div key={w} style={{ textAlign:"center", fontSize:11.5, fontWeight:900, color: i===0?"#d1554f":i===6?"#3b7dd8":"var(--faint)", padding:"3px 0" }}>{w}</div>
+                  <div key={w} style={{ textAlign:"center", fontSize:12.5, fontWeight:900, color: i===0?"#d1554f":i===6?"#3b7dd8":"var(--faint)", padding:"3px 0" }}>{w}</div>
                 ))}
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(7, 1fr)", gap:3 }}>
@@ -2143,7 +2143,7 @@ function OrderTab() {
                       style={{ aspectRatio:"1", border: isPicked ? "2px solid var(--primary-soft)" : isToday ? "1.5px solid #e0a020" : "1px solid var(--line)",
                         background:bg, borderRadius:8, padding:2, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1 }}>
                       <span style={{ fontSize:12, fontWeight: isToday ? 900 : 700, color:"var(--ink)" }}>{d}</span>
-                      {n > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:"#2c6b45" }}>{n}件</span>}
+                      {n > 0 && <span style={{ fontSize:12.5, fontWeight:900, color:"#2c6b45" }}>{n}件</span>}
                     </button>
                   );
                 })}
@@ -2151,7 +2151,7 @@ function OrderTab() {
             </div>
 
             {/* 週ごとの推移 */}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:12 }}>
+            <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px", marginBottom:12 }}>
               <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>週ごとの推移</div>
               {weeks.map(w => (
                 <div key={w.no} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
@@ -2169,11 +2169,11 @@ function OrderTab() {
             </div>
 
             {/* 選んだ日の記録 */}
-            <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px" }}>
+            <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"12px 13px" }}>
               <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>
                 {Number(pickDate.slice(5,7))}月{Number(pickDate.slice(8,10))}日（{OI_WDAY[new Date(pickDate + "T00:00:00").getDay()]}）に発注したもの
               </div>
-              <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:10 }}>カレンダーの日を押すと切り替わります</div>
+              <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:10 }}>カレンダーの日を押すと切り替わります</div>
 
               {(() => {
                 const dayLogs = logs.filter(l => l.ordered_on === pickDate);
@@ -2237,7 +2237,7 @@ function OrderTab() {
             )}
 
             {formOpen && (
-              <div style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:12, padding:"13px", marginBottom:14 }}>
+              <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"13px", marginBottom:14 }}>
                 <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>{editId ? "品目を直す" : "品目を追加"}</div>
                 <input value={form.name} onChange={e => setF("name", e.target.value)} placeholder="品名（例：もずく）" style={{ ...inp, marginBottom:8 }} />
                 <input value={form.maker} onChange={e => setF("maker", e.target.value)} placeholder="メーカー・仕入先（例：CGC）" style={{ ...inp, marginBottom:8, fontSize:12.5 }} />
@@ -2261,7 +2261,7 @@ function OrderTab() {
               return off.length > 0 ? (
                 <div style={{ marginBottom:12 }}>
                   <button onClick={() => setShowOff(v => !v)}
-                    style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:8, padding:"7px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+                    style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:8, padding:"7px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                     使わないもの {off.length}件 {showOff ? "を隠す" : "を見る"}
                   </button>
                   {showOff && (
@@ -2271,7 +2271,7 @@ function OrderTab() {
                           {it.thumb && <img src={it.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0, opacity:0.5 }} />}
                           <span style={{ fontSize:12.5, fontWeight:700, color:"var(--sub)", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.name}</span>
                           <button onClick={() => toggleActive(it, true)}
-                            style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--primary)", borderRadius:7, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer", flexShrink:0 }}>もどす</button>
+                            style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:7, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer", flexShrink:0 }}>もどす</button>
                           <button onClick={() => removeItem(it)} aria-label="完全に消す"
                             style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:14, fontWeight:900, cursor:"pointer", padding:"0 3px", flexShrink:0 }}>×</button>
                         </div>
@@ -2293,7 +2293,7 @@ function OrderTab() {
                   const n = logs.filter(l => l.item_id === it.id).length;
                   const q = logs.filter(l => l.item_id === it.id).reduce((a, l) => a + Number(l.qty || 0), 0);
                   return (
-                    <div key={it.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", background:"#fff", display:"flex", gap:11 }}>
+                    <div key={it.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"11px 12px", background:"var(--card, #fff)", display:"flex", gap:11 }}>
                       {it.thumb && <img src={it.thumb} alt="" style={{ width:52, height:52, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--bg)" }} />}
                       <div style={{ minWidth:0, flex:1 }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
@@ -2304,18 +2304,18 @@ function OrderTab() {
                       {(it.maker || it.note) && <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.5, marginBottom:7 }}>{[it.maker, it.note].filter(Boolean).join(" / ")}</div>}
                       <div style={{ display:"flex", gap:6 }}>
                         <button onClick={() => openEdit(it)}
-                          style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:7, padding:"5px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>直す</button>
+                          style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:7, padding:"5px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>直す</button>
                         {confirmOff === it.id ? (
                           <span style={{ marginLeft:"auto", display:"flex", gap:5, alignItems:"center" }}>
-                            <span style={{ fontSize:11.5, color:"var(--sub)", fontWeight:700 }}>使わない？</span>
+                            <span style={{ fontSize:12.5, color:"var(--sub)", fontWeight:700 }}>使わない？</span>
                             <button onClick={() => setConfirmOff(null)}
-                              style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>やめる</button>
+                              style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>やめる</button>
                             <button onClick={() => toggleActive(it, false)}
                               style={{ border:"none", background:"#c07a1a", color:"#fff", borderRadius:7, padding:"5px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>はい</button>
                           </span>
                         ) : (
                           <button onClick={() => setConfirmOff(it.id)}
-                            style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:7, padding:"5px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>使わない</button>
+                            style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:7, padding:"5px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>使わない</button>
                         )}
                       </div>
                       </div>
@@ -2596,7 +2596,7 @@ function BundleTab() {
                         <img src={p.image_url} alt="" style={{ width:32, height:44, objectFit:"cover", borderRadius:4, flexShrink:0, background:"var(--bg)" }} />
                         <span style={{ minWidth:0, flex:1 }}>
                           <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</span>
-                          <span style={{ display:"block", fontSize:11.5, color:"var(--faint)" }}>{p.store_name}</span>
+                          <span style={{ display:"block", fontSize:12.5, color:"var(--faint)" }}>{p.store_name}</span>
                         </span>
                         <span style={{ fontSize:16, fontWeight:900, color:"var(--primary-soft)", flexShrink:0 }}>＋</span>
                       </button>
@@ -2711,9 +2711,9 @@ function BundleTab() {
         <span style={{ minWidth:0, flex:1 }}>
           <span style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
             <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
-            {soon && <span style={{ fontSize:11.5, fontWeight:900, color:"#fff", background:"#e0855f", borderRadius:999, padding:"1px 7px", flexShrink:0 }}>来月</span>}
+            {soon && <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background:"#e0855f", borderRadius:999, padding:"1px 7px", flexShrink:0 }}>来月</span>}
           </span>
-          {b.note && <span style={{ display:"block", fontSize:11.5, color:"var(--sub)", lineHeight:1.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.note}</span>}
+          {b.note && <span style={{ display:"block", fontSize:12.5, color:"var(--sub)", lineHeight:1.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.note}</span>}
         </span>
         <span style={{ fontSize:12, fontWeight:900, color: n > 0 ? col : "var(--faint)", flexShrink:0, whiteSpace:"nowrap" }}>
           {n > 0 ? `${n}枚` : "—"}
@@ -2748,7 +2748,7 @@ function BundleTab() {
                         style={{ border:"none", borderLeft:"1px solid var(--line)", borderRadius:0,
                           background: isView ? "var(--primary)" : "var(--card, #fff)",
                           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
-                          padding:"5px 0 6px", fontSize:11.5, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
+                          padding:"5px 0 6px", fontSize:12.5, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
                         {m}月
                       </button>
                     );
@@ -2765,8 +2765,8 @@ function BundleTab() {
                       style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, width:"100%", alignItems:"stretch",
                         border:"none", borderBottom:"1px solid var(--line)", background: on ? "var(--soft)" : "transparent", borderRadius:0, padding:"0 2px", margin:0, cursor:"pointer" }}>
                       <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, padding:"7px 4px", position:"sticky", left:0, zIndex:2, background: on ? "var(--soft)" : "var(--card, #fff)", paddingRight:4, borderRight:"1px solid var(--line)" }}>
-                        <span style={{ fontSize:11.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
-                        {n > 0 && <span style={{ fontSize:11.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
+                        <span style={{ fontSize:12.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
+                        {n > 0 && <span style={{ fontSize:12.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
                       </span>
                       {MONTH_ORDER.map((mm) => {
                         const m = String(mm), hit = b.months.includes(mm);
@@ -2785,9 +2785,9 @@ function BundleTab() {
 
                 {/* 今月の印 */}
                 <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, padding:"0 2px", marginTop:3 }}>
-                  <div style={{ fontSize:11.5, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:6 }}>今月</div>
+                  <div style={{ fontSize:12.5, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:6 }}>今月</div>
                   {MONTH_ORDER.map((mm) => (
-                    <div key={mm} style={{ textAlign:"center", fontSize:11.5, fontWeight:900, color:"var(--primary-soft)" }}>
+                    <div key={mm} style={{ textAlign:"center", fontSize:12.5, fontWeight:900, color:"var(--primary-soft)" }}>
                       {mm === NOW_M ? "▲" : ""}
                     </div>
                   ))}
@@ -2841,7 +2841,7 @@ function BundleTab() {
               </>
             )}
 
-            <div style={{ fontSize:11.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
+            <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
               上の図の月を押すと、その月の行事に切り替わります。右の数字はPOPの枚数です。
             </div>
           </>

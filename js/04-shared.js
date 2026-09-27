@@ -436,7 +436,7 @@ function UploadModal({
       border: "1px solid var(--line)",
       borderRadius: 10,
       padding: "8px 9px",
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, /*#__PURE__*/React.createElement("img", {
     src: it.preview,
@@ -478,7 +478,7 @@ function UploadModal({
   }, product.trim() ? "上の「商品名」が使われます" : "上に商品名を入れてください"), it.warn && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 5,
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "#8a6d00",
       background: "#fff6de",
       border: "1px solid #eeddad",
@@ -1010,7 +1010,7 @@ function PopDetail({
     fill: active && fillWhenActive ? "#fff" : "none"
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "#fff",
       background: "rgba(22,30,42,0.55)",
@@ -1230,7 +1230,7 @@ function PopDetail({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       padding: "18px",
       width: "100%",
@@ -1338,7 +1338,7 @@ function PopDetail({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       width: "100%",
       maxWidth: 400,
@@ -1449,7 +1449,7 @@ function PopDetail({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: "20px 20px 0 0",
       width: "100%",
       maxWidth: 460,
@@ -1480,7 +1480,7 @@ function PopDetail({
       width: "100%",
       textAlign: "left",
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 12,
       padding: "13px 14px",
       marginBottom: 8,
@@ -1559,7 +1559,7 @@ function PopDetail({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       padding: "18px",
       width: "100%",
@@ -1814,7 +1814,7 @@ function PopDetail({
       borderRadius: 9,
       fontSize: 12.5,
       outline: "none",
-      background: "#fff",
+      background: "var(--card, #fff)",
       flexShrink: 0,
       maxWidth: 110
     }

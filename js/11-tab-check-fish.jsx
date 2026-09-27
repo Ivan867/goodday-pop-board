@@ -212,13 +212,13 @@ function PopCheckTab() {
     <div style={{ marginBottom:11 }}>
       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
         <span style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", width:78, flexShrink:0 }}>{label}</span>
-        <span style={{ fontSize:11, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px", flexShrink:0 }}>{level}</span>
+        <span style={{ fontSize:12, fontWeight:800, color:"var(--soft-text)", background:"var(--soft)", borderRadius:6, padding:"1px 7px", flexShrink:0 }}>{level}</span>
         <div style={{ flex:1, height:6, background:"var(--chip)", borderRadius:3, overflow:"hidden" }}>
           <div style={{ width:`${score}%`, height:"100%", background:barColor(score), borderRadius:3, transition:"width .5s ease" }} />
         </div>
-        <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", width:26, textAlign:"right", flexShrink:0 }}>{score}</span>
+        <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)", width:26, textAlign:"right", flexShrink:0 }}>{score}</span>
       </div>
-      <div style={{ fontSize:11.5, color:"var(--text)", lineHeight:1.6, marginTop:3, paddingLeft:2 }}>{comment}</div>
+      <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.6, marginTop:3, paddingLeft:2 }}>{comment}</div>
     </div>
   );
 
@@ -228,7 +228,7 @@ function PopCheckTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:900, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>POP診断</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>POP診断</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません</div>
         </div>
       </div>
@@ -240,7 +240,7 @@ function PopCheckTab() {
               {dzCheck.over ? "ここに離す" : "📷 画像を選ぶ"}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
-            <button onClick={openPicker} style={{ flex:1, border:"1.5px solid var(--line)", background:"#fff", borderRadius:11, fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>🗂 最近のPOPから</button>
+            <button onClick={openPicker} style={{ flex:1, border:"1.5px solid var(--line)", background:"var(--card, #fff)", borderRadius:11, fontSize:13, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>🗂 最近のPOPから</button>
           </div>
           {picker && (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6, marginTop:10 }}>
@@ -273,7 +273,7 @@ function PopCheckTab() {
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14 }}>
                 <div style={{ width:74, height:74, borderRadius:"50%", background: res.j.total >= 70 ? "#2f6fb0" : res.j.total >= 55 ? "#C7892B" : "#b3261e", color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   <div style={{ fontSize:27, fontWeight:900, lineHeight:1 }}>{res.j.grade}</div>
-                  <div style={{ fontSize:11, fontWeight:800 }}>{res.j.total}点</div>
+                  <div style={{ fontSize:12, fontWeight:800 }}>{res.j.total}点</div>
                 </div>
                 <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.75, textAlign:"left", fontWeight:700 }}>{res.j.summary}</div>
               </div>
@@ -285,7 +285,7 @@ function PopCheckTab() {
                   </div>
                 ))}
               </div>
-              <div style={{ fontSize:10.5, color:"var(--sub)", marginTop:6 }}>主要カラー　／　推定色数：{res.m.colorCount}色</div>
+              <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:6 }}>主要カラー　／　推定色数：{res.m.colorCount}色</div>
             </div>
 
             <div className="wcard">
@@ -305,7 +305,7 @@ function PopCheckTab() {
               <div style={{ fontSize:13, fontWeight:900, color:"var(--primary)", marginBottom:7 }}>🔧 改善案</div>
               {res.j.imp.map((g,i) => <div key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.9 }}>・{g}</div>)}
             </div>
-            <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", lineHeight:1.7 }}>診断は機械的な目安です。最後は売場での見え方を優先してください。</div>
+            <div style={{ fontSize:12, color:"var(--faint)", textAlign:"center", lineHeight:1.7 }}>診断は機械的な目安です。最後は売場での見え方を優先してください。</div>
           </>
         )}
       </div>
@@ -376,30 +376,30 @@ function FishTab() {
     <div className="min-vh" style={{ background:"var(--bg)" }}>
       <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
         <div style={{ maxWidth:900, margin:"0 auto" }}>
-          <div style={{ color:"#1d3a57", fontSize:18, fontWeight:900 }}>魚図鑑</div>
+          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>魚図鑑</div>
           <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース</div>
         </div>
       </div>
       <div style={{ maxWidth:900, margin:"0 auto", padding:"14px 16px 120px" }}>
         <input value={q} onChange={e=>setQ(e.target.value)} placeholder="魚の名前やキーワードで検索…"
-          style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:12, padding:"11px 14px", fontSize:14, marginBottom:12, background:"#fff" }} />
+          style={{ width:"100%", boxSizing:"border-box", border:"1.5px solid var(--line)", borderRadius:12, padding:"11px 14px", fontSize:14, marginBottom:12, background:"var(--card, #fff)" }} />
         <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:9 }}>
           {list.map((f) => {
             const idx = FISH_DB.indexOf(f);
             const now = inSeason(f) && !seasonAll(f);
             return (
               <div key={f.name} onClick={() => setOpenIdx(idx)}
-                style={{ background:"#fff", border: now ? "1.5px solid var(--primary)" : "1px solid var(--line)", borderRadius:13, padding:"13px 12px", cursor:"pointer", position:"relative", minHeight:92, display:"flex", flexDirection:"column" }}>
+                style={{ background:"var(--card, #fff)", border: now ? "1.5px solid var(--primary)" : "1px solid var(--line)", borderRadius:13, padding:"13px 12px", cursor:"pointer", position:"relative", minHeight:92, display:"flex", flexDirection:"column" }}>
                 {now && <span style={{ position:"absolute", top:8, right:8, fontSize:9, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:6, padding:"2px 6px" }}>今が旬</span>}
                 <div style={{ fontSize:15.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3, marginBottom:4 }}>{f.name}</div>
-                <span style={{ fontSize:10, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 7px", alignSelf:"flex-start", marginBottom:6 }}>{mLabel(f)}</span>
-                <div style={{ fontSize:11, color:"var(--sub)", lineHeight:1.55, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{f.point}</div>
+                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 7px", alignSelf:"flex-start", marginBottom:6 }}>{mLabel(f)}</span>
+                <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.55, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{f.point}</div>
               </div>
             );
           })}
         </div>
         {list.length === 0 && <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0", fontSize:13 }}>見つかりませんでした</div>}
-        <div style={{ fontSize:11, color:"var(--faint)", textAlign:"center", marginTop:12, lineHeight:1.7 }}>内容はAIが知識から書き下ろした参考情報です。<br/>追加したい魚や直したい内容があれば管理者へ。</div>
+        <div style={{ fontSize:12, color:"var(--faint)", textAlign:"center", marginTop:12, lineHeight:1.7 }}>内容はAIが知識から書き下ろした参考情報です。<br/>追加したい魚や直したい内容があれば管理者へ。</div>
       </div>
 
       {openIdx != null && FISH_DB[openIdx] && (() => {
@@ -408,12 +408,12 @@ function FishTab() {
         return (
           <>
             <div onClick={() => setOpenIdx(null)} style={{ position:"fixed", inset:0, zIndex:301, background:"rgba(0,0,0,0.4)" }} />
-            <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:302, background:"#fff", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.2)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 18px calc(24px + env(safe-area-inset-bottom))", maxHeight:"82vh", overflowY:"auto" }}>
+            <div style={{ position:"fixed", left:0, right:0, bottom:0, zIndex:302, background:"var(--card, #fff)", borderRadius:"22px 22px 0 0", boxShadow:"0 -8px 30px rgba(0,0,0,0.2)", animation:"sheetUp .28s cubic-bezier(.32,.72,.28,1)", padding:"10px 18px calc(24px + env(safe-area-inset-bottom))", maxHeight:"82vh", overflowY:"auto" }}>
               <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 14px" }} />
               <div style={{ display:"flex", alignItems:"center", gap:9, marginBottom:12 }}>
                 <span style={{ fontSize:20, fontWeight:900, color:"var(--ink)" }}>{f.name}</span>
-                {now && <span style={{ fontSize:10.5, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:7, padding:"2px 8px" }}>今が旬</span>}
-                <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"2px 8px" }}>{mLabel(f)}</span>
+                {now && <span style={{ fontSize:11.5, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:7, padding:"2px 8px" }}>今が旬</span>}
+                <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"2px 8px" }}>{mLabel(f)}</span>
                 <button onClick={() => setOpenIdx(null)} style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--text)", width:32, height:32, borderRadius:"50%", fontSize:16, fontWeight:800, cursor:"pointer" }}>✕</button>
               </div>
               <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.85 }}>

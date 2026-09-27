@@ -25,6 +25,15 @@ const PW_CACHE = {};
 
 // 共通fetch：REST/RPCの定型（headers・エラー処理）を1箇所に集約。
 // body があれば JSON 化、prefer は Prefer ヘッダー（"return=representation" 等）。
+// 書き込みが失敗したときに、画面へ知らせる（黙って失敗しないようにする）
+function sbNotifyFail(method, detail) {
+  if (method === "GET") return; // 読み込みの失敗は画面側の表示で分かるので出さない
+  try {
+    window.dispatchEvent(new CustomEvent("apiError", {
+      detail: String(detail || "").slice(0, 200)
+    }));
+  } catch (e) {}
+}
 async function sbFetch(path, {
   method = "GET",
   body,
@@ -40,12 +49,23 @@ async function sbFetch(path, {
     } : {}),
     ...headers
   };
-  const r = await fetch(`${SB_URL}${path}`, {
-    method,
-    headers: h(extra),
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  });
-  if (!r.ok) throw new Error(await r.text());
+  let r;
+  try {
+    r = await fetch(`${SB_URL}${path}`, {
+      method,
+      headers: h(extra),
+      body: body !== undefined ? JSON.stringify(body) : undefined
+    });
+  } catch (e) {
+    // 圏外・電波切れなど、そもそも届かなかった場合
+    sbNotifyFail(method, "network");
+    throw e;
+  }
+  if (!r.ok) {
+    const t = await r.text();
+    sbNotifyFail(method, t);
+    throw new Error(t);
+  }
   return r;
 }
 const sbJson = async (path, opts) => (await sbFetch(path, opts)).json(); // 配列/JSONを返す

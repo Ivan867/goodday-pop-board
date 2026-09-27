@@ -29,7 +29,7 @@ function IdeaTab({ embedded } = {}) {
     <div style={{ maxWidth:1100, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
       {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>アイデア</div>
-        <div style={{ fontSize:11.5, opacity:0.85, marginTop:3 }}>ほかの売場を手がかりに起こした、ポップや売場の案です</div>
+        <div style={{ fontSize:12.5, opacity:0.85, marginTop:3 }}>ほかの売場を手がかりに起こした、ポップや売場の案です</div>
       </div>}
 
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="さがす（さんま・刺身・バナー など）"
@@ -55,11 +55,11 @@ function IdeaTab({ embedded } = {}) {
                   style={{ width:"100%", aspectRatio:"1 / 1.2", objectFit:"contain", display:"block", background:"var(--card, #fff)" }} />
                 {im.length > 1 && (
                   <span style={{ position:"absolute", top:6, right:6, background:"rgba(22,30,42,0.7)", color:"#fff",
-                    fontSize:11.5, fontWeight:900, borderRadius:10, padding:"2px 8px" }}>{im.length}枚</span>
+                    fontSize:12.5, fontWeight:900, borderRadius:10, padding:"2px 8px" }}>{im.length}枚</span>
                 )}
                 <span style={{ display:"block", padding:"8px 9px 9px", borderTop:"1px solid var(--line)" }}>
                   <span style={{ display:"block", fontSize:13.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.title}</span>
-                  <span style={{ display:"block", fontSize:11.5, color:"var(--faint)", marginTop:2 }}>{fmt(it.created_at)}</span>
+                  <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", marginTop:2 }}>{fmt(it.created_at)}</span>
                 </span>
               </button>
             );
@@ -90,11 +90,11 @@ function IdeaTab({ embedded } = {}) {
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {imgs(open).map((u, i) => (
                 <a key={i} href={u} target="_blank" rel="noopener noreferrer" style={{ display:"block" }}>
-                  <img src={u} alt="" style={{ width:"100%", display:"block", borderRadius:4, background:"#fff" }} />
+                  <img src={u} alt="" style={{ width:"100%", display:"block", borderRadius:4, background:"var(--card, #fff)" }} />
                 </a>
               ))}
             </div>
-            <div style={{ color:"rgba(255,255,255,0.55)", fontSize:11.5, marginTop:12, lineHeight:1.8 }}>
+            <div style={{ color:"rgba(255,255,255,0.55)", fontSize:12.5, marginTop:12, lineHeight:1.8 }}>
               画像を押すと大きく開きます。長押しで保存できます。
             </div>
           </div>

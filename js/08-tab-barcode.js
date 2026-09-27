@@ -595,11 +595,11 @@ function BarcodeTab() {
       left: 14,
       background: "var(--bg)",
       padding: "0 8px",
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)"
     }
-  }, pi + 1, "ページ目（", pg.length, "枚）"), /*#__PURE__*/React.createElement("div", {
+  }, pi + 1, "\u30DA\u30FC\u30B8\u76EE\uFF08", pg.length, "\u679A\uFF09"), /*#__PURE__*/React.createElement("div", {
     className: "bc-grid",
     style: {
       display: "grid",
@@ -747,7 +747,7 @@ function BarcodeTab() {
       color: "var(--ink)",
       marginBottom: 10
     }
-  }, "発注バーコード生成"), /*#__PURE__*/React.createElement("div", {
+  }, "\u767A\u6CE8\u30D0\u30FC\u30B3\u30FC\u30C9\u751F\u6210"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "#8a6d00",
@@ -758,7 +758,7 @@ function BarcodeTab() {
       marginBottom: 13,
       lineHeight: 1.55
     }
-  }, "※ この画面はパソコンのブラウザでの操作を推奨します（スマートフォンでは一覧が多いと動作が重くなる場合があります）。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u203B \u3053\u306E\u753B\u9762\u306F\u30D1\u30BD\u30B3\u30F3\u306E\u30D6\u30E9\u30A6\u30B6\u3067\u306E\u64CD\u4F5C\u3092\u63A8\u5968\u3057\u307E\u3059\uFF08\u30B9\u30DE\u30FC\u30C8\u30D5\u30A9\u30F3\u3067\u306F\u4E00\u89A7\u304C\u591A\u3044\u3068\u52D5\u4F5C\u304C\u91CD\u304F\u306A\u308B\u5834\u5408\u304C\u3042\u308A\u307E\u3059\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 9,
@@ -768,7 +768,7 @@ function BarcodeTab() {
     onClick: () => cfgRef.current && cfgRef.current.click(),
     style: {
       border: `1.5px solid ${ACCENT}`,
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: ACCENT,
       borderRadius: 9,
       padding: "9px 14px",
@@ -776,7 +776,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "プリセット読み込み"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30D7\u30EA\u30BB\u30C3\u30C8\u8AAD\u307F\u8FBC\u307F"), /*#__PURE__*/React.createElement("button", {
     onClick: exportCfg,
     disabled: !list.length,
     style: {
@@ -789,7 +789,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: list.length ? "pointer" : "not-allowed"
     }
-  }, "プリセット保存（", list.length, "）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u30D7\u30EA\u30BB\u30C3\u30C8\u4FDD\u5B58\uFF08", list.length, "\uFF09"), /*#__PURE__*/React.createElement("input", {
     ref: cfgRef,
     type: "file",
     accept: ".txt,.json,text/plain",
@@ -800,7 +800,7 @@ function BarcodeTab() {
   })), /*#__PURE__*/React.createElement("input", {
     value: listName,
     onChange: e => setListName(e.target.value),
-    placeholder: "プリセット名（印刷の右下に表示されます）",
+    placeholder: "\u30D7\u30EA\u30BB\u30C3\u30C8\u540D\uFF08\u5370\u5237\u306E\u53F3\u4E0B\u306B\u8868\u793A\u3055\u308C\u307E\u3059\uFF09",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -827,14 +827,14 @@ function BarcodeTab() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "共有プリセット"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5171\u6709\u30D7\u30EA\u30BB\u30C3\u30C8"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--text)",
       marginBottom: 12,
       lineHeight: 1.55
     }
-  }, "みんなで使う発注プリセットです。商品マスターを読み込むと使えるようになります。"), master.length === 0 ? null : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u307F\u3093\u306A\u3067\u4F7F\u3046\u767A\u6CE8\u30D7\u30EA\u30BB\u30C3\u30C8\u3067\u3059\u3002\u5546\u54C1\u30DE\u30B9\u30BF\u30FC\u3092\u8AAD\u307F\u8FBC\u3080\u3068\u4F7F\u3048\u308B\u3088\u3046\u306B\u306A\u308A\u307E\u3059\u3002"), master.length === 0 ? null : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       borderRadius: 10,
@@ -854,7 +854,7 @@ function BarcodeTab() {
       background: shTab === "pdf" ? "#222" : "#fff",
       color: shTab === "pdf" ? "#fff" : "#888"
     }
-  }, "PDF（すぐ印刷）"), /*#__PURE__*/React.createElement("button", {
+  }, "PDF\uFF08\u3059\u3050\u5370\u5237\uFF09"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShTab("text"),
     style: {
       flex: 1,
@@ -866,14 +866,14 @@ function BarcodeTab() {
       background: shTab === "text" ? "#222" : "#fff",
       color: shTab === "text" ? "#fff" : "#888"
     }
-  }, "テキスト・プリセット")), sharedLoad ? /*#__PURE__*/React.createElement("div", {
+  }, "\u30C6\u30AD\u30B9\u30C8\u30FB\u30D7\u30EA\u30BB\u30C3\u30C8")), sharedLoad ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "18px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : (() => {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : (() => {
     const rows = shared.filter(p => !!p.pdf_url === (shTab === "pdf"));
     return rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
       style: {
@@ -882,7 +882,7 @@ function BarcodeTab() {
         padding: "18px 0",
         fontSize: 13
       }
-    }, "まだ登録がありません") : /*#__PURE__*/React.createElement("div", {
+    }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         flexDirection: "column",
@@ -931,7 +931,7 @@ function BarcodeTab() {
         }
       }, p.name || "（無名）"), /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 11,
+          fontSize: 12,
           color: "var(--sub)"
         }
       }, isPdf ? "完成PDF（開く／DLして印刷）" : cnt + "点")), !shAdmin && (isPdf ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
@@ -946,11 +946,11 @@ function BarcodeTab() {
           fontWeight: 800,
           cursor: "pointer"
         }
-      }, "開く"), /*#__PURE__*/React.createElement("button", {
+      }, "\u958B\u304F"), /*#__PURE__*/React.createElement("button", {
         onClick: () => downloadPdf(p),
         style: {
           border: `1.5px solid ${ACCENT}`,
-          background: "#fff",
+          background: "var(--card, #fff)",
           color: ACCENT,
           borderRadius: 8,
           padding: "7px 11px",
@@ -970,11 +970,11 @@ function BarcodeTab() {
           fontWeight: 800,
           cursor: "pointer"
         }
-      }, "読込"), /*#__PURE__*/React.createElement("button", {
+      }, "\u8AAD\u8FBC"), /*#__PURE__*/React.createElement("button", {
         onClick: () => downloadShared(p),
         style: {
           border: `1.5px solid ${ACCENT}`,
-          background: "#fff",
+          background: "var(--card, #fff)",
           color: ACCENT,
           borderRadius: 8,
           padding: "7px 11px",
@@ -994,7 +994,7 @@ function BarcodeTab() {
     onClick: () => pdfRef.current && pdfRef.current.click(),
     style: {
       border: "1.5px dashed #f0b48a",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#c2410c",
       borderRadius: 9,
       padding: "9px 14px",
@@ -1002,7 +1002,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "＋ PDFを登録（完成表・複数可）"), /*#__PURE__*/React.createElement("input", {
+  }, "\uFF0B PDF\u3092\u767B\u9332\uFF08\u5B8C\u6210\u8868\u30FB\u8907\u6570\u53EF\uFF09"), /*#__PURE__*/React.createElement("input", {
     ref: pdfRef,
     type: "file",
     accept: "application/pdf,.pdf",
@@ -1013,16 +1013,16 @@ function BarcodeTab() {
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 8,
       lineHeight: 1.6
     }
-  }, "完成したバーコード表のPDFです。生成せず、開く・DLしてそのまま印刷できます。全店で共有されます。")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+  }, "\u5B8C\u6210\u3057\u305F\u30D0\u30FC\u30B3\u30FC\u30C9\u8868\u306EPDF\u3067\u3059\u3002\u751F\u6210\u305B\u305A\u3001\u958B\u304F\u30FBDL\u3057\u3066\u305D\u306E\u307E\u307E\u5370\u5237\u3067\u304D\u307E\u3059\u3002\u5168\u5E97\u3067\u5171\u6709\u3055\u308C\u307E\u3059\u3002")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     onClick: () => sharedRef.current && sharedRef.current.click(),
     style: {
       border: "1.5px dashed #c9c9d2",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "9px 14px",
@@ -1030,7 +1030,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "＋ テキストを登録（.txt・複数可）"), /*#__PURE__*/React.createElement("input", {
+  }, "\uFF0B \u30C6\u30AD\u30B9\u30C8\u3092\u767B\u9332\uFF08.txt\u30FB\u8907\u6570\u53EF\uFF09"), /*#__PURE__*/React.createElement("input", {
     ref: sharedRef,
     type: "file",
     accept: ".txt,.json,text/plain",
@@ -1041,12 +1041,12 @@ function BarcodeTab() {
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 8,
       lineHeight: 1.6
     }
-  }, "「プリセット保存」で書き出した.txtです。読込・DLできます。全店で共有されます。"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\u30D7\u30EA\u30BB\u30C3\u30C8\u4FDD\u5B58\u300D\u3067\u66F8\u304D\u51FA\u3057\u305F.txt\u3067\u3059\u3002\u8AAD\u8FBC\u30FBDL\u3067\u304D\u307E\u3059\u3002\u5168\u5E97\u3067\u5171\u6709\u3055\u308C\u307E\u3059\u3002"))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 12,
       borderTop: "1px solid #f0f0f2",
@@ -1067,7 +1067,7 @@ function BarcodeTab() {
       padding: 0,
       textDecoration: "underline"
     }
-  }, "🔧 管理モード（削除する）"), !shAdmin && shPwOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDD27 \u7BA1\u7406\u30E2\u30FC\u30C9\uFF08\u524A\u9664\u3059\u308B\uFF09"), !shAdmin && shPwOpen && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -1084,7 +1084,7 @@ function BarcodeTab() {
     onKeyDown: e => {
       if (e.key === "Enter") unlockShAdmin();
     },
-    placeholder: "管理パスワード",
+    placeholder: "\u7BA1\u7406\u30D1\u30B9\u30EF\u30FC\u30C9",
     style: {
       padding: "8px 11px",
       border: "1px solid #e2e2e6",
@@ -1105,7 +1105,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "解除"), /*#__PURE__*/React.createElement("button", {
+  }, "\u89E3\u9664"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setShPwOpen(false);
       setShPw("");
@@ -1119,7 +1119,7 @@ function BarcodeTab() {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "やめる"), shPwErr && /*#__PURE__*/React.createElement("span", {
+  }, "\u3084\u3081\u308B"), shPwErr && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       color: "#e11",
@@ -1142,11 +1142,11 @@ function BarcodeTab() {
       fontWeight: 900,
       color: "#8a4b00"
     }
-  }, "管理モード：チェックで選択（今表示中のタブのみ）"), /*#__PURE__*/React.createElement("button", {
+  }, "\u7BA1\u7406\u30E2\u30FC\u30C9\uFF1A\u30C1\u30A7\u30C3\u30AF\u3067\u9078\u629E\uFF08\u4ECA\u8868\u793A\u4E2D\u306E\u30BF\u30D6\u306E\u307F\uFF09"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShSel(new Set(shared.filter(p => !!p.pdf_url === (shTab === "pdf")).map(x => x.id))),
     style: {
       border: "1px solid #e6c9a3",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#8a4b00",
       borderRadius: 7,
       padding: "6px 10px",
@@ -1154,11 +1154,11 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "全選択"), /*#__PURE__*/React.createElement("button", {
+  }, "\u5168\u9078\u629E"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShSel(new Set()),
     style: {
       border: "1px solid #e6c9a3",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#8a4b00",
       borderRadius: 7,
       padding: "6px 10px",
@@ -1166,7 +1166,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "選択解除"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9078\u629E\u89E3\u9664"), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1
     }
@@ -1183,7 +1183,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: shSel.size ? "pointer" : "default"
     }
-  }, "選択した", shSel.size > 0 ? `${shSel.size}件` : "", "を削除") : /*#__PURE__*/React.createElement("span", {
+  }, "\u9078\u629E\u3057\u305F", shSel.size > 0 ? `${shSel.size}件` : "", "\u3092\u524A\u9664") : /*#__PURE__*/React.createElement("span", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -1195,7 +1195,7 @@ function BarcodeTab() {
       fontWeight: 800,
       color: "#8a4b00"
     }
-  }, shSel.size, "件を削除？"), /*#__PURE__*/React.createElement("button", {
+  }, shSel.size, "\u4EF6\u3092\u524A\u9664\uFF1F"), /*#__PURE__*/React.createElement("button", {
     onClick: bulkDelShared,
     disabled: shBusy,
     style: {
@@ -1218,7 +1218,7 @@ function BarcodeTab() {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "キャンセル")), /*#__PURE__*/React.createElement("button", {
+  }, "\u30AD\u30E3\u30F3\u30BB\u30EB")), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setShAdmin(false);
       setShSel(new Set());
@@ -1226,7 +1226,7 @@ function BarcodeTab() {
     },
     style: {
       border: "1px solid #ffc98a",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#8a4b00",
       borderRadius: 8,
       padding: "8px 12px",
@@ -1234,7 +1234,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "終了"))))), /*#__PURE__*/React.createElement("div", {
+  }, "\u7D42\u4E86"))))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1249,7 +1249,7 @@ function BarcodeTab() {
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "発注リスト ", /*#__PURE__*/React.createElement("span", {
+  }, "\u767A\u6CE8\u30EA\u30B9\u30C8 ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: ACCENT
     }
@@ -1265,7 +1265,7 @@ function BarcodeTab() {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "すべて消去")), list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u3059\u3079\u3066\u6D88\u53BB")), list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -1273,7 +1273,7 @@ function BarcodeTab() {
       fontSize: 13,
       lineHeight: 1.7
     }
-  }, "下の一覧からタップで追加、または「プリセット読み込み」で復元してください") : /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0B\u306E\u4E00\u89A7\u304B\u3089\u30BF\u30C3\u30D7\u3067\u8FFD\u52A0\u3001\u307E\u305F\u306F\u300C\u30D7\u30EA\u30BB\u30C3\u30C8\u8AAD\u307F\u8FBC\u307F\u300D\u3067\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044") : /*#__PURE__*/React.createElement("div", {
     ref: drag.containerRef,
     style: {
       display: "flex",
@@ -1308,7 +1308,7 @@ function BarcodeTab() {
       touchAction: "none",
       lineHeight: 1
     }
-  }, "⋮⋮"), /*#__PURE__*/React.createElement("span", {
+  }, "\u22EE\u22EE"), /*#__PURE__*/React.createElement("span", {
     style: {
       width: 18,
       textAlign: "center",
@@ -1349,7 +1349,7 @@ function BarcodeTab() {
     title: (companyOf(it) || {}).name || "発注先 " + (it.haccyu || "不明")
   }), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       fontFamily: "monospace"
     }
@@ -1379,11 +1379,11 @@ function BarcodeTab() {
       borderRadius: 5,
       width: 26,
       height: 18,
-      fontSize: 10,
+      fontSize: 11,
       cursor: i === 0 ? "default" : "pointer",
       lineHeight: 1
     }
-  }, "▲"), /*#__PURE__*/React.createElement("button", {
+  }, "\u25B2"), /*#__PURE__*/React.createElement("button", {
     onClick: () => moveItem(i, 1),
     disabled: i === list.length - 1,
     style: {
@@ -1393,11 +1393,11 @@ function BarcodeTab() {
       borderRadius: 5,
       width: 26,
       height: 18,
-      fontSize: 10,
+      fontSize: 11,
       cursor: i === list.length - 1 ? "default" : "pointer",
       lineHeight: 1
     }
-  }, "▼")), /*#__PURE__*/React.createElement("button", {
+  }, "\u25BC")), /*#__PURE__*/React.createElement("button", {
     onClick: () => removeItem(it.bcode),
     style: {
       border: "none",
@@ -1408,7 +1408,7 @@ function BarcodeTab() {
       padding: "0 2px",
       lineHeight: 1
     }
-  }, "×"))))), /*#__PURE__*/React.createElement("div", {
+  }, "\xD7"))))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1424,7 +1424,7 @@ function BarcodeTab() {
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "商品を追加", master.length > 0 ? `（${master.length}件）` : ""), /*#__PURE__*/React.createElement("span", {
+  }, "\u5546\u54C1\u3092\u8FFD\u52A0", master.length > 0 ? `（${master.length}件）` : ""), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
       fontSize: 14
@@ -1461,13 +1461,13 @@ function BarcodeTab() {
       fontWeight: 700,
       color: "var(--text)"
     }
-  }, "商品マスタ（エクセル）をドロップ／タップ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5546\u54C1\u30DE\u30B9\u30BF\uFF08\u30A8\u30AF\u30BB\u30EB\uFF09\u3092\u30C9\u30ED\u30C3\u30D7\uFF0F\u30BF\u30C3\u30D7"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginTop: 6
     }
-  }, "包材・冷食・たれ・資材・生鮮をカテゴリで絞れます"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5305\u6750\u30FB\u51B7\u98DF\u30FB\u305F\u308C\u30FB\u8CC7\u6750\u30FB\u751F\u9BAE\u3092\u30AB\u30C6\u30B4\u30EA\u3067\u7D5E\u308C\u307E\u3059"), /*#__PURE__*/React.createElement("input", {
     ref: fileRef,
     type: "file",
     accept: ".xlsx,.xls",
@@ -1503,7 +1503,7 @@ function BarcodeTab() {
       }
     }, c.label, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: on ? ACCENT : "#bbb",
         marginLeft: 4
       }
@@ -1518,7 +1518,7 @@ function BarcodeTab() {
   }, /*#__PURE__*/React.createElement("input", {
     value: search,
     onChange: e => setSearch(e.target.value),
-    placeholder: "商品名・コードで絞り込み",
+    placeholder: "\u5546\u54C1\u540D\u30FB\u30B3\u30FC\u30C9\u3067\u7D5E\u308A\u8FBC\u307F",
     style: {
       flex: 1,
       padding: "9px 12px",
@@ -1542,7 +1542,7 @@ function BarcodeTab() {
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
-  }, "読み直し")), /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u76F4\u3057")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -1553,12 +1553,12 @@ function BarcodeTab() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       fontWeight: 800,
       flexShrink: 0
     }
-  }, "用途:"), /*#__PURE__*/React.createElement("button", {
+  }, "\u7528\u9014:"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setUseFilter(""),
     style: {
       flexShrink: 0,
@@ -1571,7 +1571,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "すべて"), USE_TAGS.map(t => {
+  }, "\u3059\u3079\u3066"), USE_TAGS.map(t => {
     const on = useFilter === t;
     const cnt = srcFilteredRaw.filter(it => (useTags[it.bcode] || []).includes(t)).length;
     return /*#__PURE__*/React.createElement("button", {
@@ -1590,7 +1590,7 @@ function BarcodeTab() {
       }
     }, t, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11,
         marginLeft: 4,
         opacity: 0.8
       }
@@ -1608,7 +1608,7 @@ function BarcodeTab() {
       textAlign: "center",
       color: "var(--faint)"
     }
-  }, "該当する商品がありません") : srcShown.map(it => {
+  }, "\u8A72\u5F53\u3059\u308B\u5546\u54C1\u304C\u3042\u308A\u307E\u305B\u3093") : srcShown.map(it => {
     const on = inList(it.bcode);
     const tags = useTags[it.bcode] || [];
     const cc = companyColor(it);
@@ -1673,7 +1673,7 @@ function BarcodeTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--sub)",
         fontFamily: "monospace"
       }
@@ -1698,12 +1698,12 @@ function BarcodeTab() {
       }
     }, t)))), on && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: ACCENT,
         fontWeight: 700,
         whiteSpace: "nowrap"
       }
-    }, "追加済")), /*#__PURE__*/React.createElement("button", {
+    }, "\u8FFD\u52A0\u6E08")), /*#__PURE__*/React.createElement("button", {
       onClick: e => {
         e.stopPropagation();
         setTagEditFor(tagEditFor === it.bcode ? null : it.bcode);
@@ -1717,8 +1717,8 @@ function BarcodeTab() {
         cursor: "pointer",
         fontSize: 16
       },
-      title: "用途を設定"
-    }, "🏷"));
+      title: "\u7528\u9014\u3092\u8A2D\u5B9A"
+    }, "\uD83C\uDFF7"));
   }), tagEditFor && srcShown.some(it => it.bcode === tagEditFor) && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 14px",
@@ -1727,12 +1727,12 @@ function BarcodeTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, "納品会社を選ぶ（色と模様がラベルに付きます）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7D0D\u54C1\u4F1A\u793E\u3092\u9078\u3076\uFF08\u8272\u3068\u6A21\u69D8\u304C\u30E9\u30D9\u30EB\u306B\u4ED8\u304D\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -1768,12 +1768,12 @@ function BarcodeTab() {
     }), c.name);
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, "用途を選ぶ（複数可）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7528\u9014\u3092\u9078\u3076\uFF08\u8907\u6570\u53EF\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -1806,7 +1806,7 @@ function BarcodeTab() {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "閉じる")))))), /*#__PURE__*/React.createElement("div", {
+  }, "\u9589\u3058\u308B")))))), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1815,7 +1815,7 @@ function BarcodeTab() {
       color: "var(--ink)",
       marginBottom: 14
     }
-  }, "レイアウトと印刷"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30EC\u30A4\u30A2\u30A6\u30C8\u3068\u5370\u5237"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 22,
@@ -1835,7 +1835,7 @@ function BarcodeTab() {
       fontWeight: 700,
       color: "var(--sub)"
     }
-  }, "1行の数"), /*#__PURE__*/React.createElement("div", {
+  }, "1\u884C\u306E\u6570"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "inline-flex",
       border: "1px solid #e2e2e4",
@@ -1849,7 +1849,7 @@ function BarcodeTab() {
       ...seg(cols === c),
       borderRight: c < 4 ? "1px solid var(--line)" : "none"
     }
-  }, c, "列")))), /*#__PURE__*/React.createElement("div", {
+  }, c, "\u5217")))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -1861,7 +1861,7 @@ function BarcodeTab() {
       fontWeight: 700,
       color: "var(--sub)"
     }
-  }, "商品名"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5546\u54C1\u540D"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "inline-flex",
       border: "1px solid #e2e2e4",
@@ -1874,10 +1874,10 @@ function BarcodeTab() {
       ...seg(showName),
       borderRight: "1px solid var(--line)"
     }
-  }, "表示"), /*#__PURE__*/React.createElement("button", {
+  }, "\u8868\u793A"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowName(false),
     style: seg(!showName)
-  }, "コードのみ"))), /*#__PURE__*/React.createElement("button", {
+  }, "\u30B3\u30FC\u30C9\u306E\u307F"))), /*#__PURE__*/React.createElement("button", {
     onClick: () => window.print(),
     disabled: list.length === 0,
     style: {
@@ -1891,7 +1891,7 @@ function BarcodeTab() {
       fontWeight: 900,
       cursor: list.length ? "pointer" : "not-allowed"
     }
-  }, "A4横で印刷（", list.length, "件・", pages.length, "ページ）")), list.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "A4\u6A2A\u3067\u5370\u5237\uFF08", list.length, "\u4EF6\u30FB", pages.length, "\u30DA\u30FC\u30B8\uFF09")), list.length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       borderTop: "1px solid var(--line)",
       paddingTop: 14,
@@ -1904,14 +1904,14 @@ function BarcodeTab() {
       color: "var(--ink)",
       marginBottom: 3
     }
-  }, "納品会社の割り当て"), /*#__PURE__*/React.createElement("div", {
+  }, "\u7D0D\u54C1\u4F1A\u793E\u306E\u5272\u308A\u5F53\u3066"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "各商品にラベル上部の色・模様・会社名が付きます。一括で全部に設定するか、商品ごとに個別で選べます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5404\u5546\u54C1\u306B\u30E9\u30D9\u30EB\u4E0A\u90E8\u306E\u8272\u30FB\u6A21\u69D8\u30FB\u4F1A\u793E\u540D\u304C\u4ED8\u304D\u307E\u3059\u3002\u4E00\u62EC\u3067\u5168\u90E8\u306B\u8A2D\u5B9A\u3059\u308B\u304B\u3001\u5546\u54C1\u3054\u3068\u306B\u500B\u5225\u3067\u9078\u3079\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -1927,7 +1927,7 @@ function BarcodeTab() {
       fontWeight: 800,
       color: "var(--faint)"
     }
-  }, "一括："), COMPANIES.map(c => /*#__PURE__*/React.createElement("button", {
+  }, "\u4E00\u62EC\uFF1A"), COMPANIES.map(c => /*#__PURE__*/React.createElement("button", {
     key: c.key,
     onClick: () => {
       const next = {
@@ -1946,7 +1946,7 @@ function BarcodeTab() {
       alignItems: "center",
       gap: 6,
       border: `1px solid ${c.color}`,
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: c.color,
       borderRadius: 8,
       padding: "6px 10px",
@@ -1977,7 +1977,7 @@ function BarcodeTab() {
     },
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--sub)",
       borderRadius: 8,
       padding: "6px 10px",
@@ -1985,7 +1985,7 @@ function BarcodeTab() {
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "クリア")), /*#__PURE__*/React.createElement("div", {
+  }, "\u30AF\u30EA\u30A2")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -2030,11 +2030,11 @@ function BarcodeTab() {
           alignItems: "center",
           gap: 5,
           border: on ? `2px solid ${c.color}` : "1px solid var(--line)",
-          background: "#fff",
+          background: "var(--card, #fff)",
           color: on ? c.color : "var(--sub)",
           borderRadius: 7,
           padding: "4px 8px",
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 800,
           cursor: "pointer"
         }
@@ -2059,7 +2059,7 @@ function BarcodeTab() {
       fontWeight: 700,
       marginBottom: 8
     }
-  }, "プレビュー"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     ref: previewRef,
     style: {
       background: "var(--bg)",
@@ -2074,7 +2074,7 @@ function BarcodeTab() {
       color: "var(--faint)",
       padding: "24px 0"
     }
-  }, "リストに追加するとここにプレビューが表示されます") : renderPages(false))), ReactDOM.createPortal(/*#__PURE__*/React.createElement(React.Fragment, null, renderPages(true)), portalEl));
+  }, "\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0\u3059\u308B\u3068\u3053\u3053\u306B\u30D7\u30EC\u30D3\u30E5\u30FC\u304C\u8868\u793A\u3055\u308C\u307E\u3059") : renderPages(false))), ReactDOM.createPortal(/*#__PURE__*/React.createElement(React.Fragment, null, renderPages(true)), portalEl));
 }
 ;
 Object.assign(window, {

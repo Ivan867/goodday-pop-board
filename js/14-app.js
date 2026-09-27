@@ -187,7 +187,7 @@ function LazyTab(props) {
       },
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--text)",
         borderRadius: 9,
         padding: "9px 18px",
@@ -311,13 +311,28 @@ function App() {
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
   const [toast, setToast] = useState(null);
+  const [toastBad, setToastBad] = useState(false); // 赤いトースト（失敗のお知らせ）
   useEffect(() => {
     const h = e => {
+      setToastBad(false);
       setToast(e.detail || "完了しました");
       setTimeout(() => setToast(null), 2200);
     };
+    // 保存・投稿などの書き込みが失敗したとき（api層から届く）
+    const bad = () => {
+      setToastBad(true);
+      setToast("保存できませんでした。電波を確かめて、もう一度お試しください");
+      setTimeout(() => {
+        setToast(null);
+        setToastBad(false);
+      }, 5000);
+    };
     window.addEventListener("appToast", h);
-    return () => window.removeEventListener("appToast", h);
+    window.addEventListener("apiError", bad);
+    return () => {
+      window.removeEventListener("appToast", h);
+      window.removeEventListener("apiError", bad);
+    };
   }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -530,7 +545,7 @@ function App() {
       width: 34,
       height: 34,
       borderRadius: "50%",
-      background: "#fff",
+      background: "var(--card, #fff)",
       boxShadow: "0 3px 12px rgba(0,0,0,0.18)",
       display: "flex",
       alignItems: "center",
@@ -728,11 +743,13 @@ function App() {
       padding: "0 24px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    role: "status",
+    "aria-live": "polite",
     style: {
       display: "flex",
       alignItems: "center",
       gap: 8,
-      background: "rgba(26,43,60,0.94)",
+      background: toastBad ? "rgba(140,30,34,0.96)" : "rgba(26,43,60,0.94)",
       color: "#fff",
       borderRadius: 999,
       padding: "11px 20px",
@@ -743,7 +760,20 @@ function App() {
       backdropFilter: "blur(8px)",
       maxWidth: "100%"
     }
-  }, /*#__PURE__*/React.createElement("svg", {
+  }, toastBad ? /*#__PURE__*/React.createElement("svg", {
+    width: "17",
+    height: "17",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#ffc9c1",
+    strokeWidth: "2.8",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 7v7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 17.5v.01"
+  })) : /*#__PURE__*/React.createElement("svg", {
     width: "17",
     height: "17",
     viewBox: "0 0 24 24",
@@ -757,8 +787,9 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     style: {
       overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
+      textOverflow: toastBad ? "clip" : "ellipsis",
+      whiteSpace: toastBad ? "normal" : "nowrap",
+      lineHeight: 1.5
     }
   }, toast))), tab === "board" && !searchOpen && !moreOpen && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
@@ -929,7 +960,7 @@ function App() {
       right: -9,
       background: "var(--primary)",
       color: "#fff",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       padding: "2px 5px",
       borderRadius: 7,
@@ -1021,12 +1052,12 @@ class ErrBoundary extends React.Component {
         width: "100%",
         boxSizing: "border-box",
         height: 180,
-        fontSize: 11,
+        fontSize: 12,
         lineHeight: 1.6,
         border: "1px solid var(--line)",
         borderRadius: 10,
         padding: "10px 12px",
-        background: "#fff",
+        background: "var(--card, #fff)",
         fontFamily: "monospace"
       }
     }), /*#__PURE__*/React.createElement("div", {
@@ -1061,7 +1092,7 @@ class ErrBoundary extends React.Component {
       style: {
         flex: 1,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--text)",
         borderRadius: 10,
         padding: "12px",

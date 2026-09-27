@@ -1,3 +1,4 @@
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 /* GoodDay 鮮魚共有 — 10-tab-gne （自動分割・window共有） */
 var {
   useState,
@@ -1074,7 +1075,7 @@ function GeneratorTab({
   const fontSt = loadedFonts[font.family];
   const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
   const card = {
-    background: "#fff",
+    background: "var(--card, #fff)",
     borderRadius: 14,
     boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     padding: 16
@@ -1094,7 +1095,7 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "入力支援"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5165\u529B\u652F\u63F4"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -1123,13 +1124,13 @@ function GeneratorTab({
       padding: "40px 0",
       fontSize: 13
     }
-  }, "読み込み中…") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
       marginBottom: 16
     }
-  }, "柄テンプレに文字を焼いて PNG 出力。単品ライブ編集と Excel 一括（ZIP）に対応。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u67C4\u30C6\u30F3\u30D7\u30EC\u306B\u6587\u5B57\u3092\u713C\u3044\u3066 PNG \u51FA\u529B\u3002\u5358\u54C1\u30E9\u30A4\u30D6\u7DE8\u96C6\u3068 Excel \u4E00\u62EC\uFF08ZIP\uFF09\u306B\u5BFE\u5FDC\u3002"), /*#__PURE__*/React.createElement("div", {
     className: "gne-grid",
     style: {
       display: "grid",
@@ -1152,7 +1153,7 @@ function GeneratorTab({
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, "プレビュー ", fontNote), /*#__PURE__*/React.createElement("span", {
+  }, "\u30D7\u30EC\u30D3\u30E5\u30FC ", fontNote), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
       fontSize: 12,
@@ -1177,7 +1178,7 @@ function GeneratorTab({
       color: "var(--sub)",
       margin: "14px 0 7px"
     }
-  }, "テンプレを選ぶ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30C6\u30F3\u30D7\u30EC\u3092\u9078\u3076"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1195,7 +1196,7 @@ function GeneratorTab({
         flexShrink: 0,
         width: 92,
         border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 10,
         padding: 4,
         cursor: "pointer"
@@ -1214,7 +1215,7 @@ function GeneratorTab({
     }), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: on ? "var(--primary)" : "var(--sub)",
         marginTop: 4,
@@ -1240,8 +1241,7 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, "テンプレ画像（文字なし・1200×1697推奨）"), /*#__PURE__*/React.createElement("button", {
-    ...dzTpl.props,
+  }, "\u30C6\u30F3\u30D7\u30EC\u753B\u50CF\uFF08\u6587\u5B57\u306A\u3057\u30FB1200\xD71697\u63A8\u5968\uFF09"), /*#__PURE__*/React.createElement("button", _extends({}, dzTpl.props, {
     onClick: () => tplInput.current && tplInput.current.click(),
     style: {
       border: "1px dashed #ccc",
@@ -1254,14 +1254,14 @@ function GeneratorTab({
       cursor: "pointer",
       ...dzTpl.style
     }
-  }, dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
+  }), dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: 10,
       fontSize: 12,
       color: "#2f6fb0",
       fontWeight: 700
     }
-  }, "読込済み"), /*#__PURE__*/React.createElement("input", {
+  }, "\u8AAD\u8FBC\u6E08\u307F"), /*#__PURE__*/React.createElement("input", {
     ref: tplInput,
     type: "file",
     accept: "image/*",
@@ -1278,7 +1278,7 @@ function GeneratorTab({
       color: "var(--sub)",
       margin: "16px 0 7px"
     }
-  }, "読み込んだ商品（押すとプレビューに入ります）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u3093\u3060\u5546\u54C1\uFF08\u62BC\u3059\u3068\u30D7\u30EC\u30D3\u30E5\u30FC\u306B\u5165\u308A\u307E\u3059\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -1312,7 +1312,7 @@ function GeneratorTab({
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "var(--faint)",
         width: 20,
@@ -1336,7 +1336,7 @@ function GeneratorTab({
     }, String(r.name || "").replace(/\r?\n/g, " ")), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         marginTop: 1
       }
@@ -1357,13 +1357,13 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "文字の位置・サイズ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u6587\u5B57\u306E\u4F4D\u7F6E\u30FB\u30B5\u30A4\u30BA"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 12
     }
-  }, "文字ブロック全体の位置と大きさを変えられます。ボタンでざっくり→スライダーで微調整"), /*#__PURE__*/React.createElement("div", {
+  }, "\u6587\u5B57\u30D6\u30ED\u30C3\u30AF\u5168\u4F53\u306E\u4F4D\u7F6E\u3068\u5927\u304D\u3055\u3092\u5909\u3048\u3089\u308C\u307E\u3059\u3002\u30DC\u30BF\u30F3\u3067\u3056\u3063\u304F\u308A\u2192\u30B9\u30E9\u30A4\u30C0\u30FC\u3067\u5FAE\u8ABF\u6574"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 14,
@@ -1408,7 +1408,7 @@ function GeneratorTab({
       color: "var(--text)",
       marginBottom: 2
     }
-  }, "横（左 ⇄ 右）：", gx > 0 ? `+${gx}` : gx), /*#__PURE__*/React.createElement("input", {
+  }, "\u6A2A\uFF08\u5DE6 \u21C4 \u53F3\uFF09\uFF1A", gx > 0 ? `+${gx}` : gx), /*#__PURE__*/React.createElement("input", {
     type: "range",
     min: -120,
     max: 120,
@@ -1425,7 +1425,7 @@ function GeneratorTab({
       color: "var(--text)",
       margin: "10px 0 2px"
     }
-  }, "縦（上 ⇄ 下）：", gy > 0 ? `+${gy}` : gy), /*#__PURE__*/React.createElement("input", {
+  }, "\u7E26\uFF08\u4E0A \u21C4 \u4E0B\uFF09\uFF1A", gy > 0 ? `+${gy}` : gy), /*#__PURE__*/React.createElement("input", {
     type: "range",
     min: -320,
     max: 40,
@@ -1442,7 +1442,7 @@ function GeneratorTab({
       color: "var(--text)",
       margin: "10px 0 2px"
     }
-  }, "文字サイズ（全体）：", gScale, "%"), /*#__PURE__*/React.createElement("input", {
+  }, "\u6587\u5B57\u30B5\u30A4\u30BA\uFF08\u5168\u4F53\uFF09\uFF1A", gScale, "%"), /*#__PURE__*/React.createElement("input", {
     type: "range",
     min: 70,
     max: 130,
@@ -1465,7 +1465,7 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, "フィールド別サイズ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D5\u30A3\u30FC\u30EB\u30C9\u5225\u30B5\u30A4\u30BA"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -1495,7 +1495,7 @@ function GeneratorTab({
       width: 30,
       height: 30,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
@@ -1503,7 +1503,7 @@ function GeneratorTab({
       cursor: "pointer",
       lineHeight: 1
     }
-  }, "−"), /*#__PURE__*/React.createElement("span", {
+  }, "\u2212"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
       fontWeight: 900,
@@ -1520,7 +1520,7 @@ function GeneratorTab({
       width: 30,
       height: 30,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       fontSize: 15,
       fontWeight: 900,
@@ -1528,7 +1528,7 @@ function GeneratorTab({
       cursor: "pointer",
       lineHeight: 1
     }
-  }, "＋")))), /*#__PURE__*/React.createElement("div", {
+  }, "\uFF0B")))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",
@@ -1541,14 +1541,14 @@ function GeneratorTab({
       color: "var(--primary)",
       marginBottom: 3
     }
-  }, "▼ 1つずつ動かす（選んだ項目だけ）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u25BC 1\u3064\u305A\u3064\u52D5\u304B\u3059\uFF08\u9078\u3093\u3060\u9805\u76EE\u3060\u3051\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
     }
-  }, "上の「位置」は全部まとめて動きます。ここは選んだ項目だけが動きます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0A\u306E\u300C\u4F4D\u7F6E\u300D\u306F\u5168\u90E8\u307E\u3068\u3081\u3066\u52D5\u304D\u307E\u3059\u3002\u3053\u3053\u306F\u9078\u3093\u3060\u9805\u76EE\u3060\u3051\u304C\u52D5\u304D\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 5,
@@ -1604,7 +1604,7 @@ function GeneratorTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "↑"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
+  }, "\u2191"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
     onClick: () => nudge(posTarget, "x", -10),
     style: {
       width: 40,
@@ -1617,7 +1617,7 @@ function GeneratorTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "←"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2190"), /*#__PURE__*/React.createElement("button", {
     onClick: () => resetOne(posTarget),
     style: {
       width: 40,
@@ -1625,12 +1625,12 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       background: "var(--bg)",
       borderRadius: 8,
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       cursor: "pointer"
     }
-  }, "戻す"), /*#__PURE__*/React.createElement("button", {
+  }, "\u623B\u3059"), /*#__PURE__*/React.createElement("button", {
     onClick: () => nudge(posTarget, "x", 10),
     style: {
       width: 40,
@@ -1643,7 +1643,7 @@ function GeneratorTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "→"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
+  }, "\u2192"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
     onClick: () => nudge(posTarget, "y", 10),
     style: {
       width: 40,
@@ -1656,7 +1656,7 @@ function GeneratorTab({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "↓"), /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
+  }, "\u2193"), /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
@@ -1664,7 +1664,7 @@ function GeneratorTab({
       lineHeight: 1.7,
       minWidth: 96
     }
-  }, "選択中：", /*#__PURE__*/React.createElement("span", {
+  }, "\u9078\u629E\u4E2D\uFF1A", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
@@ -1674,7 +1674,7 @@ function GeneratorTab({
     count: "個数",
     price: "価格",
     tax: "税込表示"
-  }[posTarget]), /*#__PURE__*/React.createElement("br", null), "よこ ", posOf(posTarget).x > 0 ? "+" : "", posOf(posTarget).x, /*#__PURE__*/React.createElement("br", null), "たて ", posOf(posTarget).y > 0 ? "+" : "", posOf(posTarget).y)), /*#__PURE__*/React.createElement("div", {
+  }[posTarget]), /*#__PURE__*/React.createElement("br", null), "\u3088\u3053 ", posOf(posTarget).x > 0 ? "+" : "", posOf(posTarget).x, /*#__PURE__*/React.createElement("br", null), "\u305F\u3066 ", posOf(posTarget).y > 0 ? "+" : "", posOf(posTarget).y)), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",
@@ -1687,14 +1687,14 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 3
     }
-  }, "💾 設定を保存する"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCBE \u8A2D\u5B9A\u3092\u4FDD\u5B58\u3059\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
     }
-  }, "いまの文字の位置・サイズ・税の設定をまとめて保存します。次回そのまま呼び出せます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3044\u307E\u306E\u6587\u5B57\u306E\u4F4D\u7F6E\u30FB\u30B5\u30A4\u30BA\u30FB\u7A0E\u306E\u8A2D\u5B9A\u3092\u307E\u3068\u3081\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002\u6B21\u56DE\u305D\u306E\u307E\u307E\u547C\u3073\u51FA\u305B\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1704,7 +1704,7 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("input", {
     value: pName,
     onChange: e => setPName(e.target.value),
-    placeholder: "名前（例：うなぎ用）",
+    placeholder: "\u540D\u524D\uFF08\u4F8B\uFF1A\u3046\u306A\u304E\u7528\uFF09",
     style: {
       flex: "1 1 140px",
       minWidth: 0,
@@ -1718,7 +1718,7 @@ function GeneratorTab({
     onClick: saveLocal,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--primary)",
       borderRadius: 9,
       padding: "8px 13px",
@@ -1727,7 +1727,7 @@ function GeneratorTab({
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
-  }, "この端末に保存"), /*#__PURE__*/React.createElement("button", {
+  }, "\u3053\u306E\u7AEF\u672B\u306B\u4FDD\u5B58"), /*#__PURE__*/React.createElement("button", {
     onClick: saveShared,
     disabled: pBusy,
     style: {
@@ -1741,7 +1741,7 @@ function GeneratorTab({
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
-  }, "みんなと共有")), pMsg && /*#__PURE__*/React.createElement("div", {
+  }, "\u307F\u3093\u306A\u3068\u5171\u6709")), pMsg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--primary)",
@@ -1759,7 +1759,7 @@ function GeneratorTab({
       color: "var(--sub)",
       marginBottom: 5
     }
-  }, "この端末の保存"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u7AEF\u672B\u306E\u4FDD\u5B58"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 5,
@@ -1774,7 +1774,7 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       borderRadius: 999,
       padding: "3px 4px 3px 11px",
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => applySettings(x.settings),
@@ -1789,7 +1789,7 @@ function GeneratorTab({
     }
   }, x.name), /*#__PURE__*/React.createElement("button", {
     onClick: () => delLocal(x.id),
-    title: "削除",
+    title: "\u524A\u9664",
     style: {
       border: "none",
       background: "transparent",
@@ -1800,7 +1800,7 @@ function GeneratorTab({
       padding: "0 4px",
       lineHeight: 1
     }
-  }, "×"))))), shared.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "\xD7"))))), shared.length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 10
     }
@@ -1811,7 +1811,7 @@ function GeneratorTab({
       color: "var(--sub)",
       marginBottom: 5
     }
-  }, "みんなの共有"), /*#__PURE__*/React.createElement("div", {
+  }, "\u307F\u3093\u306A\u306E\u5171\u6709"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 5,
@@ -1841,7 +1841,7 @@ function GeneratorTab({
     }
   }, x.name), /*#__PURE__*/React.createElement("button", {
     onClick: () => delShared(x.id),
-    title: "削除",
+    title: "\u524A\u9664",
     style: {
       border: "none",
       background: "transparent",
@@ -1852,7 +1852,7 @@ function GeneratorTab({
       padding: "0 4px",
       lineHeight: 1
     }
-  }, "×"))))), /*#__PURE__*/React.createElement("div", {
+  }, "\xD7"))))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex"
     }
@@ -1873,7 +1873,7 @@ function GeneratorTab({
     style: {
       marginTop: 12,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "7px 14px",
@@ -1881,13 +1881,13 @@ function GeneratorTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "標準に戻す")), /*#__PURE__*/React.createElement("div", {
+  }, "\u6A19\u6E96\u306B\u623B\u3059")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
       marginTop: 10
     }
-  }, "※ Excelからの一括生成にも同じ位置・サイズが適用されます")), /*#__PURE__*/React.createElement("div", {
+  }, "\u203B Excel\u304B\u3089\u306E\u4E00\u62EC\u751F\u6210\u306B\u3082\u540C\u3058\u4F4D\u7F6E\u30FB\u30B5\u30A4\u30BA\u304C\u9069\u7528\u3055\u308C\u307E\u3059")), /*#__PURE__*/React.createElement("div", {
     style: card
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1896,7 +1896,7 @@ function GeneratorTab({
       color: "var(--ink)",
       marginBottom: 10
     }
-  }, "フォント"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D5\u30A9\u30F3\u30C8"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1934,7 +1934,7 @@ function GeneratorTab({
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, "単品入力（ライブプレビュー）"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
+  }, "\u5358\u54C1\u5165\u529B\uFF08\u30E9\u30A4\u30D6\u30D7\u30EC\u30D3\u30E5\u30FC\uFF09"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
     key: key
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1946,11 +1946,11 @@ function GeneratorTab({
     style: {
       color: "var(--faint)"
     }
-  }, "（改行すると2行になります）")), key === "name" ? /*#__PURE__*/React.createElement("textarea", {
+  }, "\uFF08\u6539\u884C\u3059\u308B\u30682\u884C\u306B\u306A\u308A\u307E\u3059\uFF09")), key === "name" ? /*#__PURE__*/React.createElement("textarea", {
     value: f[key] || "",
     onChange: set(key),
     rows: 2,
-    placeholder: "長いときは改行してください",
+    placeholder: "\u9577\u3044\u3068\u304D\u306F\u6539\u884C\u3057\u3066\u304F\u3060\u3055\u3044",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1992,7 +1992,7 @@ function GeneratorTab({
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, "税込丸め"), /*#__PURE__*/React.createElement("select", {
+  }, "\u7A0E\u8FBC\u4E38\u3081"), /*#__PURE__*/React.createElement("select", {
     value: taxMode,
     onChange: e => setTaxMode(e.target.value),
     style: {
@@ -2003,11 +2003,11 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("option", {
     value: "ceil"
-  }, "切り上げ"), /*#__PURE__*/React.createElement("option", {
+  }, "\u5207\u308A\u4E0A\u3052"), /*#__PURE__*/React.createElement("option", {
     value: "round"
-  }, "四捨五入"), /*#__PURE__*/React.createElement("option", {
+  }, "\u56DB\u6368\u4E94\u5165"), /*#__PURE__*/React.createElement("option", {
     value: "floor"
-  }, "切り捨て")), /*#__PURE__*/React.createElement("div", {
+  }, "\u5207\u308A\u6368\u3066")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 2,
@@ -2035,7 +2035,7 @@ function GeneratorTab({
       fontSize: 12,
       color: "var(--sub)"
     }
-  }, "税込（", taxRate, "%）：", /*#__PURE__*/React.createElement("b", {
+  }, "\u7A0E\u8FBC\uFF08", taxRate, "%\uFF09\uFF1A", /*#__PURE__*/React.createElement("b", {
     style: {
       color: "var(--ink)"
     }
@@ -2052,7 +2052,7 @@ function GeneratorTab({
       color: "var(--sub)",
       marginRight: 2
     }
-  }, "税率"), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => /*#__PURE__*/React.createElement("button", {
+  }, "\u7A0E\u7387"), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => /*#__PURE__*/React.createElement("button", {
     key: r,
     onClick: () => setTaxRate(r),
     style: {
@@ -2079,7 +2079,7 @@ function GeneratorTab({
       fontWeight: 800,
       cursor: "pointer"
     }
-  }, "この1枚を PNG ダウンロード")), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E1\u679A\u3092 PNG \u30C0\u30A6\u30F3\u30ED\u30FC\u30C9")), /*#__PURE__*/React.createElement("div", {
     style: {
       ...card,
       display: "flex",
@@ -2092,13 +2092,13 @@ function GeneratorTab({
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, "Excel 一括（products.xlsx）"), /*#__PURE__*/React.createElement("div", {
+  }, "Excel \u4E00\u62EC\uFF08products.xlsx\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.6
     }
-  }, "1行目に見出し、2行目から商品を書きます。列名は「", /*#__PURE__*/React.createElement("b", null, "産地／補足／商品名／個数／本体価格"), "」のとおりに（順番は自由・補足は空でもOK）。商品名が空の行は飛ばされます。"), /*#__PURE__*/React.createElement("button", {
+  }, "1\u884C\u76EE\u306B\u898B\u51FA\u3057\u30012\u884C\u76EE\u304B\u3089\u5546\u54C1\u3092\u66F8\u304D\u307E\u3059\u3002\u5217\u540D\u306F\u300C", /*#__PURE__*/React.createElement("b", null, "\u7523\u5730\uFF0F\u88DC\u8DB3\uFF0F\u5546\u54C1\u540D\uFF0F\u500B\u6570\uFF0F\u672C\u4F53\u4FA1\u683C"), "\u300D\u306E\u3068\u304A\u308A\u306B\uFF08\u9806\u756A\u306F\u81EA\u7531\u30FB\u88DC\u8DB3\u306F\u7A7A\u3067\u3082OK\uFF09\u3002\u5546\u54C1\u540D\u304C\u7A7A\u306E\u884C\u306F\u98DB\u3070\u3055\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
     onClick: downloadTemplate,
     style: {
       display: "flex",
@@ -2127,8 +2127,7 @@ function GeneratorTab({
     d: "M12 3.5v11m0 0l-4-4m4 4l4-4"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M4 16.5v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-  })), "見本ファイルをダウンロード"), /*#__PURE__*/React.createElement("button", {
-    ...dzXlsx.props,
+  })), "\u898B\u672C\u30D5\u30A1\u30A4\u30EB\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9"), /*#__PURE__*/React.createElement("button", _extends({}, dzXlsx.props, {
     onClick: () => xlsxInput.current && xlsxInput.current.click(),
     style: {
       border: "1px dashed #ccc",
@@ -2142,7 +2141,7 @@ function GeneratorTab({
       width: "fit-content",
       ...dzXlsx.style
     }
-  }, dzXlsx.over ? "ここに離す" : ".xlsx を選択（ドラッグでもOK）"), /*#__PURE__*/React.createElement("input", {
+  }), dzXlsx.over ? "ここに離す" : ".xlsx を選択（ドラッグでもOK）"), /*#__PURE__*/React.createElement("input", {
     ref: xlsxInput,
     type: "file",
     accept: ".xlsx,.xls",

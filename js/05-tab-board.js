@@ -579,7 +579,7 @@ function BoardTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
@@ -595,7 +595,7 @@ function BoardTab({
       fontSize: 12,
       fontWeight: 800,
       color: "#2f6fb0",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       padding: "4px 10px",
       flexShrink: 0
@@ -659,7 +659,7 @@ function BoardTab({
   }, [210, 150, 180, 230, 160, 200, 140, 190].map((h, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 14,
       overflow: "hidden"
@@ -836,7 +836,7 @@ function BoardTab({
     }, openGroup.group_name || openGroup.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         opacity: 0.85
       }
     }, inGroup.length, "\u679A \uFF0F ", openGroup.store_name, " \uFF0F \u6A2A\u306B\u30B9\u30EF\u30A4\u30D7\u3067\u3082\u3069\u308B"))), /*#__PURE__*/React.createElement("div", {
@@ -1043,7 +1043,7 @@ function BoardTab({
       }
     }), it.l, it.n != null && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 900,
         opacity: 0.6
       }

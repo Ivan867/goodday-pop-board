@@ -320,7 +320,7 @@ function BarcodeTab() {
       style={ forPrint
         ? { breakAfter:"page", pageBreakAfter:"always", position:"relative", height:"192mm" }
         : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
-      {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"var(--bg)", padding:"0 8px", fontSize:11, fontWeight:800, color:"var(--sub)" }}>{pi+1}ページ目（{pg.length}枚）</div>}
+      {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"var(--bg)", padding:"0 8px", fontSize:12, fontWeight:800, color:"var(--sub)" }}>{pi+1}ページ目（{pg.length}枚）</div>}
       <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},minmax(0,1fr))`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, minmax(0,1fr))`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
         {pg.map(it => {
           const comp = companyOf(it);
@@ -358,7 +358,7 @@ function BarcodeTab() {
         <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>発注バーコード生成</div>
         <div style={{ fontSize:12, color:"#8a6d00", background:"#fff8e1", border:"1px solid #ffe6a0", borderRadius:8, padding:"7px 11px", marginBottom:13, lineHeight:1.55 }}>※ この画面はパソコンのブラウザでの操作を推奨します（スマートフォンでは一覧が多いと動作が重くなる場合があります）。</div>
         <div style={{ display:"flex", gap:9, flexWrap:"wrap" }}>
-          <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>プリセット読み込み</button>
+          <button onClick={()=>cfgRef.current && cfgRef.current.click()} style={{ border:`1.5px solid ${ACCENT}`, background:"var(--card, #fff)", color:ACCENT, borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>プリセット読み込み</button>
           <button onClick={exportCfg} disabled={!list.length} style={{ border:"none", background: list.length?ACCENT:"#ccc", color:"#fff", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor: list.length?"pointer":"not-allowed" }}>プリセット保存（{list.length}）</button>
           <input ref={cfgRef} type="file" accept=".txt,.json,text/plain" onChange={e=>importCfg(e.target.files[0])} style={{ display:"none" }} />
         </div>
@@ -399,21 +399,21 @@ function BarcodeTab() {
                         {shAdmin && <input type="checkbox" checked={checked} readOnly style={{ width:18, height:18, accentColor:"#2f6fed", pointerEvents:"none" }} />}
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:13.5, fontWeight:800, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name || "（無名）"}</div>
-                          <div style={{ fontSize:11, color:"var(--sub)" }}>{isPdf ? "完成PDF（開く／DLして印刷）" : cnt+"点"}</div>
+                          <div style={{ fontSize:12, color:"var(--sub)" }}>{isPdf ? "完成PDF（開く／DLして印刷）" : cnt+"点"}</div>
                         </div>
                         {!shAdmin && (isPdf ? (
                           <>
                             <button onClick={()=>window.open(p.pdf_url, "_blank")}
                               style={{ border:"none", background:ACCENT, color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>開く</button>
                             <button onClick={()=>downloadPdf(p)}
-                              style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
+                              style={{ border:`1.5px solid ${ACCENT}`, background:"var(--card, #fff)", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
                           </>
                         ) : (
                           <>
                             <button onClick={()=>loadShared(p)}
                               style={{ border:"none", background:ACCENT, color:"#fff", borderRadius:8, padding:"7px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>読込</button>
                             <button onClick={()=>downloadShared(p)}
-                              style={{ border:`1.5px solid ${ACCENT}`, background:"#fff", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
+                              style={{ border:`1.5px solid ${ACCENT}`, background:"var(--card, #fff)", color:ACCENT, borderRadius:8, padding:"7px 11px", fontSize:13, fontWeight:800, cursor:"pointer" }}>DL</button>
                           </>
                         ))}
                       </div>
@@ -427,16 +427,16 @@ function BarcodeTab() {
               {shTab==="pdf" ? (
                 <>
                   <button onClick={()=>pdfRef.current && pdfRef.current.click()}
-                    style={{ border:"1.5px dashed #f0b48a", background:"#fff", color:"#c2410c", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ PDFを登録（完成表・複数可）</button>
+                    style={{ border:"1.5px dashed #f0b48a", background:"var(--card, #fff)", color:"#c2410c", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ PDFを登録（完成表・複数可）</button>
                   <input ref={pdfRef} type="file" accept="application/pdf,.pdf" multiple onChange={e=>uploadSharedPdf(e.target.files)} style={{ display:"none" }} />
-                  <div style={{ fontSize:11, color:"var(--sub)", marginTop:8, lineHeight:1.6 }}>完成したバーコード表のPDFです。生成せず、開く・DLしてそのまま印刷できます。全店で共有されます。</div>
+                  <div style={{ fontSize:12, color:"var(--sub)", marginTop:8, lineHeight:1.6 }}>完成したバーコード表のPDFです。生成せず、開く・DLしてそのまま印刷できます。全店で共有されます。</div>
                 </>
               ) : (
                 <>
                   <button onClick={()=>sharedRef.current && sharedRef.current.click()}
-                    style={{ border:"1.5px dashed #c9c9d2", background:"#fff", color:"var(--text)", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ テキストを登録（.txt・複数可）</button>
+                    style={{ border:"1.5px dashed #c9c9d2", background:"var(--card, #fff)", color:"var(--text)", borderRadius:9, padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer" }}>＋ テキストを登録（.txt・複数可）</button>
                   <input ref={sharedRef} type="file" accept=".txt,.json,text/plain" multiple onChange={e=>uploadShared(e.target.files)} style={{ display:"none" }} />
-                  <div style={{ fontSize:11, color:"var(--sub)", marginTop:8, lineHeight:1.6 }}>「プリセット保存」で書き出した.txtです。読込・DLできます。全店で共有されます。</div>
+                  <div style={{ fontSize:12, color:"var(--sub)", marginTop:8, lineHeight:1.6 }}>「プリセット保存」で書き出した.txtです。読込・DLできます。全店で共有されます。</div>
                 </>
               )}
             </div>
@@ -457,8 +457,8 @@ function BarcodeTab() {
               {shAdmin && (
                 <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", background:"#fff4e5", border:"1px solid #ffc98a", borderRadius:10, padding:"9px 11px" }}>
                   <span style={{ fontSize:12.5, fontWeight:900, color:"#8a4b00" }}>管理モード：チェックで選択（今表示中のタブのみ）</span>
-                  <button onClick={()=>setShSel(new Set(shared.filter(p=>!!p.pdf_url===(shTab==="pdf")).map(x=>x.id)))} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>全選択</button>
-                  <button onClick={()=>setShSel(new Set())} style={{ border:"1px solid #e6c9a3", background:"#fff", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>選択解除</button>
+                  <button onClick={()=>setShSel(new Set(shared.filter(p=>!!p.pdf_url===(shTab==="pdf")).map(x=>x.id)))} style={{ border:"1px solid #e6c9a3", background:"var(--card, #fff)", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>全選択</button>
+                  <button onClick={()=>setShSel(new Set())} style={{ border:"1px solid #e6c9a3", background:"var(--card, #fff)", color:"#8a4b00", borderRadius:7, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>選択解除</button>
                   <div style={{ flex:1 }} />
                   {!shConfirm ? (
                     <button onClick={()=> shSel.size>0 && setShConfirm(true)} disabled={shSel.size===0}
@@ -470,7 +470,7 @@ function BarcodeTab() {
                       <button onClick={()=>setShConfirm(false)} style={{ border:"none", background:"none", color:"var(--sub)", fontSize:12, fontWeight:700, cursor:"pointer" }}>キャンセル</button>
                     </span>
                   )}
-                  <button onClick={()=>{ setShAdmin(false); setShSel(new Set()); setShConfirm(false); }} style={{ border:"1px solid #ffc98a", background:"#fff", color:"#8a4b00", borderRadius:8, padding:"8px 12px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>終了</button>
+                  <button onClick={()=>{ setShAdmin(false); setShSel(new Set()); setShConfirm(false); }} style={{ border:"1px solid #ffc98a", background:"var(--card, #fff)", color:"#8a4b00", borderRadius:8, padding:"8px 12px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>終了</button>
                 </div>
               )}
             </div>
@@ -500,15 +500,15 @@ function BarcodeTab() {
                   <div style={{ fontSize:13.5, fontWeight:700, color:"#2c2c30", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
                   <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:2, flexWrap:"wrap" }}>
                     <span style={{ width:9, height:9, borderRadius:"50%", background:companyColor(it), flexShrink:0 }} title={(companyOf(it)||{}).name || ("発注先 "+(it.haccyu||"不明"))} />
-                    <span style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
+                    <span style={{ fontSize:12, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
                     {(useTags[it.bcode]||[]).map(t => (
                       <span key={t} style={{ fontSize:9, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:4, padding:"1px 5px" }}>{t}</span>
                     ))}
                   </div>
                 </div>
                 <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
-                  <button onClick={()=>moveItem(i,-1)} disabled={i===0} style={{ border:"none", background:"#eef1f5", color:i===0?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:10, cursor:i===0?"default":"pointer", lineHeight:1 }}>▲</button>
-                  <button onClick={()=>moveItem(i,1)} disabled={i===list.length-1} style={{ border:"none", background:"#eef1f5", color:i===list.length-1?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:10, cursor:i===list.length-1?"default":"pointer", lineHeight:1 }}>▼</button>
+                  <button onClick={()=>moveItem(i,-1)} disabled={i===0} style={{ border:"none", background:"#eef1f5", color:i===0?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:11, cursor:i===0?"default":"pointer", lineHeight:1 }}>▲</button>
+                  <button onClick={()=>moveItem(i,1)} disabled={i===list.length-1} style={{ border:"none", background:"#eef1f5", color:i===list.length-1?"#ccc":"#666", borderRadius:5, width:26, height:18, fontSize:11, cursor:i===list.length-1?"default":"pointer", lineHeight:1 }}>▼</button>
                 </div>
                 <button onClick={()=>removeItem(it.bcode)} style={{ border:"none", background:"none", color:"var(--faint)", fontSize:18, cursor:"pointer", padding:"0 2px", lineHeight:1 }}>×</button>
               </div>
@@ -544,7 +544,7 @@ function BarcodeTab() {
                     return (
                       <button key={c.key} onClick={()=>setCat(c.key)}
                         style={{ border:"none", background:"none", cursor:"pointer", padding:"4px 0 9px", flexShrink:0, whiteSpace:"nowrap", fontSize:13.5, fontWeight: on?800:600, color: on?ACCENT:"#999", borderBottom: on?`2px solid ${ACCENT}`:"2px solid transparent", marginBottom:-1 }}>
-                        {c.label}<span style={{ fontSize:11, color: on?ACCENT:"#bbb", marginLeft:4 }}>{catCount(c)}</span>
+                        {c.label}<span style={{ fontSize:12, color: on?ACCENT:"#bbb", marginLeft:4 }}>{catCount(c)}</span>
                       </button>
                     );
                   })}
@@ -555,7 +555,7 @@ function BarcodeTab() {
                   <button onClick={()=>{ setMaster([]); setFileName(""); setSearch(""); }} style={{ border:"none", background:"none", color:"var(--faint)", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>読み直し</button>
                 </div>
                 <div style={{ display:"flex", gap:7, alignItems:"center", marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
-                  <span style={{ fontSize:11, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>用途:</span>
+                  <span style={{ fontSize:12, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>用途:</span>
                   <button onClick={()=>setUseFilter("")}
                     style={{ flexShrink:0, border: useFilter===""?"2px solid var(--primary)":"1px solid var(--line)", background: useFilter===""?"var(--soft)":"#fff", color: useFilter===""?"var(--primary)":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
                   {USE_TAGS.map(t => {
@@ -563,7 +563,7 @@ function BarcodeTab() {
                     const cnt = srcFilteredRaw.filter(it => (useTags[it.bcode]||[]).includes(t)).length;
                     return (
                       <button key={t} onClick={()=>setUseFilter(on?"":t)}
-                        style={{ flexShrink:0, border: on?"2px solid var(--primary)":"1px solid var(--line)", background: on?"var(--primary)":"#fff", color: on?"#fff":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{t}<span style={{ fontSize:10, marginLeft:4, opacity:0.8 }}>{cnt}</span></button>
+                        style={{ flexShrink:0, border: on?"2px solid var(--primary)":"1px solid var(--line)", background: on?"var(--primary)":"#fff", color: on?"#fff":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{t}<span style={{ fontSize:11, marginLeft:4, opacity:0.8 }}>{cnt}</span></button>
                     );
                   })}
                 </div>
@@ -584,14 +584,14 @@ function BarcodeTab() {
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{it.name || "（名称なし）"}</div>
                             <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:2, flexWrap:"wrap" }}>
-                              <span style={{ fontSize:11, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
+                              <span style={{ fontSize:12, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
                               <span style={{ fontSize:9.5, color:cc, fontWeight:800, border:"1px solid "+cc, borderRadius:5, padding:"0 5px" }}>{comp ? comp.name : (it.haccyu||"—")}</span>
                               {tags.map(t => (
                                 <span key={t} style={{ fontSize:9.5, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:5, padding:"1px 6px" }}>{t}</span>
                               ))}
                             </div>
                           </div>
-                          {on && <span style={{ fontSize:11, color:ACCENT, fontWeight:700, whiteSpace:"nowrap" }}>追加済</span>}
+                          {on && <span style={{ fontSize:12, color:ACCENT, fontWeight:700, whiteSpace:"nowrap" }}>追加済</span>}
                         </div>
                         <button onClick={(e)=>{ e.stopPropagation(); setTagEditFor(tagEditFor===it.bcode?null:it.bcode); }}
                           style={{ flexShrink:0, border:"none", background: tagEditFor===it.bcode?"var(--soft)":"transparent", color:"var(--sub)", padding:"0 12px", cursor:"pointer", fontSize:16 }} title="用途を設定">🏷</button>
@@ -600,7 +600,7 @@ function BarcodeTab() {
                   })}
                   {tagEditFor && srcShown.some(it => it.bcode === tagEditFor) && (
                     <div style={{ padding:"12px 14px", background:"var(--soft)", borderBottom:"1px solid #f3f3f3" }}>
-                      <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>納品会社を選ぶ（色と模様がラベルに付きます）</div>
+                      <div style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>納品会社を選ぶ（色と模様がラベルに付きます）</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:7, marginBottom:14 }}>
                         {COMPANIES.map(c => {
                           const active = bcCompany[tagEditFor] === c.key;
@@ -613,7 +613,7 @@ function BarcodeTab() {
                           );
                         })}
                       </div>
-                      <div style={{ fontSize:11.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>用途を選ぶ（複数可）</div>
+                      <div style={{ fontSize:12.5, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>用途を選ぶ（複数可）</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
                         {USE_TAGS.map(t => {
                           const active = (useTags[tagEditFor] || []).includes(t);
@@ -659,18 +659,18 @@ function BarcodeTab() {
         {list.length > 0 && (
           <div style={{ borderTop:"1px solid var(--line)", paddingTop:14, marginTop:2 }}>
             <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:3 }}>納品会社の割り当て</div>
-            <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>各商品にラベル上部の色・模様・会社名が付きます。一括で全部に設定するか、商品ごとに個別で選べます。</div>
+            <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>各商品にラベル上部の色・模様・会社名が付きます。一括で全部に設定するか、商品ごとに個別で選べます。</div>
 
             <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:14, paddingBottom:14, borderBottom:"1px dashed var(--line)" }}>
               <span style={{ fontSize:12, fontWeight:800, color:"var(--faint)" }}>一括：</span>
               {COMPANIES.map(c => (
                 <button key={c.key} onClick={()=>{ const next={...bcCompany}; list.forEach(it=>{ next[it.bcode]=c.key; }); setBcCompany(next); try{localStorage.setItem("bcCompanyMap",JSON.stringify(next));}catch(e){} }}
-                  style={{ display:"flex", alignItems:"center", gap:6, border:`1px solid ${c.color}`, background:"#fff", color:c.color, borderRadius:8, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+                  style={{ display:"flex", alignItems:"center", gap:6, border:`1px solid ${c.color}`, background:"var(--card, #fff)", color:c.color, borderRadius:8, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                   <span style={{ width:20, height:11, borderRadius:3, border:`1px solid ${c.color}`, ...companyPatStyle(c) }} />{c.name}
                 </button>
               ))}
               <button onClick={()=>{ const next={...bcCompany}; list.forEach(it=>{ delete next[it.bcode]; }); setBcCompany(next); try{localStorage.setItem("bcCompanyMap",JSON.stringify(next));}catch(e){} }}
-                style={{ border:"1px solid var(--line)", background:"#fff", color:"var(--sub)", borderRadius:8, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>クリア</button>
+                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:8, padding:"6px 10px", fontSize:12, fontWeight:800, cursor:"pointer" }}>クリア</button>
             </div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -684,7 +684,7 @@ function BarcodeTab() {
                         const on = cur === c.key;
                         return (
                           <button key={c.key} onClick={()=>setCompanyFor(it.bcode, on ? null : c.key)} title={c.name}
-                            style={{ display:"flex", alignItems:"center", gap:5, border: on?`2px solid ${c.color}`:"1px solid var(--line)", background:"#fff", color: on?c.color:"var(--sub)", borderRadius:7, padding:"4px 8px", fontSize:11, fontWeight:800, cursor:"pointer" }}>
+                            style={{ display:"flex", alignItems:"center", gap:5, border: on?`2px solid ${c.color}`:"1px solid var(--line)", background:"var(--card, #fff)", color: on?c.color:"var(--sub)", borderRadius:7, padding:"4px 8px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                             <span style={{ width:16, height:10, borderRadius:2, border:`1px solid ${c.color}`, ...companyPatStyle(c) }} />{c.name}
                           </button>
                         );

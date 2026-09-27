@@ -69,7 +69,7 @@ function CalendarTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
@@ -96,7 +96,7 @@ function CalendarTab() {
     onClick: prevM,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 10,
       width: 38,
       height: 38,
@@ -115,7 +115,7 @@ function CalendarTab() {
     onClick: nextM,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 10,
       width: 38,
       height: 38,
@@ -126,7 +126,7 @@ function CalendarTab() {
     }
   }, "\u203A")), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 14,
       padding: "10px 8px 8px",
@@ -182,7 +182,7 @@ function CalendarTab() {
       }
     }, d), ev ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: "var(--soft-text)",
         lineHeight: 1.15,
@@ -191,7 +191,7 @@ function CalendarTab() {
       }
     }, ev.name.length > 4 ? ev.name.slice(0, 4) : ev.name) : hol ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: "#c0392b",
         lineHeight: 1.1,
@@ -210,7 +210,7 @@ function CalendarTab() {
     style: {
       fontSize: 12.5,
       color: "var(--sub)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "16px",
@@ -222,7 +222,7 @@ function CalendarTab() {
       display: "flex",
       alignItems: "center",
       gap: 10,
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "11px 13px",
@@ -243,7 +243,7 @@ function CalendarTab() {
     }
   }, e.date.getDate()), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--sub)",
       fontWeight: 700
     }
@@ -260,7 +260,7 @@ function CalendarTab() {
     }
   }, e.name, e.holiday && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "#c0392b",
       background: "#fdeeee",
@@ -413,7 +413,7 @@ function CompetitorTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
@@ -469,7 +469,7 @@ function CompetitorTab() {
     style: {
       display: "block",
       textDecoration: "none",
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "12px 13px",
@@ -490,7 +490,7 @@ function CompetitorTab() {
     }
   }, r.name), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       background: "var(--chip)",
@@ -743,7 +743,7 @@ function IndustryTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
@@ -791,7 +791,7 @@ function IndustryTab() {
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "ucard",
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       padding: "13px 15px",
       marginBottom: 20
@@ -835,7 +835,7 @@ function IndustryTab() {
       textDecoration: "none",
       fontSize: 12.5,
       fontWeight: 800,
-      color: "#4a7ab0",
+      color: "var(--primary-soft)",
       background: "var(--soft)",
       border: "1px solid #cfe2f3",
       borderRadius: 999,
@@ -872,7 +872,7 @@ function IndustryTab() {
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         display: "inline-block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: "var(--soft-text)",
         background: "var(--soft)",
@@ -895,7 +895,7 @@ function IndustryTab() {
     }, "\u2197")), st.status === "loading" && /*#__PURE__*/React.createElement("div", null, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 12,
         padding: "12px 13px",
@@ -923,7 +923,7 @@ function IndustryTab() {
       style: {
         display: "block",
         textDecoration: "none",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 12,
         padding: "14px 14px",
@@ -944,7 +944,7 @@ function IndustryTab() {
       style: {
         display: "block",
         textDecoration: "none",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 12,
         padding: "12px 13px",
@@ -958,7 +958,7 @@ function IndustryTab() {
       }
     }, fmtDate(it.pubDate) && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: site.color,
         flexShrink: 0
@@ -1009,7 +1009,7 @@ function IndustryTab() {
   }, "\u5404\u793E\u306E\u4E88\u7D04\u30AB\u30BF\u30ED\u30B0\u3084\u767A\u8868\u304B\u3089\u62FE\u3063\u305F\u50BE\u5411\u3067\u3059"), trends.map(t => /*#__PURE__*/React.createElement("div", {
     key: t.id,
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 13,
       padding: "13px 14px",
@@ -1025,7 +1025,7 @@ function IndustryTab() {
     }
   }, t.season && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       color: "var(--primary-soft)",
       background: "var(--soft)",
@@ -1067,7 +1067,7 @@ function IndustryTab() {
     }
   }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)",
       fontWeight: 800,
       marginTop: 8
@@ -1132,7 +1132,7 @@ function IndustryTab() {
     style: {
       display: "block",
       textDecoration: "none",
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "12px 13px",
@@ -1153,7 +1153,7 @@ function IndustryTab() {
     }
   }, r.name), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       background: "var(--chip)",
@@ -1240,7 +1240,7 @@ function SoubaTab({
   const profit = sellValid ? sell - Math.round(C) : null;
   const sellTax = sellValid ? Math.ceil(sell * 1.08) : null;
   const card = {
-    background: "#fff",
+    background: "var(--card, #fff)",
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
@@ -1296,7 +1296,7 @@ function SoubaTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
@@ -1422,7 +1422,7 @@ function SoubaTab({
       marginTop: 8,
       width: "100%",
       border: "1px solid #3f83c4",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#2f6fb0",
       borderRadius: 10,
       padding: "10px",
@@ -1491,7 +1491,7 @@ function SoubaTab({
       marginTop: 10,
       width: "100%",
       border: "1px solid #b8860b",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#8B6914",
       borderRadius: 10,
       padding: "10px",
@@ -2346,7 +2346,7 @@ function CatalogTab() {
         justifyContent: "center",
         textDecoration: "none",
         color: "var(--sub)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 8,
         padding: compact ? "0 9px" : "0 11px",
@@ -2367,7 +2367,7 @@ function CatalogTab() {
         justifyContent: "center",
         textDecoration: "none",
         color: "var(--sub)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 8,
         padding: compact ? "0 9px" : "0 11px",
@@ -2388,7 +2388,7 @@ function CatalogTab() {
         justifyContent: "center",
         textDecoration: "none",
         color: "var(--sub)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 8,
         padding: compact ? "0 9px" : "0 11px",
@@ -2401,7 +2401,7 @@ function CatalogTab() {
       return /*#__PURE__*/React.createElement("div", {
         className: "ucard",
         style: {
-          background: "#fff",
+          background: "var(--card, #fff)",
           borderRadius: 9,
           padding: "8px 10px 8px 12px",
           borderLeft: `4px solid ${g.color}`,
@@ -2427,7 +2427,7 @@ function CatalogTab() {
         }
       }, c.store), c.area && /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)",
           fontWeight: 800
         }
@@ -2444,7 +2444,7 @@ function CatalogTab() {
       return /*#__PURE__*/React.createElement("div", {
         className: "ucard",
         style: {
-          background: "#fff",
+          background: "var(--card, #fff)",
           borderRadius: 9,
           padding: "9px 10px 9px 12px",
           borderLeft: `4px solid ${g.color}`
@@ -2476,7 +2476,7 @@ function CatalogTab() {
     return /*#__PURE__*/React.createElement("div", {
       className: "ucard",
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 10,
         padding: "10px 11px 10px 13px",
         borderLeft: `4px solid ${g.color}`
@@ -2512,13 +2512,13 @@ function CatalogTab() {
       }
     }, c.area && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         fontWeight: 800
       }
     }, c.area), c.stores_count ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: g.color,
         background: g.color + "12",
@@ -2527,7 +2527,7 @@ function CatalogTab() {
       }
     }, c.stores_count, "\u5E97") : null, c.revenue ? /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: g.color,
         background: g.color + "12",
@@ -2536,7 +2536,7 @@ function CatalogTab() {
       }
     }, c.revenue) : null), c.strength && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--text)",
         lineHeight: 1.6,
         background: "var(--bg)",
@@ -2552,7 +2552,7 @@ function CatalogTab() {
       style: {
         display: "flex",
         gap: 5,
-        fontSize: 11.5,
+        fontSize: 12.5,
         lineHeight: 1.55,
         marginBottom: 3
       }
@@ -2570,7 +2570,7 @@ function CatalogTab() {
       style: {
         display: "flex",
         gap: 5,
-        fontSize: 11.5,
+        fontSize: 12.5,
         lineHeight: 1.55
       }
     }, /*#__PURE__*/React.createElement("span", {
@@ -2592,7 +2592,7 @@ function CatalogTab() {
     fontSize: 13,
     fontWeight: 700,
     color: "var(--text)",
-    background: "#fff",
+    background: "var(--card, #fff)",
     outline: "none",
     width: "100%",
     boxSizing: "border-box",
@@ -2744,7 +2744,7 @@ function CatalogTab() {
     key: i
   }, i > 0 && /*#__PURE__*/React.createElement("br", null), t))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 10,
       padding: "12px 13px",
@@ -2911,7 +2911,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2930,7 +2930,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2949,7 +2949,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2968,7 +2968,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -2987,7 +2987,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -3006,7 +3006,7 @@ function CatalogTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -3085,14 +3085,14 @@ function CatalogTab() {
         background: "var(--primary-soft)",
         color: "#fff",
         borderRadius: 999,
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         padding: "0 5px",
         lineHeight: 1.6
       }
     }, used), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         transform: on ? "rotate(180deg)" : "none",
         display: "inline-block",
         transition: "transform .2s"
@@ -3297,7 +3297,7 @@ function CatalogTab() {
       }
     }, g.label), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: g.color,
         background: g.color + "16",
@@ -4088,7 +4088,7 @@ function OrderTab() {
         color: "transparent",
         caretColor: "transparent",
         textShadow: "none",
-        background: "#fff"
+        background: "var(--card, #fff)"
       }
     }), pw.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
@@ -4250,7 +4250,7 @@ function OrderTab() {
       }, /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           fontWeight: 800,
           opacity: sel ? 0.85 : 0.7
         }
@@ -4264,7 +4264,7 @@ function OrderTab() {
       }, d.getDate()), n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           fontWeight: 900,
           marginTop: 1,
           color: sel ? "#fff" : "var(--primary-soft)",
@@ -4297,7 +4297,7 @@ function OrderTab() {
       "aria-label": "\u524D\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 7,
         width: 26,
         height: 26,
@@ -4321,7 +4321,7 @@ function OrderTab() {
       "aria-label": "\u6B21\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 7,
         width: 26,
         height: 26,
@@ -4445,7 +4445,7 @@ function OrderTab() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)"
         }
       }, "\u5199\u771F\u306A\u3057"), /*#__PURE__*/React.createElement("div", {
@@ -4466,13 +4466,13 @@ function OrderTab() {
         }
       }, r.item_name), /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)",
           marginTop: 2
         }
       }, [r.maker, r.price != null ? `¥${r.price}` : null, r.life_days != null ? `D+${r.life_days}` : null].filter(Boolean).join(" ／ ")), r.memo && /*#__PURE__*/React.createElement("div", {
         style: {
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "#c07a1a",
           fontWeight: 700,
           marginTop: 3
@@ -4504,14 +4504,14 @@ function OrderTab() {
         }
       }), /*#__PURE__*/React.createElement("span", {
         style: {
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)",
           width: 26
         }
       }, r.unit || "")));
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         lineHeight: 1.7,
         marginTop: 16
@@ -4579,7 +4579,7 @@ function OrderTab() {
       "aria-label": "\u524D\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 8,
         width: 30,
         height: 30,
@@ -4607,7 +4607,7 @@ function OrderTab() {
       "aria-label": "\u6B21\u306E\u9031",
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 8,
         width: 30,
         height: 30,
@@ -4621,7 +4621,7 @@ function OrderTab() {
       style: {
         marginLeft: "auto",
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 8,
         padding: "6px 11px",
         fontSize: 12,
@@ -4662,7 +4662,7 @@ function OrderTab() {
       }, OI_WDAY[dnum]), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           fontWeight: 800,
           opacity: 0.75,
           marginTop: 1
@@ -4670,7 +4670,7 @@ function OrderTab() {
       }, d.getDate()), n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           fontWeight: 900,
           marginTop: 2,
           color: sel ? "#fff" : "var(--primary-soft)"
@@ -4678,7 +4678,7 @@ function OrderTab() {
       }, n));
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px",
@@ -4693,7 +4693,7 @@ function OrderTab() {
       }
     }, wd, "\u66DC\u306B\u767A\u6CE8\u3059\u308B\u3082\u306E ", onDay.length > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "var(--primary-soft)"
       }
@@ -4748,7 +4748,7 @@ function OrderTab() {
     }, r.item_name), (r.maker || r.price != null || r.life_days != null) && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         marginTop: 1,
         overflow: "hidden",
@@ -4766,7 +4766,7 @@ function OrderTab() {
         height: 28,
         flexShrink: 0,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--sub)",
         borderRadius: 7,
         fontSize: 16,
@@ -4803,7 +4803,7 @@ function OrderTab() {
         height: 28,
         flexShrink: 0,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--primary)",
         borderRadius: 7,
         fontSize: 16,
@@ -4817,7 +4817,7 @@ function OrderTab() {
       }
     }, "\uFF0B"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         width: 22,
         flexShrink: 0
@@ -4837,7 +4837,7 @@ function OrderTab() {
       }
     }, "\xD7"))))), active.length > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px",
@@ -4882,14 +4882,14 @@ function OrderTab() {
           background: "var(--primary-soft)",
           color: "#fff",
           borderRadius: 999,
-          fontSize: 11.5,
+          fontSize: 12.5,
           fontWeight: 900,
           padding: "0 5px",
           lineHeight: 1.6
         }
       }, n), /*#__PURE__*/React.createElement("span", {
         style: {
-          fontSize: 11.5,
+          fontSize: 12.5,
           transform: on ? "rotate(180deg)" : "none",
           display: "inline-block"
         }
@@ -4974,7 +4974,7 @@ function OrderTab() {
       }, it.name), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)",
           marginTop: 1
         }
@@ -4988,7 +4988,7 @@ function OrderTab() {
       }, "\xA5", it.price));
     }))), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px",
@@ -5021,7 +5021,7 @@ function OrderTab() {
       }
     })), recCount() > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1.5px solid #cfe0d8",
         borderRadius: 11,
         padding: "12px 13px",
@@ -5076,7 +5076,7 @@ function OrderTab() {
       style: {
         flex: 1,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--primary)",
         borderRadius: 11,
         padding: "13px",
@@ -5114,7 +5114,7 @@ function OrderTab() {
     "aria-label": "\u524D\u306E\u9031",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       width: 30,
       height: 30,
@@ -5142,7 +5142,7 @@ function OrderTab() {
     "aria-label": "\u6B21\u306E\u9031",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       width: 30,
       height: 30,
@@ -5156,7 +5156,7 @@ function OrderTab() {
     style: {
       marginLeft: "auto",
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       padding: "6px 11px",
       fontSize: 12,
@@ -5184,7 +5184,7 @@ function OrderTab() {
     }
   }, "\u300C\u7BA1\u7406\u300D\u304B\u3089\u54C1\u76EE\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "13px",
@@ -5219,7 +5219,7 @@ function OrderTab() {
       }
     }, l, "\u66DC"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)"
       }
     }, day.length, "\u4EF6")), day.length === 0 ? /*#__PURE__*/React.createElement("div", {
@@ -5273,7 +5273,7 @@ function OrderTab() {
     }
   }, "1\u9031\u9593\u5206\u3092\u5370\u5237\u3059\u308B\uFF08A4\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)",
       lineHeight: 1.7,
       marginTop: 12
@@ -5345,7 +5345,7 @@ function OrderTab() {
         alignItems: "center",
         gap: 11,
         textDecoration: "none",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 12,
         padding: "13px 14px"
@@ -5355,7 +5355,7 @@ function OrderTab() {
         flexShrink: 0,
         background: k.bg,
         color: k.c,
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         borderRadius: 7,
         padding: "5px 9px",
@@ -5400,7 +5400,7 @@ function OrderTab() {
     "aria-label": "\u524D\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       width: 34,
       height: 34,
@@ -5420,7 +5420,7 @@ function OrderTab() {
     "aria-label": "\u6B21\u306E\u6708",
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       width: 34,
       height: 34,
@@ -5443,7 +5443,7 @@ function OrderTab() {
       ...inp,
       marginBottom: 11,
       fontSize: 12.5,
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
@@ -5452,7 +5452,7 @@ function OrderTab() {
     value: i.id
   }, i.name))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "10px",
@@ -5469,7 +5469,7 @@ function OrderTab() {
     key: w,
     style: {
       textAlign: "center",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       color: i === 0 ? "#d1554f" : i === 6 ? "#3b7dd8" : "var(--faint)",
       padding: "3px 0"
@@ -5514,14 +5514,14 @@ function OrderTab() {
       }
     }, d), n > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "#2c6b45"
       }
     }, n, "\u4EF6"));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "12px 13px",
@@ -5593,7 +5593,7 @@ function OrderTab() {
     }
   }, "\u3053\u306E\u6708\u306E\u8A18\u9332\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093")), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "12px 13px"
@@ -5607,7 +5607,7 @@ function OrderTab() {
     }
   }, Number(pickDate.slice(5, 7)), "\u6708", Number(pickDate.slice(8, 10)), "\u65E5\uFF08", OI_WDAY[new Date(pickDate + "T00:00:00").getDay()], "\uFF09\u306B\u767A\u6CE8\u3057\u305F\u3082\u306E"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 10
     }
@@ -5824,7 +5824,7 @@ function OrderTab() {
     }
   }, impMsg), formOpen && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 12,
       padding: "13px",
@@ -5940,7 +5940,7 @@ function OrderTab() {
       onClick: () => setShowOff(v => !v),
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--sub)",
         borderRadius: 8,
         padding: "7px 13px",
@@ -5992,7 +5992,7 @@ function OrderTab() {
       onClick: () => toggleActive(it, true),
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--primary)",
         borderRadius: 7,
         padding: "5px 12px",
@@ -6048,7 +6048,7 @@ function OrderTab() {
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: "11px 12px",
-        background: "#fff",
+        background: "var(--card, #fff)",
         display: "flex",
         gap: 11
       }
@@ -6116,7 +6116,7 @@ function OrderTab() {
       onClick: () => openEdit(it),
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--text)",
         borderRadius: 7,
         padding: "5px 13px",
@@ -6133,7 +6133,7 @@ function OrderTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--sub)",
         fontWeight: 700
       }
@@ -6141,7 +6141,7 @@ function OrderTab() {
       onClick: () => setConfirmOff(null),
       style: {
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--sub)",
         borderRadius: 7,
         padding: "5px 11px",
@@ -6166,7 +6166,7 @@ function OrderTab() {
       style: {
         marginLeft: "auto",
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--sub)",
         borderRadius: 7,
         padding: "5px 13px",
@@ -6707,7 +6707,7 @@ function BundleTab() {
     }, p.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)"
       }
     }, p.store_name)), /*#__PURE__*/React.createElement("span", {
@@ -7046,7 +7046,7 @@ function BundleTab() {
       }
     }, b.name), soon && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
         background: "#e0855f",
@@ -7057,7 +7057,7 @@ function BundleTab() {
     }, "\u6765\u6708")), b.note && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--sub)",
         lineHeight: 1.5,
         overflow: "hidden",
@@ -7162,7 +7162,7 @@ function BundleTab() {
         background: isView ? "var(--primary)" : "var(--card, #fff)",
         color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
         padding: "5px 0 6px",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         cursor: "pointer",
         lineHeight: 1.3,
@@ -7208,7 +7208,7 @@ function BundleTab() {
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: on ? "var(--ink)" : "var(--sub)",
         overflow: "hidden",
@@ -7217,7 +7217,7 @@ function BundleTab() {
       }
     }, b.name), n > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: col,
         flexShrink: 0
@@ -7255,7 +7255,7 @@ function BundleTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--faint)",
       textAlign: "right",
@@ -7265,7 +7265,7 @@ function BundleTab() {
     key: mm,
     style: {
       textAlign: "center",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
@@ -7386,7 +7386,7 @@ function BundleTab() {
     b: b
   })))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)",
       lineHeight: 1.7,
       marginTop: 18

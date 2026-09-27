@@ -1,3 +1,4 @@
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 /* GoodDay 鮮魚共有 — 11-tab-check-fish （自動分割・window共有） */
 var {
   useState,
@@ -292,7 +293,7 @@ function PopCheckTab() {
     }
   }, label), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--soft-text)",
       background: "var(--soft)",
@@ -318,7 +319,7 @@ function PopCheckTab() {
     }
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       width: 26,
@@ -327,7 +328,7 @@ function PopCheckTab() {
     }
   }, score)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--text)",
       lineHeight: 1.6,
       marginTop: 3,
@@ -356,17 +357,17 @@ function PopCheckTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
-  }, "POP診断"), /*#__PURE__*/React.createElement("div", {
+  }, "POP\u8A3A\u65AD"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "色・明るさ・情報量・余白を自動チェック。画像は外部に送信されません"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u8272\u30FB\u660E\u308B\u3055\u30FB\u60C5\u5831\u91CF\u30FB\u4F59\u767D\u3092\u81EA\u52D5\u30C1\u30A7\u30C3\u30AF\u3002\u753B\u50CF\u306F\u5916\u90E8\u306B\u9001\u4FE1\u3055\u308C\u307E\u305B\u3093"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 900,
       margin: "0 auto",
@@ -379,8 +380,7 @@ function PopCheckTab() {
       display: "flex",
       gap: 8
     }
-  }, /*#__PURE__*/React.createElement("label", {
-    ...dzCheck.props,
+  }, /*#__PURE__*/React.createElement("label", _extends({}, dzCheck.props, {
     style: {
       flex: 1,
       display: "block",
@@ -395,7 +395,7 @@ function PopCheckTab() {
       background: "var(--bg)",
       ...dzCheck.style
     }
-  }, dzCheck.over ? "ここに離す" : "📷 画像を選ぶ", /*#__PURE__*/React.createElement("input", {
+  }), dzCheck.over ? "ここに離す" : "📷 画像を選ぶ", /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: "image/*",
     onChange: onFile,
@@ -407,14 +407,14 @@ function PopCheckTab() {
     style: {
       flex: 1,
       border: "1.5px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 11,
       fontSize: 13,
       fontWeight: 800,
       color: "var(--text)",
       cursor: "pointer"
     }
-  }, "🗂 最近のPOPから")), picker && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDDC2 \u6700\u8FD1\u306EPOP\u304B\u3089")), picker && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(4,1fr)",
@@ -429,7 +429,7 @@ function PopCheckTab() {
       textAlign: "center",
       padding: "10px 0"
     }
-  }, "読み込み中…") : recent.map(pp => /*#__PURE__*/React.createElement("img", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : recent.map(pp => /*#__PURE__*/React.createElement("img", {
     key: pp.id,
     src: pp.image_url,
     onClick: () => {
@@ -522,10 +522,10 @@ function PopCheckTab() {
     }
   }, res.j.grade), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800
     }
-  }, res.j.total, "点")), /*#__PURE__*/React.createElement("div", {
+  }, res.j.total, "\u70B9")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--text)",
@@ -561,11 +561,11 @@ function PopCheckTab() {
     }
   }, c)))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--sub)",
       marginTop: 6
     }
-  }, "主要カラー\u3000／\u3000推定色数：", res.m.colorCount, "色")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E3B\u8981\u30AB\u30E9\u30FC\u3000\uFF0F\u3000\u63A8\u5B9A\u8272\u6570\uFF1A", res.m.colorCount, "\u8272")), /*#__PURE__*/React.createElement("div", {
     className: "wcard"
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -574,33 +574,33 @@ function PopCheckTab() {
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "診断項目"), /*#__PURE__*/React.createElement(Row, {
-    label: "色数",
+  }, "\u8A3A\u65AD\u9805\u76EE"), /*#__PURE__*/React.createElement(Row, {
+    label: "\u8272\u6570",
     level: res.j.lv.color,
     score: res.m.colorCount <= 6 ? 100 - (res.m.colorCount - 3) * 8 : Math.max(20, 100 - (res.m.colorCount - 6) * 15),
     comment: res.j.cm.color
   }), /*#__PURE__*/React.createElement(Row, {
-    label: "明るさ",
+    label: "\u660E\u308B\u3055",
     level: res.j.lv.brightness,
     score: res.m.brightness,
     comment: res.j.cm.brightness
   }), /*#__PURE__*/React.createElement(Row, {
-    label: "彩度",
+    label: "\u5F69\u5EA6",
     level: res.j.lv.saturation,
     score: res.m.saturation,
     comment: res.j.cm.saturation
   }), /*#__PURE__*/React.createElement(Row, {
-    label: "コントラスト",
+    label: "\u30B3\u30F3\u30C8\u30E9\u30B9\u30C8",
     level: res.j.lv.contrast,
     score: res.m.contrast,
     comment: res.j.cm.contrast
   }), /*#__PURE__*/React.createElement(Row, {
-    label: "情報量",
+    label: "\u60C5\u5831\u91CF",
     level: res.j.lv.clutter,
     score: res.m.clutter,
     comment: res.j.cm.clutter
   }), /*#__PURE__*/React.createElement(Row, {
-    label: "余白",
+    label: "\u4F59\u767D",
     level: res.j.lv.margin,
     score: res.m.marginScore,
     comment: res.j.cm.margin
@@ -613,14 +613,14 @@ function PopCheckTab() {
       color: "#2f6fb0",
       marginBottom: 7
     }
-  }, "👍 良い点"), res.j.good.map((g, i) => /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDC4D \u826F\u3044\u70B9"), res.j.good.map((g, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       fontSize: 12.5,
       color: "var(--text)",
       lineHeight: 1.9
     }
-  }, "・", g)), /*#__PURE__*/React.createElement("div", {
+  }, "\u30FB", g)), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 1,
       background: "var(--line)",
@@ -633,21 +633,21 @@ function PopCheckTab() {
       color: "var(--primary)",
       marginBottom: 7
     }
-  }, "🔧 改善案"), res.j.imp.map((g, i) => /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDD27 \u6539\u5584\u6848"), res.j.imp.map((g, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       fontSize: 12.5,
       color: "var(--text)",
       lineHeight: 1.9
     }
-  }, "・", g))), /*#__PURE__*/React.createElement("div", {
+  }, "\u30FB", g))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       lineHeight: 1.7
     }
-  }, "診断は機械的な目安です。最後は売場での見え方を優先してください。"))));
+  }, "\u8A3A\u65AD\u306F\u6A5F\u68B0\u7684\u306A\u76EE\u5B89\u3067\u3059\u3002\u6700\u5F8C\u306F\u58F2\u5834\u3067\u306E\u898B\u3048\u65B9\u3092\u512A\u5148\u3057\u3066\u304F\u3060\u3055\u3044\u3002"))));
 }
 const FISH_DB = [{
   name: "真あじ",
@@ -1028,17 +1028,17 @@ function FishTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      color: "#1d3a57",
+      color: "var(--primary)",
       fontSize: 18,
       fontWeight: 900
     }
-  }, "魚図鑑"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9B5A\u56F3\u9451"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
       marginTop: 2
     }
-  }, "旬・売りポイント・調理・POPフレーズをまとめた鮮魚データベース"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u65EC\u30FB\u58F2\u308A\u30DD\u30A4\u30F3\u30C8\u30FB\u8ABF\u7406\u30FBPOP\u30D5\u30EC\u30FC\u30BA\u3092\u307E\u3068\u3081\u305F\u9BAE\u9B5A\u30C7\u30FC\u30BF\u30D9\u30FC\u30B9"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 900,
       margin: "0 auto",
@@ -1047,7 +1047,7 @@ function FishTab() {
   }, /*#__PURE__*/React.createElement("input", {
     value: q,
     onChange: e => setQ(e.target.value),
-    placeholder: "魚の名前やキーワードで検索…",
+    placeholder: "\u9B5A\u306E\u540D\u524D\u3084\u30AD\u30FC\u30EF\u30FC\u30C9\u3067\u691C\u7D22\u2026",
     style: {
       width: "100%",
       boxSizing: "border-box",
@@ -1056,7 +1056,7 @@ function FishTab() {
       padding: "11px 14px",
       fontSize: 14,
       marginBottom: 12,
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1071,7 +1071,7 @@ function FishTab() {
       key: f.name,
       onClick: () => setOpenIdx(idx),
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: now ? "1.5px solid var(--primary)" : "1px solid var(--line)",
         borderRadius: 13,
         padding: "13px 12px",
@@ -1093,7 +1093,7 @@ function FishTab() {
         borderRadius: 6,
         padding: "2px 6px"
       }
-    }, "今が旬"), /*#__PURE__*/React.createElement("div", {
+    }, "\u4ECA\u304C\u65EC"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 15.5,
         fontWeight: 900,
@@ -1103,7 +1103,7 @@ function FishTab() {
       }
     }, f.name), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: 800,
         color: "var(--sub)",
         background: "var(--chip)",
@@ -1114,7 +1114,7 @@ function FishTab() {
       }
     }, mLabel(f)), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         color: "var(--sub)",
         lineHeight: 1.55,
         display: "-webkit-box",
@@ -1130,15 +1130,15 @@ function FishTab() {
       padding: "30px 0",
       fontSize: 13
     }
-  }, "見つかりませんでした"), /*#__PURE__*/React.createElement("div", {
+  }, "\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)",
       textAlign: "center",
       marginTop: 12,
       lineHeight: 1.7
     }
-  }, "内容はAIが知識から書き下ろした参考情報です。", /*#__PURE__*/React.createElement("br", null), "追加したい魚や直したい内容があれば管理者へ。")), openIdx != null && FISH_DB[openIdx] && (() => {
+  }, "\u5185\u5BB9\u306FAI\u304C\u77E5\u8B58\u304B\u3089\u66F8\u304D\u4E0B\u308D\u3057\u305F\u53C2\u8003\u60C5\u5831\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u8FFD\u52A0\u3057\u305F\u3044\u9B5A\u3084\u76F4\u3057\u305F\u3044\u5185\u5BB9\u304C\u3042\u308C\u3070\u7BA1\u7406\u8005\u3078\u3002")), openIdx != null && FISH_DB[openIdx] && (() => {
     const f = FISH_DB[openIdx];
     const now = inSeason(f) && !seasonAll(f);
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -1156,7 +1156,7 @@ function FishTab() {
         right: 0,
         bottom: 0,
         zIndex: 302,
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: "22px 22px 0 0",
         boxShadow: "0 -8px 30px rgba(0,0,0,0.2)",
         animation: "sheetUp .28s cubic-bezier(.32,.72,.28,1)",
@@ -1187,16 +1187,16 @@ function FishTab() {
       }
     }, f.name), now && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
         background: "var(--primary)",
         borderRadius: 7,
         padding: "2px 8px"
       }
-    }, "今が旬"), /*#__PURE__*/React.createElement("span", {
+    }, "\u4ECA\u304C\u65EC"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 800,
         color: "var(--sub)",
         background: "var(--chip)",
@@ -1217,7 +1217,7 @@ function FishTab() {
         fontWeight: 800,
         cursor: "pointer"
       }
-    }, "✕")), /*#__PURE__*/React.createElement("div", {
+    }, "\u2715")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: "var(--text)",
@@ -1237,7 +1237,7 @@ function FishTab() {
       style: {
         color: "var(--ink)"
       }
-    }, "🍳 調理・食べ方"), /*#__PURE__*/React.createElement("br", null), f.cook), /*#__PURE__*/React.createElement("div", {
+    }, "\uD83C\uDF73 \u8ABF\u7406\u30FB\u98DF\u3079\u65B9"), /*#__PURE__*/React.createElement("br", null), f.cook), /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 8
       }
@@ -1245,7 +1245,7 @@ function FishTab() {
       style: {
         color: "var(--ink)"
       }
-    }, "📝 POPフレーズ例"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+    }, "\uD83D\uDCDD POP\u30D5\u30EC\u30FC\u30BA\u4F8B"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "var(--soft-text)"
       }
@@ -1253,7 +1253,7 @@ function FishTab() {
       style: {
         color: "var(--ink)"
       }
-    }, "📍 山陰メモ"), /*#__PURE__*/React.createElement("br", null), f.local))));
+    }, "\uD83D\uDCCD \u5C71\u9670\u30E1\u30E2"), /*#__PURE__*/React.createElement("br", null), f.local))));
   })());
 }
 ;

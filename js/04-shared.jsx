@@ -171,7 +171,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             {items.length > 0 && (
               <div style={{ display:"flex", flexDirection:"column", gap:8, marginTop:10 }}>
                 {items.map((it, i) => (
-                  <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", border:"1px solid var(--line)", borderRadius:10, padding:"8px 9px", background:"#fff" }}>
+                  <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", border:"1px solid var(--line)", borderRadius:10, padding:"8px 9px", background:"var(--card, #fff)" }}>
                     <img src={it.preview} alt="" style={{ width:56, height:78, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--bg)" }} />
                     <div style={{ minWidth:0, flex:1 }}>
                       {items.length > 1 ? (
@@ -183,7 +183,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
                         </div>
                       )}
                       {it.warn && (
-                        <div style={{ marginTop:5, fontSize:11.5, color:"#8a6d00", background:"#fff6de", border:"1px solid #eeddad", borderRadius:7, padding:"5px 7px", lineHeight:1.5 }}>{it.warn}</div>
+                        <div style={{ marginTop:5, fontSize:12.5, color:"#8a6d00", background:"#fff6de", border:"1px solid #eeddad", borderRadius:7, padding:"5px 7px", lineHeight:1.5 }}>{it.warn}</div>
                       )}
                     </div>
                     <button onClick={() => removeAt(i)} aria-label="この画像を外す"
@@ -479,7 +479,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
       <span style={{ width:46, height:46, borderRadius:"50%", background: active ? activeColor : "rgba(22,30,42,0.62)", border: active ? "none" : "1px solid rgba(255,255,255,0.22)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", boxShadow:"0 2px 8px rgba(0,0,0,0.3)", transition:"all .18s ease" }}>
         <Ico d={ICONS[icon]} fill={active && fillWhenActive ? "#fff" : "none"} />
       </span>
-      <span style={{ fontSize:11.5, fontWeight:800, color:"#fff", background:"rgba(22,30,42,0.55)", borderRadius:6, padding:"1px 6px", letterSpacing:"-0.2px" }}>{label}</span>
+      <span style={{ fontSize:12.5, fontWeight:800, color:"#fff", background:"rgba(22,30,42,0.55)", borderRadius:6, padding:"1px 6px", letterSpacing:"-0.2px" }}>{label}</span>
     </button>
   );
 
@@ -526,7 +526,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
           {showArcConfirm && (
             <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10, padding:20 }} onClick={()=>{ setShowArcConfirm(false); setPwInput(""); setPwError(""); }}>
-              <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
+              <div onClick={e=>e.stopPropagation()} style={{ background:"var(--card, #fff)", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
                 <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>アーカイブに移しますか？</div>
                 <div style={{ fontSize:12, color:"var(--sub)", marginBottom:10, lineHeight:1.6 }}>一覧から見えなくなりますが、消えるわけではありません。管理画面の「アーカイブ」からいつでも戻せます。</div>
                 <div style={{ fontSize:12, color:"var(--sub)", marginBottom:10 }}>ヒント：本社の郵便番号</div>
@@ -547,7 +547,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         <div onClick={(e) => { e.stopPropagation(); if (!rnBusy) setRenaming(false); }}
           style={{ position:"fixed", inset:0, zIndex:1400, background:"rgba(15,25,38,0.62)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:400, padding:"22px 20px" }}>
+            style={{ background:"var(--card, #fff)", borderRadius:16, width:"100%", maxWidth:400, padding:"22px 20px" }}>
             <div style={{ fontSize:16.5, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>商品名を直す</div>
             <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="商品名"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
@@ -572,7 +572,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         <div onClick={() => setShowPrint(false)}
           style={{ position:"fixed", inset:0, zIndex:1200, background:"rgba(15,25,38,0.55)", display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"#fff", borderRadius:"20px 20px 0 0", width:"100%", maxWidth:460, padding:"20px 18px calc(22px + env(safe-area-inset-bottom))", animation:"sheetUp .3s cubic-bezier(.16,1,.3,1)" }}>
+            style={{ background:"var(--card, #fff)", borderRadius:"20px 20px 0 0", width:"100%", maxWidth:460, padding:"20px 18px calc(22px + env(safe-area-inset-bottom))", animation:"sheetUp .3s cubic-bezier(.16,1,.3,1)" }}>
             <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>印刷する</div>
             <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:16 }}>
               余白なしでA4に印刷します。印刷画面が開いたら、用紙をA4・余白を「なし」にして印刷してください。
@@ -583,7 +583,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               [4, "A4に4枚", "4分割（A6サイズ）"],
             ].map(([n, title, desc]) => (
               <button key={n} onClick={() => doPrint(n)}
-                style={{ display:"flex", alignItems:"center", gap:12, width:"100%", textAlign:"left", border:"1px solid var(--line)", background:"#fff", borderRadius:12, padding:"13px 14px", marginBottom:8, cursor:"pointer" }}>
+                style={{ display:"flex", alignItems:"center", gap:12, width:"100%", textAlign:"left", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:12, padding:"13px 14px", marginBottom:8, cursor:"pointer" }}>
                 <span style={{ width:32, height:44, flexShrink:0, border:"1.5px solid var(--primary-soft)", borderRadius:3, display:"grid",
                   gridTemplateColumns: n === 4 ? "1fr 1fr" : "1fr", gridTemplateRows: n === 1 ? "1fr" : "1fr 1fr", gap:1.5, padding:1.5 }}>
                   {Array.from({ length: n }, (_, i) => <span key={i} style={{ background:"var(--primary-soft)", opacity:0.35, borderRadius:1 }} />)}
@@ -602,7 +602,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 
       {showDelConfirm && (
             <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10, padding:20 }} onClick={()=>{ setShowDelConfirm(false); setPwInput(""); setPwError(""); }}>
-              <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
+              <div onClick={e=>e.stopPropagation()} style={{ background:"var(--card, #fff)", borderRadius:16, padding:"18px", width:"100%", maxWidth:320 }}>
                 <div style={{ fontSize:14, fontWeight:800, color:"#d05050", marginBottom:8 }}>本当に削除しますか？</div>
                 <div style={{ fontSize:12, color:"var(--sub)", marginBottom:10 }}>ヒント：本社の郵便番号</div>
                 <input type="password" value={pwInput} onChange={e=>{ setPwInput(e.target.value); setPwError(""); }}
@@ -661,7 +661,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
           )}
           {cOpen && <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
             <select value={cStore} onChange={e=>setCStore(e.target.value)}
-              style={{ padding:"10px 8px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:12.5, outline:"none", background:"#fff", flexShrink:0, maxWidth:110 }}>
+              style={{ padding:"10px 8px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:12.5, outline:"none", background:"var(--card, #fff)", flexShrink:0, maxWidth:110 }}>
               {STORES.map(s=><option key={s}>{s}</option>)}
             </select>
             <textarea value={cText} onChange={e=>setCText(e.target.value)} placeholder="コメントを入力…" rows={1}

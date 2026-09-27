@@ -59,7 +59,7 @@ function IdeaTab({
     }
   }, "\u30A2\u30A4\u30C7\u30A2"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       opacity: 0.85,
       marginTop: 3
     }
@@ -139,7 +139,7 @@ function IdeaTab({
         right: 6,
         background: "rgba(22,30,42,0.7)",
         color: "#fff",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         borderRadius: 10,
         padding: "2px 8px"
@@ -163,7 +163,7 @@ function IdeaTab({
     }, it.title), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         marginTop: 2
       }
@@ -270,12 +270,12 @@ function IdeaTab({
       width: "100%",
       display: "block",
       borderRadius: 4,
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   })))), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(255,255,255,0.55)",
-      fontSize: 11.5,
+      fontSize: 12.5,
       marginTop: 12,
       lineHeight: 1.8
     }

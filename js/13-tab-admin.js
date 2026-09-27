@@ -160,7 +160,7 @@ function AdminTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 16,
         boxShadow: "0 2px 14px rgba(0,0,0,0.07)",
         padding: 24,
@@ -494,7 +494,7 @@ function AdminTab({
         right: 6,
         background: "#e0555f",
         color: "#fff",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         borderRadius: 999,
         minWidth: 16,
@@ -602,7 +602,7 @@ function AdminTab({
     onClick: () => setSection(k),
     style: {
       position: "relative",
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 14,
       padding: "18px 8px 13px",
@@ -638,7 +638,7 @@ function AdminTab({
       right: 9,
       background: col,
       color: "#fff",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       minWidth: 21,
       height: 21,
@@ -655,7 +655,7 @@ function AdminTab({
       alignItems: "center",
       gap: 5,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--sub)",
       borderRadius: 10,
       padding: "8px 14px 8px 10px",
@@ -743,7 +743,7 @@ function AdminTab({
       style: {
         background: "#e01010",
         color: "#fff",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         padding: "2px 7px",
         borderRadius: 7
@@ -755,7 +755,7 @@ function AdminTab({
         gap: 3,
         background: "#3f9e63",
         color: "#fff",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         padding: "3px 9px",
         borderRadius: 7
@@ -773,7 +773,7 @@ function AdminTab({
       d: "M4 12.5l5 5L20 6.5"
     })), "\u5BFE\u5FDC\u6E08\u307F"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         color: "#2f6fb0",
         background: "#eaf2fb",
@@ -833,7 +833,7 @@ function AdminTab({
         border: "1px solid var(--line)",
         borderRadius: 8,
         padding: "5px 9px 5px 5px",
-        background: "#fff"
+        background: "var(--card, #fff)"
       }
     }, (f.type || "").startsWith("image/") ? /*#__PURE__*/React.createElement("img", {
       src: f.url,
@@ -854,7 +854,7 @@ function AdminTab({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "var(--sub)"
       }
@@ -886,7 +886,7 @@ function AdminTab({
     }, "\u8FD4\u7B54\uFF1A"), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: 8,
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "#6a9a7c"
       }
     }, "\uFF08", fmtDate(r.replied_at), "\uFF09")), /*#__PURE__*/React.createElement("input", {
@@ -929,7 +929,7 @@ function AdminTab({
       onClick: () => delReq(r),
       style: {
         border: "1px solid #f0d0d0",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "#d33",
         fontWeight: 800,
         fontSize: 13,
@@ -992,7 +992,7 @@ function AdminTab({
   }, genreList.map(p => /*#__PURE__*/React.createElement("div", {
     key: p.id,
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 12,
       boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
       padding: 10,
@@ -1295,7 +1295,7 @@ function AdminTab({
     }, it.title), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)"
       }
     }, fmtDate(it.created_at), " \uFF0F ", (it.images || []).length, "\u679A")), idDel === it.id ? /*#__PURE__*/React.createElement("button", {
@@ -1412,7 +1412,7 @@ function AdminTab({
       }
     }, bkDone), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         lineHeight: 1.8,
         marginTop: 18
@@ -1480,14 +1480,14 @@ function AdminTab({
         display: "flex",
         alignItems: "flex-start",
         gap: 9,
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: "1px solid var(--line)",
         borderRadius: 10,
         padding: "9px 11px"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
         background: COLOR[lg.action] || "#889",
@@ -1514,14 +1514,14 @@ function AdminTab({
     }, lg.target_name || "（名前なし）"), lg.detail && /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--sub)",
         marginTop: 2
       }
     }, lg.detail), /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         marginTop: 2
       }
@@ -1607,7 +1607,7 @@ function AdminTab({
       style: {
         marginLeft: "auto",
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--sub)",
         borderRadius: 9,
         padding: "9px 12px",
@@ -1633,7 +1633,7 @@ function AdminTab({
       disabled: trashBusy,
       style: {
         border: "1px solid #f0c8c4",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "#b3261e",
         borderRadius: 9,
         padding: "9px 13px",
@@ -1680,7 +1680,7 @@ function AdminTab({
       }, pop.product_name), /*#__PURE__*/React.createElement("span", {
         style: {
           display: "block",
-          fontSize: 11.5,
+          fontSize: 12.5,
           color: "var(--faint)",
           padding: "0 7px 7px"
         }
@@ -1758,7 +1758,7 @@ function AdminTab({
         border: on ? "3px solid var(--primary)" : "1px solid var(--line)",
         borderRadius: 12,
         overflow: "hidden",
-        background: "#fff",
+        background: "var(--card, #fff)",
         padding: 0,
         cursor: "pointer",
         textAlign: "left",
@@ -1821,7 +1821,7 @@ function AdminTab({
       right: 0,
       bottom: "calc(78px + env(safe-area-inset-bottom))",
       zIndex: 190,
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderTop: "1px solid #ececec",
       boxShadow: "0 -2px 14px rgba(0,0,0,0.1)",
       padding: "12px 16px",
@@ -1840,7 +1840,7 @@ function AdminTab({
     style: {
       marginLeft: "auto",
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--sub)",
       borderRadius: 9,
       padding: "9px 12px",
@@ -1856,7 +1856,7 @@ function AdminTab({
     },
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--primary)",
       borderRadius: 9,
       padding: "9px 13px",
@@ -1871,7 +1871,7 @@ function AdminTab({
     },
     style: {
       border: "1px solid #f0c8c4",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#b3261e",
       borderRadius: 9,
       padding: "9px 13px",
@@ -1908,7 +1908,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       width: "100%",
       maxWidth: 420,
@@ -1952,7 +1952,7 @@ function AdminTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -1977,7 +1977,7 @@ function AdminTab({
         flexShrink: 0,
         width: 62,
         border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         borderRadius: 9,
         padding: 3,
         cursor: "pointer"
@@ -2034,7 +2034,7 @@ function AdminTab({
     style: {
       width: "100%",
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--sub)",
       borderRadius: 10,
       padding: "10px",
@@ -2057,7 +2057,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       width: "100%",
       maxWidth: 420,
@@ -2434,7 +2434,7 @@ function ArchiveTab({
       color: "#fff",
       borderRadius: 999,
       padding: "4px 9px",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       cursor: "pointer"
     }
@@ -2453,7 +2453,7 @@ function ArchiveTab({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       padding: 18,
       width: "100%",
@@ -2661,7 +2661,7 @@ function RequestTab() {
     setError("");
   };
   const card = {
-    background: "#fff",
+    background: "var(--card, #fff)",
     borderRadius: 14,
     boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     padding: 16
@@ -2680,7 +2680,7 @@ function RequestTab() {
     padding: "11px 12px",
     fontSize: 15,
     outline: "none",
-    background: "#fff"
+    background: "var(--card, #fff)"
   };
   if (done) {
     return /*#__PURE__*/React.createElement("div", {
@@ -2866,7 +2866,7 @@ function RequestTab() {
   }, upBusy ? "送っています…" : "＋ ファイルを添付する"), /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)",
       marginTop: 3
     }
@@ -2904,7 +2904,7 @@ function RequestTab() {
       border: "1px solid var(--line)",
       borderRadius: 9,
       padding: "7px 9px",
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, isImg(f) ? /*#__PURE__*/React.createElement("img", {
     src: f.url,
@@ -2927,7 +2927,7 @@ function RequestTab() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       color: "var(--sub)"
     }
@@ -2949,7 +2949,7 @@ function RequestTab() {
   }, f.name), /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)"
     }
   }, fileKB(f.size))), /*#__PURE__*/React.createElement("button", {
@@ -3061,7 +3061,7 @@ function NoticeAdmin({
     setSaving(false);
   };
   const card = {
-    background: "#fff",
+    background: "var(--card, #fff)",
     borderRadius: 14,
     boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
     padding: "16px 18px",
@@ -3116,7 +3116,7 @@ function NoticeAdmin({
       width: 26,
       height: 26,
       borderRadius: "50%",
-      background: "#fff",
+      background: "var(--card, #fff)",
       boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
       transition: "left .2s"
     }
@@ -3217,7 +3217,7 @@ function NoticeAdmin({
       width: 26,
       height: 26,
       borderRadius: "50%",
-      background: "#fff",
+      background: "var(--card, #fff)",
       boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
       transition: "left .2s"
     }
@@ -3319,7 +3319,7 @@ function NoticeAdmin({
       width: 26,
       height: 26,
       borderRadius: "50%",
-      background: "#fff",
+      background: "var(--card, #fff)",
       boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
       transition: "left .2s"
     }
@@ -3378,7 +3378,7 @@ function NoticeAdmin({
       border: "1px solid #e2e2e6",
       borderRadius: 10,
       fontSize: 14,
-      background: "#fff",
+      background: "var(--card, #fff)",
       fontFamily: "inherit"
     }
   }, /*#__PURE__*/React.createElement("option", {
@@ -3413,7 +3413,7 @@ function NoticeAdmin({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "rgba(255,255,255,0.8)"
     }
@@ -3429,7 +3429,7 @@ function NoticeAdmin({
       fontSize: 12,
       fontWeight: 800,
       color: "#2f6fb0",
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 8,
       padding: "4px 10px"
     }
@@ -3514,7 +3514,7 @@ function NoticeAdmin({
       }
     }, t.label), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         flexShrink: 0
       }
@@ -3550,7 +3550,7 @@ function NoticeAdmin({
       border: "1px solid #e2e2e6",
       borderRadius: 10,
       fontSize: 14,
-      background: "#fff",
+      background: "var(--card, #fff)",
       fontFamily: "inherit",
       marginBottom: 12
     }
@@ -3632,7 +3632,7 @@ function NoticeAdmin({
       display: "flex",
       alignItems: "center",
       gap: 7,
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--primary-soft)",
       borderRadius: 24,
       padding: "9px 18px"
@@ -3798,7 +3798,7 @@ function RotateAdmin() {
         border: "1px solid var(--line)",
         borderRadius: 11,
         padding: 8,
-        background: "#fff"
+        background: "var(--card, #fff)"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -3844,7 +3844,7 @@ function RotateAdmin() {
       style: {
         flex: 1,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--text)",
         borderRadius: 7,
         padding: "6px 0",
@@ -3859,7 +3859,7 @@ function RotateAdmin() {
       style: {
         flex: 1,
         border: "1px solid var(--line)",
-        background: "#fff",
+        background: "var(--card, #fff)",
         color: "var(--text)",
         borderRadius: 7,
         padding: "6px 0",
@@ -3877,14 +3877,14 @@ function RotateAdmin() {
         color: "var(--primary)",
         borderRadius: 7,
         padding: "6px 8px",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 800,
         cursor: "pointer"
       },
       title: "\u5143\u306B\u623B\u3059"
     }, "\u623B\u3059")), rot !== 0 && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--primary-soft)",
         fontWeight: 800,
         marginTop: 5,
@@ -4052,7 +4052,7 @@ function CatalogAdmin() {
     borderRadius: 9,
     fontSize: 13,
     outline: "none",
-    background: "#fff",
+    background: "var(--card, #fff)",
     color: "var(--text)"
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -4068,7 +4068,7 @@ function CatalogAdmin() {
       borderRadius: 12,
       padding: 13,
       marginBottom: 16,
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4096,7 +4096,7 @@ function CatalogAdmin() {
     onClick: () => setF("store", st),
     style: {
       border: form.store === st ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: form.store === st ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "5px 11px",
@@ -4125,7 +4125,7 @@ function CatalogAdmin() {
     style: {
       flex: 1,
       border: form.kind === k ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: form.kind === k ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "7px 0",
@@ -4319,7 +4319,7 @@ function CatalogAdmin() {
       border: "1px solid var(--line)",
       borderRadius: 11,
       padding: "10px 12px",
-      background: "#fff",
+      background: "var(--card, #fff)",
       opacity: c.visible ? 1 : 0.55,
       display: "flex",
       alignItems: "center",
@@ -4355,7 +4355,7 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 900,
       color: "var(--primary-soft)"
     }
@@ -4391,7 +4391,7 @@ function CatalogAdmin() {
       color: c.visible ? "var(--primary)" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4403,7 +4403,7 @@ function CatalogAdmin() {
       color: c.link_status === "dead" ? "#b3261e" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4411,11 +4411,11 @@ function CatalogAdmin() {
     onClick: () => del(c),
     style: {
       border: "1px solid #f0c8c4",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#b3261e",
       borderRadius: 7,
       padding: "4px 10px",
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       cursor: "pointer"
     }
@@ -4572,7 +4572,7 @@ function ResourceAdmin() {
     borderRadius: 9,
     fontSize: 13,
     outline: "none",
-    background: "#fff",
+    background: "var(--card, #fff)",
     color: "var(--text)"
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -4588,7 +4588,7 @@ function ResourceAdmin() {
       borderRadius: 12,
       padding: 13,
       marginBottom: 16,
-      background: "#fff"
+      background: "var(--card, #fff)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4612,7 +4612,7 @@ function ResourceAdmin() {
     },
     style: {
       border: form.kind === k.k ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: form.kind === k.k ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "6px 11px",
@@ -4718,7 +4718,7 @@ function ResourceAdmin() {
     disabled: loading,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "6px 12px",
@@ -4752,7 +4752,7 @@ function ResourceAdmin() {
       border: "1px solid var(--line)",
       borderRadius: 11,
       padding: "10px 12px",
-      background: "#fff",
+      background: "var(--card, #fff)",
       opacity: r.visible ? 1 : 0.55
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -4823,7 +4823,7 @@ function ResourceAdmin() {
     disabled: i === 0,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: i === 0 ? "var(--faint)" : "var(--text)",
       borderRadius: 7,
       padding: "5px 10px",
@@ -4836,7 +4836,7 @@ function ResourceAdmin() {
     disabled: i === list.length - 1,
     style: {
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: i === list.length - 1 ? "var(--faint)" : "var(--text)",
       borderRadius: 7,
       padding: "5px 10px",
@@ -4849,7 +4849,7 @@ function ResourceAdmin() {
     style: {
       marginLeft: "auto",
       border: "1px solid #f0c8c4",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "#b3261e",
       borderRadius: 7,
       padding: "5px 11px",
@@ -4941,7 +4941,7 @@ function DeviceStatsPanel() {
     style: {
       flexShrink: 0,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "7px 13px",
@@ -5084,7 +5084,7 @@ function RankingPanel({
     style: {
       flexShrink: 0,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "7px 13px",
@@ -5147,7 +5147,7 @@ function RankingPanel({
       display: "flex",
       gap: 11,
       alignItems: "center",
-      background: "#fff",
+      background: "var(--card, #fff)",
       border: "1px solid var(--line)",
       borderRadius: 13,
       padding: "10px 12px",
@@ -5203,7 +5203,7 @@ function RankingPanel({
         display: "flex",
         gap: 11,
         alignItems: "center",
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)",
         borderRadius: 13,
         padding: "10px 12px",
@@ -5269,7 +5269,7 @@ function RankingPanel({
       }
     }, m.get(p)), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12.5,
         color: "var(--faint)",
         fontWeight: 700
       }

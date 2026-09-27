@@ -60,7 +60,7 @@ function TrendTab({ embedded } = {}) {
     finally { setAddBusy(false); }
   };
 
-  const card = { background:"#fff", border:"1px solid var(--line)", borderRadius:14, padding:"14px 15px" };
+  const card = { background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, padding:"14px 15px" };
   const now = new Date().getMonth() + 1;
 
   const shown = species.filter(f => {
@@ -74,7 +74,7 @@ function TrendTab({ embedded } = {}) {
     <div style={{ maxWidth:900, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
       {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>トレンド</div>
-        <div style={{ fontSize:11.5, opacity:0.85, marginTop:3 }}>魚ごとに、いま使える売り文句をためておく場所です</div>
+        <div style={{ fontSize:12.5, opacity:0.85, marginTop:3 }}>魚ごとに、いま使える売り文句をためておく場所です</div>
       </div>}
 
       {/* 切り替え */}
@@ -115,7 +115,7 @@ function TrendTab({ embedded } = {}) {
       ) : sel ? (
         <>
           <button onClick={() => setSel(null)}
-            style={{ display:"flex", alignItems:"center", gap:5, border:"1px solid var(--line)", background:"#fff",
+            style={{ display:"flex", alignItems:"center", gap:5, border:"1px solid var(--line)", background:"var(--card, #fff)",
               color:"var(--sub)", borderRadius:10, padding:"8px 14px 8px 10px", fontSize:13, fontWeight:800,
               cursor:"pointer", marginBottom:14 }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
@@ -126,7 +126,7 @@ function TrendTab({ embedded } = {}) {
             <div style={{ display:"flex", alignItems:"baseline", gap:9, marginBottom:8 }}>
               <span style={{ fontSize:19, fontWeight:900, color:"var(--ink)" }}>{sel.canonical_name}</span>
               {(sel.season_months || []).includes(now) && (
-                <span style={{ fontSize:11, fontWeight:900, color:"#2c6b45", background:"#eaf6ee", borderRadius:6, padding:"3px 8px" }}>いまが旬</span>
+                <span style={{ fontSize:12, fontWeight:900, color:"#2c6b45", background:"#eaf6ee", borderRadius:6, padding:"3px 8px" }}>いまが旬</span>
               )}
             </div>
             {(sel.season_months || []).length > 0 && (
@@ -144,7 +144,7 @@ function TrendTab({ embedded } = {}) {
                 料理：{sel.common_dishes.join("／")}
               </div>
             )}
-            {sel.note && <div style={{ fontSize:11.5, color:"var(--faint)", marginTop:8, lineHeight:1.7 }}>{sel.note}</div>}
+            {sel.note && <div style={{ fontSize:12.5, color:"var(--faint)", marginTop:8, lineHeight:1.7 }}>{sel.note}</div>}
           </div>
 
           {/* 文脈語 */}
@@ -177,7 +177,7 @@ function TrendTab({ embedded } = {}) {
                     <div key={i} style={{ display:"flex", alignItems:"center", gap:9,
                       borderBottom: i < signals.length - 1 ? "1px solid var(--line)" : "none", paddingBottom:7 }}>
                       <span style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)", flex:1, minWidth:0 }}>{r.term}</span>
-                      <span style={{ fontSize:10.5, color:"var(--faint)", flexShrink:0 }}>
+                      <span style={{ fontSize:11.5, color:"var(--faint)", flexShrink:0 }}>
                         {r.captured_at ? String(r.captured_at).slice(5,10).replace("-","/") : ""}
                       </span>
                     </div>
@@ -203,11 +203,11 @@ function TrendTab({ embedded } = {}) {
               const inSeason = (f.season_months || []).includes(now);
               return (
                 <button key={f.id} onClick={() => openFish(f)}
-                  style={{ background:"#fff", border: inSeason ? "1.5px solid #3f9e63" : "1px solid var(--line)",
+                  style={{ background:"var(--card, #fff)", border: inSeason ? "1.5px solid #3f9e63" : "1px solid var(--line)",
                     borderRadius:12, padding:"14px 8px", cursor:"pointer", display:"flex", flexDirection:"column",
                     alignItems:"center", gap:5, minHeight:64 }}>
                   <span style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>{f.canonical_name}</span>
-                  {inSeason && <span style={{ fontSize:10, fontWeight:900, color:"#2c6b45" }}>いまが旬</span>}
+                  {inSeason && <span style={{ fontSize:11, fontWeight:900, color:"#2c6b45" }}>いまが旬</span>}
                 </button>
               );
             })}
@@ -226,27 +226,27 @@ function TrendTab({ embedded } = {}) {
           style={{ position:"fixed", inset:0, zIndex:1300, background:"rgba(15,25,38,0.6)",
             display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:420, padding:"22px 20px" }}>
+            style={{ background:"var(--card, #fff)", borderRadius:16, width:"100%", maxWidth:420, padding:"22px 20px" }}>
             <div style={{ fontSize:16.5, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>
               切り口を足す{sel ? `（${sel.canonical_name}）` : ""}
             </div>
-            <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.7, marginBottom:14 }}>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.7, marginBottom:14 }}>
               売場で気づいたこと、お客様の声、使えそうな言い回しなど
             </div>
 
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>ことば</div>
+            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>ことば</div>
             <input value={term} onChange={e => setTerm(e.target.value)} placeholder="例：寒ブリ 脂のりが最高"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10,
                 padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
 
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>
+            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>
               調理法・季節（あれば・読点で区切る）
             </div>
             <input value={ctx} onChange={e => setCtx(e.target.value)} placeholder="例：刺身、しゃぶしゃぶ、年末"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10,
                 padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
 
-            <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>パスワード</div>
+            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>パスワード</div>
             <input type="password" inputMode="numeric" value={pw} onChange={e => setPw(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") submitNote(); }}
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10,

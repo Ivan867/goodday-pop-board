@@ -55,8 +55,8 @@ function PostCard({ post, onOpen }) {
       <div style={{ padding:"14px 16px" }}>
         {post.text && <div style={{ fontSize:14, color:"var(--ink)", lineHeight:1.6, marginBottom:8, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{post.text}</div>}
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontSize:11, color:"var(--faint)" }}>{timeAgo(post.created_at)}</div>
-          {post.views>0 && <div style={{ fontSize:11, color:"var(--faint)" }}>{post.views}</div>}
+          <div style={{ fontSize:12, color:"var(--faint)" }}>{timeAgo(post.created_at)}</div>
+          {post.views>0 && <div style={{ fontSize:12, color:"var(--faint)" }}>{post.views}</div>}
         </div>
       </div>
     </div>
@@ -466,7 +466,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px 12px" }}>
                 {[["①","モードとサイズを選ぶ"],["②","入力欄を埋める"],["③","「プロンプト生成」を押す"],["④","「コピー」→Geminiに貼り付け"]].map(([n,t])=>(
                   <div key={n} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:"var(--sub)" }}>
-                    <div style={{ width:20, height:20, background:"#3a3a00", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:900, color:"#c8a840", flexShrink:0 }}>{n}</div>
+                    <div style={{ width:20, height:20, background:"#3a3a00", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:900, color:"#c8a840", flexShrink:0 }}>{n}</div>
                     <div>{t}</div>
                   </div>
                 ))}
@@ -481,7 +481,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
         {/* ── 見本スタイルでかんたん作成 ── */}
         <div style={{ marginTop:14, background:"#141414", border:"1px solid #2e2a1a", borderRadius:12, padding:"15px 15px 17px" }}>
           <div style={{ fontSize:13.5, fontWeight:900, color:"#c8a840", marginBottom:3 }}>🎨 見本スタイルでかんたん作成</div>
-          <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>投稿されたプロンプト見本3種の型を内蔵。スタイルを選んで空欄を埋めるだけで、完成プロンプトができます。</div>
+          <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>投稿されたプロンプト見本3種の型を内蔵。スタイルを選んで空欄を埋めるだけで、完成プロンプトができます。</div>
 
           <div style={{ display:"flex", gap:7, marginBottom:13 }}>
             {[["wamodern","和モダン","墨絵・和紙・上品"],["navygold","紺×金 高級","寿司・ハレの日"],["kirimi","切身リアル","写真風・産地推し"]].map(([k,l,d]) => {
@@ -499,7 +499,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
           <div style={{ display:"flex", flexDirection:"column", gap:11, marginBottom:11 }}>
             {[["fish","魚種・商品名 *","例：イサキ"],["origin","産地名","例：山陰沖"],["catchcopy","キャッチコピー","例：旬の味"],["appeal","ひとこと訴求","例：脂のり抜群！"],["recipes","食べ方・レシピ（複数タップ可）","例：刺身、塩焼き"],["price","本体価格（円）","例：498"]].map(([k,l,ph]) => (
               <div key={k}>
-                <div style={{ fontSize:11, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>{l}</div>
+                <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>{l}</div>
                 <input value={qs[k]} onChange={e=>qsSet(k, e.target.value)} placeholder={ph}
                   inputMode={k==="price"?"numeric":undefined}
                   style={{ width:"100%", boxSizing:"border-box", padding:"9px 10px", background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:8, color:"var(--text)", fontSize:13, outline:"none" }} />
@@ -509,7 +509,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
                       const on = qsTagOn(k, tag);
                       return (
                         <button key={tag} onClick={()=>qsTagTap(k, tag)}
-                          style={{ border: on?"1.5px solid #c8a840":"1px solid #2e2e2e", background: on?"#231f0f":"#1c1c1c", color: on?"#e6c860":"#9a9a9a", borderRadius:14, padding:"4px 11px", fontSize:11.5, fontWeight:700, cursor:"pointer", lineHeight:1.4 }}>{tag}</button>
+                          style={{ border: on?"1.5px solid #c8a840":"1px solid #2e2e2e", background: on?"#231f0f":"#1c1c1c", color: on?"#e6c860":"#9a9a9a", borderRadius:14, padding:"4px 11px", fontSize:12.5, fontWeight:700, cursor:"pointer", lineHeight:1.4 }}>{tag}</button>
                       );
                     })}
                   </div>
@@ -538,7 +538,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
               {qsCopied?"コピー済":"コピー"}
             </button>
           </div>
-          <div style={{ fontSize:10.5, color:"var(--faint)", marginTop:9 }}>※ 価格を空欄にすると価格表記なしで生成されます。税込は8%で自動計算。</div>
+          <div style={{ fontSize:11.5, color:"var(--faint)", marginTop:9 }}>※ 価格を空欄にすると価格表記なしで生成されます。税込は8%で自動計算。</div>
         </div>
 
       </div>

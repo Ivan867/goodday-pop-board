@@ -85,7 +85,7 @@ function TrendTab({
     }
   };
   const card = {
-    background: "#fff",
+    background: "var(--card, #fff)",
     border: "1px solid var(--line)",
     borderRadius: 14,
     padding: "14px 15px"
@@ -118,7 +118,7 @@ function TrendTab({
     }
   }, "\u30C8\u30EC\u30F3\u30C9"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       opacity: 0.85,
       marginTop: 3
     }
@@ -227,7 +227,7 @@ function TrendTab({
       alignItems: "center",
       gap: 5,
       border: "1px solid var(--line)",
-      background: "#fff",
+      background: "var(--card, #fff)",
       color: "var(--sub)",
       borderRadius: 10,
       padding: "8px 14px 8px 10px",
@@ -267,7 +267,7 @@ function TrendTab({
     }
   }, sel.canonical_name), (sel.season_months || []).includes(now) && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 900,
       color: "#2c6b45",
       background: "#eaf6ee",
@@ -293,7 +293,7 @@ function TrendTab({
     }
   }, "\u6599\u7406\uFF1A", sel.common_dishes.join("／")), sel.note && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--faint)",
       marginTop: 8,
       lineHeight: 1.7
@@ -379,7 +379,7 @@ function TrendTab({
       }
     }, r.term), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10.5,
+        fontSize: 11.5,
         color: "var(--faint)",
         flexShrink: 0
       }
@@ -427,7 +427,7 @@ function TrendTab({
       key: f.id,
       onClick: () => openFish(f),
       style: {
-        background: "#fff",
+        background: "var(--card, #fff)",
         border: inSeason ? "1.5px solid #3f9e63" : "1px solid var(--line)",
         borderRadius: 12,
         padding: "14px 8px",
@@ -446,7 +446,7 @@ function TrendTab({
       }
     }, f.canonical_name), inSeason && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: 900,
         color: "#2c6b45"
       }
@@ -473,7 +473,7 @@ function TrendTab({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card, #fff)",
       borderRadius: 16,
       width: "100%",
       maxWidth: 420,
@@ -488,14 +488,14 @@ function TrendTab({
     }
   }, "\u5207\u308A\u53E3\u3092\u8DB3\u3059", sel ? `（${sel.canonical_name}）` : ""), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.7,
       marginBottom: 14
     }
   }, "\u58F2\u5834\u3067\u6C17\u3065\u3044\u305F\u3053\u3068\u3001\u304A\u5BA2\u69D8\u306E\u58F0\u3001\u4F7F\u3048\u305D\u3046\u306A\u8A00\u3044\u56DE\u3057\u306A\u3069"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -517,7 +517,7 @@ function TrendTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6
@@ -539,7 +539,7 @@ function TrendTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 6

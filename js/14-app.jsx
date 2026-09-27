@@ -62,7 +62,7 @@ function LazyTab(props) {
     return React.createElement("div", { style:{ padding:"60px 20px", textAlign:"center" } },
       React.createElement("div", { style:{ fontSize:14, color:"var(--sub)", marginBottom:14, lineHeight:1.7 } }, "読み込みに失敗しました。\n通信環境をご確認ください。"),
       React.createElement("button", { onClick:function(){ setErr(null); window.loadLazyTab(info.file).then(function(){ setReady(true); }).catch(setErr); },
-        style:{ border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:9, padding:"9px 18px", fontSize:13, fontWeight:800, cursor:"pointer" } }, "もう一度読み込む"));
+        style:{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:9, padding:"9px 18px", fontSize:13, fontWeight:800, cursor:"pointer" } }, "もう一度読み込む"));
   }
   var Comp = window[info.comp];
   if (!(window.__lazyLoaded && window.__lazyLoaded[info.file]) || !Comp) {
@@ -129,13 +129,22 @@ function App() {
   const [radialOpen, setRadialOpen] = useState(false);
   const [scrollP, setScrollP] = useState(0); // 0=最上部 ... 1=ヘッダーがガラス化しきった状態
   const [toast, setToast] = useState(null);
+  const [toastBad, setToastBad] = useState(false);   // 赤いトースト（失敗のお知らせ）
   useEffect(() => {
     const h = (e) => {
+      setToastBad(false);
       setToast(e.detail || "完了しました");
       setTimeout(() => setToast(null), 2200);
     };
+    // 保存・投稿などの書き込みが失敗したとき（api層から届く）
+    const bad = () => {
+      setToastBad(true);
+      setToast("保存できませんでした。電波を確かめて、もう一度お試しください");
+      setTimeout(() => { setToast(null); setToastBad(false); }, 5000);
+    };
     window.addEventListener("appToast", h);
-    return () => window.removeEventListener("appToast", h);
+    window.addEventListener("apiError", bad);
+    return () => { window.removeEventListener("appToast", h); window.removeEventListener("apiError", bad); };
   }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -260,7 +269,7 @@ function App() {
         <div style={{ position:"fixed", top:0, left:"50%", transform:"translateX(-50%)", zIndex:150, pointerEvents:"none",
           marginTop: refreshing ? 12 : Math.max(pullY - 30, 4),
           transition: pullActive.current ? "none" : "margin-top .25s" }}>
-          <div style={{ width:34, height:34, borderRadius:"50%", background:"#fff", boxShadow:"0 3px 12px rgba(0,0,0,0.18)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--primary)", fontSize:18, fontWeight:900,
+          <div style={{ width:34, height:34, borderRadius:"50%", background:"var(--card, #fff)", boxShadow:"0 3px 12px rgba(0,0,0,0.18)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--primary)", fontSize:18, fontWeight:900,
             transform: refreshing ? undefined : `rotate(${pullY*4}deg)`,
             animation: refreshing ? "spin 0.7s linear infinite" : "none" }}>↻</div>
         </div>
@@ -325,9 +334,13 @@ function App() {
 
       {toast && (
         <div style={{ position:"fixed", left:0, right:0, bottom:"calc(96px + env(safe-area-inset-bottom))", zIndex:400, display:"flex", justifyContent:"center", pointerEvents:"none", padding:"0 24px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(26,43,60,0.94)", color:"#fff", borderRadius:999, padding:"11px 20px", fontSize:13.5, fontWeight:800, boxShadow:"0 6px 20px rgba(0,0,0,0.28)", animation:"fadeUp .28s ease", backdropFilter:"blur(8px)", maxWidth:"100%" }}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6fe08a" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
-            <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{toast}</span>
+          <div role="status" aria-live="polite" style={{ display:"flex", alignItems:"center", gap:8, background: toastBad ? "rgba(140,30,34,0.96)" : "rgba(26,43,60,0.94)", color:"#fff", borderRadius:999, padding:"11px 20px", fontSize:13.5, fontWeight:800, boxShadow:"0 6px 20px rgba(0,0,0,0.28)", animation:"fadeUp .28s ease", backdropFilter:"blur(8px)", maxWidth:"100%" }}>
+            {toastBad ? (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffc9c1" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 7v7"/><path d="M12 17.5v.01"/></svg>
+            ) : (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6fe08a" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+            )}
+            <span style={{ overflow:"hidden", textOverflow: toastBad ? "clip" : "ellipsis", whiteSpace: toastBad ? "normal" : "nowrap", lineHeight:1.5 }}>{toast}</span>
           </div>
         </div>
       )}
@@ -382,7 +395,7 @@ function App() {
                     padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13, flex:"1 1 0", minHeight:56 }}>
                   <span style={{ position:"relative", width:38, height:38, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
-                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:11.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
+                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
                   </span>
                   <span style={{ flex:1, minWidth:0, fontSize:17, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--ink)", lineHeight:1.3, textAlign:"left", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{o.label}</span>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M9 6l6 6-6 6"/></svg>
@@ -415,12 +428,12 @@ class ErrBoundary extends React.Component {
           下の内容をそのままコピーして開発担当に送ってください。アプリの他の画面は使えます。
         </div>
         <textarea readOnly value={msg}
-          style={{ width:"100%", boxSizing:"border-box", height:180, fontSize:11, lineHeight:1.6, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", background:"#fff", fontFamily:"monospace" }} />
+          style={{ width:"100%", boxSizing:"border-box", height:180, fontSize:12, lineHeight:1.6, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", background:"var(--card, #fff)", fontFamily:"monospace" }} />
         <div style={{ display:"flex", gap:8, marginTop:12 }}>
           <button onClick={() => { try { navigator.clipboard.writeText(msg); } catch(e) {} }}
             style={{ flex:1, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>コピーする</button>
           <button onClick={() => { this.setState({ err: null }); }}
-            style={{ flex:1, border:"1px solid var(--line)", background:"#fff", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>戻る</button>
+            style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>戻る</button>
         </div>
       </div>
     );

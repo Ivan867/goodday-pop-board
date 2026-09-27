@@ -232,10 +232,10 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
             style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px", marginBottom:12, cursor: feat.tab ? "pointer" : "default", boxShadow:"0 4px 16px rgba(47,111,176,0.22)", animation:"fadeUp .35s ease" }}>
             <span style={{ fontSize:20, flexShrink:0 }}>🎉</span>
             <div style={{ minWidth:0, flex:1 }}>
-              <div style={{ fontSize:11.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
+              <div style={{ fontSize:12.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
               <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{feat.message}</div>
             </div>
-            {feat.tab && <span style={{ fontSize:12, fontWeight:800, color:"#2f6fb0", background:"#fff", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
+            {feat.tab && <span style={{ fontSize:12, fontWeight:800, color:"#2f6fb0", background:"var(--card, #fff)", borderRadius:8, padding:"4px 10px", flexShrink:0 }}>ひらく</span>}
             <button onClick={(e) => { e.stopPropagation(); try { localStorage.setItem("featSeen", feat.ver || feat.message); } catch(x){} setFeatShow(false); }}
               style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", width:26, height:26, borderRadius:"50%", fontSize:14, fontWeight:800, cursor:"pointer", flexShrink:0, lineHeight:1 }}>✕</button>
           </div>
@@ -251,7 +251,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
         {loading ? (
           <div className={"pop-grid v-" + view}>
             {[210,150,180,230,160,200,140,190].map((h,i) => (
-              <div key={i} style={{ background:"#fff", border:"1px solid var(--line)", borderRadius:14, overflow:"hidden" }}>
+              <div key={i} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, overflow:"hidden" }}>
                 <div className="sk" style={{ width:"100%", height:h }} />
                 <div style={{ padding:"9px 11px" }}>
                   <div className="sk" style={{ width:"62%", height:11, borderRadius:6 }} />
@@ -331,7 +331,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                 <span style={{ display:"block", fontSize:15.5, fontWeight:800, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {openGroup.group_name || openGroup.product_name}
                 </span>
-                <span style={{ display:"block", fontSize:11.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name} ／ 横にスワイプでもどる</span>
+                <span style={{ display:"block", fontSize:12.5, opacity:0.85 }}>{inGroup.length}枚 ／ {openGroup.store_name} ／ 横にスワイプでもどる</span>
               </span>
             </div>
             <div style={{ maxWidth:1600, margin:"0 auto", padding:"12px 14px 120px" }}>
@@ -397,7 +397,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                             border: on ? "5px solid var(--primary-soft)" : "1.5px solid var(--line)",
                             background:"var(--card, #fff)", boxSizing:"border-box" }} />
                           {it.l}
-                          {it.n != null && <span style={{ fontSize:11, fontWeight:900, opacity:0.6 }}>{it.n}</span>}
+                          {it.n != null && <span style={{ fontSize:12, fontWeight:900, opacity:0.6 }}>{it.n}</span>}
                         </button>
                       );
                     })}

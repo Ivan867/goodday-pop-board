@@ -56,10 +56,10 @@ function NewPostForm({
       marginBottom: 14,
       color: "#2d6a4f"
     }
-  }, "新しい投稿"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u65B0\u3057\u3044\u6295\u7A3F"), /*#__PURE__*/React.createElement("textarea", {
     value: text,
     onChange: e => setText(e.target.value),
-    placeholder: "売り場の様子、発見、コツなど...",
+    placeholder: "\u58F2\u308A\u5834\u306E\u69D8\u5B50\u3001\u767A\u898B\u3001\u30B3\u30C4\u306A\u3069...",
     rows: 4,
     style: {
       width: "100%",
@@ -95,7 +95,7 @@ function NewPostForm({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "写真を追加（任意）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5199\u771F\u3092\u8FFD\u52A0\uFF08\u4EFB\u610F\uFF09"), /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: "image/*",
     onChange: onFile,
@@ -126,7 +126,7 @@ function NewPostForm({
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "キャンセル"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30AD\u30E3\u30F3\u30BB\u30EB"), /*#__PURE__*/React.createElement("button", {
     onClick: submit,
     disabled: loading,
     style: {
@@ -196,12 +196,12 @@ function PostCard({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)"
     }
   }, timeAgo(post.created_at)), post.views > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--faint)"
     }
   }, post.views))));
@@ -256,7 +256,7 @@ function PostModal({
       cursor: "pointer",
       zIndex: 1
     }
-  }, "✕"), post.image_url && /*#__PURE__*/React.createElement("img", {
+  }, "\u2715"), post.image_url && /*#__PURE__*/React.createElement("img", {
     src: post.image_url,
     style: {
       width: "100%",
@@ -282,7 +282,7 @@ function PostModal({
       fontSize: 12,
       color: "var(--faint)"
     }
-  }, /*#__PURE__*/React.createElement("span", null, formatDate(post.created_at)), /*#__PURE__*/React.createElement("span", null, (post.views || 0) + 1, " 閲覧")))));
+  }, /*#__PURE__*/React.createElement("span", null, formatDate(post.created_at)), /*#__PURE__*/React.createElement("span", null, (post.views || 0) + 1, " \u95B2\u89A7")))));
 }
 function BlogTab() {
   const [posts, setPosts] = useState([]);
@@ -324,7 +324,7 @@ function BlogTab() {
       color: "rgba(255,255,255,0.8)",
       fontSize: 13
     }
-  }, "鮮魚部の情報共有スペース"), /*#__PURE__*/React.createElement("button", {
+  }, "\u9BAE\u9B5A\u90E8\u306E\u60C5\u5831\u5171\u6709\u30B9\u30DA\u30FC\u30B9"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowForm(f => !f),
     style: {
       background: showForm ? "#2d5a3d" : "#52b788",
@@ -356,7 +356,7 @@ function BlogTab() {
       marginTop: 8,
       animation: "pulse 1.5s infinite"
     }
-  }, "読み込み中...")) : posts.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D...")) : posts.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 80
@@ -366,7 +366,7 @@ function BlogTab() {
       fontSize: 15,
       color: "var(--sub)"
     }
-  }, "まだ投稿がありません")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u307E\u3060\u6295\u7A3F\u304C\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gap: 14
@@ -421,7 +421,7 @@ function PopToolTab({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "読み込み中…") : /*#__PURE__*/React.createElement(PromptTab, {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(PromptTab, {
     embedded: true
   }));
 }
@@ -702,13 +702,13 @@ function PopCreateInner({
       marginBottom: 20,
       color: "#eee"
     }
-  }, "鮮魚売り場 POP作成ツール"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9BAE\u9B5A\u58F2\u308A\u5834 POP\u4F5C\u6210\u30C4\u30FC\u30EB"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "モード選択"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30E2\u30FC\u30C9\u9078\u629E"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -738,7 +738,7 @@ function PopCreateInner({
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "サイズ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30B5\u30A4\u30BA"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -794,7 +794,7 @@ function PopCreateInner({
       color: "var(--sub)",
       marginBottom: 10
     }
-  }, "入力"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5165\u529B"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -803,38 +803,38 @@ function PopCreateInner({
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "商品"), /*#__PURE__*/React.createElement("input", {
+  }, "\u5546\u54C1"), /*#__PURE__*/React.createElement("input", {
     value: fields.product,
     onChange: e => setF("product", e.target.value),
-    placeholder: "例：天然マダイ（1尾）",
+    placeholder: "\u4F8B\uFF1A\u5929\u7136\u30DE\u30C0\u30A4\uFF081\u5C3E\uFF09",
     style: inp
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "用途"), /*#__PURE__*/React.createElement("input", {
+  }, "\u7528\u9014"), /*#__PURE__*/React.createElement("input", {
     value: fields.usage,
     onChange: e => setF("usage", e.target.value),
-    placeholder: "例：お刺身・塩焼き",
+    placeholder: "\u4F8B\uFF1A\u304A\u523A\u8EAB\u30FB\u5869\u713C\u304D",
     style: inp
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "価格"), /*#__PURE__*/React.createElement("input", {
+  }, "\u4FA1\u683C"), /*#__PURE__*/React.createElement("input", {
     value: fields.price,
     onChange: e => setF("price", e.target.value),
-    placeholder: "例：980円（税込）",
+    placeholder: "\u4F8B\uFF1A980\u5186\uFF08\u7A0E\u8FBC\uFF09",
     style: inp
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "一言アピール"), /*#__PURE__*/React.createElement("input", {
+  }, "\u4E00\u8A00\u30A2\u30D4\u30FC\u30EB"), /*#__PURE__*/React.createElement("input", {
     value: fields.appeal,
     onChange: e => setF("appeal", e.target.value),
-    placeholder: "例：産地直送！鮮度抜群",
+    placeholder: "\u4F8B\uFF1A\u7523\u5730\u76F4\u9001\uFF01\u9BAE\u5EA6\u629C\u7FA4",
     style: inp
   }))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "雰囲気"), /*#__PURE__*/React.createElement("input", {
+  }, "\u96F0\u56F2\u6C17"), /*#__PURE__*/React.createElement("input", {
     value: fields.mood,
     onChange: e => setF("mood", e.target.value),
-    placeholder: "例：夏らしい涼しげなデザイン、和風テイスト",
+    placeholder: "\u4F8B\uFF1A\u590F\u3089\u3057\u3044\u6DBC\u3057\u3052\u306A\u30C7\u30B6\u30A4\u30F3\u3001\u548C\u98A8\u30C6\u30A4\u30B9\u30C8",
     style: inp
   }))), mode === "bg" && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -846,7 +846,7 @@ function PopCreateInner({
       color: "var(--sub)",
       lineHeight: 1.8
     }
-  }, "Geminiで修正したいPOP画像を貼り付けてから、下のプロンプトをコピーして送信してください。"), mode === "ref" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Gemini\u3067\u4FEE\u6B63\u3057\u305F\u3044POP\u753B\u50CF\u3092\u8CBC\u308A\u4ED8\u3051\u3066\u304B\u3089\u3001\u4E0B\u306E\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u30B3\u30D4\u30FC\u3057\u3066\u9001\u4FE1\u3057\u3066\u304F\u3060\u3055\u3044\u3002"), mode === "ref" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#1a2a1a",
       border: "1px solid #2d4a2d",
@@ -857,7 +857,7 @@ function PopCreateInner({
       lineHeight: 1.75,
       marginBottom: 14
     }
-  }, "Geminiに参考にしたいPOP画像を先にアップロードしてから、生成したプロンプトを貼り付けてください。"), refImage && /*#__PURE__*/React.createElement("div", {
+  }, "Gemini\u306B\u53C2\u8003\u306B\u3057\u305F\u3044POP\u753B\u50CF\u3092\u5148\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u3066\u304B\u3089\u3001\u751F\u6210\u3057\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8CBC\u308A\u4ED8\u3051\u3066\u304F\u3060\u3055\u3044\u3002"), refImage && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#1e1e1e",
       border: "1px solid #3a3a3a",
@@ -889,11 +889,11 @@ function PopCreateInner({
       fontWeight: 800,
       marginBottom: 2
     }
-  }, "このPOPを参照元にします"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306EPOP\u3092\u53C2\u7167\u5143\u306B\u3057\u307E\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "var(--sub)"
     }
-  }, "この画像を長押しで保存し、AIにアップロードしてから下のプロンプトを貼り付けてください。"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u3053\u306E\u753B\u50CF\u3092\u9577\u62BC\u3057\u3067\u4FDD\u5B58\u3057\u3001AI\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u3066\u304B\u3089\u4E0B\u306E\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8CBC\u308A\u4ED8\u3051\u3066\u304F\u3060\u3055\u3044\u3002"))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -901,21 +901,21 @@ function PopCreateInner({
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "ポップの内容（商品名など）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u30DD\u30C3\u30D7\u306E\u5185\u5BB9\uFF08\u5546\u54C1\u540D\u306A\u3069\uFF09"), /*#__PURE__*/React.createElement("input", {
     value: fields.refProduct,
     onChange: e => setF("refProduct", e.target.value),
-    placeholder: "例：天然マダイ お刺身用",
+    placeholder: "\u4F8B\uFF1A\u5929\u7136\u30DE\u30C0\u30A4 \u304A\u523A\u8EAB\u7528",
     style: inp
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
-  }, "表記しない内容 ", /*#__PURE__*/React.createElement("span", {
+  }, "\u8868\u8A18\u3057\u306A\u3044\u5185\u5BB9 ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--text)"
     }
-  }, "（空欄の場合は上と同じ）")), /*#__PURE__*/React.createElement("input", {
+  }, "\uFF08\u7A7A\u6B04\u306E\u5834\u5408\u306F\u4E0A\u3068\u540C\u3058\uFF09")), /*#__PURE__*/React.createElement("input", {
     value: fields.refNoShow,
     onChange: e => setF("refNoShow", e.target.value),
-    placeholder: "例：天然マダイ",
+    placeholder: "\u4F8B\uFF1A\u5929\u7136\u30DE\u30C0\u30A4",
     style: inp
   })))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -928,10 +928,10 @@ function PopCreateInner({
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "生成されたプロンプト"), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u751F\u6210\u3055\u308C\u305F\u30D7\u30ED\u30F3\u30D7\u30C8"), /*#__PURE__*/React.createElement("textarea", {
     value: prompt,
     readOnly: true,
-    placeholder: "← 上の項目を入力して「プロンプト生成」を押してください",
+    placeholder: "\u2190 \u4E0A\u306E\u9805\u76EE\u3092\u5165\u529B\u3057\u3066\u300C\u30D7\u30ED\u30F3\u30D7\u30C8\u751F\u6210\u300D\u3092\u62BC\u3057\u3066\u304F\u3060\u3055\u3044",
     rows: 5,
     style: {
       width: "100%",
@@ -968,7 +968,7 @@ function PopCreateInner({
     },
     onMouseEnter: e => e.currentTarget.style.background = "#2e2e2e",
     onMouseLeave: e => e.currentTarget.style.background = "#222"
-  }, "プロンプト生成"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30D7\u30ED\u30F3\u30D7\u30C8\u751F\u6210"), /*#__PURE__*/React.createElement("button", {
     onClick: copy,
     disabled: !prompt,
     style: {
@@ -1005,7 +1005,7 @@ function PopCreateInner({
       color: "#c8a840",
       marginBottom: 8
     }
-  }, "使い方（4ステップ）"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F7F\u3044\u65B9\uFF084\u30B9\u30C6\u30C3\u30D7\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -1029,7 +1029,7 @@ function PopCreateInner({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: 900,
       color: "#c8a840",
       flexShrink: 0
@@ -1048,7 +1048,7 @@ function PopCreateInner({
     style: {
       color: "#52c87e"
     }
-  }, "価格を入れたくない場合"), "は価格欄を空欄にすると「表記なし」が自動で入ります。")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4FA1\u683C\u3092\u5165\u308C\u305F\u304F\u306A\u3044\u5834\u5408"), "\u306F\u4FA1\u683C\u6B04\u3092\u7A7A\u6B04\u306B\u3059\u308B\u3068\u300C\u8868\u8A18\u306A\u3057\u300D\u304C\u81EA\u52D5\u3067\u5165\u308A\u307E\u3059\u3002")), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 14,
       background: "#141414",
@@ -1063,14 +1063,14 @@ function PopCreateInner({
       color: "#c8a840",
       marginBottom: 3
     }
-  }, "🎨 見本スタイルでかんたん作成"), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFA8 \u898B\u672C\u30B9\u30BF\u30A4\u30EB\u3067\u304B\u3093\u305F\u3093\u4F5C\u6210"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
-  }, "投稿されたプロンプト見本3種の型を内蔵。スタイルを選んで空欄を埋めるだけで、完成プロンプトができます。"), /*#__PURE__*/React.createElement("div", {
+  }, "\u6295\u7A3F\u3055\u308C\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u898B\u672C3\u7A2E\u306E\u578B\u3092\u5185\u8535\u3002\u30B9\u30BF\u30A4\u30EB\u3092\u9078\u3093\u3067\u7A7A\u6B04\u3092\u57CB\u3081\u308B\u3060\u3051\u3067\u3001\u5B8C\u6210\u30D7\u30ED\u30F3\u30D7\u30C8\u304C\u3067\u304D\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -1113,7 +1113,7 @@ function PopCreateInner({
     key: k
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 800,
       color: "var(--sub)",
       marginBottom: 4
@@ -1152,7 +1152,7 @@ function PopCreateInner({
         color: on ? "#e6c860" : "#9a9a9a",
         borderRadius: 14,
         padding: "4px 11px",
-        fontSize: 11.5,
+        fontSize: 12.5,
         fontWeight: 700,
         cursor: "pointer",
         lineHeight: 1.4
@@ -1213,7 +1213,7 @@ function PopCreateInner({
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "プロンプト生成"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30D7\u30ED\u30F3\u30D7\u30C8\u751F\u6210"), /*#__PURE__*/React.createElement("button", {
     onClick: qsCopy,
     disabled: !qsPrompt,
     style: {
@@ -1230,11 +1230,11 @@ function PopCreateInner({
     }
   }, qsCopied ? "コピー済" : "コピー")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10.5,
+      fontSize: 11.5,
       color: "var(--faint)",
       marginTop: 9
     }
-  }, "※ 価格を空欄にすると価格表記なしで生成されます。税込は8%で自動計算。"))));
+  }, "\u203B \u4FA1\u683C\u3092\u7A7A\u6B04\u306B\u3059\u308B\u3068\u4FA1\u683C\u8868\u8A18\u306A\u3057\u3067\u751F\u6210\u3055\u308C\u307E\u3059\u3002\u7A0E\u8FBC\u306F8%\u3067\u81EA\u52D5\u8A08\u7B97\u3002"))));
 }
 
 // ── Floor Photo Tab ──
