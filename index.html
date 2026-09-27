@@ -127,6 +127,8 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .bt-a-s { font-size: 13px; }
 .bt-a-l { font-size: 19px; }
 @media (min-width: 700px) {
+  /* 上の行から開けるので、メニューの中からは外す */
+  .menu-row-catalog, .menu-row-gne { display: none !important; }
   /* パソコン：上の行を1列に、画面いっぱいまで広げる */
   .board-head { display: flex; align-items: center; gap: 12px; max-width: none; }
   .board-head .bh-post, .board-head .bh-catalog, .board-head .bh-gne,
@@ -389,7 +391,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260919x";
+window.APP_VER = "20260919y";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

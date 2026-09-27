@@ -896,7 +896,7 @@ function App() {
     },
     "aria-label": o.label,
     "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item",
+    className: "menu-item menu-row-" + o.key,
     style: {
       width: "100%",
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",

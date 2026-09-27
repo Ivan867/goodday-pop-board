@@ -376,7 +376,7 @@ function App() {
               })().map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
-                  className="menu-item"
+                  className={"menu-item menu-row-" + o.key}
                   style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
                     background: tab===o.key ? "var(--soft)" : "var(--menu-row, #fff)", borderRadius:12,
                     padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13, flex:"1 1 0", minHeight:56 }}>
