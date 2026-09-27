@@ -162,16 +162,16 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 @keyframes gsweep { 0% { transform: translateY(-12%); opacity: 0; } 12% { opacity: .9; } 88% { opacity: .9; } 100% { transform: translateY(1100%); opacity: 0; } }
 @keyframes gblink { 50% { opacity: .15; } }
 @keyframes gripple { from { transform: translate(-50%,-50%) scale(.6); opacity: .55; } to { transform: translate(-50%,-50%) scale(2.1); opacity: 0; } }
-@keyframes gpulse { 50% { box-shadow: 0 0 0 1px rgba(34,211,238,0.22), 0 0 52px rgba(34,211,238,0.20); } }
+@keyframes gpulse { 50% { box-shadow: 0 0 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,220,174,0.13), 0 0 34px rgba(240,164,74,0.10); } }
 @keyframes gglitch { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
 .g-panel { animation: gpulse 4.5s ease-in-out infinite; }
-.g-sweep { position: absolute; left: 0; right: 0; top: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(34,211,238,.75), transparent);
+.g-sweep { position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,164,74,.55), transparent);
   animation: gsweep 5.2s linear infinite; pointer-events: none; }
-.g-corner { position: absolute; width: 14px; height: 14px; border-color: #22d3ee; border-style: solid; opacity: .75; }
+.g-corner { position: absolute; width: 13px; height: 13px; border-color: rgba(240,164,74,.55); border-style: solid; opacity: .9; }
 .g-blink { animation: gblink 1.4s steps(2) infinite; }
-.g-ripple { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; border-radius: 50%;
-  border: 1.5px solid #22d3ee; animation: gripple .5s ease-out forwards; pointer-events: none; }
+.g-ripple { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; border-radius: 50%;
+  border: 1px solid #f0a44a; animation: gripple .5s ease-out forwards; pointer-events: none; }
 .g-shake { animation: gglitch .32s ease; }
 @media (prefers-reduced-motion: reduce) {
   .g-panel, .g-sweep, .g-blink, .g-ripple, .g-shake { animation: none !important; }
@@ -410,7 +410,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260920b";
+window.APP_VER = "20260920c";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

@@ -5,6 +5,83 @@ var {
   useCallback,
   useRef
 } = React;
+
+/* 解錠画面の背景に降るカタカナ。この画面を閉じると止まる */
+function RainCanvas() {
+  const ref = React.useRef(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext && cv.getContext("2d");
+    if (!ctx) return;
+    const CH = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンｱｲｳｴｵ0123456789";
+    const FS = 13;
+    let drops = [],
+      raf = 0,
+      last = 0,
+      w = 0,
+      h = 0,
+      stopped = false;
+    const reduce = (() => {
+      try {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      } catch (e) {
+        return false;
+      }
+    })();
+    const size = () => {
+      const r = cv.getBoundingClientRect();
+      w = cv.width = Math.max(1, Math.floor(r.width));
+      h = cv.height = Math.max(1, Math.floor(r.height));
+      const cols = Math.max(1, Math.floor(w / FS));
+      drops = new Array(cols).fill(0).map(() => Math.random() * -(h / FS));
+      ctx.font = FS + "px ui-monospace, Menlo, monospace";
+      ctx.textBaseline = "top";
+    };
+    const frame = t => {
+      if (stopped) return;
+      raf = requestAnimationFrame(frame);
+      if (t - last < 55) return; // 秒18コマ程度に抑える
+      last = t;
+      ctx.fillStyle = "rgba(6, 13, 15, 0.10)"; // 尾を引かせる
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < drops.length; i++) {
+        const y = drops[i] * FS;
+        const c = CH[Math.random() * CH.length | 0];
+        ctx.fillStyle = "rgba(150, 232, 214, 0.85)"; // 先頭は明るく
+        ctx.fillText(c, i * FS, y);
+        ctx.fillStyle = "rgba(58, 148, 132, 0.30)"; // その上は淡く
+        ctx.fillText(CH[Math.random() * CH.length | 0], i * FS, y - FS);
+        drops[i] = y > h && Math.random() > 0.975 ? 0 : drops[i] + 1;
+      }
+    };
+    size();
+    if (reduce) {
+      // 動きを減らす設定なら1枚だけ描く
+      ctx.fillStyle = "rgba(58, 148, 132, 0.22)";
+      for (let i = 0; i < drops.length; i++) for (let j = 0; j < h / FS; j += 3) ctx.fillText(CH[Math.random() * CH.length | 0], i * FS, j * FS);
+      return;
+    }
+    raf = requestAnimationFrame(frame);
+    window.addEventListener("resize", size);
+    return () => {
+      stopped = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", size);
+    };
+  }, []);
+  return /*#__PURE__*/React.createElement("canvas", {
+    ref: ref,
+    "aria-hidden": "true",
+    style: {
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      opacity: 0.5
+    }
+  });
+}
 function AdminTab({
   onNoticeChange,
   onCreateFromPop
@@ -170,7 +247,11 @@ function AdminTab({
   const tryUnlock = () => tryUnlockWith(gpw);
   if (!unlocked) {
     const DOTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const PIN_LEN = 4; // ここまで押したら自動で送る（合図の桁数）
+    const PIN_LEN = 4; // ここまで押したら自動で送る
+    const AM = "#f0a44a"; // 琥珀（手前の光）
+    const AMB = "#ffdcae"; // 明るい琥珀（文字）
+    const DIM = "#8a6a45"; // 落とした琥珀
+    const NODE = [[18, 18], [50, 18], [82, 18], [18, 50], [50, 50], [82, 50], [18, 82], [50, 82], [82, 82]];
     const tapDot = n => {
       if (gChecking || gOK) return;
       setGErr("");
@@ -181,61 +262,64 @@ function AdminTab({
       } catch (e) {}
       setGpw(v => {
         const nv = v.length >= 12 ? v : v + n;
-        if (nv.length === PIN_LEN) setTimeout(() => tryUnlockWith(nv), 200); // 最後の光を見せてから
+        if (nv.length === PIN_LEN) setTimeout(() => tryUnlockWith(nv), 200);
         return nv;
       });
     };
-    const CY = "#22d3ee";
-    // 点の位置（3×3）。背後の配線を描くのに使う
-    const NODE = [[18, 18], [50, 18], [82, 18], [18, 50], [50, 50], [82, 50], [18, 82], [50, 82], [82, 82]];
     return /*#__PURE__*/React.createElement("div", {
       style: {
-        minHeight: "70vh",
+        position: "relative",
+        minHeight: "92vh",
+        overflow: "hidden",
+        marginBottom: -120,
+        background: "radial-gradient(120% 90% at 50% 18%, #123033 0%, #0a181c 45%, #050d0f 100%)",
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "center",
-        padding: "30px 16px 60px",
-        animation: "fadeUp .3s ease"
+        padding: "42px 16px 70px"
       }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "g-panel",
-      style: {
-        position: "relative",
-        width: "100%",
-        maxWidth: 360,
-        border: "1px solid #16394b",
-        borderRadius: 5,
-        background: "linear-gradient(180deg, rgba(10,22,32,0.96), rgba(5,12,18,0.96))",
-        padding: "20px 18px 22px",
-        boxShadow: "0 0 0 1px rgba(34,211,238,0.08), 0 0 40px rgba(34,211,238,0.10)",
-        overflow: "hidden",
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(RainCanvas, null), /*#__PURE__*/React.createElement("div", {
       "aria-hidden": "true",
       style: {
         position: "absolute",
         inset: 0,
         pointerEvents: "none",
-        background: "repeating-linear-gradient(0deg, rgba(125,227,244,0.035) 0 1px, transparent 1px 3px)"
+        background: "radial-gradient(60% 42% at 50% 34%, rgba(240,164,74,0.16), transparent 70%), radial-gradient(100% 70% at 50% 100%, rgba(0,0,0,0.65), transparent 60%)"
       }
     }), /*#__PURE__*/React.createElement("div", {
+      className: "g-panel",
+      style: {
+        position: "relative",
+        zIndex: 2,
+        width: "100%",
+        maxWidth: 352,
+        border: "1px solid rgba(240,164,74,0.22)",
+        borderRadius: 2,
+        background: "linear-gradient(180deg, rgba(16,28,31,0.80), rgba(8,16,19,0.88))",
+        backdropFilter: "blur(3px)",
+        WebkitBackdropFilter: "blur(3px)",
+        padding: "26px 22px 20px",
+        overflow: "hidden",
+        boxShadow: "0 0 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,220,174,0.07)",
+        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
       "aria-hidden": "true",
       className: "g-sweep"
-    }), [["top", "left", "2px 0 0 2px", {
-      top: 7,
-      left: 7
-    }], ["top", "right", "2px 2px 0 0", {
-      top: 7,
-      right: 7
-    }], ["bottom", "left", "0 0 0 2px", {
-      bottom: 7,
-      left: 7
-    }], ["bottom", "right", "0 2px 2px 0", {
-      bottom: 7,
-      right: 7
-    }]].map(([a, b, bw, pos]) => /*#__PURE__*/React.createElement("div", {
-      key: a + b,
+    }), [["tl", "2px 0 0 2px", {
+      top: 8,
+      left: 8
+    }], ["tr", "2px 2px 0 0", {
+      top: 8,
+      right: 8
+    }], ["bl", "0 0 0 2px", {
+      bottom: 8,
+      left: 8
+    }], ["br", "0 2px 2px 0", {
+      bottom: 8,
+      right: 8
+    }]].map(([k, bw, pos]) => /*#__PURE__*/React.createElement("div", {
+      key: k,
       "aria-hidden": "true",
       className: "g-corner",
       style: {
@@ -244,38 +328,40 @@ function AdminTab({
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
+        fontSize: 9.5,
+        letterSpacing: "0.34em",
+        color: DIM
+      }
+    }, "USHIO \u2014 SEAFOOD DIVISION"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 21,
+        fontWeight: 400,
+        color: AMB,
+        letterSpacing: "0.16em",
+        marginTop: 7,
+        textShadow: "0 0 22px rgba(240,164,74,0.45)"
+      }
+    }, "\u7BA1 \u7406 \u8005 \u8A8D \u8A3C"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: 1,
+        background: "linear-gradient(90deg, rgba(240,164,74,0.5), transparent)",
+        margin: "13px 0 11px"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
         fontSize: 10,
-        letterSpacing: "0.22em",
-        color: "#2a5f75"
-      }
-    }, "USHIO // SEAFOOD NET"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 16,
-        fontWeight: 700,
-        color: "#bfefff",
-        letterSpacing: "0.06em",
-        marginTop: 3
-      }
-    }, "\u7BA1\u7406\u753B\u9762 ", /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: CY
-      }
-    }, "ACCESS")), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10.5,
-        color: "#2f6a80",
-        lineHeight: 1.85,
-        minHeight: 58,
-        margin: "10px 0 6px",
+        color: DIM,
+        lineHeight: 1.95,
+        minHeight: 56,
         whiteSpace: "pre-line"
       }
     }, gBoot, /*#__PURE__*/React.createElement("span", {
       className: "g-blink",
       style: {
         display: "inline-block",
-        width: 7,
-        height: 11,
-        background: CY,
+        width: 6,
+        height: 10,
+        background: AM,
         marginLeft: 3,
         verticalAlign: "-1px"
       }
@@ -283,23 +369,25 @@ function AdminTab({
       style: {
         display: "flex",
         justifyContent: "center",
-        gap: 7,
-        height: 16,
-        marginBottom: 10
+        gap: 9,
+        height: 14,
+        margin: "6px 0 14px"
       }
-    }, gpw.split("").map((_, i) => /*#__PURE__*/React.createElement("span", {
+    }, [0, 1, 2, 3].map(i => /*#__PURE__*/React.createElement("span", {
       key: i,
       style: {
-        width: 8,
-        height: 8,
+        width: 7,
+        height: 7,
         borderRadius: "50%",
-        background: CY,
-        boxShadow: "0 0 8px " + CY
+        transition: "all .18s",
+        background: i < gpw.length ? AM : "transparent",
+        border: i < gpw.length ? "none" : "1px solid rgba(240,164,74,0.28)",
+        boxShadow: i < gpw.length ? "0 0 10px " + AM : "none"
       }
     }))), !gKeyMode ? /*#__PURE__*/React.createElement("div", {
       style: {
         position: "relative",
-        width: 236,
+        width: 224,
         margin: "0 auto"
       }
     }, /*#__PURE__*/React.createElement("svg", {
@@ -312,7 +400,7 @@ function AdminTab({
         width: "100%",
         height: "100%",
         pointerEvents: "none",
-        opacity: .5
+        opacity: .45
       }
     }, [[0, 2], [3, 5], [6, 8], [0, 6], [1, 7], [2, 8]].map(([a, b], i) => /*#__PURE__*/React.createElement("line", {
       key: "l" + i,
@@ -320,20 +408,14 @@ function AdminTab({
       y1: NODE[a][1],
       x2: NODE[b][0],
       y2: NODE[b][1],
-      stroke: "#14384a",
-      strokeWidth: "0.6"
-    })), NODE.map((p, i) => /*#__PURE__*/React.createElement("circle", {
-      key: "c" + i,
-      cx: p[0],
-      cy: p[1],
-      r: "1.1",
-      fill: "#1d5568"
+      stroke: "rgba(240,164,74,0.20)",
+      strokeWidth: "0.5"
     }))), /*#__PURE__*/React.createElement("div", {
       style: {
         position: "relative",
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 14,
+        gap: 13,
         justifyItems: "center"
       }
     }, DOTS.map(n => /*#__PURE__*/React.createElement("button", {
@@ -343,15 +425,15 @@ function AdminTab({
       disabled: gChecking || gOK,
       style: {
         position: "relative",
-        width: 56,
-        height: 56,
+        width: 54,
+        height: 54,
         borderRadius: "50%",
         cursor: "pointer",
         padding: 0,
-        border: "1.5px solid " + (gFlash === n ? "#9beefc" : "#1d5568"),
-        background: gFlash === n ? CY : "#0d2330",
-        boxShadow: gFlash === n ? "0 0 16px " + CY + ", 0 0 34px rgba(34,211,238,0.5)" : "none",
-        transition: "background .12s, box-shadow .12s, border-color .12s"
+        border: "1px solid " + (gFlash === n ? AMB : "rgba(240,164,74,0.30)"),
+        background: gFlash === n ? AM : "rgba(240,164,74,0.05)",
+        boxShadow: gFlash === n ? "0 0 18px " + AM + ", 0 0 42px rgba(240,164,74,0.55)" : "inset 0 0 12px rgba(240,164,74,0.06)",
+        transition: "background .14s, box-shadow .14s, border-color .14s"
       }
     }, gFlash === n && /*#__PURE__*/React.createElement("span", {
       "aria-hidden": "true",
@@ -373,10 +455,10 @@ function AdminTab({
       style: {
         width: "100%",
         boxSizing: "border-box",
-        border: "1px solid #16394b",
-        background: "#0a1620",
-        color: CY,
-        borderRadius: 4,
+        border: "1px solid rgba(240,164,74,0.3)",
+        background: "rgba(240,164,74,0.05)",
+        color: AMB,
+        borderRadius: 2,
         padding: "13px",
         fontSize: 16,
         textAlign: "center",
@@ -393,104 +475,93 @@ function AdminTab({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(4,20,26,0.88)",
+        background: "rgba(8,16,19,0.9)",
         animation: "fadeUp .18s ease"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        color: "#4ade80",
-        fontSize: 15,
-        fontWeight: 700,
-        letterSpacing: "0.18em",
-        textShadow: "0 0 16px rgba(74,222,128,0.8)"
+        color: AMB,
+        fontSize: 14,
+        letterSpacing: "0.34em",
+        textShadow: "0 0 26px rgba(240,164,74,0.9)"
       }
-    }, "ACCESS GRANTED")), /*#__PURE__*/React.createElement("div", {
+    }, "\u627F \u8A8D")), /*#__PURE__*/React.createElement("div", {
       role: "status",
       "aria-live": "polite",
+      className: gErr ? "g-shake" : "",
       style: {
-        minHeight: 20,
-        marginTop: 14,
+        minHeight: 19,
+        marginTop: 15,
         textAlign: "center",
-        fontSize: 11.5,
-        letterSpacing: "0.08em",
+        fontSize: 11,
+        letterSpacing: "0.06em",
         lineHeight: 1.6,
-        color: gErr ? "#fb7185" : "#2f6a80"
-      },
-      className: gErr ? "g-shake" : ""
-    }, gErr ? "ACCESS DENIED — " + gErr : ""), (gKeyMode || gChecking) && /*#__PURE__*/React.createElement("button", {
+        color: gErr ? "#e8806f" : DIM
+      }
+    }, gChecking ? "照合中 ..." : gErr || ""), (gKeyMode || gChecking) && /*#__PURE__*/React.createElement("button", {
       onClick: tryUnlock,
       disabled: gChecking || !gpw,
       style: {
         width: "100%",
-        marginTop: 10,
-        borderRadius: 4,
+        marginTop: 8,
+        borderRadius: 2,
         padding: "13px",
-        fontSize: 14,
-        fontWeight: 700,
-        letterSpacing: "0.12em",
+        fontSize: 13,
+        letterSpacing: "0.2em",
         fontFamily: "inherit",
-        border: "1px solid " + (gpw ? CY : "#16394b"),
-        background: gpw && !gChecking ? "rgba(34,211,238,0.14)" : "transparent",
-        color: gpw ? CY : "#2a5f75",
+        border: "1px solid " + (gpw ? "rgba(240,164,74,0.55)" : "rgba(240,164,74,0.2)"),
+        background: gpw && !gChecking ? "rgba(240,164,74,0.12)" : "transparent",
+        color: gpw ? AMB : DIM,
         cursor: gChecking || !gpw ? "default" : "pointer"
       }
-    }, gChecking ? "確認中 ..." : "UNLOCK"), /*#__PURE__*/React.createElement("div", {
+    }, gChecking ? "照合中 ..." : "解 錠"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         justifyContent: "center",
-        gap: 18,
+        gap: 20,
         marginTop: 14
       }
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        setGpw("");
-        setGErr("");
-      },
+    }, [["やり直す", () => {
+      setGpw("");
+      setGErr("");
+    }], [gKeyMode ? "点で入れる" : "数字で入れる", () => {
+      setGKeyMode(v => !v);
+      setGpw("");
+      setGErr("");
+    }]].map(([t, fn]) => /*#__PURE__*/React.createElement("button", {
+      key: t,
+      onClick: fn,
       style: {
         border: "none",
         background: "transparent",
-        color: "#2f6a80",
-        fontSize: 11,
+        color: DIM,
+        fontSize: 10.5,
+        letterSpacing: "0.1em",
         textDecoration: "underline",
         cursor: "pointer",
         fontFamily: "inherit"
       }
-    }, "\u3084\u308A\u76F4\u3059"), /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        setGKeyMode(v => !v);
-        setGpw("");
-        setGErr("");
-      },
-      style: {
-        border: "none",
-        background: "transparent",
-        color: "#2f6a80",
-        fontSize: 11,
-        textDecoration: "underline",
-        cursor: "pointer",
-        fontFamily: "inherit"
-      }
-    }, gKeyMode ? "点で入れる" : "数字で入れる")), /*#__PURE__*/React.createElement("div", {
+    }, t))), /*#__PURE__*/React.createElement("div", {
       "aria-hidden": "true",
       style: {
         display: "flex",
         alignItems: "center",
         gap: 7,
-        marginTop: 16,
-        paddingTop: 10,
-        borderTop: "1px solid #102b39",
-        fontSize: 9,
-        letterSpacing: "0.16em",
-        color: "#26576b"
+        marginTop: 18,
+        paddingTop: 11,
+        borderTop: "1px solid rgba(240,164,74,0.12)",
+        fontSize: 8.5,
+        letterSpacing: "0.2em",
+        color: DIM
       }
     }, /*#__PURE__*/React.createElement("span", {
       className: "g-blink",
       style: {
-        width: 6,
-        height: 6,
+        width: 5,
+        height: 5,
         borderRadius: "50%",
-        background: "#4ade80",
-        boxShadow: "0 0 7px #4ade80",
+        background: AM,
+        boxShadow: "0 0 7px " + AM,
         flexShrink: 0
       }
     }), /*#__PURE__*/React.createElement("span", null, "LINK SECURE"), /*#__PURE__*/React.createElement("span", {
