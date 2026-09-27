@@ -201,9 +201,11 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     };
 
     return (
-      <div style={{ position:"relative", minHeight:"92vh", overflow:"hidden", marginBottom:-120,
+      <div style={{ position:"fixed", zIndex:100, left:0, right:0, bottom:0,
+        top:"calc(env(safe-area-inset-top, 0px) + 52px)",
+        overflow:"hidden", touchAction:"none",
         background:"radial-gradient(120% 90% at 50% 18%, #123033 0%, #0a181c 45%, #050d0f 100%)",
-        display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"42px 16px 70px" }}>
+        display:"flex", alignItems:"center", justifyContent:"center", padding:"16px" }}>
 
         {/* 降るカタカナ */}
         <RainCanvas />
@@ -227,8 +229,9 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           ))}
 
           <div style={{ fontSize:9.5, letterSpacing:"0.34em", color:DIM }}>USHIO — SEAFOOD DIVISION</div>
-          <div style={{ fontSize:21, fontWeight:400, color:AMB, letterSpacing:"0.16em", marginTop:7,
-            textShadow:"0 0 22px rgba(240,164,74,0.45)" }}>管 理 者 認 証</div>
+          <div style={{ fontSize:25, fontWeight:400, color:AMB, letterSpacing:"0.14em", marginTop:7, lineHeight:1.15,
+            textShadow:"0 0 24px rgba(240,164,74,0.45)" }}>АВТОРИЗАЦИЯ</div>
+          <div style={{ fontSize:9.5, letterSpacing:"0.3em", color:DIM, marginTop:5 }}>ADMINISTRATOR ACCESS</div>
           <div style={{ height:1, background:"linear-gradient(90deg, rgba(240,164,74,0.5), transparent)", margin:"13px 0 11px" }} />
 
           <div style={{ fontSize:10, color:DIM, lineHeight:1.95, minHeight:56, whiteSpace:"pre-line" }}>

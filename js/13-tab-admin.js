@@ -268,15 +268,19 @@ function AdminTab({
     };
     return /*#__PURE__*/React.createElement("div", {
       style: {
-        position: "relative",
-        minHeight: "92vh",
+        position: "fixed",
+        zIndex: 100,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        top: "calc(env(safe-area-inset-top, 0px) + 52px)",
         overflow: "hidden",
-        marginBottom: -120,
+        touchAction: "none",
         background: "radial-gradient(120% 90% at 50% 18%, #123033 0%, #0a181c 45%, #050d0f 100%)",
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "center",
         justifyContent: "center",
-        padding: "42px 16px 70px"
+        padding: "16px"
       }
     }, /*#__PURE__*/React.createElement(RainCanvas, null), /*#__PURE__*/React.createElement("div", {
       "aria-hidden": "true",
@@ -334,14 +338,22 @@ function AdminTab({
       }
     }, "USHIO \u2014 SEAFOOD DIVISION"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 21,
+        fontSize: 25,
         fontWeight: 400,
         color: AMB,
-        letterSpacing: "0.16em",
+        letterSpacing: "0.14em",
         marginTop: 7,
-        textShadow: "0 0 22px rgba(240,164,74,0.45)"
+        lineHeight: 1.15,
+        textShadow: "0 0 24px rgba(240,164,74,0.45)"
       }
-    }, "\u7BA1 \u7406 \u8005 \u8A8D \u8A3C"), /*#__PURE__*/React.createElement("div", {
+    }, "\u0410\u0412\u0422\u041E\u0420\u0418\u0417\u0410\u0426\u0418\u042F"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9.5,
+        letterSpacing: "0.3em",
+        color: DIM,
+        marginTop: 5
+      }
+    }, "ADMINISTRATOR ACCESS"), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 1,
         background: "linear-gradient(90deg, rgba(240,164,74,0.5), transparent)",
