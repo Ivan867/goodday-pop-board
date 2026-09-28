@@ -43,7 +43,12 @@ var LAZY_TABS = {
   idea: {
     file: "17-tab-idea",
     comp: "IdeaTab"
-  } // アイデア（一覧には出さない）
+  },
+  // アイデア（一覧には出さない）
+  order: {
+    file: "18-tab-support",
+    comp: "SupportTab"
+  } // 店舗支援（画像の置き場）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -103,6 +108,15 @@ const MENU_ICON = (() => {
       d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
+    }))),
+    shiokan: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+      x: "3.5",
+      y: "7",
+      width: "17",
+      height: "13",
+      rx: "1.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M3.5 11h17M9 7V4.5h6V7"
     }))),
     gne: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
       x: "3",
@@ -677,7 +691,9 @@ function App() {
   }), tab === "tool" && /*#__PURE__*/React.createElement(PopToolTab, {
     seed: toolSeed,
     onSeedConsumed: () => setToolSeed(null)
-  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
+  }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "order"
+  }), tab === "shiokan" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
   }), tab === "idea" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "idea"
@@ -923,7 +939,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "catalog", "gne", "order", "barcode", "request", "admin"];
+    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
