@@ -1,24 +1,340 @@
-/* GoodDay 鮮魚共有 — 19-tab-scan （読み込みシステム：伝票PDF補正ツールの手順） */
+/* GoodDay 鮮魚共有 — 19-tab-scan （読み込みシステム：伝票PDFをブラウザの中で補正する）
+   外部に画像を送りません。すべてこの端末の中だけで処理します。 */
 var {
-  useState
+  useState,
+  useRef,
+  useCallback
 } = React;
-const SCAN_STEPS = [{
-  t: "PDFを入れる",
-  d: "コピー機でまとめてスキャンした伝票PDFを、ツールの「01_補正前」フォルダに入れます。何枚でも構いません。"
-}, {
-  t: "補正を実行.bat をダブルクリック",
-  d: "黒い画面が出て、進み具合が日本語で表示されます。終わると「成功◯件／失敗◯件」と出ます。"
-}, {
-  t: "02_補正後 を確認",
-  d: "補正済みのPDFが出ています。このフォルダを伝票入力アプリの読み取り先にしておけば、あとはいつもどおりです。"
-}, {
-  t: "元のPDFは消えていません",
-  d: "「03_原本保管」の中に、日付のフォルダを作って移してあります。消したり上書きしたりは一切しません。"
-}];
-const SCAN_SETTINGS = [["向きの自動判定", "入", "横向き・逆さまのページを正しい向きに回す"], ["傾き補正", "入", "斜めにスキャンされた紙を水平に戻す"], ["解像度をそろえる", "入", "300dpi相当にそろえる。小さい伝票は拡大する"], ["コントラスト強化", "入", "薄い複写伝票の印字を濃くする"], ["白黒化", "切", "2色にする。効くかどうか比べたい項目"], ["白紙ページの除去", "入", "裏面など、何も写っていないページを捨てる"]];
-const SCAN_TROUBLE = [["黒い画面が一瞬で閉じる", "「環境チェック.bat」を実行してください。Pythonが入っていない可能性があります。"], ["日本語が読めていない", "Tesseractを入れるとき「Japanese」のチェックを入れ忘れています。入れ直せば直ります。"], ["ocrmypdf が失敗と出る", "Ghostscriptがありません。config.json の エンジン を tesseract に変えれば、無くても動きます。"], ["ページが減りすぎる", "白紙と間違えられています。「白紙と判断する黒画素の割合」を 0.002 に下げてください。"], ["文字がつぶれる", "「白黒化」を切にして、「コントラスト強化の強さ」を 1.5 に下げてください。"], ["処理が遅い", "「目標dpi」を 200 に、「向きの自動判定」を切にすると速くなります。"]];
+
+// ── 画像の補正（すべて素のJavaScript。外部に送らない） ──────────────
+
+// 白い紙を前提に、黒い点の割合を数える
+function scanInkRatio(data, w, h) {
+  let 黒 = 0,
+    数 = 0;
+  const 端 = Math.floor(Math.min(w, h) * 0.03);
+  for (let y = 端; y < h - 端; y += 2) {
+    for (let x = 端; x < w - 端; x += 2) {
+      const i = (y * w + x) * 4;
+      const v = (data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000;
+      if (v < 160) 黒++;
+      数++;
+    }
+  }
+  return 数 ? 黒 / 数 : 0;
+}
+
+// 行ごとの黒の量がいちばんはっきり分かれる角度＝文字が水平（射影プロファイル法）
+function scanScoreAt(gray, w, h, deg) {
+  const r = deg * Math.PI / 180,
+    cos = Math.cos(r),
+    sin = Math.sin(r);
+  const cx = w / 2,
+    cy = h / 2;
+  const 行和 = new Float64Array(h);
+  for (let y = 0; y < h; y += 2) {
+    for (let x = 0; x < w; x += 2) {
+      const dx = x - cx,
+        dy = y - cy;
+      const sx = Math.round(cx + dx * cos + dy * sin);
+      const sy = Math.round(cy - dx * sin + dy * cos);
+      if (sx < 0 || sy < 0 || sx >= w || sy >= h) continue;
+      if (gray[sy * w + sx] < 160) 行和[y]++;
+    }
+  }
+  let 得点 = 0;
+  for (let y = 2; y < h; y += 2) {
+    const d = 行和[y] - 行和[y - 2];
+    得点 += d * d;
+  }
+  return 得点;
+}
+function scanToGray(ctx, w, h) {
+  const d = ctx.getImageData(0, 0, w, h).data;
+  const g = new Uint8Array(w * h);
+  for (let i = 0, j = 0; j < g.length; i += 4, j++) g[j] = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
+  return g;
+}
+
+// 横向き（90度単位）を直す。上下逆さまは文字構造では判別できないので触らない
+function scanDetectQuarter(gray, w, h) {
+  const 縦 = scanScoreAt(gray, w, h, 0);
+  // 90度回した状態の得点は、幅と高さを入れ替えて測るのと同じ
+  const g2 = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) g2[x * h + y] = gray[y * w + x];
+  const 横 = scanScoreAt(g2, h, w, 0);
+  return 横 > 縦 * 1.25 ? 90 : 0;
+}
+function scanFindSkew(gray, w, h, 上限) {
+  let 粗 = 0,
+    最高 = -1;
+  for (let a = -上限; a <= 上限; a += 1) {
+    const s = scanScoreAt(gray, w, h, a);
+    if (s > 最高) {
+      最高 = s;
+      粗 = a;
+    }
+  }
+  let 細 = 粗;
+  最高 = -1;
+  for (let a = 粗 - 1; a <= 粗 + 1; a += 0.2) {
+    const s = scanScoreAt(gray, w, h, a);
+    if (s > 最高) {
+      最高 = s;
+      細 = a;
+    }
+  }
+  return Math.abs(細) < 0.2 || Math.abs(細) > 上限 ? 0 : Math.round(細 * 10) / 10;
+}
+
+// 薄い複写伝票を濃くする（明るさの分布を引き伸ばす）
+function scanStretch(img, 強さ) {
+  const d = img.data,
+    度数 = new Uint32Array(256);
+  for (let i = 0; i < d.length; i += 4) 度数[(d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0]++;
+  const 総数 = d.length / 4;
+  const 切る = 総数 * (0.005 * 強さ);
+  let 下 = 0,
+    上 = 255,
+    積 = 0;
+  for (let v = 0; v < 256; v++) {
+    積 += 度数[v];
+    if (積 > 切る) {
+      下 = v;
+      break;
+    }
+  }
+  積 = 0;
+  for (let v = 255; v >= 0; v--) {
+    積 += 度数[v];
+    if (積 > 切る) {
+      上 = v;
+      break;
+    }
+  }
+  if (上 - 下 < 20) return img;
+  const 表 = new Uint8Array(256);
+  for (let v = 0; v < 256; v++) 表[v] = Math.max(0, Math.min(255, Math.round((v - 下) * 255 / (上 - 下))));
+  for (let i = 0; i < d.length; i += 4) {
+    d[i] = 表[d[i]];
+    d[i + 1] = 表[d[i + 1]];
+    d[i + 2] = 表[d[i + 2]];
+  }
+  return img;
+}
+
+// 白黒にする（まわりの明るさと比べて決める＝局所しきい値）
+function scanBinarize(img, w, h, 補正値) {
+  const d = img.data;
+  const g = new Float64Array(w * h);
+  for (let i = 0, j = 0; j < g.length; i += 4, j++) g[j] = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
+  // 積分画像で、まわりの平均を速く求める
+  const 積 = new Float64Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) {
+    let 行 = 0;
+    for (let x = 0; x < w; x++) {
+      行 += g[y * w + x];
+      積[(y + 1) * (w + 1) + (x + 1)] = 積[y * (w + 1) + (x + 1)] + 行;
+    }
+  }
+  const 半 = Math.max(8, Math.round(Math.min(w, h) / 45));
+  for (let y = 0; y < h; y++) {
+    const y1 = Math.max(0, y - 半),
+      y2 = Math.min(h - 1, y + 半);
+    for (let x = 0; x < w; x++) {
+      const x1 = Math.max(0, x - 半),
+        x2 = Math.min(w - 1, x + 半);
+      const 面積 = (y2 - y1 + 1) * (x2 - x1 + 1);
+      const 合計 = 積[(y2 + 1) * (w + 1) + (x2 + 1)] - 積[y1 * (w + 1) + (x2 + 1)] - 積[(y2 + 1) * (w + 1) + x1] + 積[y1 * (w + 1) + x1];
+      const v = g[y * w + x] < 合計 / 面積 - 補正値 ? 0 : 255;
+      const i = (y * w + x) * 4;
+      d[i] = d[i + 1] = d[i + 2] = v;
+    }
+  }
+  return img;
+}
+
+// ── 本体 ────────────────────────────────────────────────────
 function ScanTab() {
-  const [開いた, set開いた] = useState(null);
+  const [設定, set設定] = useState({
+    向き: true,
+    傾き: true,
+    解像度: true,
+    濃さ: true,
+    白黒: false,
+    白紙: true,
+    dpi: 200,
+    上限角度: 8,
+    濃さの強さ: 1.0,
+    白黒の補正値: 12,
+    白紙のしきい値: 0.004
+  });
+  const [状態, set状態] = useState("待機"); // 待機 | 処理中 | 完了
+  const [進捗, set進捗] = useState("");
+  const [結果, set結果] = useState([]);
+  const [記録, set記録] = useState([]);
+  const fileRef = useRef(null);
+  const 切替 = k => set設定(o => ({
+    ...o,
+    [k]: !o[k]
+  }));
+  const 変更 = (k, v) => set設定(o => ({
+    ...o,
+    [k]: v
+  }));
+  const ページを補正 = useCallback((canvas, s) => {
+    const ctx = canvas.getContext("2d", {
+      willReadFrequently: true
+    });
+    let w = canvas.width,
+      h = canvas.height;
+    const 記 = {
+      回転: 0,
+      傾き: 0,
+      白紙: false
+    };
+    if (s.向き) {
+      const g = scanToGray(ctx, w, h);
+      if (scanDetectQuarter(g, w, h) === 90) {
+        const tmp = document.createElement("canvas");
+        tmp.width = h;
+        tmp.height = w;
+        const c2 = tmp.getContext("2d");
+        c2.translate(h / 2, w / 2);
+        c2.rotate(Math.PI / 2);
+        c2.drawImage(canvas, -w / 2, -h / 2);
+        canvas.width = h;
+        canvas.height = w;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(tmp, 0, 0);
+        w = canvas.width;
+        h = canvas.height;
+        記.回転 = 90;
+      }
+    }
+    if (s.傾き) {
+      const g = scanToGray(ctx, w, h);
+      const 角 = scanFindSkew(g, w, h, s.上限角度);
+      if (角 !== 0) {
+        const tmp = document.createElement("canvas");
+        tmp.width = w;
+        tmp.height = h;
+        const c2 = tmp.getContext("2d");
+        c2.fillStyle = "#fff";
+        c2.fillRect(0, 0, w, h);
+        c2.translate(w / 2, h / 2);
+        c2.rotate(角 * Math.PI / 180);
+        c2.drawImage(canvas, -w / 2, -h / 2);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(tmp, 0, 0);
+        記.傾き = 角;
+      }
+    }
+    let img = ctx.getImageData(0, 0, w, h);
+    if (s.濃さ) img = scanStretch(img, s.濃さの強さ);
+    if (s.白黒) img = scanBinarize(img, w, h, s.白黒の補正値);
+    ctx.putImageData(img, 0, 0);
+    if (s.白紙 && scanInkRatio(img.data, w, h) < s.白紙のしきい値) 記.白紙 = true;
+    return 記;
+  }, []);
+  const 実行 = async files => {
+    if (!files || !files.length) return;
+    set状態("処理中");
+    set結果([]);
+    set記録([]);
+    try {
+      await loadScriptOnce(PDFJS_SRC);
+      await loadScriptOnce(JSPDF_SRC);
+      const pdfjs = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+      pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+      const jsPDFctor = window.jspdf && window.jspdf.jsPDF || window.jsPDF;
+      const 出来上がり = [],
+        記録行 = [];
+      for (let f = 0; f < files.length; f++) {
+        const ファイル = files[f];
+        set進捗(`${f + 1}／${files.length}　${ファイル.name}　を開いています…`);
+        const doc = await pdfjs.getDocument({
+          data: await ファイル.arrayBuffer()
+        }).promise;
+        const 出力 = new jsPDFctor({
+          unit: "pt",
+          compress: true
+        });
+        let 入れた = 0,
+          白紙数 = 0,
+          回転数 = 0,
+          傾き合計 = 0;
+        for (let p = 1; p <= doc.numPages; p++) {
+          set進捗(`${f + 1}／${files.length}　${ファイル.name}　${p}／${doc.numPages}ページ を補正中…`);
+          await new Promise(r => setTimeout(r, 0)); // 画面を固まらせない
+          const page = await doc.getPage(p);
+          const 倍率 = 設定.解像度 ? 設定.dpi / 72 : 1.5;
+          const vp = page.getViewport({
+            scale: 倍率
+          });
+          const cv = document.createElement("canvas");
+          cv.width = Math.round(vp.width);
+          cv.height = Math.round(vp.height);
+          const cx = cv.getContext("2d", {
+            willReadFrequently: true
+          });
+          cx.fillStyle = "#fff";
+          cx.fillRect(0, 0, cv.width, cv.height);
+          await page.render({
+            canvasContext: cx,
+            viewport: vp
+          }).promise;
+          const 記 = ページを補正(cv, 設定);
+          if (記.回転) 回転数++;
+          if (記.傾き) 傾き合計++;
+          if (記.白紙) {
+            白紙数++;
+            continue;
+          }
+          const 幅pt = cv.width * 72 / (設定.解像度 ? 設定.dpi : 108);
+          const 高pt = cv.height * 72 / (設定.解像度 ? 設定.dpi : 108);
+          if (入れた > 0) 出力.addPage([幅pt, 高pt], 幅pt > 高pt ? "l" : "p");else 出力.deletePage(1), 出力.addPage([幅pt, 高pt], 幅pt > 高pt ? "l" : "p");
+          出力.addImage(cv.toDataURL("image/jpeg", 0.88), "JPEG", 0, 0, 幅pt, 高pt);
+          入れた++;
+        }
+        doc.destroy();
+        if (入れた === 0) {
+          記録行.push({
+            名: ファイル.name,
+            結果: "失敗",
+            内容: "すべて白紙と判定されました"
+          });
+          continue;
+        }
+        const 名 = ファイル.name.replace(/\.pdf$/i, "") + "_補正済.pdf";
+        出来上がり.push({
+          名,
+          url: URL.createObjectURL(出力.output("blob")),
+          ページ: 入れた
+        });
+        記録行.push({
+          名: ファイル.name,
+          結果: "成功",
+          ページ: 入れた,
+          白紙: 白紙数,
+          回転: 回転数,
+          傾き: 傾き合計
+        });
+      }
+      set結果(出来上がり);
+      set記録(記録行);
+      set状態("完了");
+      set進捗("");
+    } catch (e) {
+      set状態("完了");
+      set進捗("");
+      set記録([{
+        名: "—",
+        結果: "失敗",
+        内容: String(e && e.message || e).slice(0, 120)
+      }]);
+    }
+  };
   const 箱 = {
     background: "var(--card, #fff)",
     border: "1px solid var(--line)",
@@ -32,201 +348,265 @@ function ScanTab() {
     color: "var(--ink)",
     marginBottom: 10
   };
+  const 項目 = [["向き", "向きを直す", "横向きのページを縦に戻します"], ["傾き", "傾きを直す", "斜めにスキャンされた紙を水平にします"], ["解像度", "解像度をそろえる", "細かい字がつぶれにくくなります"], ["濃さ", "濃さを上げる", "薄い複写伝票の印字を濃くします"], ["白黒", "白黒にする", "2色にします。効くかどうか比べてください"], ["白紙", "白紙を捨てる", "裏面など、何も写っていないページを除きます"]];
   return /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 720,
       margin: "0 auto",
       padding: "6px 16px 120px"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("input", {
+    ref: fileRef,
+    type: "file",
+    accept: "application/pdf",
+    multiple: true,
+    style: {
+      display: "none"
+    },
+    onChange: e => {
+      const fs = Array.from(e.target.files || []);
+      e.target.value = "";
+      実行(fs);
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       ...箱,
-      background: "var(--soft)",
-      border: "1px solid var(--line)"
+      background: "var(--soft)"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13.5,
-      fontWeight: 900,
-      color: "var(--soft-text)",
-      marginBottom: 7
-    }
-  }, "\u4F1D\u7968PDF\u306E\u8AAD\u307F\u53D6\u308A\u7CBE\u5EA6\u3092\u4E0A\u3052\u308B\u9053\u5177"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--text)",
       lineHeight: 1.9
     }
-  }, "\u30B9\u30AD\u30E3\u30F3\u3057\u305F\u4F1D\u7968\u3092\u3001\u4F1D\u7968\u5165\u529B\u30A2\u30D7\u30EA\u306B\u6E21\u3059\u524D\u306B\u6574\u3048\u307E\u3059\u3002 \u5411\u304D\u3068\u50BE\u304D\u3092\u76F4\u3057\u3001\u8584\u3044\u5370\u5B57\u3092\u6FC3\u304F\u3057\u3066\u304B\u3089\u3001\u6587\u5B57\u30C7\u30FC\u30BF\u3092\u57CB\u3081\u8FBC\u307F\u307E\u3059\u3002", /*#__PURE__*/React.createElement("b", null, "\u30D1\u30BD\u30B3\u30F3\u306E\u4E2D\u3060\u3051\u3067\u51E6\u7406"), "\u3059\u308B\u306E\u3067\u3001\u4F1D\u7968\u306E\u753B\u50CF\u304C\u5916\u306B\u51FA\u308B\u3053\u3068\u306F\u3042\u308A\u307E\u305B\u3093\u3002")), /*#__PURE__*/React.createElement("div", {
+  }, "\u30B9\u30AD\u30E3\u30F3\u3057\u305F\u4F1D\u7968PDF\u3092\u3001\u4F1D\u7968\u5165\u529B\u30A2\u30D7\u30EA\u306B\u6E21\u3059\u524D\u306B\u6574\u3048\u307E\u3059\u3002", /*#__PURE__*/React.createElement("b", null, "\u51E6\u7406\u306F\u3053\u306E\u7AEF\u672B\u306E\u4E2D\u3060\u3051\u3067\u884C\u3044\u307E\u3059\u3002"), "\u753B\u50CF\u304C\u3069\u3053\u304B\u306B\u9001\u3089\u308C\u308B\u3053\u3068\u306F\u3042\u308A\u307E\u305B\u3093\u3002")), /*#__PURE__*/React.createElement("div", {
     style: 箱
   }, /*#__PURE__*/React.createElement("div", {
     style: 見出し
-  }, "\u4F7F\u3046\u624B\u9806"), SCAN_STEPS.map((s, i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      display: "flex",
-      gap: 11,
-      marginBottom: i === SCAN_STEPS.length - 1 ? 0 : 13
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: "0 0 24px",
-      height: 24,
-      borderRadius: "50%",
-      background: "var(--primary-soft)",
-      color: "#fff",
-      fontSize: 12.5,
-      fontWeight: 900,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  }, i + 1), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 0
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13.5,
-      fontWeight: 800,
-      color: "var(--ink)",
-      marginBottom: 3
-    }
-  }, s.t), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      color: "var(--sub)",
-      lineHeight: 1.8
-    }
-  }, s.d))))), /*#__PURE__*/React.createElement("div", {
-    style: 箱
-  }, /*#__PURE__*/React.createElement("div", {
-    style: 見出し
-  }, "\u3069\u308C\u304C\u52B9\u304F\u304B\u6BD4\u3079\u305F\u3044\u3068\u304D"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      color: "var(--sub)",
-      lineHeight: 1.9
-    }
-  }, /*#__PURE__*/React.createElement("b", {
-    style: {
-      color: "var(--ink)"
-    }
-  }, "\u6BD4\u8F03\u30C6\u30B9\u30C8\u3092\u5B9F\u884C.bat"), " \u3092\u30C0\u30D6\u30EB\u30AF\u30EA\u30C3\u30AF\u3059\u308B\u3068\u3001 \u540C\u3058PDF\u304B\u30893\u7A2E\u985E\uFF08\u88DC\u6B63\u306A\u3057\uFF0F\u88DC\u6B63\u3042\u308A\uFF0F\u88DC\u6B63\u3042\u308A\uFF0B\u767D\u9ED2\uFF09\u3092\u4F5C\u308A\u307E\u3059\u3002 3\u3064\u3068\u3082\u4F1D\u7968\u5165\u529B\u30A2\u30D7\u30EA\u306B\u8AAD\u307E\u305B\u3066\u3001\u3069\u308C\u304C\u4E00\u756A\u6B63\u3057\u304F\u8AAD\u3081\u308B\u304B\u6BD4\u3079\u3066\u304F\u3060\u3055\u3044\u3002 \u3053\u306E\u3068\u304D\u306F\u5143\u306EPDF\u306F\u79FB\u52D5\u3057\u306A\u3044\u306E\u3067\u3001\u4F55\u5EA6\u3067\u3082\u8A66\u305B\u307E\u3059\u3002")), /*#__PURE__*/React.createElement("div", {
-    style: 箱
-  }, /*#__PURE__*/React.createElement("div", {
-    style: 見出し
-  }, "\u8A2D\u5B9A\uFF08config.json\uFF09"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--sub)",
-      lineHeight: 1.8,
-      marginBottom: 11
-    }
-  }, "\u30E1\u30E2\u5E33\u3067\u958B\u3044\u3066\u66F8\u304D\u63DB\u3048\u3089\u308C\u307E\u3059\u3002\u5165\uFF1Dtrue\u3001\u5207\uFF1Dfalse \u3067\u3059\u3002"), SCAN_SETTINGS.map(([名, 既定, 説明], i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      display: "flex",
-      alignItems: "flex-start",
-      gap: 9,
-      padding: "8px 0",
-      borderTop: i === 0 ? "none" : "1px solid var(--line)"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: "0 0 34px",
-      textAlign: "center",
-      fontSize: 11,
-      fontWeight: 900,
-      borderRadius: 6,
-      padding: "3px 0",
-      background: 既定 === "入" ? "var(--soft)" : "var(--chip)",
-      color: 既定 === "入" ? "var(--soft-text)" : "var(--sub)"
-    }
-  }, 既定), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 0
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 800,
-      color: "var(--ink)"
-    }
-  }, 名), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--sub)",
-      lineHeight: 1.7
-    }
-  }, 説明))))), /*#__PURE__*/React.createElement("div", {
-    style: 箱
-  }, /*#__PURE__*/React.createElement("div", {
-    style: 見出し
-  }, "\u3046\u307E\u304F\u3044\u304B\u306A\u3044\u3068\u304D"), SCAN_TROUBLE.map(([症状, 対処], i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      borderTop: i === 0 ? "none" : "1px solid var(--line)"
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => set開いた(開いた === i ? null : i),
+  }, "\u4F55\u3092\u76F4\u3059\u304B"), 項目.map(([k, 名, 説明], i) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => 切替(k),
+    disabled: 状態 === "処理中",
     style: {
       width: "100%",
       border: "none",
       background: "transparent",
       cursor: "pointer",
-      padding: "11px 0",
       display: "flex",
       alignItems: "center",
-      gap: 8,
-      textAlign: "left"
+      gap: 11,
+      padding: "10px 0",
+      textAlign: "left",
+      borderTop: i === 0 ? "none" : "1px solid var(--line)"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
+      flex: "0 0 42px",
+      height: 25,
+      borderRadius: 999,
+      position: "relative",
+      background: 設定[k] ? "var(--primary-soft)" : "var(--chip)",
+      transition: "background .15s"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      top: 3,
+      left: 設定[k] ? 20 : 3,
+      width: 19,
+      height: 19,
+      borderRadius: "50%",
+      background: "#fff",
+      transition: "left .15s",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
+    }
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
       flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 13.5,
+      fontWeight: 800,
+      color: "var(--ink)"
+    }
+  }, 名), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.7
+    }
+  }, 説明)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: "1px solid var(--line)",
+      paddingTop: 11,
+      marginTop: 4,
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
       fontSize: 13,
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, 症状), /*#__PURE__*/React.createElement("svg", {
-    width: "14",
-    height: "14",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "var(--faint)",
-    strokeWidth: "2.4",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
+  }, "\u7D30\u304B\u3055"), /*#__PURE__*/React.createElement("div", {
     style: {
-      flexShrink: 0,
-      transform: 開いた === i ? "rotate(90deg)" : "none",
-      transition: "transform .15s"
+      marginLeft: "auto",
+      display: "flex",
+      gap: 6
     }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M9 6l6 6-6 6"
-  }))), 開いた === i && /*#__PURE__*/React.createElement("div", {
+  }, [150, 200, 300].map(v => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    onClick: () => 変更("dpi", v),
+    disabled: 状態 === "処理中",
+    style: {
+      border: "1px solid " + (設定.dpi === v ? "var(--primary-soft)" : "var(--line)"),
+      background: 設定.dpi === v ? "var(--soft)" : "var(--card, #fff)",
+      color: 設定.dpi === v ? "var(--soft-text)" : "var(--sub)",
+      borderRadius: 999,
+      padding: "6px 13px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, v)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginTop: 7,
+      lineHeight: 1.7
+    }
+  }, "\u6570\u5B57\u304C\u5927\u304D\u3044\u307B\u3069\u304D\u308C\u3044\u3067\u3059\u304C\u3001\u51E6\u7406\u306B\u6642\u9593\u304C\u304B\u304B\u308A\u307E\u3059\u3002\u307E\u305A200\u3067\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002")), /*#__PURE__*/React.createElement("button", {
+    onClick: () => fileRef.current && fileRef.current.click(),
+    disabled: 状態 === "処理中",
+    style: {
+      width: "100%",
+      border: "none",
+      borderRadius: 12,
+      padding: "16px 12px",
+      marginBottom: 12,
+      background: 状態 === "処理中" ? "var(--chip)" : "var(--primary-soft)",
+      color: 状態 === "処理中" ? "var(--sub)" : "#fff",
+      fontSize: 15.5,
+      fontWeight: 900,
+      cursor: 状態 === "処理中" ? "default" : "pointer"
+    }
+  }, 状態 === "処理中" ? "処理中…" : "PDFを選んで補正する"), 状態 === "処理中" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...箱,
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 26,
+      height: 26,
+      margin: "0 auto 10px",
+      border: "3px solid var(--chip)",
+      borderTopColor: "var(--primary-soft)",
+      borderRadius: "50%",
+      animation: "spinR .8s linear infinite"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--sub)",
-      lineHeight: 1.9,
-      padding: "0 0 12px"
+      lineHeight: 1.8
     }
-  }, 対処)))), /*#__PURE__*/React.createElement("div", {
+  }, 進捗)), 結果.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: 箱
+  }, /*#__PURE__*/React.createElement("div", {
+    style: 見出し
+  }, "\u3067\u304D\u3042\u304C\u308A"), 結果.map((r, i) => /*#__PURE__*/React.createElement("a", {
+    key: i,
+    href: r.url,
+    download: r.名,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      textDecoration: "none",
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "12px 13px",
+      marginBottom: 8,
+      background: "var(--card, #fff)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "var(--primary-soft)",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: {
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 4v11M7.5 10.5L12 15l4.5-4.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M4 19h16"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      flex: 1,
+      minWidth: 0,
+      fontSize: 13,
+      fontWeight: 800,
+      color: "var(--ink)",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, r.名), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      whiteSpace: "nowrap"
+    }
+  }, r.ページ, "\u30DA\u30FC\u30B8"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginTop: 4
+    }
+  }, "\u62BC\u3059\u3068\u7AEF\u672B\u306B\u4FDD\u5B58\u3055\u308C\u307E\u3059\u3002\u3053\u308C\u3092\u4F1D\u7968\u5165\u529B\u30A2\u30D7\u30EA\u306B\u8AAD\u307E\u305B\u3066\u304F\u3060\u3055\u3044\u3002")), 記録.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: 箱
+  }, /*#__PURE__*/React.createElement("div", {
+    style: 見出し
+  }, "\u51E6\u7406\u306E\u8A18\u9332"), 記録.map((r, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      fontSize: 12.5,
+      lineHeight: 1.9,
+      color: "var(--sub)",
+      paddingTop: i === 0 ? 0 : 8,
+      borderTop: i === 0 ? "none" : "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: r.結果 === "成功" ? "var(--ink)" : "#b3261e"
+    }
+  }, r.名), "\u3000", r.結果, r.結果 === "成功" ? `　／　${r.ページ}ページ　白紙${r.白紙}枚を除去　向き${r.回転}枚　傾き${r.傾き}枚を補正` : `　／　${r.内容 || ""}`))), /*#__PURE__*/React.createElement("div", {
     style: {
       ...箱,
       marginBottom: 0
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: 見出し
-  }, "\u5B88\u3089\u308C\u3066\u3044\u308B\u3053\u3068"), /*#__PURE__*/React.createElement("div", {
+  }, "\u3046\u307E\u304F\u3044\u304B\u306A\u3044\u3068\u304D"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.95
     }
-  }, "\u30FB\u65E2\u5B58\u306E\u4F1D\u7968\u5165\u529B\u30A2\u30D7\u30EA\u306E\u30D5\u30A1\u30A4\u30EB\u306B\u306F\u4E00\u5207\u89E6\u308C\u307E\u305B\u3093", /*#__PURE__*/React.createElement("br", null), "\u30FB\u5143\u306EPDF\u306F\u6D88\u3057\u307E\u305B\u3093\u3002\u539F\u672C\u4FDD\u7BA1\u3078\u79FB\u3059\u3060\u3051\u3067\u3059", /*#__PURE__*/React.createElement("br", null), "\u30FB\u540C\u3058\u540D\u524D\u304C\u3042\u3063\u3066\u3082\u4E0A\u66F8\u304D\u3057\u307E\u305B\u3093", /*#__PURE__*/React.createElement("br", null), "\u30FB\u88DC\u6B63\u306B\u5931\u6557\u3057\u305F\u3068\u304D\u306F\u3001\u5143\u306EPDF\u3092\u305D\u306E\u307E\u307E\u51FA\u529B\u5148\u3078\u30B3\u30D4\u30FC\u3057\u307E\u3059\uFF08\u696D\u52D9\u3092\u6B62\u3081\u307E\u305B\u3093\uFF09", /*#__PURE__*/React.createElement("br", null), "\u30FB\u901A\u4FE1\u306F\u4E00\u5207\u3057\u307E\u305B\u3093\u3002\u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u306B\u7E4B\u304C\u3063\u3066\u3044\u306A\u304F\u3066\u3082\u52D5\u304D\u307E\u3059")));
+  }, "\u30FB\u30DA\u30FC\u30B8\u304C\u6E1B\u308A\u3059\u304E\u308B\u3000\u2192\u3000\u300C\u767D\u7D19\u3092\u6368\u3066\u308B\u300D\u3092\u5207\u306B\u3057\u3066\u304F\u3060\u3055\u3044", /*#__PURE__*/React.createElement("br", null), "\u30FB\u6587\u5B57\u304C\u3064\u3076\u308C\u308B\u3000\u2192\u3000\u300C\u767D\u9ED2\u306B\u3059\u308B\u300D\u3092\u5207\u306B\u3002\u305D\u308C\u3067\u3082\u99C4\u76EE\u306A\u3089\u300C\u6FC3\u3055\u3092\u4E0A\u3052\u308B\u300D\u3082\u5207\u306B", /*#__PURE__*/React.createElement("br", null), "\u30FB\u50BE\u304D\u304C\u304B\u3048\u3063\u3066\u60AA\u304F\u306A\u308B\u3000\u2192\u3000\u300C\u50BE\u304D\u3092\u76F4\u3059\u300D\u3092\u5207\u306B\u3057\u3066\u304F\u3060\u3055\u3044", /*#__PURE__*/React.createElement("br", null), "\u30FB\u6642\u9593\u304C\u304B\u304B\u308A\u3059\u304E\u308B\u3000\u2192\u3000\u7D30\u304B\u3055\u3092150\u306B\u3057\u3066\u304F\u3060\u3055\u3044", /*#__PURE__*/React.createElement("br", null), "\u30FB\u4E0A\u4E0B\u304C\u9006\u3055\u307E\u306E\u307E\u307E\u3000\u2192\u3000\u7D19\u306E\u5411\u304D\u306F\u6587\u5B57\u3060\u3051\u3067\u306F\u5224\u5225\u3067\u304D\u307E\u305B\u3093\u3002\u30B9\u30AD\u30E3\u30F3\u3057\u76F4\u3057\u3066\u304F\u3060\u3055\u3044")));
 }
 ;
 Object.assign(window, {

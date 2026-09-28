@@ -149,7 +149,7 @@ const ANNOUNCEMENTS = [{
   date: "2026-09-28",
   type: "新機能",
   title: "メニューに「読み込みシステム」を追加しました",
-  body: "スキャンした伝票PDFの読み取り精度を上げる道具の、使い方と設定をまとめた画面です。道具そのものはパソコンで動かします。"
+  body: "スキャンした伝票PDFを、このアプリの中で補正できます。向き・傾き・濃さを直し、白紙を除いたPDFを作って端末に保存します。画像は外に送られません。伝票入力アプリには、できあがったPDFを読ませてください。"
 }, {
   date: "2026-09-28",
   type: "改善",
@@ -1809,6 +1809,7 @@ function normJa(s) {
 }
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const JSPDF_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 const GNE_FONT_NAME = "Noto Sans JP";
@@ -1876,6 +1877,7 @@ Object.assign(window, {
   GNE_FONT_NAME,
   GNE_FONT_URL,
   JSBARCODE_SRC,
+  JSPDF_SRC,
   JSZIP_SRC,
   PDFJS_SRC,
   PDFJS_WORKER,

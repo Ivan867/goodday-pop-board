@@ -44,7 +44,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
-  { date:"2026-09-28", type:"新機能", title:"メニューに「読み込みシステム」を追加しました", body:"スキャンした伝票PDFの読み取り精度を上げる道具の、使い方と設定をまとめた画面です。道具そのものはパソコンで動かします。" },
+  { date:"2026-09-28", type:"新機能", title:"メニューに「読み込みシステム」を追加しました", body:"スキャンした伝票PDFを、このアプリの中で補正できます。向き・傾き・濃さを直し、白紙を除いたPDFを作って端末に保存します。画像は外に送られません。伝票入力アプリには、できあがったPDFを読ませてください。" },
   { date:"2026-09-28", type:"改善", title:"店舗支援に「消す」を付けました", body:"消した画像は管理画面のゴミ箱に入ります。あとから戻すこともできます。3日で自動的に消える仕組みはそのままです。" },
   { date:"2026-09-28", type:"改善", title:"店舗支援の画像は3日で消えます", body:"上げた画像は3日たつと自動的に消えます。それぞれに「あと◯日」と出ます。早く消したいものは管理画面から消せます。" },
   { date:"2026-09-28", type:"改善", title:"店舗支援の画像は、管理画面からだけ消せます", body:"店舗支援に上げた画像は消えずに残ります。いらなくなったものは、管理画面の「店舗支援の画像」からまとめて確認して消してください。" },
@@ -390,6 +390,7 @@ function normJa(s) {
 }
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const JSPDF_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 const GNE_FONT_NAME = "Noto Sans JP";
@@ -417,4 +418,4 @@ function loadScriptOnce(src) {
 
 
 
-;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSZIP_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
+;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSPDF_SRC, JSZIP_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
