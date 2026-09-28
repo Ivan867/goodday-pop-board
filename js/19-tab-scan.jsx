@@ -48,12 +48,16 @@ function scanToGray(ctx, w, h) {
 
 // 横向き（90度単位）を直す。上下逆さまは文字構造では判別できないので触らない
 function scanDetectQuarter(gray, w, h) {
-  const 縦 = scanScoreAt(gray, w, h, 0);
-  // 90度回した状態の得点は、幅と高さを入れ替えて測るのと同じ
+  // 縦長のページは回さない。縦の紙を横にしてしまう事故を構造的に防ぐ。
+  // 直したいのは「紙を横に寝かせてスキャンした」場合だけなので、
+  // もともと横長のページに限って、回したほうが文字が水平になるかを調べる。
+  if (h >= w) return 0;
+  const そのまま = scanScoreAt(gray, w, h, 0);
+  // 90度回した状態の得点は、縦横を入れ替えて測るのと同じ
   const g2 = new Uint8Array(w * h);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) g2[x * h + y] = gray[y * w + x];
-  const 横 = scanScoreAt(g2, h, w, 0);
-  return 横 > 縦 * 1.25 ? 90 : 0;
+  const 回した = scanScoreAt(g2, h, w, 0);
+  return 回した > そのまま * 1.3 ? 90 : 0;      // はっきり良くなるときだけ回す
 }
 
 function scanFindSkew(gray, w, h, 上限) {
@@ -123,7 +127,7 @@ function scanBinarize(img, w, h, 補正値) {
 // ── 本体 ────────────────────────────────────────────────────
 function ScanTab() {
   const [設定, set設定] = useState({
-    向き: true, 傾き: true, 解像度: true, 濃さ: true, 白黒: false, 白紙: true,
+    向き: false, 傾き: true, 解像度: true, 濃さ: true, 白黒: false, 白紙: true,
     dpi: 200, 上限角度: 8, 濃さの強さ: 1.0, 白黒の補正値: 12, 白紙のしきい値: 0.004,
   });
   const [状態, set状態] = useState("待機");      // 待機 | 処理中 | 完了
@@ -244,7 +248,7 @@ function ScanTab() {
   const 見出し = { fontSize:14.5, fontWeight:900, color:"var(--ink)", marginBottom:10 };
 
   const 項目 = [
-    ["向き", "向きを直す", "横向きのページを縦に戻します"],
+    ["向き", "向きを直す", "紙が寝ているときだけ入にしてください。元の向きのままにしたいなら切"],
     ["傾き", "傾きを直す", "斜めにスキャンされた紙を水平にします"],
     ["解像度", "解像度をそろえる", "細かい字がつぶれにくくなります"],
     ["濃さ", "濃さを上げる", "薄い複写伝票の印字を濃くします"],
