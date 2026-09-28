@@ -308,8 +308,8 @@ function BoardTab({
     d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
-  }))], ["gne", "入力支援", false, /*#__PURE__*/React.createElement("svg", {
-    key: "g",
+  }))], ["order", "店舗支援", false, /*#__PURE__*/React.createElement("svg", {
+    key: "o",
     width: "19",
     height: "19",
     viewBox: "0 0 24 24",
@@ -319,13 +319,13 @@ function BoardTab({
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "4.5",
-    width: "18",
-    height: "15",
-    rx: "2.5"
+    x: "4",
+    y: "10.5",
+    width: "16",
+    height: "10.5",
+    rx: "2"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M7 9.5h6M7 14h10"
+    d: "M8 10.5V7a4 4 0 018 0v3.5"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
@@ -336,7 +336,7 @@ function BoardTab({
         loadSpecies();
       } else if (onFeatGo) onFeatGo(key);
     },
-    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "gne" ? "bh-gne" : "bh-search"),
+    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "order" ? "bh-order" : "bh-search"),
     style: {
       display: "flex",
       flexDirection: "row",

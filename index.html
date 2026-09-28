@@ -119,7 +119,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .board-head .bh-post { grid-column: 1; grid-row: 1; }
 .board-head .bh-menu { grid-column: 2; grid-row: 1; }
 /* カタログ・入力支援はパソコンでだけ出す */
-.board-head .bh-catalog, .board-head .bh-gne { display: none !important; }
+.board-head .bh-catalog, .board-head .bh-order { display: none !important; }
 .board-head .board-tools { grid-column: 1 / -1; grid-row: 2; }
 .board-tools { max-width: none; }
 .bt-btn { width: min(42px, 10.5vw); height: 42px; }
@@ -128,10 +128,10 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .bt-a-l { font-size: 19px; }
 @media (min-width: 700px) {
   /* 上の行から開けるので、メニューの中からは外す */
-  .menu-row-catalog, .menu-row-gne { display: none !important; }
+  .menu-row-catalog, .menu-row-order { display: none !important; }
   /* パソコン：上の行を1列に、画面いっぱいまで広げる */
   .board-head { display: flex; align-items: center; gap: 12px; max-width: none; }
-  .board-head .bh-post, .board-head .bh-catalog, .board-head .bh-gne,
+  .board-head .bh-post, .board-head .bh-catalog, .board-head .bh-order,
   .board-head .bh-menu, .board-head .bh-search {
     display: flex !important; flex: 1 1 0; min-width: 0;
     padding-left: 12px; padding-right: 12px;
@@ -140,7 +140,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
   .board-head .bh-post    { order: 1; }
   .board-head .board-tools { order: 2; }
   .board-head .bh-catalog { order: 3; }
-  .board-head .bh-gne     { order: 4; }
+  .board-head .bh-order   { order: 4; }
   .board-head .bh-menu    { order: 5; }
   .board-head .bh-search  { order: 6; }
   .board-tools > * { height: 56px; }
@@ -414,7 +414,7 @@ setTimeout(function(){
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260920g";
+window.APP_VER = "20260920h";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
