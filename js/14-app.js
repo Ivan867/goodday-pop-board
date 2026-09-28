@@ -703,7 +703,9 @@ function App() {
     onSeedConsumed: () => setToolSeed(null)
   }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "order"
-  }), tab === "shiokan" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
+  }), tab === "shiokan" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "scan" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "scan"
+  }), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
   }), tab === "idea" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "idea"

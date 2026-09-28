@@ -314,6 +314,7 @@ function App() {
       {tab==="catalog" && <CatalogTab />}
       {tab==="order"   && <LazyTab tabKey="order" />}
       {tab==="shiokan" && <OrderTab />}
+      {tab==="scan"    && <LazyTab tabKey="scan" />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="trend" && <LazyTab tabKey="trend" />}
       {tab==="idea" && <LazyTab tabKey="idea" />}
