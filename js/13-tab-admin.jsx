@@ -91,6 +91,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [trashOpen, setTrashOpen] = useState(null);  // ゴミ箱で開いているポップ
   const [supPhotos, setSupPhotos] = useState([]);   // 店舗支援に上がった画像
   const [supOpen, setSupOpen] = useState(null);     // 拡大して見ている画像
+  const [supTrash, setSupTrash] = useState([]);     // 店舗支援のゴミ箱
+  const [supView, setSupView] = useState("live");   // live | trash
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -152,6 +154,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   }, []);
   const loadSupport = useCallback(async () => {
     try { setSupPhotos(await api.listFloorPhotos(null, "店舗支援") || []); } catch(e) { setSupPhotos([]); }
+    try { setSupTrash(await api.listFloorPhotos(null, "店舗支援ゴミ箱") || []); } catch(e) { setSupTrash([]); }
   }, []);
   const loadOpLogs = useCallback(async () => {
     try { setOpLogs(await api.listOpLogs(200) || []); } catch(e) { setOpLogs([]); }
@@ -434,7 +437,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["res","資料",null,"#1d9e75",<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5"/></>],
             ["cat","カタログ",null,"#378add",<><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></>],
             ["dev","更新履歴",null,"#639922",<><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8M12 8v8"/></>],
-            ["support","店舗支援の画像",supPhotos.length||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
+            ["support","店舗支援の画像",(supPhotos.length+supTrash.length)||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
           ].map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
@@ -783,17 +786,45 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           </div>
       );})()}
 
-      {section === "support" && (
+      {section === "support" && (() => {
+        const rows = supView === "trash" ? supTrash : supPhotos;
+        const restore = async (p2) => {
+          try {
+            await api.insertFloorPhoto({ store_name: p2.store_name || "共有", category:"店舗支援",
+              image_url: p2.image_url, comment: p2.comment || "", author: p2.author || "", created_at: p2.created_at });
+            await api.deleteFloorPhoto(p2.id);
+            loadSupport();
+          } catch(e) {}
+        };
+        const erase = async (p2) => {
+          if (!window.confirm("完全に消します。元に戻せません。よろしいですか？")) return;
+          try { await api.deleteFloorPhoto(p2.id); await api.deleteStoredImage(p2.image_url); loadSupport(); } catch(e) {}
+        };
+        return (
         <div>
-          <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:12 }}>
-            店舗支援に上がった画像です。上げてから3日で自動的に消えますが、それより早く消したいものはここで消せます。
-            消すと元に戻せません。
+          <div style={{ display:"flex", gap:8, marginBottom:12 }}>
+            {[["live", "今ある", supPhotos.length], ["trash", "ゴミ箱", supTrash.length]].map(([k, label, n]) => (
+              <button key={k} onClick={() => setSupView(k)}
+                style={{ flex:1, border:"1px solid " + (supView===k ? "var(--primary)" : "var(--line)"),
+                  background: supView===k ? "var(--primary)" : "var(--card, #fff)",
+                  color: supView===k ? "#fff" : "var(--text)", borderRadius:10, padding:"10px 6px",
+                  fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{label}（{n}）</button>
+            ))}
           </div>
-          {supPhotos.length === 0 ? (
-            <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13, padding:"40px 0" }}>まだ1枚もありません。</div>
+
+          <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:12 }}>
+            {supView === "trash"
+              ? "店舗支援で消された画像です。戻すか、完全に消すかを選べます。完全に消すと元に戻せません。"
+              : "店舗支援に上がっている画像です。上げてから3日で自動的に消えます。"}
+          </div>
+
+          {rows.length === 0 ? (
+            <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13, padding:"40px 0" }}>
+              {supView === "trash" ? "ゴミ箱は空です。" : "まだ1枚もありません。"}
+            </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(150px, 1fr))", gap:10 }}>
-              {supPhotos.map(p2 => (
+              {rows.map(p2 => (
                 <div key={p2.id} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)",
                   borderRadius:12, overflow:"hidden" }}>
                   <button onClick={() => setSupOpen(p2)}
@@ -806,17 +837,27 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                       {formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10)}
                       {p2.author ? "　" + p2.author : ""}
                     </div>
-                    <button onClick={async () => {
-                        if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
-                        try { await api.deleteFloorPhoto(p2.id); await api.deleteStoredImage(p2.image_url); loadSupport(); } catch(e) {}
-                      }}
-                      style={{ width:"100%", border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
-                        borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>消す</button>
+                    {supView === "trash" ? (
+                      <div style={{ display:"flex", gap:6 }}>
+                        <button onClick={() => restore(p2)}
+                          style={{ flex:1, border:"1px solid var(--primary-soft)", background:"transparent",
+                            color:"var(--primary-soft)", borderRadius:8, padding:"7px 4px", fontSize:12.5,
+                            fontWeight:800, cursor:"pointer" }}>戻す</button>
+                        <button onClick={() => erase(p2)}
+                          style={{ flex:1, border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
+                            borderRadius:8, padding:"7px 4px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>完全に消す</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => erase(p2)}
+                        style={{ width:"100%", border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
+                          borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>完全に消す</button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           )}
+
           {supOpen && (
             <div onClick={() => setSupOpen(null)}
               style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(8,14,20,0.92)",
@@ -826,7 +867,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             </div>
           )}
         </div>
-      )}
+        );
+      })()}
 
       {section === "trash" && (() => {
         const ids = Object.keys(trashSel).filter(k => trashSel[k]);

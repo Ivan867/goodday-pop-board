@@ -123,6 +123,8 @@ function AdminTab({
   const [trashOpen, setTrashOpen] = useState(null); // ゴミ箱で開いているポップ
   const [supPhotos, setSupPhotos] = useState([]); // 店舗支援に上がった画像
   const [supOpen, setSupOpen] = useState(null); // 拡大して見ている画像
+  const [supTrash, setSupTrash] = useState([]); // 店舗支援のゴミ箱
+  const [supView, setSupView] = useState("live"); // live | trash
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -204,6 +206,11 @@ function AdminTab({
       setSupPhotos((await api.listFloorPhotos(null, "店舗支援")) || []);
     } catch (e) {
       setSupPhotos([]);
+    }
+    try {
+      setSupTrash((await api.listFloorPhotos(null, "店舗支援ゴミ箱")) || []);
+    } catch (e) {
+      setSupTrash([]);
     }
   }, []);
   const loadOpLogs = useCallback(async () => {
@@ -855,7 +862,7 @@ function AdminTab({
     r: "8.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 12h8M12 8v8"
-  }))], ["support", "店舗支援の画像", supPhotos.length || 0, "#7a5cb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  }))], ["support", "店舗支援の画像", supPhotos.length + supTrash.length || 0, "#7a5cb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
     x: "3",
     y: "5",
     width: "18",
@@ -1800,107 +1807,176 @@ function AdminTab({
         marginTop: 2
       }
     }, fmtDate(lg.created_at), lg.store_name ? ` ／ ${lg.store_name}` : ""))))));
-  })(), section === "support" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      color: "var(--sub)",
-      lineHeight: 1.8,
-      marginBottom: 12
-    }
-  }, "\u5E97\u8217\u652F\u63F4\u306B\u4E0A\u304C\u3063\u305F\u753B\u50CF\u3067\u3059\u3002\u4E0A\u3052\u3066\u304B\u30893\u65E5\u3067\u81EA\u52D5\u7684\u306B\u6D88\u3048\u307E\u3059\u304C\u3001\u305D\u308C\u3088\u308A\u65E9\u304F\u6D88\u3057\u305F\u3044\u3082\u306E\u306F\u3053\u3053\u3067\u6D88\u305B\u307E\u3059\u3002 \u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), supPhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      color: "var(--sub)",
-      fontSize: 13,
-      padding: "40px 0"
-    }
-  }, "\u307E\u30601\u679A\u3082\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-      gap: 10
-    }
-  }, supPhotos.map(p2 => /*#__PURE__*/React.createElement("div", {
-    key: p2.id,
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 12,
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setSupOpen(p2),
-    style: {
-      border: "none",
-      background: "transparent",
-      padding: 0,
-      cursor: "pointer",
-      display: "block",
-      width: "100%"
-    }
-  }, /*#__PURE__*/React.createElement("img", {
-    src: p2.image_url,
-    alt: "",
-    loading: "lazy",
-    style: {
-      width: "100%",
-      aspectRatio: "3/4",
-      objectFit: "cover",
-      display: "block",
-      background: "var(--chip)"
-    }
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "7px 9px 9px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11.5,
-      color: "var(--sub)",
-      marginBottom: 7
-    }
-  }, formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10), p2.author ? "　" + p2.author : ""), /*#__PURE__*/React.createElement("button", {
-    onClick: async () => {
-      if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
+  })(), section === "support" && (() => {
+    const rows = supView === "trash" ? supTrash : supPhotos;
+    const restore = async p2 => {
+      try {
+        await api.insertFloorPhoto({
+          store_name: p2.store_name || "共有",
+          category: "店舗支援",
+          image_url: p2.image_url,
+          comment: p2.comment || "",
+          author: p2.author || "",
+          created_at: p2.created_at
+        });
+        await api.deleteFloorPhoto(p2.id);
+        loadSupport();
+      } catch (e) {}
+    };
+    const erase = async p2 => {
+      if (!window.confirm("完全に消します。元に戻せません。よろしいですか？")) return;
       try {
         await api.deleteFloorPhoto(p2.id);
         await api.deleteStoredImage(p2.image_url);
         loadSupport();
       } catch (e) {}
-    },
-    style: {
-      width: "100%",
-      border: "1px solid #b3261e",
-      background: "transparent",
-      color: "#b3261e",
-      borderRadius: 8,
-      padding: "7px",
-      fontSize: 12.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, "\u6D88\u3059"))))), supOpen && /*#__PURE__*/React.createElement("div", {
-    onClick: () => setSupOpen(null),
-    style: {
-      position: "fixed",
-      inset: 0,
-      zIndex: 300,
-      background: "rgba(8,14,20,0.92)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 16
-    }
-  }, /*#__PURE__*/React.createElement("img", {
-    src: supOpen.image_url,
-    alt: "",
-    style: {
-      maxWidth: "100%",
-      maxHeight: "92vh",
-      objectFit: "contain",
-      borderRadius: 6
-    }
-  }))), section === "trash" && (() => {
+    };
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8,
+        marginBottom: 12
+      }
+    }, [["live", "今ある", supPhotos.length], ["trash", "ゴミ箱", supTrash.length]].map(([k, label, n]) => /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setSupView(k),
+      style: {
+        flex: 1,
+        border: "1px solid " + (supView === k ? "var(--primary)" : "var(--line)"),
+        background: supView === k ? "var(--primary)" : "var(--card, #fff)",
+        color: supView === k ? "#fff" : "var(--text)",
+        borderRadius: 10,
+        padding: "10px 6px",
+        fontSize: 13.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, label, "\uFF08", n, "\uFF09"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        lineHeight: 1.8,
+        marginBottom: 12
+      }
+    }, supView === "trash" ? "店舗支援で消された画像です。戻すか、完全に消すかを選べます。完全に消すと元に戻せません。" : "店舗支援に上がっている画像です。上げてから3日で自動的に消えます。"), rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        color: "var(--sub)",
+        fontSize: 13,
+        padding: "40px 0"
+      }
+    }, supView === "trash" ? "ゴミ箱は空です。" : "まだ1枚もありません。") : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+        gap: 10
+      }
+    }, rows.map(p2 => /*#__PURE__*/React.createElement("div", {
+      key: p2.id,
+      style: {
+        border: "1px solid var(--line)",
+        background: "var(--card, #fff)",
+        borderRadius: 12,
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => setSupOpen(p2),
+      style: {
+        border: "none",
+        background: "transparent",
+        padding: 0,
+        cursor: "pointer",
+        display: "block",
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: p2.image_url,
+      alt: "",
+      loading: "lazy",
+      style: {
+        width: "100%",
+        aspectRatio: "3/4",
+        objectFit: "cover",
+        display: "block",
+        background: "var(--chip)"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "7px 9px 9px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--sub)",
+        marginBottom: 7
+      }
+    }, formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10), p2.author ? "　" + p2.author : ""), supView === "trash" ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => restore(p2),
+      style: {
+        flex: 1,
+        border: "1px solid var(--primary-soft)",
+        background: "transparent",
+        color: "var(--primary-soft)",
+        borderRadius: 8,
+        padding: "7px 4px",
+        fontSize: 12.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "\u623B\u3059"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => erase(p2),
+      style: {
+        flex: 1,
+        border: "1px solid #b3261e",
+        background: "transparent",
+        color: "#b3261e",
+        borderRadius: 8,
+        padding: "7px 4px",
+        fontSize: 12.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "\u5B8C\u5168\u306B\u6D88\u3059")) : /*#__PURE__*/React.createElement("button", {
+      onClick: () => erase(p2),
+      style: {
+        width: "100%",
+        border: "1px solid #b3261e",
+        background: "transparent",
+        color: "#b3261e",
+        borderRadius: 8,
+        padding: "7px",
+        fontSize: 12.5,
+        fontWeight: 800,
+        cursor: "pointer"
+      }
+    }, "\u5B8C\u5168\u306B\u6D88\u3059"))))), supOpen && /*#__PURE__*/React.createElement("div", {
+      onClick: () => setSupOpen(null),
+      style: {
+        position: "fixed",
+        inset: 0,
+        zIndex: 300,
+        background: "rgba(8,14,20,0.92)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: supOpen.image_url,
+      alt: "",
+      style: {
+        maxWidth: "100%",
+        maxHeight: "92vh",
+        objectFit: "contain",
+        borderRadius: 6
+      }
+    })));
+  })(), section === "trash" && (() => {
     const ids = Object.keys(trashSel).filter(k => trashSel[k]);
     const doRestore = async () => {
       setTrashBusy(true);

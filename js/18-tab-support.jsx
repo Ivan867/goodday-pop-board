@@ -4,6 +4,7 @@ var { useState, useEffect, useCallback, useRef } = React;
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）
 const SUPPORT_PIN = "8";
 const SUPPORT_CAT = "店舗支援";
+const SUPPORT_TRASH = "店舗支援ゴミ箱";           // 消したものの行き先
 const SUPPORT_DAYS = 3;                       // 上げてから何日で消えるか
 const SUPPORT_MS = SUPPORT_DAYS * 24 * 60 * 60 * 1000;
 
@@ -47,6 +48,18 @@ function SupportTab() {
       setUnlocked(true); setPinErr("");
       try { sessionStorage.setItem("supportOpen", "1"); } catch(e) {}
     } else { setPinErr("番号が違います"); setPin(""); }
+  };
+
+  const toTrash = async (p) => {
+    if (!window.confirm("この画像を消します。管理画面のゴミ箱に入ります。")) return;
+    try {
+      await api.insertFloorPhoto({
+        store_name: p.store_name || "共有", category: SUPPORT_TRASH, image_url: p.image_url,
+        comment: p.comment || "", author: p.author || "", created_at: p.created_at,
+      });
+      await api.deleteFloorPhoto(p.id);
+      setList(v => v.filter(x => x.id !== p.id));
+    } catch (err) { /* 失敗は赤いお知らせが出る */ }
   };
 
   const pick = async (e) => {
@@ -122,9 +135,10 @@ function SupportTab() {
       ) : (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(150px, 1fr))", gap:10 }}>
           {list.map(p => (
-            <button key={p.id} onClick={() => setOpen(p)}
-              style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:12,
-                overflow:"hidden", padding:0, cursor:"pointer", display:"block" }}>
+            <div key={p.id} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)",
+              borderRadius:12, overflow:"hidden" }}>
+            <button onClick={() => setOpen(p)}
+              style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", display:"block", width:"100%" }}>
               <img src={p.image_url} alt="" loading="lazy"
                 style={{ width:"100%", aspectRatio:"3/4", objectFit:"cover", display:"block", background:"var(--chip)" }} />
               <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11.5, color:"var(--sub)", padding:"7px 8px", textAlign:"left" }}>
@@ -138,6 +152,13 @@ function SupportTab() {
                   ); })()}
               </div>
             </button>
+              <div style={{ padding:"0 8px 8px" }}>
+                <button onClick={() => toTrash(p)}
+                  style={{ width:"100%", border:"1px solid var(--line)", background:"transparent",
+                    color:"var(--sub)", borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800,
+                    cursor:"pointer" }}>消す</button>
+              </div>
+            </div>
           ))}
         </div>
       )}

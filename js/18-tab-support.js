@@ -9,6 +9,7 @@ var {
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）
 const SUPPORT_PIN = "8";
 const SUPPORT_CAT = "店舗支援";
+const SUPPORT_TRASH = "店舗支援ゴミ箱"; // 消したものの行き先
 const SUPPORT_DAYS = 3; // 上げてから何日で消えるか
 const SUPPORT_MS = SUPPORT_DAYS * 24 * 60 * 60 * 1000;
 
@@ -66,6 +67,21 @@ function SupportTab() {
       setPinErr("番号が違います");
       setPin("");
     }
+  };
+  const toTrash = async p => {
+    if (!window.confirm("この画像を消します。管理画面のゴミ箱に入ります。")) return;
+    try {
+      await api.insertFloorPhoto({
+        store_name: p.store_name || "共有",
+        category: SUPPORT_TRASH,
+        image_url: p.image_url,
+        comment: p.comment || "",
+        author: p.author || "",
+        created_at: p.created_at
+      });
+      await api.deleteFloorPhoto(p.id);
+      setList(v => v.filter(x => x.id !== p.id));
+    } catch (err) {/* 失敗は赤いお知らせが出る */}
   };
   const pick = async e => {
     const files = Array.from(e.target.files || []);
@@ -253,17 +269,23 @@ function SupportTab() {
       gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
       gap: 10
     }
-  }, list.map(p => /*#__PURE__*/React.createElement("button", {
+  }, list.map(p => /*#__PURE__*/React.createElement("div", {
     key: p.id,
-    onClick: () => setOpen(p),
     style: {
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       borderRadius: 12,
-      overflow: "hidden",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setOpen(p),
+    style: {
+      border: "none",
+      background: "transparent",
       padding: 0,
       cursor: "pointer",
-      display: "block"
+      display: "block",
+      width: "100%"
     }
   }, /*#__PURE__*/React.createElement("img", {
     src: p.image_url,
@@ -300,7 +322,24 @@ function SupportTab() {
         whiteSpace: "nowrap"
       }
     }, "\u3042\u3068", d, "\u65E5");
-  })())))), open && /*#__PURE__*/React.createElement("div", {
+  })())), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 8px 8px"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => toTrash(p),
+    style: {
+      width: "100%",
+      border: "1px solid var(--line)",
+      background: "transparent",
+      color: "var(--sub)",
+      borderRadius: 8,
+      padding: "7px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "\u6D88\u3059"))))), open && /*#__PURE__*/React.createElement("div", {
     onClick: () => setOpen(null),
     style: {
       position: "fixed",
