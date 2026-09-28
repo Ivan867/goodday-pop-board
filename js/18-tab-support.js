@@ -20,56 +20,9 @@ function supportLeft(created) {
   return Math.ceil(ms / (24 * 60 * 60 * 1000));
 }
 function SupportTab() {
-  const [どれ, setどれ] = useState(() => {
-    try {
-      return localStorage.getItem("supportMode") || "photo";
-    } catch (e) {
-      return "photo";
-    }
-  });
-  const 選ぶ = k => {
-    setどれ(k);
-    try {
-      localStorage.setItem("supportMode", k);
-    } catch (e) {}
-  };
-  const 切替 = /*#__PURE__*/React.createElement("div", {
-    style: {
-      maxWidth: 1100,
-      margin: "0 auto",
-      padding: "6px 16px 0"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      marginBottom: 12
-    }
-  }, [["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => 選ぶ(k),
-    style: {
-      flex: 1,
-      border: "1px solid " + (どれ === k ? "var(--primary)" : "var(--line)"),
-      background: どれ === k ? "var(--primary)" : "var(--card, #fff)",
-      color: どれ === k ? "#fff" : "var(--text)",
-      borderRadius: 10,
-      padding: "11px 6px",
-      fontSize: 13.5,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
-  }, l))));
-  if (どれ === "order") {
-    return /*#__PURE__*/React.createElement("div", null, 切替, typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null);
-  }
-  return /*#__PURE__*/React.createElement(SupportPhotos, {
-    切替: 切替
-  });
+  return /*#__PURE__*/React.createElement(SupportPhotos, null);
 }
-function SupportPhotos({
-  切替
-}) {
+function SupportPhotos() {
   const [unlocked, setUnlocked] = useState(() => {
     try {
       return sessionStorage.getItem("supportOpen") === "1";
@@ -164,7 +117,7 @@ function SupportPhotos({
 
   // ── 番号の入力 ──
   if (!unlocked) {
-    return /*#__PURE__*/React.createElement("div", null, 切替, /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
         maxWidth: 420,
         margin: "0 auto",
@@ -241,7 +194,7 @@ function SupportPhotos({
   }
 
   // ── 本体 ──
-  return /*#__PURE__*/React.createElement("div", null, 切替, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1100,
       margin: "0 auto",

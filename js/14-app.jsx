@@ -317,6 +317,7 @@ function App() {
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="catalog" && <CatalogTab />}
       {tab==="order"   && <LazyTab tabKey="order" />}
+      {tab==="shiokan" && <OrderTab />}
       {tab==="lab"     && <LazyTab tabKey="lab" />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="trend" && <LazyTab tabKey="trend" />}
@@ -392,7 +393,7 @@ function App() {
             </div>
             <div style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","archive","catalog","gne","order","lab","barcode","request","admin"];
+                const ORDER = ["search","archive","catalog","gne","order","shiokan","lab","barcode","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))

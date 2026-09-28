@@ -170,12 +170,10 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
             /* ↓ パソコンでだけ出る（スマホではCSSで隠す） */
             ["catalog", "カタログ", false, <svg key="c" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>],
 
-            ["order", "店舗支援", false, <svg key="o" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>],
-
-            ["scan", "読み込み", false, <svg key="s" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5M8 13h8M8 16.5h5"/></svg>],
-
+            
+            
           ].map(([key, label, primary, icon]) => (
-            <button key={key} onClick={() => { if (key === "__menu") { onMenu && onMenu(); } else if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className={"hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "order" ? "bh-order" : key === "scan" ? "bh-scan" : "bh-search")}
+            <button key={key} onClick={() => { if (key === "__menu") { onMenu && onMenu(); } else if (key === "__upload") setShowUp(true); else if (key === "search") { setDrawer(true); loadSpecies(); } else if (onFeatGo) onFeatGo(key); }} className={"hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : "bh-search")}
               style={{ display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap:6, border: primary ? "none" : "1px solid var(--line)", background: primary ? "var(--primary-soft, #4a7ab0)" : "var(--card, #fff)", color: primary ? "#fff" : "var(--primary-soft, #4a7ab0)", borderRadius:11, padding:"9px 4px", minHeight:44, cursor:"pointer", position:"relative", boxShadow: primary ? "0 2px 8px rgba(74,122,176,0.3)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
               {key === "__menu" && menuBadge && (
                 <span style={{ position:"absolute", top:6, right:7, width:9, height:9, borderRadius:"50%", background:"#e0555f" }} />

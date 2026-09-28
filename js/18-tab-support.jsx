@@ -16,30 +16,10 @@ function supportLeft(created) {
 }
 
 function SupportTab() {
-  const [どれ, setどれ] = useState(() => {
-    try { return localStorage.getItem("supportMode") || "photo"; } catch (e) { return "photo"; }
-  });
-  const 選ぶ = (k) => { setどれ(k); try { localStorage.setItem("supportMode", k); } catch (e) {} };
-  const 切替 = (
-    <div style={{ maxWidth:1100, margin:"0 auto", padding:"6px 16px 0" }}>
-      <div style={{ display:"flex", gap:8, marginBottom:12 }}>
-        {[["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => (
-          <button key={k} onClick={() => 選ぶ(k)}
-            style={{ flex:1, border:"1px solid " + (どれ===k ? "var(--primary)" : "var(--line)"),
-              background: どれ===k ? "var(--primary)" : "var(--card, #fff)",
-              color: どれ===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
-              fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
-        ))}
-      </div>
-    </div>
-  );
-  if (どれ === "order") {
-    return (<div>{切替}{typeof OrderTab === "function" ? <OrderTab /> : null}</div>);
-  }
-  return <SupportPhotos 切替={切替} />;
+  return <SupportPhotos />;
 }
 
-function SupportPhotos({ 切替 }) {
+function SupportPhotos() {
   const [unlocked, setUnlocked] = useState(() => {
     try { return sessionStorage.getItem("supportOpen") === "1"; } catch(e) { return false; }
   });
@@ -108,7 +88,7 @@ function SupportPhotos({ 切替 }) {
   // ── 番号の入力 ──
   if (!unlocked) {
     return (
-      <div>{切替}
+      <div>
       <div style={{ maxWidth:420, margin:"0 auto", padding:"20px 20px 120px" }}>
         <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:16, padding:24, textAlign:"center" }}>
           <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>店舗支援</div>
@@ -132,7 +112,7 @@ function SupportPhotos({ 切替 }) {
 
   // ── 本体 ──
   return (
-    <div>{切替}
+    <div>
     <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 16px 120px" }}>
       <input ref={fileRef} type="file" accept="image/*" multiple onChange={pick} style={{ display:"none" }} />
 

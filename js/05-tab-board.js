@@ -308,38 +308,6 @@ function BoardTab({
     d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
-  }))], ["order", "店舗支援", false, /*#__PURE__*/React.createElement("svg", {
-    key: "o",
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "4",
-    y: "10.5",
-    width: "16",
-    height: "10.5",
-    rx: "2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M8 10.5V7a4 4 0 018 0v3.5"
-  }))], ["scan", "読み込み", false, /*#__PURE__*/React.createElement("svg", {
-    key: "s",
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M5 4.5h9l5 5v10H5z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M14 4.5v5h5M8 13h8M8 16.5h5"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
@@ -350,7 +318,7 @@ function BoardTab({
         loadSpecies();
       } else if (onFeatGo) onFeatGo(key);
     },
-    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "order" ? "bh-order" : key === "scan" ? "bh-scan" : "bh-search"),
+    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : "bh-search"),
     style: {
       display: "flex",
       flexDirection: "row",
