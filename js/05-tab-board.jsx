@@ -369,8 +369,6 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
               {[
                 { key:"genre", title:"ジャンルで絞り込む",
                   items: GENRES.map(g => ({ v:g, l:g })), cur: fGenre, set: setFGenre },
-                { key:"cat", title:"種類で絞り込む",
-                  items: CATEGORIES.map(c => ({ v:c, l:c })), cur: fCat, set: setFCat },
                 { key:"fish", title:"魚で絞り込む",
                   items: spCounts.map(({ sp, n }) => ({ v:sp.id, l:sp.canonical_name, n, sp })),
                   cur: fSp ? fSp.id : "", set: (v, it) => setFSp(it && it.sp ? it.sp : null) },

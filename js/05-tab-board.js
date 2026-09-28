@@ -930,15 +930,6 @@ function BoardTab({
     cur: fGenre,
     set: setFGenre
   }, {
-    key: "cat",
-    title: "種類で絞り込む",
-    items: CATEGORIES.map(c => ({
-      v: c,
-      l: c
-    })),
-    cur: fCat,
-    set: setFCat
-  }, {
     key: "fish",
     title: "魚で絞り込む",
     items: spCounts.map(({
