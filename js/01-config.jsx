@@ -16,6 +16,7 @@ const TAB_REGISTRY = [
   { key:"order",      icon:"🔒", label:"店舗支援",           section:"毎日つかう" },
   { key:"shiokan",    icon:"📦", label:"塩干発注",           section:"ツール" },
   { key:"scan",       icon:"📑", label:"読み込みシステム",   section:"ツール" },
+  { key:"check",      icon:"🖍", label:"伝票検算（試作）",   section:"ツール" },
   { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
   { key:"catalog",    icon:"📖", label:"カタログ",           section:"ツール" },
   { key:"gne",        icon:"🅖", label:"入力支援",           section:"ツール" },
@@ -44,6 +45,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-28", type:"新機能", title:"「伝票検算（試作）」を追加しました", body:"管理表に入れる金額を蛍光ペンで塗ってスキャンすると、塗った所だけを読み取ります。2か所塗れば合算します。まだ試作なので、本番の登録には使わないでください。" },
   { date:"2026-09-28", type:"修正", title:"読み込みシステムが向きを勝手に変えるのをやめました", body:"横長の伝票が縦向きで書き出されていました。「向きを直す」の初期値を切にしたので、元の向きのまま出ます。紙が寝ているときだけ入にしてください。" },
   { date:"2026-09-28", type:"改善", title:"パソコンの上の行に「読み込み」を出しました", body:"パソコンで見たときだけ、一覧の上の行から読み込みシステムを開けます。スマホはメニューの中のままです。" },
   { date:"2026-09-28", type:"修正", title:"読み込みシステムが真っ白になるのを直しました", body:"メニューから開いても何も出ない状態でした。画面を表示する処理が抜けていたためです。" },
@@ -393,6 +395,7 @@ function normJa(s) {
 }
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const TESSERACT_SRC = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js";
 const JSPDF_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -421,4 +424,4 @@ function loadScriptOnce(src) {
 
 
 
-;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSPDF_SRC, JSZIP_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
+;Object.assign(window, { ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSPDF_SRC, JSZIP_SRC, TESSERACT_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });

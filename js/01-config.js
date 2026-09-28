@@ -48,6 +48,11 @@ const TAB_REGISTRY = [{
   label: "読み込みシステム",
   section: "ツール"
 }, {
+  key: "check",
+  icon: "🖍",
+  label: "伝票検算（試作）",
+  section: "ツール"
+}, {
   key: "barcode",
   icon: "🏷",
   label: "バーコード",
@@ -146,6 +151,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-28",
+  type: "新機能",
+  title: "「伝票検算（試作）」を追加しました",
+  body: "管理表に入れる金額を蛍光ペンで塗ってスキャンすると、塗った所だけを読み取ります。2か所塗れば合算します。まだ試作なので、本番の登録には使わないでください。"
+}, {
   date: "2026-09-28",
   type: "修正",
   title: "読み込みシステムが向きを勝手に変えるのをやめました",
@@ -1824,6 +1834,7 @@ function normJa(s) {
 }
 const JSBARCODE_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js";
 const JSZIP_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const TESSERACT_SRC = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js";
 const JSPDF_SRC = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 const PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -1894,6 +1905,7 @@ Object.assign(window, {
   JSBARCODE_SRC,
   JSPDF_SRC,
   JSZIP_SRC,
+  TESSERACT_SRC,
   PDFJS_SRC,
   PDFJS_WORKER,
   STORES,

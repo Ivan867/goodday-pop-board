@@ -53,7 +53,12 @@ var LAZY_TABS = {
   scan: {
     file: "19-tab-scan",
     comp: "ScanTab"
-  } // 読み込みシステム（伝票PDF補正の手順）
+  },
+  // 読み込みシステム（伝票PDF補正の手順）
+  check: {
+    file: "20-tab-check",
+    comp: "CheckTab"
+  } // 伝票検算（試作）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -113,6 +118,11 @@ const MENU_ICON = (() => {
       d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
+    }))),
+    check: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 16.5L14.5 6l3.5 3.5L7.5 20H4z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M13 7.5l3.5 3.5M4 20h16"
     }))),
     scan: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M5 4.5h9l5 5v10H5z"
@@ -705,6 +715,8 @@ function App() {
     tabKey: "order"
   }), tab === "shiokan" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "scan" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "scan"
+  }), tab === "check" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "check"
   }), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
   }), tab === "idea" && /*#__PURE__*/React.createElement(LazyTab, {
@@ -951,7 +963,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "scan", "barcode", "request", "admin"];
+    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "scan", "check", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
