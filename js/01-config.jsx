@@ -14,9 +14,7 @@ const TAB_REGISTRY = [
   { key:"tool",       icon:"✏️", label:"作成",               section:"毎日つかう", hideInMenu:true },   // カタログの中に移した
   { key:"request",    icon:"📮", label:"お問い合わせ",       section:"毎日つかう" },
   { key:"order",      icon:"🔒", label:"店舗支援",           section:"毎日つかう" },
-  { key:"shiokan",    icon:"📦", label:"塩干発注",           section:"ツール" },
-  { key:"scan",       icon:"📑", label:"読み込みシステム",   section:"ツール" },
-  { key:"check",      icon:"🖍", label:"伝票検算（試作）",   section:"ツール" },
+  { key:"lab",        icon:"🧪", label:"試作システム",       section:"ツール" },
   { key:"barcode",    icon:"🏷", label:"バーコード",         section:"ツール" },
   { key:"catalog",    icon:"📖", label:"カタログ",           section:"ツール" },
   { key:"gne",        icon:"🅖", label:"入力支援",           section:"ツール" },
@@ -45,6 +43,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-28", type:"改善", title:"メニューを整理しました", body:"「読み込みシステム」と「伝票検算」を、ひとつの「試作システム」にまとめました。「塩干発注」は「店舗支援」の中に移しています。" },
   { date:"2026-09-28", type:"改善", title:"伝票検算に「保存」と「貯まった分」を付けました", body:"読み取った金額をこの端末の中に貯めておけます。要確認だけを絞って見られ、確認済みにできます。伝票の画像は保存しません。書き出しはまだ作っていません。" },
   { date:"2026-09-28", type:"新機能", title:"「伝票検算（試作）」を追加しました", body:"管理表に入れる金額を蛍光ペンで塗ってスキャンすると、塗った所だけを読み取ります。2か所塗れば合算します。まだ試作なので、本番の登録には使わないでください。" },
   { date:"2026-09-28", type:"修正", title:"読み込みシステムが向きを勝手に変えるのをやめました", body:"横長の伝票が縦向きで書き出されていました。「向きを直す」の初期値を切にしたので、元の向きのまま出ます。紙が寝ているときだけ入にしてください。" },

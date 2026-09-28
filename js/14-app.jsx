@@ -15,6 +15,7 @@ var LAZY_TABS = {
   order:   { file:"18-tab-support", comp:"SupportTab" },  // 店舗支援（画像の置き場）
   scan:    { file:"19-tab-scan",    comp:"ScanTab" },     // 読み込みシステム（伝票PDF補正の手順）
   check:   { file:"20-tab-check",   comp:"CheckTab" },    // 伝票検算（試作）
+  lab:     { file:"21-tab-lab",     comp:"LabTab" },      // 試作システム（読み込み＋伝票検算）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -34,6 +35,7 @@ const MENU_ICON = (() => {
     order:   P(<><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></>),
     barcode: P(<><path d="M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"/></>),
     catalog: P(<><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></>),
+    lab:     P(<><path d="M9.5 3v6.2L4.8 17a2 2 0 001.7 3h11a2 2 0 001.7-3l-4.7-7.8V3"/><path d="M8.5 3h7M8 14h8"/></>),
     check:   P(<><path d="M4 16.5L14.5 6l3.5 3.5L7.5 20H4z"/><path d="M13 7.5l3.5 3.5M4 20h16"/></>),
     scan:    P(<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5M8 13h8M8 16.5h5"/></>),
     shiokan: P(<><rect x="3.5" y="7" width="17" height="13" rx="1.5"/><path d="M3.5 11h17M9 7V4.5h6V7"/></>),
@@ -315,9 +317,7 @@ function App() {
       {tab==="tool"   && <PopToolTab seed={toolSeed} onSeedConsumed={()=>setToolSeed(null)} />}
       {tab==="catalog" && <CatalogTab />}
       {tab==="order"   && <LazyTab tabKey="order" />}
-      {tab==="shiokan" && <OrderTab />}
-      {tab==="scan"    && <LazyTab tabKey="scan" />}
-      {tab==="check"   && <LazyTab tabKey="check" />}
+      {tab==="lab"     && <LazyTab tabKey="lab" />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="trend" && <LazyTab tabKey="trend" />}
       {tab==="idea" && <LazyTab tabKey="idea" />}
@@ -392,7 +392,7 @@ function App() {
             </div>
             <div style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","archive","catalog","gne","order","shiokan","scan","check","barcode","request","admin"];
+                const ORDER = ["search","archive","catalog","gne","order","lab","barcode","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))

@@ -38,19 +38,9 @@ const TAB_REGISTRY = [{
   label: "店舗支援",
   section: "毎日つかう"
 }, {
-  key: "shiokan",
-  icon: "📦",
-  label: "塩干発注",
-  section: "ツール"
-}, {
-  key: "scan",
-  icon: "📑",
-  label: "読み込みシステム",
-  section: "ツール"
-}, {
-  key: "check",
-  icon: "🖍",
-  label: "伝票検算（試作）",
+  key: "lab",
+  icon: "🧪",
+  label: "試作システム",
   section: "ツール"
 }, {
   key: "barcode",
@@ -151,6 +141,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-28",
+  type: "改善",
+  title: "メニューを整理しました",
+  body: "「読み込みシステム」と「伝票検算」を、ひとつの「試作システム」にまとめました。「塩干発注」は「店舗支援」の中に移しています。"
+}, {
   date: "2026-09-28",
   type: "改善",
   title: "伝票検算に「保存」と「貯まった分」を付けました",
