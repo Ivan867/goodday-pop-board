@@ -326,6 +326,20 @@ function BoardTab({
     rx: "2"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 10.5V7a4 4 0 018 0v3.5"
+  }))], ["scan", "読み込み", false, /*#__PURE__*/React.createElement("svg", {
+    key: "s",
+    width: "19",
+    height: "19",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.9",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 4.5h9l5 5v10H5z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 4.5v5h5M8 13h8M8 16.5h5"
   }))]].map(([key, label, primary, icon]) => /*#__PURE__*/React.createElement("button", {
     key: key,
     onClick: () => {
@@ -336,7 +350,7 @@ function BoardTab({
         loadSpecies();
       } else if (onFeatGo) onFeatGo(key);
     },
-    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "order" ? "bh-order" : "bh-search"),
+    className: "hig-pill " + (key === "__menu" ? "bh-menu" : key === "__upload" ? "bh-post" : key === "catalog" ? "bh-catalog" : key === "order" ? "bh-order" : key === "scan" ? "bh-scan" : "bh-search"),
     style: {
       display: "flex",
       flexDirection: "row",
