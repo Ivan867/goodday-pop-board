@@ -723,7 +723,7 @@ function App() {
     onSeedConsumed: () => setToolSeed(null)
   }), tab === "catalog" && /*#__PURE__*/React.createElement(CatalogTab, null), tab === "order" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "order"
-  }), tab === "shiokan" && /*#__PURE__*/React.createElement(OrderTab, null), tab === "lab" && /*#__PURE__*/React.createElement(LazyTab, {
+  }), tab === "lab" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "lab"
   }), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
@@ -971,7 +971,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "lab", "barcode", "request", "admin"];
+    const ORDER = ["search", "archive", "catalog", "gne", "order", "lab", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,

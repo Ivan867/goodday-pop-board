@@ -16,15 +16,69 @@ function supportLeft(created) {
 }
 
 function SupportTab() {
-  return <SupportPhotos />;
+  const [開いた, set開いた] = useState(() => {
+    try { return sessionStorage.getItem("supportOpen") === "1"; } catch(e) { return false; }
+  });
+  const [番号, set番号] = useState("");
+  const [誤り, set誤り] = useState("");
+  const ひらく = () => {
+    if (番号.trim() === SUPPORT_PIN) {
+      set開いた(true); set誤り("");
+      try { sessionStorage.setItem("supportOpen", "1"); } catch(e) {}
+    } else { set誤り("番号が違います"); set番号(""); }
+  };
+
+  const [どれ, setどれ] = useState(() => {
+    try { return localStorage.getItem("supportMode") || "photo"; } catch (e) { return "photo"; }
+  });
+  const 選ぶ = (k) => { setどれ(k); try { localStorage.setItem("supportMode", k); } catch (e) {} };
+
+  // ── 番号を入れるまでは、中に何があるかも出さない ──
+  if (!開いた) {
+    return (
+      <div style={{ maxWidth:420, margin:"0 auto", padding:"20px 20px 120px" }}>
+        <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:16, padding:24, textAlign:"center" }}>
+          <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>店舗支援</div>
+          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:18 }}>番号を入れてください</div>
+          <input value={番号} autoFocus inputMode="numeric" type="password"
+            onChange={e => { set番号(e.target.value); set誤り(""); }}
+            onKeyDown={e => { if (e.key === "Enter") ひらく(); }}
+            placeholder="番号"
+            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)",
+              background:"var(--card, #fff)", color:"var(--ink)", borderRadius:10, padding:"12px",
+              fontSize:16, textAlign:"center", outline:"none", marginBottom: 誤り ? 8 : 16 }} />
+          {誤り && <div style={{ fontSize:13, color:"#b3261e", fontWeight:700, marginBottom:12 }}>{誤り}</div>}
+          <button onClick={ひらく}
+            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:10,
+              padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 番号のあと：画像と塩干発注が並ぶ ──
+  const 切替 = (
+    <div style={{ maxWidth:1100, margin:"0 auto", padding:"6px 16px 0" }}>
+      <div style={{ display:"flex", gap:8, marginBottom:12 }}>
+        {[["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => (
+          <button key={k} onClick={() => 選ぶ(k)}
+            style={{ flex:1, border:"1px solid " + (どれ===k ? "var(--primary)" : "var(--line)"),
+              background: どれ===k ? "var(--primary)" : "var(--card, #fff)",
+              color: どれ===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
+              fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
+  if (どれ === "order") {
+    return (<div>{切替}{typeof OrderTab === "function" ? <OrderTab /> : null}</div>);
+  }
+  return (<div>{切替}<SupportPhotos /></div>);
 }
 
 function SupportPhotos() {
-  const [unlocked, setUnlocked] = useState(() => {
-    try { return sessionStorage.getItem("supportOpen") === "1"; } catch(e) { return false; }
-  });
-  const [pin, setPin] = useState("");
-  const [pinErr, setPinErr] = useState("");
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(0);        // 何枚目を上げているか
@@ -45,14 +99,7 @@ function SupportPhotos() {
     } catch(e) { setList([]); }
     setLoading(false);
   }, []);
-  useEffect(() => { if (unlocked) load(); }, [unlocked, load]);
-
-  const tryUnlock = () => {
-    if (pin.trim() === SUPPORT_PIN) {
-      setUnlocked(true); setPinErr("");
-      try { sessionStorage.setItem("supportOpen", "1"); } catch(e) {}
-    } else { setPinErr("番号が違います"); setPin(""); }
-  };
+  useEffect(() => { load(); }, [load]);
 
   const toTrash = async (p) => {
     if (!window.confirm("この画像を消します。管理画面のゴミ箱に入ります。")) return;
@@ -84,31 +131,6 @@ function SupportPhotos() {
     setBusy(0); setTotal(0);
     load();
   };
-
-  // ── 番号の入力 ──
-  if (!unlocked) {
-    return (
-      <div>
-      <div style={{ maxWidth:420, margin:"0 auto", padding:"20px 20px 120px" }}>
-        <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:16, padding:24, textAlign:"center" }}>
-          <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>店舗支援</div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:18 }}>番号を入れてください</div>
-          <input value={pin} autoFocus inputMode="numeric" type="password"
-            onChange={e => { setPin(e.target.value); setPinErr(""); }}
-            onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-            placeholder="番号"
-            style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)",
-              background:"var(--card, #fff)", color:"var(--ink)", borderRadius:10, padding:"12px",
-              fontSize:16, textAlign:"center", outline:"none", marginBottom: pinErr ? 8 : 16 }} />
-          {pinErr && <div style={{ fontSize:13, color:"#b3261e", fontWeight:700, marginBottom:12 }}>{pinErr}</div>}
-          <button onClick={tryUnlock}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:10,
-              padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
-        </div>
-      </div>
-      </div>
-    );
-  }
 
   // ── 本体 ──
   return (

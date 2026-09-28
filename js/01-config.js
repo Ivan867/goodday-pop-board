@@ -38,11 +38,6 @@ const TAB_REGISTRY = [{
   label: "店舗支援",
   section: "毎日つかう"
 }, {
-  key: "shiokan",
-  icon: "🧂",
-  label: "塩干発注",
-  section: "毎日つかう"
-}, {
   key: "lab",
   icon: "🧪",
   label: "試作システム",
@@ -146,6 +141,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-28",
+  type: "改善",
+  title: "塩干発注を店舗支援の中に戻しました",
+  body: "店舗支援の番号を入れると「画像」と「塩干発注」が並びます。塩干発注はそこからお店ごとの番号で分かれます。"
+}, {
   date: "2026-09-28",
   type: "改善",
   title: "さがすから「種類で絞り込む」を外しました",
