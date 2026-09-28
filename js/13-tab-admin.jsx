@@ -283,12 +283,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div style={{ position:"absolute", zIndex:3, left:0, right:0,
           bottom:"calc(env(safe-area-inset-bottom, 0px) + 22px)",
           display:"flex", justifyContent:"center", gap:24 }}>
-          {[["やり直す", () => { setGpw(""); setGErr(""); }],
-            [gKeyMode ? "点で入れる" : "数字で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
-           ].map(([t, fn]) => (
-            <button key={t} onClick={fn}
+          {/* 表示はロシア語。読み上げ用の説明は日本語で持たせる */}
+          {[["СБРОС", "やり直す", () => { setGpw(""); setGErr(""); }],
+            gKeyMode ? ["ТОЧКИ", "点で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
+                     : ["ЦИФРЫ", "数字で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
+           ].map(([t, yomi, fn]) => (
+            <button key={t} onClick={fn} aria-label={yomi} title={yomi}
               style={{ border:"none", background:"transparent", color:DIM, fontSize:11,
-                letterSpacing:"0.1em", cursor:"pointer", fontFamily:"inherit", padding:"6px 4px" }}>{t}</button>
+                letterSpacing:"0.2em", cursor:"pointer", fontFamily:"inherit", padding:"6px 4px" }}>{t}</button>
           ))}
         </div>
 

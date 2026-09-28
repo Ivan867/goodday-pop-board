@@ -455,22 +455,28 @@ function AdminTab({
         justifyContent: "center",
         gap: 24
       }
-    }, [["やり直す", () => {
+    }, [["СБРОС", "やり直す", () => {
       setGpw("");
       setGErr("");
-    }], [gKeyMode ? "点で入れる" : "数字で入れる", () => {
+    }], gKeyMode ? ["ТОЧКИ", "点で入れる", () => {
       setGKeyMode(v => !v);
       setGpw("");
       setGErr("");
-    }]].map(([t, fn]) => /*#__PURE__*/React.createElement("button", {
+    }] : ["ЦИФРЫ", "数字で入れる", () => {
+      setGKeyMode(v => !v);
+      setGpw("");
+      setGErr("");
+    }]].map(([t, yomi, fn]) => /*#__PURE__*/React.createElement("button", {
       key: t,
       onClick: fn,
+      "aria-label": yomi,
+      title: yomi,
       style: {
         border: "none",
         background: "transparent",
         color: DIM,
         fontSize: 11,
-        letterSpacing: "0.1em",
+        letterSpacing: "0.2em",
         cursor: "pointer",
         fontFamily: "inherit",
         padding: "6px 4px"
