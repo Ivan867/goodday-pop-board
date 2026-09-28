@@ -4,6 +4,15 @@ var { useState, useEffect, useCallback, useRef } = React;
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）
 const SUPPORT_PIN = "8";
 const SUPPORT_CAT = "店舗支援";
+const SUPPORT_DAYS = 3;                       // 上げてから何日で消えるか
+const SUPPORT_MS = SUPPORT_DAYS * 24 * 60 * 60 * 1000;
+
+// あと何日で消えるか
+function supportLeft(created) {
+  const ms = SUPPORT_MS - (Date.now() - new Date(created).getTime());
+  if (ms <= 0) return null;
+  return Math.ceil(ms / (24 * 60 * 60 * 1000));
+}
 
 function SupportTab() {
   const [unlocked, setUnlocked] = useState(() => {
@@ -20,8 +29,15 @@ function SupportTab() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setList(await api.listFloorPhotos(null, SUPPORT_CAT) || []); }
-    catch(e) { setList([]); }
+    try {
+      const all = await api.listFloorPhotos(null, SUPPORT_CAT) || [];
+      const limit = Date.now() - SUPPORT_MS;
+      setList(all.filter(p => new Date(p.created_at).getTime() > limit));
+      // 期限の切れたものは、この場で本当に消す（画像そのものも）
+      for (const d of all.filter(p => new Date(p.created_at).getTime() <= limit)) {
+        try { await api.deleteFloorPhoto(d.id); await api.deleteStoredImage(d.image_url); } catch(e) {}
+      }
+    } catch(e) { setList([]); }
     setLoading(false);
   }, []);
   useEffect(() => { if (unlocked) load(); }, [unlocked, load]);
@@ -93,6 +109,10 @@ function SupportTab() {
         )}
       </button>
 
+      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.8, marginBottom:12, textAlign:"center" }}>
+        上げた画像は{SUPPORT_DAYS}日で自動的に消えます
+      </div>
+
       {loading ? (
         <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13, padding:"40px 0" }}>読み込み中…</div>
       ) : list.length === 0 ? (
@@ -107,8 +127,15 @@ function SupportTab() {
                 overflow:"hidden", padding:0, cursor:"pointer", display:"block" }}>
               <img src={p.image_url} alt="" loading="lazy"
                 style={{ width:"100%", aspectRatio:"3/4", objectFit:"cover", display:"block", background:"var(--chip)" }} />
-              <div style={{ fontSize:11.5, color:"var(--sub)", padding:"7px 8px", textAlign:"left" }}>
-                {formatDate ? formatDate(p.created_at) : String(p.created_at || "").slice(0, 10)}
+              <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11.5, color:"var(--sub)", padding:"7px 8px", textAlign:"left" }}>
+                <span>{formatDate ? formatDate(p.created_at) : String(p.created_at || "").slice(0, 10)}</span>
+                {(() => { const d = supportLeft(p.created_at);
+                  return d == null ? null : (
+                    <span style={{ marginLeft:"auto", background:"var(--soft)", color:"var(--soft-text)",
+                      borderRadius:6, padding:"2px 6px", fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>
+                      あと{d}日
+                    </span>
+                  ); })()}
               </div>
             </button>
           ))}

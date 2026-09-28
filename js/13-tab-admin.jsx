@@ -786,7 +786,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "support" && (
         <div>
           <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:12 }}>
-            店舗支援に上がった画像です。店舗支援の画面では消せないので、いらなくなったものはここで消してください。
+            店舗支援に上がった画像です。上げてから3日で自動的に消えますが、それより早く消したいものはここで消せます。
             消すと元に戻せません。
           </div>
           {supPhotos.length === 0 ? (
@@ -808,7 +808,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                     </div>
                     <button onClick={async () => {
                         if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
-                        try { await api.deleteFloorPhoto(p2.id); loadSupport(); } catch(e) {}
+                        try { await api.deleteFloorPhoto(p2.id); await api.deleteStoredImage(p2.image_url); loadSupport(); } catch(e) {}
                       }}
                       style={{ width:"100%", border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
                         borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>消す</button>

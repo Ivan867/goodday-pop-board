@@ -1807,7 +1807,7 @@ function AdminTab({
       lineHeight: 1.8,
       marginBottom: 12
     }
-  }, "\u5E97\u8217\u652F\u63F4\u306B\u4E0A\u304C\u3063\u305F\u753B\u50CF\u3067\u3059\u3002\u5E97\u8217\u652F\u63F4\u306E\u753B\u9762\u3067\u306F\u6D88\u305B\u306A\u3044\u306E\u3067\u3001\u3044\u3089\u306A\u304F\u306A\u3063\u305F\u3082\u306E\u306F\u3053\u3053\u3067\u6D88\u3057\u3066\u304F\u3060\u3055\u3044\u3002 \u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), supPhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u5E97\u8217\u652F\u63F4\u306B\u4E0A\u304C\u3063\u305F\u753B\u50CF\u3067\u3059\u3002\u4E0A\u3052\u3066\u304B\u30893\u65E5\u3067\u81EA\u52D5\u7684\u306B\u6D88\u3048\u307E\u3059\u304C\u3001\u305D\u308C\u3088\u308A\u65E9\u304F\u6D88\u3057\u305F\u3044\u3082\u306E\u306F\u3053\u3053\u3067\u6D88\u305B\u307E\u3059\u3002 \u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), supPhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -1864,6 +1864,7 @@ function AdminTab({
       if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
       try {
         await api.deleteFloorPhoto(p2.id);
+        await api.deleteStoredImage(p2.image_url);
         loadSupport();
       } catch (e) {}
     },

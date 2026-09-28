@@ -301,6 +301,15 @@ const api = {
     await sbFetch(`/rest/v1/floor_photos?id=eq.${id}`, { method:"DELETE" });
     return true;
   },
+  // 保存領域の画像そのものを消す（消し残りを出さないため）。失敗しても止めない
+  async deleteStoredImage(url) {
+    try {
+      const name = String(url || "").split("/pop-images/").pop();
+      if (!name || name.indexOf("/") >= 0) return false;
+      await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, { method:"DELETE", headers: h() });
+      return true;
+    } catch (e) { return false; }
+  },
   async delFloorPhoto(id) { await sbFetch(`/rest/v1/rpc/delete_floor_photo_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
 
   // ── rpc：パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない） ──

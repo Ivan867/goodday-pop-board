@@ -9,6 +9,15 @@ var {
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）
 const SUPPORT_PIN = "8";
 const SUPPORT_CAT = "店舗支援";
+const SUPPORT_DAYS = 3; // 上げてから何日で消えるか
+const SUPPORT_MS = SUPPORT_DAYS * 24 * 60 * 60 * 1000;
+
+// あと何日で消えるか
+function supportLeft(created) {
+  const ms = SUPPORT_MS - (Date.now() - new Date(created).getTime());
+  if (ms <= 0) return null;
+  return Math.ceil(ms / (24 * 60 * 60 * 1000));
+}
 function SupportTab() {
   const [unlocked, setUnlocked] = useState(() => {
     try {
@@ -28,7 +37,16 @@ function SupportTab() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setList((await api.listFloorPhotos(null, SUPPORT_CAT)) || []);
+      const all = (await api.listFloorPhotos(null, SUPPORT_CAT)) || [];
+      const limit = Date.now() - SUPPORT_MS;
+      setList(all.filter(p => new Date(p.created_at).getTime() > limit));
+      // 期限の切れたものは、この場で本当に消す（画像そのものも）
+      for (const d of all.filter(p => new Date(p.created_at).getTime() <= limit)) {
+        try {
+          await api.deleteFloorPhoto(d.id);
+          await api.deleteStoredImage(d.image_url);
+        } catch (e) {}
+      }
     } catch (e) {
       setList([]);
     }
@@ -206,7 +224,15 @@ function SupportTab() {
     d: "M6.5 10.5L12 5l5.5 5.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M4 19h16"
-  })), "\u753B\u50CF\u3092\u4E0A\u3052\u308B")), loading ? /*#__PURE__*/React.createElement("div", {
+  })), "\u753B\u50CF\u3092\u4E0A\u3052\u308B")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 12,
+      textAlign: "center"
+    }
+  }, "\u4E0A\u3052\u305F\u753B\u50CF\u306F", SUPPORT_DAYS, "\u65E5\u3067\u81EA\u52D5\u7684\u306B\u6D88\u3048\u307E\u3059"), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -252,12 +278,29 @@ function SupportTab() {
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
       fontSize: 11.5,
       color: "var(--sub)",
       padding: "7px 8px",
       textAlign: "left"
     }
-  }, formatDate ? formatDate(p.created_at) : String(p.created_at || "").slice(0, 10))))), open && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, formatDate ? formatDate(p.created_at) : String(p.created_at || "").slice(0, 10)), (() => {
+    const d = supportLeft(p.created_at);
+    return d == null ? null : /*#__PURE__*/React.createElement("span", {
+      style: {
+        marginLeft: "auto",
+        background: "var(--soft)",
+        color: "var(--soft-text)",
+        borderRadius: 6,
+        padding: "2px 6px",
+        fontSize: 11,
+        fontWeight: 800,
+        whiteSpace: "nowrap"
+      }
+    }, "\u3042\u3068", d, "\u65E5");
+  })())))), open && /*#__PURE__*/React.createElement("div", {
     onClick: () => setOpen(null),
     style: {
       position: "fixed",
