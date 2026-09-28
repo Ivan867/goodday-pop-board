@@ -177,12 +177,12 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       if (r.ok) { setGErr(""); setGOK(true); setTimeout(() => setUnlocked(true), 620); }
       else {
         setGErr(r.locked
-          ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください`
-          : (r.left > 0 ? `パスワードが違います（あと${r.left}回）` : "パスワードが違います"));
+          ? `БЛОКИРОВКА · ${api.lockText(r.seconds)}ほど待ってください`
+          : (r.left > 0 ? `ОТКАЗ · パスワードが違います（あと${r.left}回）` : "ОТКАЗ · パスワードが違います"));
         setGpw("");
       }
     } catch (e) {
-      setGErr("通信に失敗しました。電波を確認してください");
+      setGErr("НЕТ СВЯЗИ · 電波を確認してください");
     } finally {
       setGChecking(false);
     }
@@ -222,7 +222,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <button onClick={goBack} aria-label="一覧にもどる"
           style={{ position:"absolute", zIndex:4, left:14, top:"calc(env(safe-area-inset-top, 0px) + 12px)",
             border:"none", background:"transparent", color:DIM, fontSize:12, letterSpacing:"0.12em",
-            cursor:"pointer", fontFamily:"inherit", padding:"8px 6px" }}>‹ もどる</button>
+            cursor:"pointer", fontFamily:"inherit", padding:"8px 6px", letterSpacing:"0.12em" }}>‹ НАЗАД</button>
 
         <div style={{ position:"relative", zIndex:3, display:"flex", flexDirection:"column", alignItems:"center",
           padding:"0 20px" }}>
@@ -256,7 +256,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             <input type="password" value={gpw} autoFocus inputMode="numeric"
               onChange={e => { setGpw(e.target.value); setGErr(""); }}
               onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-              placeholder="パスワード" disabled={gChecking}
+              placeholder="ПАРОЛЬ" disabled={gChecking}
               style={{ width:236, boxSizing:"border-box", border:"none",
                 borderBottom:"1px solid rgba(240,164,74,0.4)", background:"transparent", color:AMB,
                 padding:"12px 0", fontSize:18, textAlign:"center", outline:"none",
@@ -266,7 +266,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <div role="status" aria-live="polite" className={gErr ? "g-shake" : ""}
             style={{ minHeight:18, marginTop:26, textAlign:"center", fontSize:11.5, letterSpacing:"0.06em",
               color: gErr ? "#e8806f" : DIM }}>
-            {gChecking ? "照合中 ..." : (gErr || "")}
+            {gChecking ? "ПРОВЕРКА ..." : (gErr || "")}
           </div>
 
           {(gKeyMode || gChecking) && (
@@ -275,7 +275,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 fontFamily:"inherit", border:"1px solid rgba(240,164,74,0.5)",
                 background: gpw && !gChecking ? "rgba(240,164,74,0.12)" : "transparent",
                 color: gpw ? AMB : DIM, cursor: gChecking || !gpw ? "default" : "pointer" }}>
-              {gChecking ? "照合中 ..." : "解 錠"}
+              {gChecking ? "ПРОВЕРКА ..." : "ОТКРЫТЬ"}
             </button>
           )}
         </div>
@@ -297,8 +297,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         {gOK && (
           <div aria-hidden="true" style={{ position:"absolute", inset:0, zIndex:6, display:"flex",
             alignItems:"center", justifyContent:"center", background:"rgba(5,13,15,0.92)", animation:"fadeUp .18s ease" }}>
-            <div style={{ color:AMB, fontSize:16, letterSpacing:"0.4em",
-              textShadow:"0 0 28px rgba(240,164,74,0.9)" }}>承 認</div>
+            <div style={{ color:AMB, fontSize:16, letterSpacing:"0.2em",
+              textShadow:"0 0 28px rgba(240,164,74,0.9)" }}>ДОСТУП ОТКРЫТ</div>
           </div>
         )}
       </div>

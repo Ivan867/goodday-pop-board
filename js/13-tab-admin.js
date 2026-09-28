@@ -252,11 +252,11 @@ function AdminTab({
         setGOK(true);
         setTimeout(() => setUnlocked(true), 620);
       } else {
-        setGErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `パスワードが違います（あと${r.left}回）` : "パスワードが違います");
+        setGErr(r.locked ? `БЛОКИРОВКА · ${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `ОТКАЗ · パスワードが違います（あと${r.left}回）` : "ОТКАЗ · パスワードが違います");
         setGpw("");
       }
     } catch (e) {
-      setGErr("通信に失敗しました。電波を確認してください");
+      setGErr("НЕТ СВЯЗИ · 電波を確認してください");
     } finally {
       setGChecking(false);
     }
@@ -324,9 +324,10 @@ function AdminTab({
         letterSpacing: "0.12em",
         cursor: "pointer",
         fontFamily: "inherit",
-        padding: "8px 6px"
+        padding: "8px 6px",
+        letterSpacing: "0.12em"
       }
-    }, "\u2039 \u3082\u3069\u308B"), /*#__PURE__*/React.createElement("div", {
+    }, "\u2039 \u041D\u0410\u0417\u0410\u0414"), /*#__PURE__*/React.createElement("div", {
       style: {
         position: "relative",
         zIndex: 3,
@@ -401,7 +402,7 @@ function AdminTab({
       onKeyDown: e => {
         if (e.key === "Enter") tryUnlock();
       },
-      placeholder: "\u30D1\u30B9\u30EF\u30FC\u30C9",
+      placeholder: "\u041F\u0410\u0420\u041E\u041B\u042C",
       disabled: gChecking,
       style: {
         width: 236,
@@ -429,7 +430,7 @@ function AdminTab({
         letterSpacing: "0.06em",
         color: gErr ? "#e8806f" : DIM
       }
-    }, gChecking ? "照合中 ..." : gErr || ""), (gKeyMode || gChecking) && /*#__PURE__*/React.createElement("button", {
+    }, gChecking ? "ПРОВЕРКА ..." : gErr || ""), (gKeyMode || gChecking) && /*#__PURE__*/React.createElement("button", {
       onClick: tryUnlock,
       disabled: gChecking || !gpw,
       style: {
@@ -444,7 +445,7 @@ function AdminTab({
         color: gpw ? AMB : DIM,
         cursor: gChecking || !gpw ? "default" : "pointer"
       }
-    }, gChecking ? "照合中 ..." : "解 錠")), /*#__PURE__*/React.createElement("div", {
+    }, gChecking ? "ПРОВЕРКА ..." : "ОТКРЫТЬ")), /*#__PURE__*/React.createElement("div", {
       style: {
         position: "absolute",
         zIndex: 3,
@@ -497,10 +498,10 @@ function AdminTab({
       style: {
         color: AMB,
         fontSize: 16,
-        letterSpacing: "0.4em",
+        letterSpacing: "0.2em",
         textShadow: "0 0 28px rgba(240,164,74,0.9)"
       }
-    }, "\u627F \u8A8D")));
+    }, "\u0414\u041E\u0421\u0422\u0423\u041F \u041E\u0422\u041A\u0420\u042B\u0422")));
   }
 
   // ---- アーカイブ管理 ----
