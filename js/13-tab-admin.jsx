@@ -7,7 +7,9 @@ function RainCanvas() {
   useEffect(() => {
     const cv = ref.current; if (!cv) return;
     const ctx = cv.getContext && cv.getContext("2d"); if (!ctx) return;
-    const CH = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンｱｲｳｴｵ0123456789";
+    // 降ってくるのは魚の名前。1つの列が、上から1文字ずつ名前を書いていく
+    const 魚 = ["マグロ","ホンマグロ","メバチ","キハダ","ビンチョウ","カツオ","ブリ","ハマチ","カンパチ","ヒラマサ","タイ","マダイ","チダイ","クロダイ","イサキ","ヒラメ","カレイ","マコガレイ","アカガレイ","カワハギ","アジ","マアジ","シマアジ","ムロアジ","サバ","マサバ","ゴマサバ","イワシ","マイワシ","ウルメイワシ","カタクチイワシ","サンマ","サケ","シロザケ","ギンザケ","ベニザケ","トラウト","マス","タラ","マダラ","スケソウダラ","ホッケ","キンキ","キンメダイ","ノドグロ","アカムツ","クロムツ","メバル","カサゴ","アラ","クエ","スズキ","シーバス","ボラ","コノシロ","コハダ","サヨリ","キス","アナゴ","ウナギ","ハモ","ドジョウ","アユ","ワカサギ","シシャモ","キビナゴ","トビウオ","カマス","タチウオ","マナガツオ","イトヨリ","アマダイ","ハタハタ","フグ","トラフグ","アンコウ","オコゼ","メヒカリ","ニシン","シラス","イカ","スルメイカ","ヤリイカ","ケンサキイカ","アオリイカ","コウイカ","ホタルイカ","タコ","マダコ","ミズダコ","イイダコ","エビ","クルマエビ","ブラックタイガー","バナメイ","アマエビ","ボタンエビ","シバエビ","サクラエビ","シャコ","カニ","ズワイガニ","ベニズワイ","タラバガニ","ケガニ","ワタリガニ","ホタテ","アサリ","シジミ","ハマグリ","サザエ","アワビ","トコブシ","ミルガイ","ホッキガイ","アカガイ","トリガイ","バイガイ","ツブガイ","カキ","イワガキ","ムール","ウニ","ムラサキウニ","バフンウニ","ナマコ","ホヤ","クラゲ","スジコ","イクラ","タラコ","メンタイコ","カズノコ","シラウオ","シロウオ","ワカメ","メカブ","コンブ","ヒジキ","モズク","アオサ","ノリ","テングサ","ウマヅラ","アイナメ","ソイ","ハタ","キジハタ"];
+    const えらぶ = () => 魚[(Math.random() * 魚.length) | 0];
     const FS = 13;
     let drops = [], raf = 0, last = 0, w = 0, h = 0, stopped = false;
     const reduce = (() => { try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e) { return false; } })();
@@ -16,7 +18,11 @@ function RainCanvas() {
       w = cv.width = Math.max(1, Math.floor(r.width));
       h = cv.height = Math.max(1, Math.floor(r.height));
       const cols = Math.max(1, Math.floor(w / FS));
-      drops = new Array(cols).fill(0).map(() => Math.random() * -(h / FS));
+      drops = new Array(cols).fill(0).map(() => ({
+        y: Math.random() * -(h / FS),          // 先頭がどこまで降りたか
+        名: えらぶ(),                            // いま書いている魚
+        i: 0,                                  // その何文字目か
+      }));
       ctx.font = FS + "px ui-monospace, Menlo, monospace";
       ctx.textBaseline = "top";
     };
@@ -28,21 +34,33 @@ function RainCanvas() {
       ctx.fillStyle = "rgba(6, 13, 15, 0.10)";   // 尾を引かせる
       ctx.fillRect(0, 0, w, h);
       for (let i = 0; i < drops.length; i++) {
-        const y = drops[i] * FS;
-        const c = CH[(Math.random() * CH.length) | 0];
-        ctx.fillStyle = "rgba(150, 232, 214, 0.85)";   // 先頭は明るく
-        ctx.fillText(c, i * FS, y);
-        ctx.fillStyle = "rgba(58, 148, 132, 0.30)";    // その上は淡く
-        ctx.fillText(CH[(Math.random() * CH.length) | 0], i * FS, y - FS);
-        drops[i] = (y > h && Math.random() > 0.975) ? 0 : drops[i] + 1;
+        const d = drops[i];
+        const y = d.y * FS;
+        ctx.fillStyle = "rgba(150, 232, 214, 0.85)";   // 先頭の1文字は明るく
+        ctx.fillText(d.名[d.i], i * FS, y);
+        if (d.i > 0) {                                  // 直前の文字を淡く重ねて、尾に見せる
+          ctx.fillStyle = "rgba(58, 148, 132, 0.30)";
+          ctx.fillText(d.名[d.i - 1], i * FS, y - FS);
+        }
+        d.i += 1;
+        if (d.i >= d.名.length) {                       // 名前を書き終えたら、次の魚へ
+          d.名 = えらぶ(); d.i = 0; d.y += 2;            // 名前と名前の間を少し空ける
+        }
+        d.y += 1;
+        if (d.y * FS > h && Math.random() > 0.975) { d.y = 0; d.名 = えらぶ(); d.i = 0; }
       }
     };
     size();
     if (reduce) {                                 // 動きを減らす設定なら1枚だけ描く
       ctx.fillStyle = "rgba(58, 148, 132, 0.22)";
-      for (let i = 0; i < drops.length; i++)
-        for (let j = 0; j < h / FS; j += 3)
-          ctx.fillText(CH[(Math.random() * CH.length) | 0], i * FS, j * FS);
+      for (let i = 0; i < drops.length; i++) {
+        let j = Math.floor(Math.random() * 4);
+        while (j < h / FS) {
+          const 名 = えらぶ();
+          for (let k = 0; k < 名.length && j < h / FS; k++, j++) ctx.fillText(名[k], i * FS, j * FS);
+          j += 3;
+        }
+      }
       return;
     }
     raf = requestAnimationFrame(frame);
