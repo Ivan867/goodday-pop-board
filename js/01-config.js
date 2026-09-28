@@ -43,6 +43,11 @@ const TAB_REGISTRY = [{
   label: "塩干発注",
   section: "ツール"
 }, {
+  key: "scan",
+  icon: "📑",
+  label: "読み込みシステム",
+  section: "ツール"
+}, {
   key: "barcode",
   icon: "🏷",
   label: "バーコード",
@@ -141,6 +146,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-28",
+  type: "新機能",
+  title: "メニューに「読み込みシステム」を追加しました",
+  body: "スキャンした伝票PDFの読み取り精度を上げる道具の、使い方と設定をまとめた画面です。道具そのものはパソコンで動かします。"
+}, {
   date: "2026-09-28",
   type: "改善",
   title: "店舗支援に「消す」を付けました",

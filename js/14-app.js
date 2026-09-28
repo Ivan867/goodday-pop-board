@@ -48,7 +48,12 @@ var LAZY_TABS = {
   order: {
     file: "18-tab-support",
     comp: "SupportTab"
-  } // 店舗支援（画像の置き場）
+  },
+  // 店舗支援（画像の置き場）
+  scan: {
+    file: "19-tab-scan",
+    comp: "ScanTab"
+  } // 読み込みシステム（伝票PDF補正の手順）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -108,6 +113,11 @@ const MENU_ICON = (() => {
       d: "M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
+    }))),
+    scan: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M5 4.5h9l5 5v10H5z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M14 4.5v5h5M8 13h8M8 16.5h5"
     }))),
     shiokan: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
       x: "3.5",
@@ -939,7 +949,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "barcode", "request", "admin"];
+    const ORDER = ["search", "archive", "catalog", "gne", "order", "shiokan", "scan", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
