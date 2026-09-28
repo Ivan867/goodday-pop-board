@@ -100,12 +100,54 @@ function chkParseAmount(text) {
   return Math.max.apply(null, 数);                    // 金額は行内で最も大きい数
 }
 
+
+// ── 保存のしくみ（ここだけが保存先を知っている） ──────────────
+// 出入口を list / add / update / remove の4つに絞ってある。
+// クラウドへ移すときは chkCloud を埋めて chkStore の中身を差し替えるだけでよい。
+const CHK_KEY = "denpyoChecks";
+
+const chkLocal = {
+  種類: "この端末の中",
+  async list() {
+    try { return JSON.parse(localStorage.getItem(CHK_KEY) || "[]"); } catch (e) { return []; }
+  },
+  async add(行達) {
+    const 今 = await this.list();
+    const 足す = 行達.map(r => ({ ...r, id: (Date.now() + Math.random()).toString(36),
+                                created_at: new Date().toISOString() }));
+    localStorage.setItem(CHK_KEY, JSON.stringify([...足す, ...今]));
+    return 足す.length;
+  },
+  async update(id, 変更) {
+    const 今 = await this.list();
+    localStorage.setItem(CHK_KEY, JSON.stringify(今.map(r => r.id === id ? { ...r, ...変更 } : r)));
+  },
+  async remove(id) {
+    const 今 = await this.list();
+    localStorage.setItem(CHK_KEY, JSON.stringify(今.filter(r => r.id !== id)));
+  },
+};
+
+// クラウドに移すときは、ここを埋めて chkStore を差し替える（画面側は一切変えなくてよい）
+const chkCloud = {
+  種類: "みんなで共有（未接続）",
+  async list()   { return api.listDenpyoChecks ? api.listDenpyoChecks() : []; },
+  async add(r)   { return api.addDenpyoChecks ? api.addDenpyoChecks(r) : 0; },
+  async update(id, v) { return api.updateDenpyoCheck ? api.updateDenpyoCheck(id, v) : null; },
+  async remove(id)    { return api.deleteDenpyoCheck ? api.deleteDenpyoCheck(id) : null; },
+};
+
+var chkStore = chkLocal;          // ← 保存先を変えるのはこの1行だけ
+
 function CheckTab() {
   const [色, set色] = useState("both");
   const [dpi, setDpi] = useState(300);
   const [状態, set状態] = useState("待機");
   const [進捗, set進捗] = useState("");
   const [行, set行] = useState([]);
+  const [画面, set画面] = useState("読取");        // 読取 | 一覧
+  const [貯蔵, set貯蔵] = useState([]);
+  const [要確認だけ, set要確認だけ] = useState(false);
   const fileRef = useRef(null);
   const workerRef = useRef(null);
 
@@ -121,6 +163,27 @@ function CheckTab() {
     workerRef.current = w;
     return w;
   }, []);
+
+  const 貯蔵を読む = useCallback(async () => {
+    try { set貯蔵(await chkStore.list()); } catch (e) { set貯蔵([]); }
+  }, []);
+  React.useEffect(() => { if (画面 === "一覧") 貯蔵を読む(); }, [画面, 貯蔵を読む]);
+
+  const 保存する = async () => {
+    const 出す = 行.filter(r => !r.エラー).map(r => ({
+      file_name: r.ファイル, page: r.ページ,
+      amounts: r.金額.map(m => m.値).filter(v => v != null),
+      amount_sum: r.合計,
+      amount_final: 確定値(r),
+      needs_check: r.要確認 && (r.手入力 === "" || r.手入力 == null),
+      delivered_on: null, supplier: null, note: "",
+      author: (() => { try { return localStorage.getItem("lastAuthor") || ""; } catch (e) { return ""; } })(),
+    }));
+    if (!出す.length) return;
+    await chkStore.add(出す);
+    set行([]);
+    set画面("一覧");
+  };
 
   const 実行 = async (files) => {
     if (!files || !files.length) return;
@@ -212,6 +275,20 @@ function CheckTab() {
       <input ref={fileRef} type="file" accept="application/pdf" multiple style={{ display:"none" }}
         onChange={e => { const fs = Array.from(e.target.files || []); e.target.value = ""; 実行(fs); }} />
 
+      <div style={{ display:"flex", gap:8, marginBottom:12 }}>
+        {[["読取", "読み取る"], ["一覧", `貯まった分（${貯蔵.length}）`]].map(([k, l]) => (
+          <button key={k} onClick={() => set画面(k)}
+            style={{ flex:1, border:"1px solid " + (画面===k ? "var(--primary)" : "var(--line)"),
+              background: 画面===k ? "var(--primary)" : "var(--card, #fff)",
+              color: 画面===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
+              fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
+        ))}
+      </div>
+
+      {画面 === "一覧" ? (
+        <ChkList 貯蔵={貯蔵} 要確認だけ={要確認だけ} set要確認だけ={set要確認だけ} 読み直す={貯蔵を読む} />
+      ) : (
+      <>
       <div style={{ ...箱, background:"var(--soft)" }}>
         <div style={{ fontSize:12.5, fontWeight:900, color:"var(--soft-text)", marginBottom:6 }}>
           試作品です（まだ本番では使わないでください）
@@ -337,12 +414,99 @@ function CheckTab() {
             );
           })}
 
-          <button onClick={CSVを出す}
-            style={{ width:"100%", border:"1px solid var(--primary-soft)", background:"transparent",
-              color:"var(--primary-soft)", borderRadius:12, padding:"13px", fontSize:14.5,
-              fontWeight:900, cursor:"pointer" }}>結果をCSVで書き出す</button>
+          <button onClick={保存する}
+            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff",
+              borderRadius:12, padding:"15px", fontSize:15, fontWeight:900, cursor:"pointer",
+              marginBottom:8 }}>この内容を保存する（{行.length}件）</button>
+          <div style={{ fontSize:11.5, color:"var(--sub)", textAlign:"center", lineHeight:1.8 }}>
+            保存先：{chkStore.種類}。伝票の画像は保存しません。
+          </div>
         </>
       )}
+      </>
+      )}
+    </div>
+  );
+}
+
+// ── 貯まった分の一覧 ────────────────────────────────────────
+function ChkList({ 貯蔵, 要確認だけ, set要確認だけ, 読み直す }) {
+  const 箱 = { background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14,
+               padding:14, marginBottom:12 };
+  const 表示 = 要確認だけ ? 貯蔵.filter(r => r.needs_check) : 貯蔵;
+  const 合計 = 表示.reduce((a, r) => a + (r.amount_final || 0), 0);
+  const 未確認数 = 貯蔵.filter(r => r.needs_check).length;
+
+  const 確認済みにする = async (r) => {
+    await chkStore.update(r.id, { needs_check: false, confirmed_at: new Date().toISOString() });
+    読み直す();
+  };
+  const 消す = async (r) => {
+    if (!window.confirm("この行を消します。よろしいですか？")) return;
+    await chkStore.remove(r.id); 読み直す();
+  };
+
+  if (!貯蔵.length) {
+    return (
+      <div style={{ ...箱, textAlign:"center", color:"var(--sub)", fontSize:13, lineHeight:1.9, padding:"46px 16px" }}>
+        まだ何も貯まっていません。<br />「読み取る」で伝票を読んで、保存してください。
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ ...箱, display:"flex", alignItems:"center", gap:10 }}>
+        <span style={{ fontSize:13.5, fontWeight:800, color:"var(--ink)" }}>
+          {要確認だけ ? "要確認の合計" : "全部の合計"}
+        </span>
+        <span style={{ marginLeft:"auto", fontSize:22, fontWeight:900, color:"var(--primary-soft)" }}>
+          {合計.toLocaleString()}
+        </span>
+        <span style={{ fontSize:12.5, color:"var(--sub)" }}>円</span>
+      </div>
+
+      <button onClick={() => set要確認だけ(!要確認だけ)}
+        style={{ width:"100%", marginBottom:12, borderRadius:10, padding:"10px",
+          border:"1px solid " + (要確認だけ ? "#d9a441" : "var(--line)"),
+          background: 要確認だけ ? "rgba(217,164,65,0.12)" : "var(--card, #fff)",
+          color: 要確認だけ ? "#8a6a1a" : "var(--sub)", fontSize:13, fontWeight:800, cursor:"pointer" }}>
+        {要確認だけ ? "全部を表示する" : `要確認だけを見る（${未確認数}件）`}
+      </button>
+
+      {表示.map(r => (
+        <div key={r.id} style={{ ...箱, padding:"12px 13px",
+          border:"1px solid " + (r.needs_check ? "#d9a441" : "var(--line)") }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
+            <span style={{ fontSize:12, color:"var(--sub)", overflow:"hidden",
+              textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.file_name}　{r.page}ページ目</span>
+            <span style={{ marginLeft:"auto", fontSize:18, fontWeight:900, color:"var(--ink)", flexShrink:0 }}>
+              {(r.amount_final || 0).toLocaleString()}
+            </span>
+          </div>
+          {(r.amounts || []).length > 1 && (
+            <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:7 }}>
+              内訳　{r.amounts.map(v => v.toLocaleString()).join(" ＋ ")}
+            </div>
+          )}
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <span style={{ fontSize:11, color:"var(--faint)" }}>
+              {String(r.created_at || "").slice(0, 10)}
+            </span>
+            <div style={{ marginLeft:"auto", display:"flex", gap:7 }}>
+              {r.needs_check && (
+                <button onClick={() => 確認済みにする(r)}
+                  style={{ border:"1px solid var(--primary-soft)", background:"transparent",
+                    color:"var(--primary-soft)", borderRadius:8, padding:"6px 12px",
+                    fontSize:12, fontWeight:800, cursor:"pointer" }}>確認済みにする</button>
+              )}
+              <button onClick={() => 消す(r)}
+                style={{ border:"1px solid var(--line)", background:"transparent", color:"var(--sub)",
+                  borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>消す</button>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
