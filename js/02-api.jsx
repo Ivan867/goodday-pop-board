@@ -297,6 +297,10 @@ const api = {
     return sbJson(q);
   },
   async insertFloorPhoto(data) { return sbOne(`/rest/v1/floor_photos`, { method:"POST", body:data, prefer:"return=representation" }); },
+  async deleteFloorPhoto(id) {
+    await sbFetch(`/rest/v1/floor_photos?id=eq.${id}`, { method:"DELETE" });
+    return true;
+  },
   async delFloorPhoto(id) { await sbFetch(`/rest/v1/rpc/delete_floor_photo_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
 
   // ── rpc：パスワード照合（Supabase側で判定。生のパスワードはHTMLに持たない） ──

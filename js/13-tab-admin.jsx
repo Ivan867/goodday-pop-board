@@ -89,6 +89,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [delPops, setDelPops] = useState([]);      // 消された投稿
   const [trashSel, setTrashSel] = useState({});    // ゴミ箱での選択
   const [trashOpen, setTrashOpen] = useState(null);  // ゴミ箱で開いているポップ
+  const [supPhotos, setSupPhotos] = useState([]);   // 店舗支援に上がった画像
+  const [supOpen, setSupOpen] = useState(null);     // 拡大して見ている画像
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -148,10 +150,13 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const loadIdeas = useCallback(async () => {
     try { setIdeas(await api.listIdeas() || []); } catch(e) { setIdeas([]); }
   }, []);
+  const loadSupport = useCallback(async () => {
+    try { setSupPhotos(await api.listFloorPhotos(null, "店舗支援") || []); } catch(e) { setSupPhotos([]); }
+  }, []);
   const loadOpLogs = useCallback(async () => {
     try { setOpLogs(await api.listOpLogs(200) || []); } catch(e) { setOpLogs([]); }
   }, []);
-  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadIdeas(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas]);
+  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadIdeas(); loadSupport(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas, loadSupport]);
 
   useEffect(() => {
     if (unlocked) return;
@@ -429,6 +434,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["res","資料",null,"#1d9e75",<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5"/></>],
             ["cat","カタログ",null,"#378add",<><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></>],
             ["dev","更新履歴",null,"#639922",<><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8M12 8v8"/></>],
+            ["support","店舗支援の画像",supPhotos.length||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
           ].map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
@@ -776,6 +782,51 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             )}
           </div>
       );})()}
+
+      {section === "support" && (
+        <div>
+          <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:12 }}>
+            店舗支援に上がった画像です。店舗支援の画面では消せないので、いらなくなったものはここで消してください。
+            消すと元に戻せません。
+          </div>
+          {supPhotos.length === 0 ? (
+            <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13, padding:"40px 0" }}>まだ1枚もありません。</div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(150px, 1fr))", gap:10 }}>
+              {supPhotos.map(p2 => (
+                <div key={p2.id} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)",
+                  borderRadius:12, overflow:"hidden" }}>
+                  <button onClick={() => setSupOpen(p2)}
+                    style={{ border:"none", background:"transparent", padding:0, cursor:"pointer", display:"block", width:"100%" }}>
+                    <img src={p2.image_url} alt="" loading="lazy"
+                      style={{ width:"100%", aspectRatio:"3/4", objectFit:"cover", display:"block", background:"var(--chip)" }} />
+                  </button>
+                  <div style={{ padding:"7px 9px 9px" }}>
+                    <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:7 }}>
+                      {formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10)}
+                      {p2.author ? "　" + p2.author : ""}
+                    </div>
+                    <button onClick={async () => {
+                        if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
+                        try { await api.deleteFloorPhoto(p2.id); loadSupport(); } catch(e) {}
+                      }}
+                      style={{ width:"100%", border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
+                        borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>消す</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {supOpen && (
+            <div onClick={() => setSupOpen(null)}
+              style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(8,14,20,0.92)",
+                display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+              <img src={supOpen.image_url} alt=""
+                style={{ maxWidth:"100%", maxHeight:"92vh", objectFit:"contain", borderRadius:6 }} />
+            </div>
+          )}
+        </div>
+      )}
 
       {section === "trash" && (() => {
         const ids = Object.keys(trashSel).filter(k => trashSel[k]);

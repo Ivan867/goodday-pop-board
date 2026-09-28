@@ -539,6 +539,12 @@ const api = {
       prefer: "return=representation"
     });
   },
+  async deleteFloorPhoto(id) {
+    await sbFetch(`/rest/v1/floor_photos?id=eq.${id}`, {
+      method: "DELETE"
+    });
+    return true;
+  },
   async delFloorPhoto(id) {
     await sbFetch(`/rest/v1/rpc/delete_floor_photo_secure`, {
       method: "POST",

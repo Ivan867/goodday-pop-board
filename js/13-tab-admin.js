@@ -121,6 +121,8 @@ function AdminTab({
   const [delPops, setDelPops] = useState([]); // 消された投稿
   const [trashSel, setTrashSel] = useState({}); // ゴミ箱での選択
   const [trashOpen, setTrashOpen] = useState(null); // ゴミ箱で開いているポップ
+  const [supPhotos, setSupPhotos] = useState([]); // 店舗支援に上がった画像
+  const [supOpen, setSupOpen] = useState(null); // 拡大して見ている画像
   const [trashBusy, setTrashBusy] = useState(false);
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
@@ -197,6 +199,13 @@ function AdminTab({
       setIdeas([]);
     }
   }, []);
+  const loadSupport = useCallback(async () => {
+    try {
+      setSupPhotos((await api.listFloorPhotos(null, "店舗支援")) || []);
+    } catch (e) {
+      setSupPhotos([]);
+    }
+  }, []);
   const loadOpLogs = useCallback(async () => {
     try {
       setOpLogs((await api.listOpLogs(200)) || []);
@@ -211,8 +220,9 @@ function AdminTab({
       loadTrash();
       loadOpLogs();
       loadIdeas();
+      loadSupport();
     }
-  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas]);
+  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas, loadSupport]);
   useEffect(() => {
     if (unlocked) return;
     const t = "> 接続中 ... OK\n> 端末を確認 ... OK\n> 認証待ち";
@@ -845,6 +855,18 @@ function AdminTab({
     r: "8.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 12h8M12 8v8"
+  }))], ["support", "店舗支援の画像", supPhotos.length || 0, "#7a5cb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "5",
+    width: "18",
+    height: "14",
+    rx: "2"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 15l5-4.5 4 3.5 3-2.5 6 5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "8.5",
+    cy: "9.5",
+    r: "1.3"
   }))], ["rot", "向き", null, "#b08968", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
@@ -1778,7 +1800,106 @@ function AdminTab({
         marginTop: 2
       }
     }, fmtDate(lg.created_at), lg.store_name ? ` ／ ${lg.store_name}` : ""))))));
-  })(), section === "trash" && (() => {
+  })(), section === "support" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 12
+    }
+  }, "\u5E97\u8217\u652F\u63F4\u306B\u4E0A\u304C\u3063\u305F\u753B\u50CF\u3067\u3059\u3002\u5E97\u8217\u652F\u63F4\u306E\u753B\u9762\u3067\u306F\u6D88\u305B\u306A\u3044\u306E\u3067\u3001\u3044\u3089\u306A\u304F\u306A\u3063\u305F\u3082\u306E\u306F\u3053\u3053\u3067\u6D88\u3057\u3066\u304F\u3060\u3055\u3044\u3002 \u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), supPhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--sub)",
+      fontSize: 13,
+      padding: "40px 0"
+    }
+  }, "\u307E\u30601\u679A\u3082\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+      gap: 10
+    }
+  }, supPhotos.map(p2 => /*#__PURE__*/React.createElement("div", {
+    key: p2.id,
+    style: {
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      borderRadius: 12,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSupOpen(p2),
+    style: {
+      border: "none",
+      background: "transparent",
+      padding: 0,
+      cursor: "pointer",
+      display: "block",
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: p2.image_url,
+    alt: "",
+    loading: "lazy",
+    style: {
+      width: "100%",
+      aspectRatio: "3/4",
+      objectFit: "cover",
+      display: "block",
+      background: "var(--chip)"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "7px 9px 9px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginBottom: 7
+    }
+  }, formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10), p2.author ? "　" + p2.author : ""), /*#__PURE__*/React.createElement("button", {
+    onClick: async () => {
+      if (!window.confirm("この画像を消します。元に戻せません。よろしいですか？")) return;
+      try {
+        await api.deleteFloorPhoto(p2.id);
+        loadSupport();
+      } catch (e) {}
+    },
+    style: {
+      width: "100%",
+      border: "1px solid #b3261e",
+      background: "transparent",
+      color: "#b3261e",
+      borderRadius: 8,
+      padding: "7px",
+      fontSize: 12.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "\u6D88\u3059"))))), supOpen && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setSupOpen(null),
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 300,
+      background: "rgba(8,14,20,0.92)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 16
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: supOpen.image_url,
+    alt: "",
+    style: {
+      maxWidth: "100%",
+      maxHeight: "92vh",
+      objectFit: "contain",
+      borderRadius: 6
+    }
+  }))), section === "trash" && (() => {
     const ids = Object.keys(trashSel).filter(k => trashSel[k]);
     const doRestore = async () => {
       setTrashBusy(true);
