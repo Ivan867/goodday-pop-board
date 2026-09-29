@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
+  title: "上の行のボタンを見やすくしました",
+  body: "背景と同じような色で沈んでいたので、白い面に細い輪郭と影をつけて浮かせました。背景も少し落としています。"
+}, {
+  date: "2026-09-29",
+  type: "改善",
   title: "左の行事カレンダーを作り直しました",
   body: "日付の入った今月の行事、来月以降の予定、行事ごとのポップの枚数、の三段になりました。「すべて見る」から今までの行事カレンダーが開きます。"
 }, {
@@ -12609,8 +12614,10 @@ function CalendarDock() {
       letterSpacing: "0.04em"
     }
   }, 文字), 右);
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "dock-head"
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: "dock-head",
+    onClick: () => 開く("bundle"),
+    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
     className: "cd-month"
   }, /*#__PURE__*/React.createElement("button", {

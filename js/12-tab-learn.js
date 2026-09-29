@@ -104,8 +104,10 @@ function CalendarDock() {
       letterSpacing: "0.04em"
     }
   }, 文字), 右);
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "dock-head"
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: "dock-head",
+    onClick: () => 開く("bundle"),
+    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
     className: "cd-month"
   }, /*#__PURE__*/React.createElement("button", {

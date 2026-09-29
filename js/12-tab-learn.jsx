@@ -56,7 +56,10 @@ function CalendarDock() {
 
   return (
     <div>
-      <div className="dock-head"><b>行事カレンダー</b><i>SEASONAL CALENDAR</i></div>
+      <button className="dock-head" onClick={() => 開く("bundle")}
+        aria-label="行事カレンダーのページを開く">
+        <b>行事カレンダー</b><i>SEASONAL CALENDAR</i>
+      </button>
 
       {/* 月を送る */}
       <div className="cd-month">

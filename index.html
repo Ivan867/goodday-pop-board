@@ -73,7 +73,9 @@ window.addEventListener("error", function(e){
   --primary: #1d3a57;
   --primary-soft: #4a7ab0;
   --chip: #e8edf2;
-  --bg: #eef1f5;
+  --bg: #e6ebf2;
+  --btn-ring: rgba(16,32,52,0.10);
+  --btn-shadow: rgba(16,32,52,0.08);
   --line: #d4dae1;
   --ink: #16242f;
   --text: #2e3a47;
@@ -103,7 +105,9 @@ html[data-theme="dark"] {
   --primary: #2f5f8f;
   --primary-soft: #6fa3d8;
   --chip: #26313d;
-  --bg: #161d25;
+  --bg: #12181f;
+  --btn-ring: rgba(255,255,255,0.13);
+  --btn-shadow: rgba(0,0,0,0.40);
   --line: #333f4d;
   --ink: #e8edf3;
   --text: #cdd6e0;
@@ -397,12 +401,14 @@ body { position: relative; overscroll-behavior-y: none; }
 /* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
 .board-head .hig-pill, .board-head .bt-btn {
   border-color: transparent !important;
-  background: var(--chip) !important;
-  box-shadow: none !important;
-  color: var(--sub) !important;
+  background: var(--card) !important;
+  box-shadow: 0 0 0 1px var(--btn-ring), 0 1px 3px var(--btn-shadow) !important;
+  color: var(--primary-soft) !important;
 }
-.board-head .hig-pill span { color: var(--text) !important; font-weight: 700 !important; }
-.board-head .hig-pill:hover, .board-head .bt-btn:hover { background: var(--line) !important; }
+.board-head .hig-pill span { color: var(--ink) !important; font-weight: 800 !important; }
+.board-head .hig-pill:hover, .board-head .bt-btn:hover { background: var(--soft) !important; }
+/* 文字サイズ・まいすうの切り替えは、押されている側だけ白く浮かせる */
+.board-tools > div { box-shadow: 0 0 0 1px var(--btn-ring) !important; }
 /* 部門のボタンだけは、いまどちらかが一目で分かるよう色を残す */
 .board-head .bt-dept { background: var(--soft) !important; color: var(--soft-text) !important;
   border: 1px solid var(--primary-soft) !important; }
@@ -483,7 +489,9 @@ padding: 7px 10px !important;
 .cal-dock .menu-item { background: rgba(255,255,255,0.045) !important; }
 .cal-dock .menu-item:hover { background: rgba(255,255,255,0.09) !important; }
 /* 柱の見出し（英字の副題つき） */
-.dock-head { margin: 2px 0 14px; }
+.dock-head { display:block; width:100%; text-align:left; border:none; background:transparent;
+  font-family:inherit; cursor:pointer; padding:4px 2px; border-radius:9px; margin: 2px 0 12px; }
+.dock-head:hover { background: rgba(255,255,255,0.06); }
 .dock-head b { display:block; font-size: 19px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.01em; }
 .dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
 color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
@@ -655,12 +663,12 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zl"></script>
+<script src="js/app.js?v=20260929zm"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zl";
+window.APP_VER = "20260929zm";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
