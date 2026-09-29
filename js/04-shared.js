@@ -17,7 +17,7 @@ function UploadModal({
   const [author, setAuthor] = useState("");
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
-  const [category, setCategory] = useState(deptCategories()[0]);
+  const [category, setCategory] = useState(CATEGORIES[0]);
   const [items, setItems] = useState([]); // [{file, preview, name, warn}]
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -352,7 +352,7 @@ function UploadModal({
       borderRadius: 10,
       fontSize: 14
     }
-  }, deptCategories().map(c => /*#__PURE__*/React.createElement("option", {
+  }, CATEGORIES.map(c => /*#__PURE__*/React.createElement("option", {
     key: c
   }, c)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {

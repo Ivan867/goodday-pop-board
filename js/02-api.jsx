@@ -1,22 +1,4 @@
 /* GoodDay 鮮魚共有 — 02-api （自動分割・window共有） */
-
-/* 古いファイルが端末に残っていても落ちないようにする受け皿。
-   新しい01-configが無ければ、これまでの鮮魚の値をそのまま使う。 */
-if (typeof deptCategories !== "function") {
-  window.deptCategories = function () { return (typeof CATEGORIES !== "undefined") ? CATEGORIES : []; };
-}
-if (typeof deptGenres !== "function") {
-  window.deptGenres = function () { return (typeof GENRES !== "undefined") ? GENRES : []; };
-}
-if (typeof deptGenreColors !== "function") {
-  window.deptGenreColors = function () { return (typeof GENRE_COLORS !== "undefined") ? GENRE_COLORS : {}; };
-}
-if (typeof deptConf !== "function") {
-  window.deptConf = function () { return { label: "鮮魚", ものの呼び名: "魚", categories: window.deptCategories(), genres: window.deptGenres() }; };
-}
-if (typeof deptKey !== "function") { window.deptKey = function () { return "fish"; }; }
-if (typeof setDeptKey !== "function") { window.setDeptKey = function () {}; }
-if (typeof DEPTS === "undefined") { window.DEPTS = { fish: { label: "鮮魚" } }; }
 var { useState, useEffect, useCallback, useRef } = React;
 
 // ═══════════ API：Supabase読み書き層（全DB操作はここ経由） ═══════════
@@ -41,23 +23,7 @@ function sbNotifyFail(method, detail) {
   try { window.dispatchEvent(new CustomEvent("apiError", { detail: String(detail || "").slice(0, 200) })); } catch (e) {}
 }
 
-// 部門で分かれるテーブル。ここに足せば、そのテーブルも部門ごとになる
-const DEPT_TABLES = ["pops"];
-function sbDept() {
-  try { const d = localStorage.getItem("dept"); return (d === "produce") ? d : "fish"; } catch (e) { return "fish"; }
-}
-// 読むときは ?dept=eq.○○ を足し、入れるときは dept を混ぜる。呼ぶ側は何も変えなくていい
-function sbWithDept(path, method, body) {
-  const m = /^\/rest\/v1\/([a-z_]+)/.exec(path);
-  if (!m || DEPT_TABLES.indexOf(m[1]) < 0) return { path, body };
-  const d = sbDept();
-  if (!/[?&]dept=/.test(path)) path += (path.indexOf("?") >= 0 ? "&" : "?") + "dept=eq." + d;
-  if (method === "POST" && body && !Array.isArray(body) && body.dept === undefined) body = { ...body, dept: d };
-  return { path, body };
-}
-
 async function sbFetch(path, { method = "GET", body, prefer, headers = {} } = {}) {
-  ({ path, body } = sbWithDept(path, method, body));
   const extra = { ...(body !== undefined ? { "Content-Type": "application/json" } : {}), ...(prefer ? { "Prefer": prefer } : {}), ...headers };
   let r;
   try {
