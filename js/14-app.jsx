@@ -380,13 +380,13 @@ function App() {
           }}
           className="hig-pill fab-search" aria-label={showToTop ? "上へ" : "さがす"} title={showToTop ? "上へ" : "さがす"}
           style={{ position:"fixed", zIndex:205, border:"none", cursor:"pointer",
-            background:"var(--primary)", color:"#fff",
+            background:"#0F1A28", color:"#fff",
             display:"flex", alignItems:"center", justifyContent:"center",
             boxShadow:"0 6px 20px rgba(10,20,35,0.36)" }}>
           {showToTop ? (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.3" fill="var(--primary)"/><circle cx="15" cy="12" r="2.3" fill="var(--primary)"/><circle cx="8" cy="18" r="2.3" fill="var(--primary)"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.1-4.1"/></svg>
           )}
           <span>{showToTop ? "上へ" : "さがす"}</span>
         </button>

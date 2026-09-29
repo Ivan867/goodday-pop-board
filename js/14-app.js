@@ -906,7 +906,7 @@ function App() {
       zIndex: 205,
       border: "none",
       cursor: "pointer",
-      background: "var(--primary)",
+      background: "#0F1A28",
       color: "#fff",
       display: "flex",
       alignItems: "center",
@@ -928,25 +928,15 @@ function App() {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 6h16M4 12h16M4 18h16"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "9",
-    cy: "6",
-    r: "2.3",
-    fill: "var(--primary)"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "15",
-    cy: "12",
-    r: "2.3",
-    fill: "var(--primary)"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "8",
-    cy: "18",
-    r: "2.3",
-    fill: "var(--primary)"
+    strokeWidth: "2.3",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "11",
+    cy: "11",
+    r: "7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 20l-4.1-4.1"
   })), /*#__PURE__*/React.createElement("span", null, showToTop ? "上へ" : "さがす")), (moreOpen || 広い) && /*#__PURE__*/React.createElement(React.Fragment, null, !広い && /*#__PURE__*/React.createElement("div", {
     onClick: () => setMoreOpen(false),
     style: {
