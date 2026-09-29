@@ -55,7 +55,8 @@ function deptConf() { return DEPTS[deptKey()] || DEPTS.fish; }
 function setDeptKey(k) {
   if (!DEPTS[k] || k === deptKey()) return;
   try { localStorage.setItem("dept", k); } catch (e) {}
-  try { location.reload(); } catch (e) {}
+  // 住所の合言葉を落としてから読み込み直す（残っていると元の部門に引き戻される）
+  try { location.replace(location.pathname); } catch (e) { location.reload(); }
 }
 function deptCategories() { return deptConf().categories; }
 function deptGenres() { return deptConf().genres; }
@@ -98,6 +99,7 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-29", type:"新機能", title:"リンクで部門を指定できるようにしました", body:"URLのうしろに ?seika を付けたものを開くと、最初から青果で開きます。?sengyo なら鮮魚です。一度開けばその端末が覚えるので、次からは付けなくてかまいません。" },
   { date:"2026-09-29", type:"改善", title:"電波の弱い所でも開けるようにしました", body:"起動に必要な部品を11個から1個にまとめました。これまでは1個でも届かないと止まっていましたが、その心配がなくなります。読み込みも速くなります。" },
   { date:"2026-09-29", type:"改善", title:"パソコンでは、メニューと行事カレンダーを左にずっと出します", body:"画面が広いとき、左の余白にメニューを開いたまま置き、その下に行事カレンダーを出します。押して開く手間がなくなり、今月の行事がいつも見えます。" },
   { date:"2026-09-29", type:"改善", title:"一覧の上に部門のボタンを置きました", body:"カレンダーのボタンがあった所が「鮮魚／青果」の切り替えになりました。押すと言葉も色も入れ替わります。行事カレンダーはメニューの中に移しています。" },

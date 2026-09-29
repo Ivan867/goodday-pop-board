@@ -125,9 +125,12 @@ function setDeptKey(k) {
   try {
     localStorage.setItem("dept", k);
   } catch (e) {}
+  // 住所の合言葉を落としてから読み込み直す（残っていると元の部門に引き戻される）
   try {
+    location.replace(location.pathname);
+  } catch (e) {
     location.reload();
-  } catch (e) {}
+  }
 }
 function deptCategories() {
   return deptConf().categories;
@@ -264,6 +267,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-29",
+  type: "新機能",
+  title: "リンクで部門を指定できるようにしました",
+  body: "URLのうしろに ?seika を付けたものを開くと、最初から青果で開きます。?sengyo なら鮮魚です。一度開けばその端末が覚えるので、次からは付けなくてかまいません。"
+}, {
   date: "2026-09-29",
   type: "改善",
   title: "電波の弱い所でも開けるようにしました",
