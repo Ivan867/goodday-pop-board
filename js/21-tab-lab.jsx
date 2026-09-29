@@ -21,8 +21,9 @@ function LabTab() {
   const 選ぶ = (k) => { setどれ(k); try { localStorage.setItem("labMode", k); } catch (e) {} };
 
   const 品 = [
-    ["scan",  "読み込み", "伝票PDFの向き・傾き・濃さを整える"],
-    ["check", "伝票検算", "蛍光ペンで塗った金額を読んで合算する"],
+    ["scan",    "読み込み",   "伝票PDFの向き・傾き・濃さを整える"],
+    ["check",   "伝票検算",   "蛍光ペンで塗った金額を読んで合算する"],
+    ["barcode", "バーコード", "発注用のバーコードを作って印刷する"],
   ];
 
   if (!開いた) {

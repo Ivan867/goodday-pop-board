@@ -197,21 +197,26 @@ const MENU_ICON = (() => {
 })();
 function LazyTab(props) {
   var info = LAZY_TABS[props.tabKey];
-  var readyState = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]));
-  var ready = readyState[0],
-    setReady = readyState[1];
+  // 数を1つ進めて描き直させる。真偽値だと、2つ目を開くときに
+  // すでに true のままで描き直しが起きず、「読み込み中…」で止まる。
+  var readyState = useState(0);
+  var setReady = function () {
+    readyState[1](function (n) {
+      return (n | 0) + 1;
+    });
+  };
   var errState = useState(null);
   var err = errState[0],
     setErr = errState[1];
   useEffect(function () {
     var alive = true;
-    if (window[info.comp]) {
-      setReady(true);
+    if (window[info.comp] && window.__lazyLoaded && window.__lazyLoaded[info.file]) {
+      setReady();
       return;
     }
     setErr(null);
     window.loadLazyTab(info.file).then(function () {
-      if (alive) setReady(true);
+      if (alive) setReady();
     }).catch(function (e) {
       if (alive) setErr(e);
     });
@@ -236,7 +241,7 @@ function LazyTab(props) {
       onClick: function () {
         setErr(null);
         window.loadLazyTab(info.file).then(function () {
-          setReady(true);
+          setReady();
         }).catch(setErr);
       },
       style: {
@@ -1012,7 +1017,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "bundle", "archive", "catalog", "gne", "order", "lab", "barcode", "guide", "request", "admin"];
+    const ORDER = ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
@@ -1088,12 +1093,8 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  }))))), 広い && /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 16,
-      paddingTop: 14,
-      borderTop: "1px solid var(--line)"
-    }
+  }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
+    className: "cal-dock fs-top"
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
@@ -1103,7 +1104,7 @@ function App() {
     }
   }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement(CalendarTab, {
     細い: true
-  })))), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
+  })), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUpload(false),
     onSuccess: () => {

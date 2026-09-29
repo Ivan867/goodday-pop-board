@@ -51,17 +51,19 @@ const MENU_ICON = (() => {
 
 function LazyTab(props) {
   var info = LAZY_TABS[props.tabKey];
-  var readyState = useState(!!(window.__lazyLoaded && window.__lazyLoaded[info.file]));
-  var ready = readyState[0], setReady = readyState[1];
+  // 数を1つ進めて描き直させる。真偽値だと、2つ目を開くときに
+  // すでに true のままで描き直しが起きず、「読み込み中…」で止まる。
+  var readyState = useState(0);
+  var setReady = function(){ readyState[1](function(n){ return (n | 0) + 1; }); };
   var errState = useState(null);
   var err = errState[0], setErr = errState[1];
 
   useEffect(function(){
     var alive = true;
-    if (window[info.comp]) { setReady(true); return; }
+    if (window[info.comp] && window.__lazyLoaded && window.__lazyLoaded[info.file]) { setReady(); return; }
     setErr(null);
     window.loadLazyTab(info.file).then(function(){
-      if (alive) setReady(true);
+      if (alive) setReady();
     }).catch(function(e){
       if (alive) setErr(e);
     });
@@ -71,7 +73,7 @@ function LazyTab(props) {
   if (err) {
     return React.createElement("div", { style:{ padding:"60px 20px", textAlign:"center" } },
       React.createElement("div", { style:{ fontSize:14, color:"var(--sub)", marginBottom:14, lineHeight:1.7 } }, "読み込みに失敗しました。\n通信環境をご確認ください。"),
-      React.createElement("button", { onClick:function(){ setErr(null); window.loadLazyTab(info.file).then(function(){ setReady(true); }).catch(setErr); },
+      React.createElement("button", { onClick:function(){ setErr(null); window.loadLazyTab(info.file).then(function(){ setReady(); }).catch(setErr); },
         style:{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:9, padding:"9px 18px", fontSize:13, fontWeight:800, cursor:"pointer" } }, "もう一度読み込む"));
   }
   var Comp = window[info.comp];
@@ -410,7 +412,7 @@ function App() {
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","bundle","archive","catalog","gne","order","lab","barcode","guide","request","admin"];
+                const ORDER = ["search","bundle","archive","guide","catalog","gne","order","lab","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
@@ -432,15 +434,16 @@ function App() {
               ))}
             </div>
 
-            {/* 広い画面のときだけ、メニューの下に行事カレンダーを出しておく */}
-            {広い && (
-              <div style={{ marginTop:16, paddingTop:14, borderTop:"1px solid var(--line)" }}>
-                <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>行事カレンダー</div>
-                <CalendarTab 細い />
-              </div>
-            )}
           </div>
         </>
+      )}
+
+      {/* 広い画面：左の柱に行事カレンダーをずっと出しておく */}
+      {広い && (
+        <aside className="cal-dock fs-top">
+          <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>行事カレンダー</div>
+          <CalendarTab 細い />
+        </aside>
       )}
 
       {showUpload && <UploadModal currentStore={currentStore}

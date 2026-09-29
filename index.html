@@ -430,26 +430,43 @@ body { position: relative; overscroll-behavior-y: none; }
   #barcode-print-portal .bc-label { page-break-inside: avoid; break-inside: avoid; }
 }
 
-/* ───── 広い画面（パソコン）：メニューを左にずっと開き、その下に行事カレンダーを置く ───── */
+/* ───── 広い画面（パソコン）：左に行事カレンダー、右にメニューを置く ───── */
 @media (min-width: 1280px) {
+  /* 右の柱：メニュー */
   .menu-dock {
-    left: 0 !important; right: auto !important;
-    width: 300px !important;
+    right: 0 !important; left: auto !important;
+    width: 288px !important;
     background: var(--card) !important;
     backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
-    border-right: 1px solid var(--line);
+    border-left: 1px solid var(--line);
     animation: none !important;
     z-index: 120 !important;
   }
-  /* 項目を縦に引き伸ばさない。伸ばすとカレンダーの上に重なる */
+  /* 項目を縦に引き伸ばさない */
   .menu-dock .menu-list { flex: 0 0 auto !important; }
   .menu-dock .menu-list .menu-item { flex: 0 0 auto !important; min-height: 48px !important; padding: 8px 12px !important; }
   .menu-dock .menu-list .menu-item span { font-size: 15px !important; }
-  #app-scroll { padding-left: 300px; }
-  /* 左にずっと出ているので、上の行のメニューのボタンは要らない */
+
+  /* 左の柱：行事カレンダー */
+  .cal-dock {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 288px; z-index: 120;
+    overflow-y: auto;
+    background: var(--card);
+    border-right: 1px solid var(--line);
+    padding: 14px 14px calc(18px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+  }
+
+  /* 本体は両側の柱の分だけ内側へ */
+  #app-scroll { padding-left: 288px; padding-right: 288px; }
+  /* 右にずっと出ているので、上の行のメニューのボタンは要らない */
   .board-head .bh-menu { display: none !important; }
-  .fab-search { margin-left: 150px; }
+  /* 左に出ているので、メニューの中の行事カレンダーも要らない */
+  .menu-row-bundle { display: none !important; }
+  /* さがすボタンは右の柱の内側に寄せる */
+  .fab-search { right: 316px !important; }
 }
 </style>
 </head>
@@ -492,13 +509,20 @@ body { position: relative; overscroll-behavior-y: none; }
     m.style.cssText = "margin-top:14px;font-size:10px;color:#999;text-align:center;padding:0 20px;word-break:break-all;line-height:1.6";
     s.appendChild(m);
   }
+  // 起動の途中だけ見張る。画面が出たあとのエラー（あとから読む部品の
+  // 取りこぼしなど）で読み込み直すと、作業中の状態が消えてしまう。
   window.addEventListener("error", function(){
+    var r = document.getElementById("root");
+    if (!document.getElementById("splash")) return;        // もう起動できている
+    if (r && r.childNodes.length > 0) return;              // 画面は出ている
     案内("error");
     var m = document.getElementById("bootmsg");
     if (m) m.textContent = (window.__bootErr || []).join(" / ");
   }, true);
   // 見張りを付ける前に出たエラーがあれば、その場で出す
   if ((window.__bootErr || []).length) setTimeout(function(){
+    var r0 = document.getElementById("root");
+    if (!document.getElementById("splash") || (r0 && r0.childNodes.length > 0)) return;
     案内("error");
     var m = document.getElementById("bootmsg");
     if (m) m.textContent = window.__bootErr.join(" / ");
@@ -521,12 +545,12 @@ body { position: relative; overscroll-behavior-y: none; }
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929u"></script>
+<script src="js/app.js?v=20260929v"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929u";
+window.APP_VER = "20260929v";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
