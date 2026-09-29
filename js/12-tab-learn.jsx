@@ -1,6 +1,128 @@
 /* Nexus共有 — 12-tab-learn （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
+/* ───────── パソコンの左の柱に出す、行事カレンダーの一覧 ─────────
+   今月の行事（日付つき）／今後の予定／行事のまとまり、の三段。
+   日付は JP_HOLIDAYS と seasonalEventsFor から、
+   まとまりと枚数は pop_bundles から取る。 */
+function CalendarDock() {
+  const 今日 = new Date(); 今日.setHours(0,0,0,0);
+  const [年月, set年月] = useState({ y: 今日.getFullYear(), m: 今日.getMonth() });
+  const [束, set束] = useState([]);
+  const [枚数, set枚数] = useState({});
+  const 曜 = ["日","月","火","水","木","金","土"];
+  const 色 = ["#d1554f","#c39a3c","#3f9e63","#3b7dd8","#8a5fc4","#c4685f","#3f8f9e","#9e7b3f"];
+
+  useEffect(() => {
+    let 生きてる = true;
+    const 入れる = (c) => {
+      if (!生きてる || !c) return;
+      set束(c.bs || []);
+      const m = {}; (c.cnt || []).forEach(r => { m[r.bundle_id] = (m[r.bundle_id] || 0) + 1; });
+      set枚数(m);
+    };
+    if (window.__bundleCache) 入れる(window.__bundleCache);
+    (async () => { try { 入れる(await prefetchBundles(false)); } catch (e) {} })();
+    return () => { 生きてる = false; };
+  }, []);
+
+  // その年の、日付のついた行事（祝日＋季節の行事）をまとめる
+  const 年の行事 = (y) => {
+    const a = seasonalEventsFor(y).map(e => ({ date:e.date, name:e.name, food:e.food, 祝:false }));
+    Object.entries(JP_HOLIDAYS[y] || {}).forEach(([k, name]) => {
+      const [mm, dd] = k.split("-").map(Number);
+      a.push({ date:new Date(y, mm-1, dd), name, food:null, 祝:true });
+    });
+    a.forEach(e => e.date.setHours(0,0,0,0));
+    return a.sort((x,y2) => x.date - y2.date);
+  };
+  const 全部 = [...年の行事(年月.y), ...(年月.m >= 10 ? 年の行事(年月.y + 1) : [])];
+  const 今月の = 全部.filter(e => e.date.getFullYear()===年月.y && e.date.getMonth()===年月.m);
+  const これから = 全部.filter(e => {
+    const 先 = new Date(年月.y, 年月.m + 1, 1);
+    return e.date >= 先;
+  }).slice(0, 4);
+
+  const 前月 = () => set年月(v => v.m === 0 ? { y:v.y-1, m:11 } : { y:v.y, m:v.m-1 });
+  const 次月 = () => set年月(v => v.m === 11 ? { y:v.y+1, m:0 } : { y:v.y, m:v.m+1 });
+  const 開く = (t) => { try { window.dispatchEvent(new CustomEvent("goTab", { detail:t })); } catch(e) {} };
+
+  const 見出し = (文字, 右) => (
+    <div style={{ display:"flex", alignItems:"baseline", margin:"20px 0 10px" }}>
+      <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", letterSpacing:"0.04em" }}>{文字}</span>
+      {右}
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="dock-head"><b>行事カレンダー</b><i>SEASONAL CALENDAR</i></div>
+
+      {/* 月を送る */}
+      <div className="cd-month">
+        <button onClick={前月} aria-label="前の月">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span>{年月.y}年 {年月.m+1}月</span>
+        <button onClick={次月} aria-label="次の月">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      {/* 今月の行事 */}
+      {今月の.length === 0 ? (
+        <div style={{ fontSize:12, color:"var(--faint)", padding:"18px 2px", textAlign:"center" }}>
+          {年月.m+1}月に決まった行事はありません
+        </div>
+      ) : (
+        <div className="cd-line">
+          {今月の.map((e, i) => {
+            const 今日か = e.date.getTime() === 今日.getTime();
+            return (
+              <div className="cd-row" key={i}>
+                <span className={"cd-day" + (今日か ? " cd-now" : "")}>
+                  <b>{e.date.getDate()}</b><i>{曜[e.date.getDay()]}</i>
+                </span>
+                <span className="cd-dot" style={{ background: e.祝 ? "#d1554f" : "#3b7dd8" }} />
+                <span className="cd-name">{e.name}{e.food && <em>・{e.food}</em>}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 今後の予定 */}
+      {これから.length > 0 && (
+        <>
+          {見出し("今後の予定",
+            <button onClick={() => 開く("bundle")} className="cd-more">すべて見る ›</button>)}
+          {これから.map((e, i) => (
+            <div className="cd-next" key={i}>
+              <span className="cd-next-d">{e.date.getMonth()+1}/{e.date.getDate()}</span>
+              <span className="cd-dot" style={{ background: e.祝 ? "#d1554f" : "#c39a3c" }} />
+              <span className="cd-name">{e.name}</span>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* 行事のまとまり（ポップの束） */}
+      {束.length > 0 && (
+        <>
+          {見出し("カテゴリ", null)}
+          {束.filter(b => !b.hidden).slice(0, 8).map((b, i) => (
+            <button key={b.id} className="cd-cat" onClick={() => 開く("bundle")}>
+              <span className="cd-chip" style={{ background: 色[i % 色.length] }} />
+              <span className="cd-name">{b.name}</span>
+              <span className="cd-num">{枚数[b.id] || 0}</span>
+            </button>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
 function CalendarTab({ 細い } = {}) {
   const today = new Date(); today.setHours(0,0,0,0);
   const [ym, setYm] = useState({ y: today.getFullYear(), m: today.getMonth() }); // m:0-11
@@ -2895,4 +3017,4 @@ function BundleTab({ 細い } = {}) {
   );
 }
 
-;Object.assign(window, { prefetchBundles, BundleTab, OrderTab, CatalogTab, CalendarTab, CompetitorTab, IndustryTab, SoubaTab });
+;Object.assign(window, { prefetchBundles, BundleTab, CalendarDock, OrderTab, CatalogTab, CalendarTab, CompetitorTab, IndustryTab, SoubaTab });

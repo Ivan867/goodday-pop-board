@@ -392,10 +392,17 @@ function App() {
     };
     window.addEventListener("appToast", h);
     window.addEventListener("apiError", bad);
+    const goTab = e => {
+      try {
+        setTab(e.detail);
+      } catch (x) {}
+    };
+    window.addEventListener("goTab", goTab);
     window.addEventListener("goBoard", goBoard);
     return () => {
       window.removeEventListener("appToast", h);
       window.removeEventListener("apiError", bad);
+      window.removeEventListener("goTab", goTab);
       window.removeEventListener("goBoard", goBoard);
     };
   }, []);
@@ -1122,9 +1129,7 @@ function App() {
     d: "M9 6l6 6-6 6"
   }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
-  }, /*#__PURE__*/React.createElement(BundleTab, {
-    細い: true
-  })), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
+  }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUpload(false),
     onSuccess: () => {

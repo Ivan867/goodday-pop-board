@@ -499,6 +499,46 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 }
 .dock-search:hover { background: rgba(255,255,255,0.10); }
 
+/* ── 左の柱の行事カレンダー ── */
+.cd-month { display:flex; align-items:center; justify-content:space-between;
+  background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10);
+  border-radius: 12px; padding: 7px 8px; margin-bottom: 14px; }
+.cd-month span { font-size: 14.5px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.02em; }
+.cd-month button { border:none; background:transparent; color:#93A6BA; cursor:pointer;
+  width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.cd-month button:hover { background: rgba(255,255,255,0.09); color:#EAF1F8; }
+
+.cd-row { display:flex; align-items:center; position:relative; padding: 5px 0; }
+.cd-row::before { content:""; position:absolute; left:53px; top:0; bottom:0; width:1px;
+  background: rgba(255,255,255,0.13); }
+.cd-row:first-child::before { top:50%; }
+.cd-row:last-child::before  { bottom:50%; }
+.cd-day { width:44px; flex-shrink:0; text-align:center; border-radius:10px; padding:5px 0;
+  background: rgba(255,255,255,0.90); }
+.cd-day b { display:block; font-size:16px; font-weight:800; color:#16242F; line-height:1.15; }
+.cd-day i { display:block; font-style:normal; font-size:10px; font-weight:700; color:#5C6B7A; }
+.cd-day.cd-now { background:#9CC8F2; }
+.cd-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; margin:0 9px 0 5px;
+  box-shadow: 0 0 0 3px #0F1A28; position:relative; z-index:1; }
+.cd-name { font-size:13.5px; font-weight:700; color:#E3EBF4; line-height:1.45;
+  min-width:0; overflow:hidden; }
+.cd-name em { font-style:normal; font-weight:600; color:#8398AE; }
+
+.cd-more { border:none; background:transparent; color:#8FB6DC; cursor:pointer;
+  margin-left:auto; font-size:12px; font-weight:700; font-family:inherit; padding:0; }
+.cd-more:hover { color:#BFD9F2; }
+.cd-next { display:flex; align-items:center; padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.07); }
+.cd-next-d { width:46px; flex-shrink:0; font-size:12.5px; font-weight:800; color:#B9C8D8; }
+
+.cd-cat { display:flex; align-items:center; gap:10px; width:100%; border:none;
+  background:transparent; border-radius:9px; padding:8px; cursor:pointer;
+  font-family:inherit; text-align:left; }
+.cd-cat:hover { background: rgba(255,255,255,0.07); }
+.cd-cat .cd-name { flex:1; white-space:nowrap; text-overflow:ellipsis; }
+.cd-chip { width:24px; height:24px; border-radius:7px; flex-shrink:0; }
+.cd-num { font-size:12.5px; font-weight:800; color:#8398AE; flex-shrink:0; }
+
 /* ───── 広い画面（パソコン）：左に行事カレンダー、右にメニューを置く ───── */
 @media (min-width: 1280px) {
   /* 右の柱：メニュー */
@@ -615,12 +655,12 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zk"></script>
+<script src="js/app.js?v=20260929zl"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zk";
+window.APP_VER = "20260929zl";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
+  title: "左の行事カレンダーを作り直しました",
+  body: "日付の入った今月の行事、来月以降の予定、行事ごとのポップの枚数、の三段になりました。「すべて見る」から今までの行事カレンダーが開きます。"
+}, {
+  date: "2026-09-29",
+  type: "改善",
   title: "アプリの名前を変えました",
   body: "ブラウザのタブは「Nexus共有」、ホーム画面は「生鮮共有」になりました。鮮魚と青果の両方を扱うようになったためです。"
 }, {
@@ -12505,6 +12510,191 @@ var {
   useCallback,
   useRef
 } = React;
+
+/* ───────── パソコンの左の柱に出す、行事カレンダーの一覧 ─────────
+   今月の行事（日付つき）／今後の予定／行事のまとまり、の三段。
+   日付は JP_HOLIDAYS と seasonalEventsFor から、
+   まとまりと枚数は pop_bundles から取る。 */
+function CalendarDock() {
+  const 今日 = new Date();
+  今日.setHours(0, 0, 0, 0);
+  const [年月, set年月] = useState({
+    y: 今日.getFullYear(),
+    m: 今日.getMonth()
+  });
+  const [束, set束] = useState([]);
+  const [枚数, set枚数] = useState({});
+  const 曜 = ["日", "月", "火", "水", "木", "金", "土"];
+  const 色 = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
+  useEffect(() => {
+    let 生きてる = true;
+    const 入れる = c => {
+      if (!生きてる || !c) return;
+      set束(c.bs || []);
+      const m = {};
+      (c.cnt || []).forEach(r => {
+        m[r.bundle_id] = (m[r.bundle_id] || 0) + 1;
+      });
+      set枚数(m);
+    };
+    if (window.__bundleCache) 入れる(window.__bundleCache);
+    (async () => {
+      try {
+        入れる(await prefetchBundles(false));
+      } catch (e) {}
+    })();
+    return () => {
+      生きてる = false;
+    };
+  }, []);
+
+  // その年の、日付のついた行事（祝日＋季節の行事）をまとめる
+  const 年の行事 = y => {
+    const a = seasonalEventsFor(y).map(e => ({
+      date: e.date,
+      name: e.name,
+      food: e.food,
+      祝: false
+    }));
+    Object.entries(JP_HOLIDAYS[y] || {}).forEach(([k, name]) => {
+      const [mm, dd] = k.split("-").map(Number);
+      a.push({
+        date: new Date(y, mm - 1, dd),
+        name,
+        food: null,
+        祝: true
+      });
+    });
+    a.forEach(e => e.date.setHours(0, 0, 0, 0));
+    return a.sort((x, y2) => x.date - y2.date);
+  };
+  const 全部 = [...年の行事(年月.y), ...(年月.m >= 10 ? 年の行事(年月.y + 1) : [])];
+  const 今月の = 全部.filter(e => e.date.getFullYear() === 年月.y && e.date.getMonth() === 年月.m);
+  const これから = 全部.filter(e => {
+    const 先 = new Date(年月.y, 年月.m + 1, 1);
+    return e.date >= 先;
+  }).slice(0, 4);
+  const 前月 = () => set年月(v => v.m === 0 ? {
+    y: v.y - 1,
+    m: 11
+  } : {
+    y: v.y,
+    m: v.m - 1
+  });
+  const 次月 = () => set年月(v => v.m === 11 ? {
+    y: v.y + 1,
+    m: 0
+  } : {
+    y: v.y,
+    m: v.m + 1
+  });
+  const 開く = t => {
+    try {
+      window.dispatchEvent(new CustomEvent("goTab", {
+        detail: t
+      }));
+    } catch (e) {}
+  };
+  const 見出し = (文字, 右) => /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      margin: "20px 0 10px"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      letterSpacing: "0.04em"
+    }
+  }, 文字), 右);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "dock-head"
+  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
+    className: "cd-month"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: 前月,
+    "aria-label": "\u524D\u306E\u6708"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  }))), /*#__PURE__*/React.createElement("span", null, 年月.y, "\u5E74 ", 年月.m + 1, "\u6708"), /*#__PURE__*/React.createElement("button", {
+    onClick: 次月,
+    "aria-label": "\u6B21\u306E\u6708"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "15",
+    height: "15",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M9 6l6 6-6 6"
+  })))), 今月の.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--faint)",
+      padding: "18px 2px",
+      textAlign: "center"
+    }
+  }, 年月.m + 1, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
+    className: "cd-line"
+  }, 今月の.map((e, i) => {
+    const 今日か = e.date.getTime() === 今日.getTime();
+    return /*#__PURE__*/React.createElement("div", {
+      className: "cd-row",
+      key: i
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "cd-day" + (今日か ? " cd-now" : "")
+    }, /*#__PURE__*/React.createElement("b", null, e.date.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[e.date.getDay()])), /*#__PURE__*/React.createElement("span", {
+      className: "cd-dot",
+      style: {
+        background: e.祝 ? "#d1554f" : "#3b7dd8"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "cd-name"
+    }, e.name, e.food && /*#__PURE__*/React.createElement("em", null, "\u30FB", e.food)));
+  })), これから.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("今後の予定", /*#__PURE__*/React.createElement("button", {
+    onClick: () => 開く("bundle"),
+    className: "cd-more"
+  }, "\u3059\u3079\u3066\u898B\u308B \u203A")), これから.map((e, i) => /*#__PURE__*/React.createElement("div", {
+    className: "cd-next",
+    key: i
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "cd-next-d"
+  }, e.date.getMonth() + 1, "/", e.date.getDate()), /*#__PURE__*/React.createElement("span", {
+    className: "cd-dot",
+    style: {
+      background: e.祝 ? "#d1554f" : "#c39a3c"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "cd-name"
+  }, e.name)))), 束.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("カテゴリ", null), 束.filter(b => !b.hidden).slice(0, 8).map((b, i) => /*#__PURE__*/React.createElement("button", {
+    key: b.id,
+    className: "cd-cat",
+    onClick: () => 開く("bundle")
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "cd-chip",
+    style: {
+      background: 色[i % 色.length]
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "cd-name"
+  }, b.name), /*#__PURE__*/React.createElement("span", {
+    className: "cd-num"
+  }, 枚数[b.id] || 0)))));
+}
 function CalendarTab({
   細い
 } = {}) {
@@ -19959,6 +20149,7 @@ function BundleTab({
 Object.assign(window, {
   prefetchBundles,
   BundleTab,
+  CalendarDock,
   OrderTab,
   CatalogTab,
   CalendarTab,
@@ -20361,10 +20552,17 @@ function App() {
     };
     window.addEventListener("appToast", h);
     window.addEventListener("apiError", bad);
+    const goTab = e => {
+      try {
+        setTab(e.detail);
+      } catch (x) {}
+    };
+    window.addEventListener("goTab", goTab);
     window.addEventListener("goBoard", goBoard);
     return () => {
       window.removeEventListener("appToast", h);
       window.removeEventListener("apiError", bad);
+      window.removeEventListener("goTab", goTab);
       window.removeEventListener("goBoard", goBoard);
     };
   }, []);
@@ -21091,9 +21289,7 @@ function App() {
     d: "M9 6l6 6-6 6"
   }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
-  }, /*#__PURE__*/React.createElement(BundleTab, {
-    細い: true
-  })), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
+  }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUpload(false),
     onSuccess: () => {

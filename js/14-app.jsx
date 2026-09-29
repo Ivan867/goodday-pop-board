@@ -157,8 +157,10 @@ function App() {
     const goBoard = () => { setTab("board"); setMoreOpen(false); };
     window.addEventListener("appToast", h);
     window.addEventListener("apiError", bad);
+    const goTab = (e) => { try { setTab(e.detail); } catch (x) {} };
+    window.addEventListener("goTab", goTab);
     window.addEventListener("goBoard", goBoard);
-    return () => { window.removeEventListener("appToast", h); window.removeEventListener("apiError", bad); window.removeEventListener("goBoard", goBoard); };
+    return () => { window.removeEventListener("appToast", h); window.removeEventListener("apiError", bad); window.removeEventListener("goTab", goTab); window.removeEventListener("goBoard", goBoard); };
   }, []);
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -452,7 +454,7 @@ function App() {
       {/* 広い画面：左の柱に行事カレンダーをずっと出しておく */}
       {広い && (
         <aside className="cal-dock fs-top">
-          <BundleTab 細い />
+          <CalendarDock />
         </aside>
       )}
 
