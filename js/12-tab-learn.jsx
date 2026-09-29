@@ -2717,22 +2717,24 @@ function BundleTab({ 細い } = {}) {
     const n = counts[b.id] || 0;
     const col = colorOf(b);
     return (
-      <button onClick={() => openBundle(b)}
+      <button onClick={() => openBundle(b)} className="menu-item"
         style={{ display:"flex", alignItems:"center", gap:11, textAlign:"left", width:"100%",
-          border: hot ? `1.5px solid ${col}` : "1px solid var(--line)",
-          background: hot ? col + "0f" : "#fff", borderRadius:12, padding:"12px 13px", cursor:"pointer" }}>
-        <span style={{ width:4, alignSelf:"stretch", borderRadius:2, background:col, flexShrink:0 }} />
+          border:"1px solid var(--line)", background:"var(--menu-row, #fff)",
+          borderRadius:12, padding:"10px 14px", cursor:"pointer" }}>
+        {/* 色は行事の目印として細い帯だけに残す。囲いはメニューの項目と同じ */}
+        <span style={{ width:4, height:26, borderRadius:2, background:col, flexShrink:0 }} />
         <span style={{ minWidth:0, flex:1 }}>
           <span style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
             <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
-            {soon && <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background:"#e0855f", borderRadius:999, padding:"1px 7px", flexShrink:0 }}>来月</span>}
+            {soon && <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background:"var(--primary-soft)", borderRadius:7, padding:"2px 7px", flexShrink:0 }}>来月</span>}
           </span>
           {b.note && <span style={{ display:"block", fontSize:12.5, color:"var(--sub)", lineHeight:1.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.note}</span>}
         </span>
-        <span style={{ fontSize:12, fontWeight:900, color: n > 0 ? col : "var(--faint)", flexShrink:0, whiteSpace:"nowrap" }}>
+        <span style={{ fontSize:12.5, fontWeight:900, color: n > 0 ? "var(--soft-text)" : "var(--faint)", flexShrink:0, whiteSpace:"nowrap" }}>
           {n > 0 ? `${n}枚` : "—"}
         </span>
-        <span style={{ fontSize:16, fontWeight:900, color:"var(--faint)", flexShrink:0 }}>›</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.3"
+          strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M9 6l6 6-6 6"/></svg>
       </button>
     );
   };

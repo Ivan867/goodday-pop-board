@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
+  title: "行事の囲いをメニューと同じ形にしました",
+  body: "色付きの箱をやめ、アーカイブなどのボタンと同じ白い囲いに統一しました。行事の色は左の細い帯だけに残しています。"
+}, {
+  date: "2026-09-29",
+  type: "改善",
   title: "左の行事カレンダーを6か月・7行までにしました",
   body: "1年ぶんを小さく詰め込むのをやめ、先月から5か月先までを、行事は近いものから7つまで出します。「いつでも使うもの」は左には出しません（メニューから開くほうには今までどおりあります）。"
 }, {
@@ -19483,22 +19488,23 @@ function BundleTab({
     const col = colorOf(b);
     return /*#__PURE__*/React.createElement("button", {
       onClick: () => openBundle(b),
+      className: "menu-item",
       style: {
         display: "flex",
         alignItems: "center",
         gap: 11,
         textAlign: "left",
         width: "100%",
-        border: hot ? `1.5px solid ${col}` : "1px solid var(--line)",
-        background: hot ? col + "0f" : "#fff",
+        border: "1px solid var(--line)",
+        background: "var(--menu-row, #fff)",
         borderRadius: 12,
-        padding: "12px 13px",
+        padding: "10px 14px",
         cursor: "pointer"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         width: 4,
-        alignSelf: "stretch",
+        height: 26,
         borderRadius: 2,
         background: col,
         flexShrink: 0
@@ -19530,9 +19536,9 @@ function BundleTab({
         fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
-        background: "#e0855f",
-        borderRadius: 999,
-        padding: "1px 7px",
+        background: "var(--primary-soft)",
+        borderRadius: 7,
+        padding: "2px 7px",
         flexShrink: 0
       }
     }, "\u6765\u6708")), b.note && /*#__PURE__*/React.createElement("span", {
@@ -19547,20 +19553,27 @@ function BundleTab({
       }
     }, b.note)), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         fontWeight: 900,
-        color: n > 0 ? col : "var(--faint)",
+        color: n > 0 ? "var(--soft-text)" : "var(--faint)",
         flexShrink: 0,
         whiteSpace: "nowrap"
       }
-    }, n > 0 ? `${n}枚` : "—"), /*#__PURE__*/React.createElement("span", {
+    }, n > 0 ? `${n}枚` : "—"), /*#__PURE__*/React.createElement("svg", {
+      width: "15",
+      height: "15",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "var(--faint)",
+      strokeWidth: "2.3",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
       style: {
-        fontSize: 16,
-        fontWeight: 900,
-        color: "var(--faint)",
         flexShrink: 0
       }
-    }, "\u203A"));
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M9 6l6 6-6 6"
+    })));
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
