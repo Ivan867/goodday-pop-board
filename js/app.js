@@ -20938,7 +20938,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS"
-  }), /*#__PURE__*/React.createElement("span", null, "GoodDay")), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
       try {

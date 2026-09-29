@@ -488,9 +488,8 @@ padding: 7px 10px !important;
 .dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
 color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
 /* 右の柱：しるしと名前 */
-.dock-brand { text-align:center; padding: 4px 0 14px; }
-.dock-brand img { display:block; width: 58%; max-width: 132px; height:auto; margin: 0 auto 8px; }
-.dock-brand span { display:block; font-size: 15px; font-weight: 700; color: #E6EEF7; letter-spacing: 0.04em; }
+.dock-brand { text-align:center; padding: 6px 0 16px; }
+.dock-brand img { display:block; width: 68%; max-width: 158px; height:auto; margin: 0 auto; }
 /* 右の柱：さがす（押すと今までの絞り込みが開く） */
 .dock-search {
 display:flex; align-items:center; gap:9px; width:100%;
@@ -616,12 +615,12 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zi"></script>
+<script src="js/app.js?v=20260929zj"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zi";
+window.APP_VER = "20260929zj";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

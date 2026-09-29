@@ -402,7 +402,6 @@ function App() {
               <>
                 <div className="dock-brand">
                   <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS" />
-                  <span>GoodDay</span>
                 </div>
                 <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
