@@ -626,7 +626,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
               {allPops.map(pop=>(
-                <img key={pop.id} src={pop.thumb_url || pop.image_url} loading="lazy" decoding="async" onClick={()=>setSel(pop)}
+                <img key={pop.id} src={pop.image_url} loading="lazy" onClick={()=>setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"var(--chip)", display:"block" }} />
               ))}
             </div>

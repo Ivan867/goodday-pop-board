@@ -105,10 +105,9 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const dims = await api.measureImage(it.file);          // 縦長か横長かを先に記録しておく
-        const 画 = await api.uploadPair(it.file);
-        const image_url = 画.image_url;
+        const image_url = await api.upload(it.file);
         const nm = single ? product.trim() : it.name.trim();
-        last = await api.insert({ store_name: store, product_name: nm, category, image_url, thumb_url: 画.thumb_url, likes: 0,
+        last = await api.insert({ store_name: store, product_name: nm, category, image_url, likes: 0,
           author: author.trim(), comment: comment.trim(),
           group_id: gid, group_name: gname, group_pos: done,
           img_w: dims ? dims.w : null, img_h: dims ? dims.h : null });
@@ -754,7 +753,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
       <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.thumb_url || pop.image_url} loading="lazy" decoding="async" className="fdin pc-img-el" onLoad={onImgLoad} style={{ width:"100%", objectFit:"contain", display:"block", background:"var(--card, #fff)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
+          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin pc-img-el" onLoad={onImgLoad} style={{ width:"100%", objectFit:"contain", display:"block", background:"var(--card, #fff)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ width:"100%", aspectRatio:"1 / 1.414", background:"var(--card, #fff)" }} />}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
           {pop.__group && (

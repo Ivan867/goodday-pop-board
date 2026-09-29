@@ -273,9 +273,9 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
-  type: "改善",
-  title: "一覧の画像を軽くしました",
-  body: "これまで一覧は撮ったままの大きな画像を読んでいました。これからは投稿のときに縮小版も作り、一覧はそちらを読みます。開いたときは今までどおり大きな画像が出ます。"
+  type: "修正",
+  title: "画像まわりを元に戻しました",
+  body: "縮小版を作る仕組みを入れましたが、効果が出なかったため取り消しています。見た目の変更はそのままです。"
 }, {
   date: "2026-09-29",
   type: "改善",
@@ -2289,7 +2289,7 @@ const h = (extra = {}) => ({
 });
 
 // 取得する列を明示（select=* をやめて転送量を抑える）。pops の全カラム＝UIで使う分だけ。
-const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,thumb_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation,group_id,group_name,group_pos,img_w,img_h";
+const POP_COLS = "id,store_name,product_name,category,comment,author,image_url,created_at,likes,archived,genre,comment_count,used_count,is_pinned,view_count,rotation,group_id,group_name,group_pos,img_w,img_h";
 // 1回の取得上限（投稿が増えても重くならないための安全弁）。アーカイブ運用していれば公開中はこの数に収まる。
 const POP_LIMIT = 500;
 
@@ -2771,71 +2771,6 @@ const api = {
     });
     if (!r.ok) throw new Error(await r.text());
     return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
-  },
-  // 画像を、指定の幅まで縮めた JPEG にする
-  async _縮める(元, 幅, 質) {
-    const blob = await new Promise((res, rej) => {
-      const img = new Image();
-      img.onload = () => {
-        const c = document.createElement("canvas");
-        let w = img.width,
-          h = img.height;
-        if (w > 幅) {
-          h = Math.round(h * 幅 / w);
-          w = 幅;
-        }
-        c.width = w;
-        c.height = h;
-        c.getContext("2d").drawImage(img, 0, 0, w, h);
-        c.toBlob(res, "image/jpeg", 質);
-      };
-      img.onerror = rej;
-      img.crossOrigin = "anonymous";
-      img.src = 元 instanceof Blob ? URL.createObjectURL(元) : 元;
-    });
-    return blob;
-  },
-  async _置く(blob, name) {
-    const r = await fetch(`${SB_URL}/storage/v1/object/pop-images/${name}`, {
-      method: "POST",
-      headers: {
-        ...h(),
-        "Content-Type": "image/jpeg",
-        "x-upsert": "true"
-      },
-      body: blob
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return `${SB_URL}/storage/v1/object/public/pop-images/${name}`;
-  },
-  // 元の画像と、一覧用の縮小版（幅520px）を両方上げる
-  async uploadPair(file) {
-    const 印 = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const 大 = await this._縮める(file, 1200, 0.85);
-    const image_url = await this._置く(大, `${印}.jpg`);
-    let thumb_url = null;
-    try {
-      const 小 = await this._縮める(file, 520, 0.72);
-      thumb_url = await this._置く(小, `t_${印}.jpg`);
-    } catch (e) {/* 縮小版が作れなくても、投稿は成立させる */}
-    return {
-      image_url,
-      thumb_url
-    };
-  },
-  // あとから縮小版を作る（管理画面から既存ぶんに使う）
-  async makeThumb(pop) {
-    const 元 = pop.image_url;
-    const 名 = 元.split("/").pop().replace(/\.[a-z]+$/i, "");
-    const 小 = await this._縮める(元, 520, 0.72);
-    const url = await this._置く(小, `t_${名}.jpg`);
-    await sbFetch(`/rest/v1/pops?id=eq.${pop.id}`, {
-      method: "PATCH",
-      body: {
-        thumb_url: url
-      }
-    });
-    return url;
   },
   async uploadRaw(file) {
     const safe = (file.name || "file").replace(/[^\w.\-]+/g, "_");
@@ -3795,15 +3730,13 @@ function UploadModal({
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const dims = await api.measureImage(it.file); // 縦長か横長かを先に記録しておく
-        const 画 = await api.uploadPair(it.file);
-        const image_url = 画.image_url;
+        const image_url = await api.upload(it.file);
         const nm = single ? product.trim() : it.name.trim();
         last = await api.insert({
           store_name: store,
           product_name: nm,
           category,
           image_url,
-          thumb_url: 画.thumb_url,
           likes: 0,
           author: author.trim(),
           comment: comment.trim(),
@@ -5657,7 +5590,7 @@ function PopCard({
       position: "relative"
     }
   }, pop.image_url ? /*#__PURE__*/React.createElement("img", {
-    src: pop.thumb_url || pop.image_url,
+    src: pop.image_url,
     loading: "lazy",
     decoding: "async",
     className: "fdin pc-img-el",
@@ -7262,9 +7195,8 @@ function SearchTab({
     }
   }, allPops.map(pop => /*#__PURE__*/React.createElement("img", {
     key: pop.id,
-    src: pop.thumb_url || pop.image_url,
+    src: pop.image_url,
     loading: "lazy",
-    decoding: "async",
     onClick: () => setSel(pop),
     style: {
       width: "100%",
