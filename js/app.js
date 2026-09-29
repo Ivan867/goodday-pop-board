@@ -273,6 +273,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
+  type: "改善",
+  title: "左の行事カレンダーを4か月分にしました",
+  body: "1年ぶんを小さく詰め込むのをやめ、先月・今月・来月・再来月だけを大きく出します。「いつでも使うもの」は左には出しません（メニューから開くほうには今までどおりあります）。"
+}, {
+  date: "2026-09-29",
   type: "修正",
   title: "試作システムで2つ目を開くと「読み込み中…」で止まるのを直しました",
   body: "読み込み・伝票検算・バーコードを行き来しても、きちんと切り替わるようになりました。"
@@ -19443,7 +19448,11 @@ function BundleTab({
   // ── 年間の図 ──
   const MONTH_LABEL = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
   // 当月が真ん中あたりに来るように並べ替える（今月-5 〜 今月+6）
-  const MONTH_ORDER = Array.from({
+  // 細いとき＝パソコンの左の柱では、前後あわせて4か月だけ見せる。
+  // 1年ぶんを詰め込むより、いま動かす月が読めるほうが役に立つ。
+  const MONTH_ORDER = 細い ? Array.from({
+    length: 4
+  }, (_, i) => (NOW_M - 2 + i + 12) % 12 + 1) : Array.from({
     length: 12
   }, (_, i) => (NOW_M - 7 + i + 12) % 12 + 1);
   const BAR_COLORS = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
@@ -19574,13 +19583,13 @@ function BundleTab({
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
     const 寸 = 細い ? {
-      名: 52,
-      字: 9.5,
-      帯: 9,
+      名: 78,
+      字: 11,
+      帯: 11,
       最小: 0,
-      高: 190,
-      行: "3px 3px",
-      月: m => String(m)
+      高: "none",
+      行: "5px 4px",
+      月: m => m + "月"
     } : {
       名: 84,
       字: 12.5,
@@ -19590,7 +19599,7 @@ function BundleTab({
       行: "7px 4px",
       月: m => m + "月"
     };
-    const 列 = 寸.名 + "px repeat(12, 1fr)";
+    const 列 = 寸.名 + "px repeat(" + MONTH_ORDER.length + ", 1fr)";
     return /*#__PURE__*/React.createElement("div", {
       ref: chartBox,
       style: {
@@ -19821,11 +19830,11 @@ function BundleTab({
       borderRadius: 11,
       marginBottom: 14
     }
-  }, viewM, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+  }, viewM, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093", !細い && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12
     }
-  }, "\u4E0B\u306E\u300C\u3044\u3064\u3067\u3082\u4F7F\u3046\u3082\u306E\u300D\u304B\u3089\u9078\u3079\u307E\u3059")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0B\u306E\u300C\u3044\u3064\u3067\u3082\u4F7F\u3046\u3082\u306E\u300D\u304B\u3089\u9078\u3079\u307E\u3059"))) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -19854,7 +19863,7 @@ function BundleTab({
     key: b.id,
     b: b,
     soon: true
-  })))), always.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })))), !細い && always.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 900,
@@ -19870,7 +19879,7 @@ function BundleTab({
   }, always.map(b => /*#__PURE__*/React.createElement(Card, {
     key: b.id,
     b: b
-  })))), /*#__PURE__*/React.createElement("div", {
+  })))), !細い && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: "var(--faint)",

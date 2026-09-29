@@ -2688,7 +2688,11 @@ function BundleTab({ 細い } = {}) {
   // ── 年間の図 ──
   const MONTH_LABEL = ["1","2","3","4","5","6","7","8","9","10","11","12"];
   // 当月が真ん中あたりに来るように並べ替える（今月-5 〜 今月+6）
-  const MONTH_ORDER = Array.from({ length: 12 }, (_, i) => ((NOW_M - 7 + i + 12) % 12) + 1);
+  // 細いとき＝パソコンの左の柱では、前後あわせて4か月だけ見せる。
+  // 1年ぶんを詰め込むより、いま動かす月が読めるほうが役に立つ。
+  const MONTH_ORDER = 細い
+    ? Array.from({ length: 4 },  (_, i) => ((NOW_M - 2 + i + 12) % 12) + 1)
+    : Array.from({ length: 12 }, (_, i) => ((NOW_M - 7 + i + 12) % 12) + 1);
   const BAR_COLORS = ["#d1554f","#c39a3c","#3f9e63","#3b7dd8","#8a5fc4","#c4685f","#3f8f9e","#9e7b3f"];
 
   const seasonal = bundles.filter(b => Array.isArray(b.months) && b.months.length > 0 && b.months.length < 12);
@@ -2740,9 +2744,9 @@ function BundleTab({ 細い } = {}) {
             {/* 年間の帯グラフ（月を押すと切り替わる）
                 細いとき＝パソコンの左の柱では、横に出ないところまで縮める */}
             {(() => { const 寸 = 細い
-              ? { 名:52, 字:9.5, 帯:9, 最小:0, 高:190, 行:"3px 3px", 月:(m)=>String(m) }
+              ? { 名:78, 字:11, 帯:11, 最小:0, 高:"none", 行:"5px 4px", 月:(m)=>m+"月" }
               : { 名:84, 字:12.5, 帯:14, 最小:600, 高:228, 行:"7px 4px", 月:(m)=>m+"月" };
-              const 列 = 寸.名 + "px repeat(12, 1fr)";
+              const 列 = 寸.名 + "px repeat(" + MONTH_ORDER.length + ", 1fr)";
               return (
             <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"0 0 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:寸.高, WebkitOverflowScrolling:"touch" }}>
               <div style={{ minWidth:寸.最小 }}>
@@ -2822,8 +2826,8 @@ function BundleTab({ 細い } = {}) {
 
             {viewList.length === 0 ? (
               <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 20px", fontSize:12.5, lineHeight:1.7, background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, marginBottom:14 }}>
-                {viewM}月に決まった行事はありません<br/>
-                <span style={{ fontSize:12 }}>下の「いつでも使うもの」から選べます</span>
+                {viewM}月に決まった行事はありません
+                {!細い && <><br/><span style={{ fontSize:12 }}>下の「いつでも使うもの」から選べます</span></>}
               </div>
             ) : (
               <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:14 }}>
@@ -2841,8 +2845,8 @@ function BundleTab({ 細い } = {}) {
               </>
             )}
 
-            {/* 通年 */}
-            {always.length > 0 && (
+            {/* 通年（細いときは出さない。柱の縦を行事に使うため） */}
+            {!細い && always.length > 0 && (
               <>
                 <div style={{ fontSize:12, fontWeight:900, color:"var(--sub)", marginBottom:8 }}>いつでも使うもの</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -2851,9 +2855,11 @@ function BundleTab({ 細い } = {}) {
               </>
             )}
 
-            <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
-              上の図の月を押すと、その月の行事に切り替わります。右の数字はPOPの枚数です。
-            </div>
+            {!細い && (
+              <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:18 }}>
+                上の図の月を押すと、その月の行事に切り替わります。右の数字はPOPの枚数です。
+              </div>
+            )}
           </>
         )}
       </div>
