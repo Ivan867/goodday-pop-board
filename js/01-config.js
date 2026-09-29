@@ -100,7 +100,18 @@ const DEPTS = {
   }
 };
 // いま開いている部門。端末が覚える（売場のiPadは一度選べばそのまま）
+// 売場の端末（狭い画面）は、記録がどうであっても必ず鮮魚にする。
+// 切り替えは事務所のパソコンからしかできないので、青果のまま閉じ込められないように。
+const DEPT_PC_MIN = 1024; // ← index.html の .dept-opt のCSSと、02-api.jsx の sbDept と同じ数字にすること
+function deptOnPhone() {
+  try {
+    return window.innerWidth < DEPT_PC_MIN;
+  } catch (e) {
+    return false;
+  }
+}
 function deptKey() {
+  if (deptOnPhone()) return "fish";
   try {
     const d = localStorage.getItem("dept");
     return DEPTS[d] ? d : "fish";
@@ -258,8 +269,8 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
-  title: "メニューに、いま何部門かを出しました",
-  body: "スマホ・iPadでは「鮮魚」と出るだけで、切り替えはできません。売場の端末で知らないうちに青果へ変わる事故を防ぐためです。切り替えは事務所のパソコンからできます。"
+  title: "スマホ・iPadは必ず鮮魚になります",
+  body: "メニューに「鮮魚」とだけ出ます。前に青果へ切り替えた端末でも、鮮魚に戻ります。売場の端末で知らないうちに青果になっている事故を防ぐためです。切り替えは事務所のパソコンからだけできます。"
 }, {
   date: "2026-09-29",
   type: "改善",

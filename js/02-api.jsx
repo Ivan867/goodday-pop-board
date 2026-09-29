@@ -26,7 +26,10 @@ function sbNotifyFail(method, detail) {
 // 部門で分かれるテーブル。ここに足せば、そのテーブルも部門ごとになる
 const DEPT_TABLES = ["pops"];
 function sbDept() {
-  try { const d = localStorage.getItem("dept"); return (d === "produce") ? d : "fish"; } catch (e) { return "fish"; }
+  try {
+    if (window.innerWidth < 1024) return "fish";         // 売場の端末（スマホ・iPad）は必ず鮮魚
+    const d = localStorage.getItem("dept"); return (d === "produce") ? d : "fish";
+  } catch (e) { return "fish"; }
 }
 // 読むときは ?dept=eq.○○ を足し、入れるときは dept を混ぜる。呼ぶ側は何も変えなくていい
 function sbWithDept(path, method, body) {
