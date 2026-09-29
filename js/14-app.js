@@ -964,6 +964,34 @@ function App() {
     }
   }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
+      display: "flex",
+      gap: 6,
+      marginBottom: 14,
+      background: "var(--chip)",
+      borderRadius: 11,
+      padding: 4
+    }
+  }, Object.keys(DEPTS).map(k => {
+    const いま = deptKey() === k;
+    return /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setDeptKey(k),
+      "aria-pressed": いま,
+      style: {
+        flex: 1,
+        border: "none",
+        cursor: いま ? "default" : "pointer",
+        background: いま ? "var(--primary-soft)" : "transparent",
+        color: いま ? "#fff" : "var(--sub)",
+        borderRadius: 8,
+        padding: "9px 6px",
+        fontSize: 13.5,
+        fontWeight: 900,
+        fontFamily: "inherit"
+      }
+    }, DEPTS[k].label);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
       flex: "1 1 auto",
       display: "flex",
       flexDirection: "column",

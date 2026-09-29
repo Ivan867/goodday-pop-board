@@ -151,7 +151,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   const pickCat = (val) => { setFCat(val); setRadialChanged(true); };
 
   const storeItems = [{lbl:"全店舗",val:""},...STORES.filter(s=>(counts[s]||0)>0).map(s=>({lbl:s,val:s}))];
-  const catItems = ["",...CATEGORIES].map(c=>({lbl:c||"すべて", val:c}));
+  const catItems = ["",...deptCategories()].map(c=>({lbl:c||"すべて", val:c}));
   const storePos = arcPositions(storeItems.length, 104, 150, 30);
   const catPos = arcPositions(catItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
@@ -368,8 +368,8 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
               {[
                 { key:"genre", title:"ジャンルで絞り込む",
-                  items: GENRES.map(g => ({ v:g, l:g })), cur: fGenre, set: setFGenre },
-                { key:"fish", title:"魚で絞り込む",
+                  items: deptGenres().map(g => ({ v:g, l:g })), cur: fGenre, set: setFGenre },
+                { key:"fish", title: deptConf().ものの呼び名 + "で絞り込む",
                   items: spCounts.map(({ sp, n }) => ({ v:sp.id, l:sp.canonical_name, n, sp })),
                   cur: fSp ? fSp.id : "", set: (v, it) => setFSp(it && it.sp ? it.sp : null) },
                 { key:"store", title:"お店で絞り込む",
@@ -523,7 +523,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
   const hasFilter = q || fStore || fCat || fGenre;
   const storeCounts = allPops.reduce((a,p)=>{ a[p.store_name]=(a[p.store_name]||0)+1; return a; }, {});
   const fanStoreItems = STORES.filter(s=>(storeCounts[s]||0)>0).map(s=>({lbl:s,val:s}));
-  const fanCatItems = ["",...CATEGORIES.filter(c=>c!=="その他")].map(c=>({lbl:c||"すべて", val:c}));
+  const fanCatItems = ["",...deptCategories().filter(c=>c!=="その他")].map(c=>({lbl:c||"すべて", val:c}));
   const fanStorePos = arcPositions(fanStoreItems.length, 104, 150, 30);
   const fanCatPos = arcPositions(fanCatItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
@@ -533,8 +533,8 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
       {/* 左端のジャンル付箋タブ（扇フィルターと同時に表示。勝部が選別したジャンルで絞り込み） */}
       <div className="genre-tabs" style={{ position:"fixed", left:0, top:"calc(50% + 16px)", transform:"translateY(-50%)", zIndex:166, display:"flex", flexDirection:"column", gap:3, maxHeight:"calc(100vh - 210px)", overflowY:"auto", overscrollBehavior:"contain", WebkitOverflowScrolling:"touch", paddingTop:2, paddingBottom:2 }}>
-          {GENRES.map(g => {
-            const c = GENRE_COLORS[g];
+          {deptGenres().map(g => {
+            const c = deptGenreColors()[g];
             const on = fGenre === g;
             return (
               <button key={g} onClick={() => { setFGenre(on ? "" : g); ensureLoaded(); }}
@@ -574,7 +574,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
 
         {/* カテゴリフィルター */}
         <div style={{ display:"flex", gap:"0 15px", flexWrap:"nowrap", overflowX:"auto", paddingBottom:4 }}>
-          {["", "その他", ...CATEGORIES.filter(c=>c!=="その他")].map(c=>(
+          {["", "その他", ...deptCategories().filter(c=>c!=="その他")].map(c=>(
             <button key={c||"all"} onClick={()=>{ setFCat(c); ensureLoaded(); }}
               style={{ border:"none", background:"none", cursor:"pointer", padding:"0 0 3px", flexShrink:0, whiteSpace:"nowrap", fontSize:12.5, fontWeight:fCat===c?700:600, color:fCat===c?"#111":"#999", borderBottom:fCat===c?"2px solid #111":"1px solid #ededef" }}>
               {c||"すべて"}

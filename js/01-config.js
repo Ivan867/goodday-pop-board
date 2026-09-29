@@ -77,6 +77,57 @@ const TAB_REGISTRY = [{
   section: "管理"
 }];
 const CATEGORIES = ["鮮魚", "刺身・寿司", "惣菜", "塩干", "その他"];
+
+// ═══════════ 部門（鮮魚 / 青果）═══════════
+// 部門ごとに変わるのは「言葉」と「色」だけ。仕組みは共通のまま。
+const DEPT_VEG_NAMES = ["ダイコン", "ニンジン", "タマネギ", "ジャガイモ", "サツマイモ", "サトイモ", "ナガイモ", "ゴボウ", "レンコン", "カブ", "ハクサイ", "キャベツ", "レタス", "サニーレタス", "ホウレンソウ", "コマツナ", "シュンギク", "ミズナ", "チンゲンサイ", "ニラ", "ネギ", "ワケギ", "ミツバ", "セロリ", "アスパラガス", "ブロッコリー", "カリフラワー", "キュウリ", "ナス", "トマト", "ミニトマト", "ピーマン", "パプリカ", "シシトウ", "ズッキーニ", "カボチャ", "ゴーヤ", "オクラ", "トウモロコシ", "エダマメ", "サヤインゲン", "サヤエンドウ", "スナップエンドウ", "ソラマメ", "モヤシ", "カイワレ", "ニンニク", "ショウガ", "ミョウガ", "シソ", "パセリ", "バジル", "セリ", "フキ", "ウド", "タケノコ", "ワラビ", "ゼンマイ", "タラノメ", "ナノハナ", "シイタケ", "シメジ", "エノキ", "マイタケ", "エリンギ", "ナメコ", "マッシュルーム", "キクラゲ", "マツタケ", "ヒラタケ", "リンゴ", "フジ", "ミカン", "デコポン", "イヨカン", "ハッサク", "ネーブル", "グレープフルーツ", "レモン", "ユズ", "カボス", "スダチ", "イチゴ", "ブドウ", "シャインマスカット", "ピオーネ", "デラウェア", "ナシ", "ニホンナシ", "ラフランス", "モモ", "スモモ", "サクランボ", "カキ", "イチジク", "クリ", "ウメ", "ビワ", "キウイ", "メロン", "スイカ", "バナナ", "パイナップル", "マンゴー", "アボカド", "ブルーベリー", "ラズベリー", "プルーン", "ザクロ", "ポンカン"];
+const DEPTS = {
+  fish: {
+    key: "fish",
+    label: "鮮魚",
+    短い: "魚",
+    categories: ["鮮魚", "刺身・寿司", "惣菜", "塩干", "その他"],
+    genres: ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "その他"],
+    ものの呼び名: "魚"
+  },
+  produce: {
+    key: "produce",
+    label: "青果",
+    短い: "菜",
+    categories: ["野菜", "果物", "カット・サラダ", "漬物・惣菜", "その他"],
+    genres: ["葉物", "根菜", "果菜", "きのこ", "果物", "カット", "地物", "行事", "均一", "その他"],
+    ものの呼び名: "品目"
+  }
+};
+// いま開いている部門。端末が覚える（売場のiPadは一度選べばそのまま）
+function deptKey() {
+  try {
+    const d = localStorage.getItem("dept");
+    return DEPTS[d] ? d : "fish";
+  } catch (e) {
+    return "fish";
+  }
+}
+function deptConf() {
+  return DEPTS[deptKey()] || DEPTS.fish;
+}
+// 部門を変える。色も言葉も全部変わるので、読み込み直すのが一番確実で安全
+function setDeptKey(k) {
+  if (!DEPTS[k] || k === deptKey()) return;
+  try {
+    localStorage.setItem("dept", k);
+  } catch (e) {}
+  try {
+    location.reload();
+  } catch (e) {}
+}
+function deptCategories() {
+  return deptConf().categories;
+}
+function deptGenres() {
+  return deptConf().genres;
+}
+
 // 検索の縦タブ用ジャンル（管理画面で勝部だけが選別する）。色は売場でひと目で見分ける用。
 const GENRES = ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "その他"];
 const GENRE_COLORS = {
@@ -136,11 +187,80 @@ const GENRE_COLORS = {
     text: "#565B61"
   }
 };
+// 青果のジャンル色。明暗の差は鮮魚と同じ組み方にしてある
+const GENRE_COLORS_PRODUCE = {
+  "葉物": {
+    solid: "#3E8E41",
+    soft: "#E7F3E7",
+    text: "#245C27"
+  },
+  "根菜": {
+    solid: "#B0703A",
+    soft: "#F6EDE3",
+    text: "#6E4218"
+  },
+  "果菜": {
+    solid: "#D2483F",
+    soft: "#FAE9E7",
+    text: "#8F2820"
+  },
+  "きのこ": {
+    solid: "#8A6A4F",
+    soft: "#F0EAE3",
+    text: "#55402C"
+  },
+  "果物": {
+    solid: "#D94C7A",
+    soft: "#FCE9F0",
+    text: "#96284F"
+  },
+  "カット": {
+    solid: "#2AA3A3",
+    soft: "#E2F4F4",
+    text: "#136868"
+  },
+  "地物": {
+    solid: "#639922",
+    soft: "#EAF3DE",
+    text: "#3B6D11"
+  },
+  "行事": {
+    solid: "#6C5CC7",
+    soft: "#EEEDFE",
+    text: "#3C3489"
+  },
+  "均一": {
+    solid: "#E08A2B",
+    soft: "#FBF0E0",
+    text: "#96560F"
+  },
+  "その他": {
+    solid: "#B08968",
+    soft: "#F4EDE4",
+    text: "#6E4F2F"
+  },
+  "除外": {
+    solid: "#8A9099",
+    soft: "#EEF0F2",
+    text: "#565B61"
+  }
+};
+function deptGenreColors() {
+  return deptKey() === "produce" ? GENRE_COLORS_PRODUCE : GENRE_COLORS;
+}
+function deptRainNames() {
+  return deptKey() === "produce" ? DEPT_VEG_NAMES : null;
+}
 const FLOOR_CATS = ["対面", "丸魚", "切身", "刺身", "寿司", "塩干", "その他"];
 const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医大通り店", "平田店", "推奨モデル"];
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-29",
+  type: "新機能",
+  title: "部門を切り替えられるようにしました（試し）",
+  body: "メニューの一番上で「鮮魚」と「青果」を切り替えられます。切り替えると言葉も色も変わり、ポップも部門ごとに分かれます。今ある355件はすべて鮮魚のままです。まだ試しの段階です。"
+}, {
   date: "2026-09-29",
   type: "改善",
   title: "認証画面に降る文字を魚の名前にしました",
@@ -1937,6 +2057,16 @@ function loadScriptOnce(src) {
 }
 ;
 Object.assign(window, {
+  DEPTS,
+  deptKey,
+  deptConf,
+  setDeptKey,
+  deptCategories,
+  deptGenres,
+  deptGenreColors,
+  deptRainNames,
+  GENRE_COLORS_PRODUCE,
+  DEPT_VEG_NAMES,
   ANNOUNCEMENTS,
   ANN_TYPES,
   CATEGORIES,

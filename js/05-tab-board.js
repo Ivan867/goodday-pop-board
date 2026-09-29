@@ -249,7 +249,7 @@ function BoardTab({
     lbl: s,
     val: s
   }))];
-  const catItems = ["", ...CATEGORIES].map(c => ({
+  const catItems = ["", ...deptCategories()].map(c => ({
     lbl: c || "すべて",
     val: c
   }));
@@ -923,7 +923,7 @@ function BoardTab({
   }), [{
     key: "genre",
     title: "ジャンルで絞り込む",
-    items: GENRES.map(g => ({
+    items: deptGenres().map(g => ({
       v: g,
       l: g
     })),
@@ -931,7 +931,7 @@ function BoardTab({
     set: setFGenre
   }, {
     key: "fish",
-    title: "魚で絞り込む",
+    title: deptConf().ものの呼び名 + "で絞り込む",
     items: spCounts.map(({
       sp,
       n
@@ -1225,7 +1225,7 @@ function SearchTab({
     lbl: s,
     val: s
   }));
-  const fanCatItems = ["", ...CATEGORIES.filter(c => c !== "その他")].map(c => ({
+  const fanCatItems = ["", ...deptCategories().filter(c => c !== "その他")].map(c => ({
     lbl: c || "すべて",
     val: c
   }));
@@ -1256,8 +1256,8 @@ function SearchTab({
       paddingTop: 2,
       paddingBottom: 2
     }
-  }, GENRES.map(g => {
-    const c = GENRE_COLORS[g];
+  }, deptGenres().map(g => {
+    const c = deptGenreColors()[g];
     const on = fGenre === g;
     return /*#__PURE__*/React.createElement("button", {
       key: g,
@@ -1379,7 +1379,7 @@ function SearchTab({
       overflowX: "auto",
       paddingBottom: 4
     }
-  }, ["", "その他", ...CATEGORIES.filter(c => c !== "その他")].map(c => /*#__PURE__*/React.createElement("button", {
+  }, ["", "その他", ...deptCategories().filter(c => c !== "その他")].map(c => /*#__PURE__*/React.createElement("button", {
     key: c || "all",
     onClick: () => {
       setFCat(c);
