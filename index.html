@@ -2,6 +2,16 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
+<script>
+/* 起動中のエラーを、いちばん最初から拾う。読み込めなかったファイル名も残す。 */
+window.__bootErr = [];
+window.addEventListener("error", function(e){
+  var t = e && e.target;
+  var msg = (t && (t.src || t.href)) ? ("読めない: " + String(t.src || t.href).split("/").slice(-2).join("/"))
+          : ((e && e.message) || "?");
+  if (window.__bootErr.indexOf(msg) < 0) window.__bootErr.push(msg);
+}, true);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#F5F2EC" />
 <meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: dark)" />
@@ -26,9 +36,12 @@
 })();
 </script>
 <title>GoodDay 鮮魚共有</title>
-<!-- React本体はこのサイトの中に置いている（外のCDNに取りに行かないので、会社の通信制限や外の障害で止まらない） -->
-<script src="vendor/react-18.2.0.min.js"></script>
-<script src="vendor/react-dom-18.2.0.min.js"></script>
+<!-- React本体：まず今までどおりCDNから。取れなければ、このサイトに置いた控えに切り替える。
+     （会社の通信制限やCDN障害で止まらないための二段構え） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script>if (!window.React) document.write('<script src="vendor/react-18.2.0.min.js"><\/script>');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>if (!window.ReactDOM) document.write('<script src="vendor/react-dom-18.2.0.min.js"><\/script>');</script>
 <style>
 :root {
   --primary: #1d3a57;
@@ -408,14 +421,17 @@ body { position: relative; overscroll-behavior-y: none; }
     m.style.cssText = "margin-top:14px;font-size:10px;color:#999;text-align:center;padding:0 20px;word-break:break-all;line-height:1.6";
     s.appendChild(m);
   }
-  window.__bootErr = [];
-  window.addEventListener("error", function(e){
-    var msg = (e && (e.message || (e.target && e.target.src))) || "?";
-    window.__bootErr.push(String(msg).slice(0,160));
+  window.addEventListener("error", function(){
+    案内("error");
+    var m = document.getElementById("bootmsg");
+    if (m) m.textContent = (window.__bootErr || []).join(" / ");
+  }, true);
+  // 見張りを付ける前に出たエラーがあれば、その場で出す
+  if ((window.__bootErr || []).length) setTimeout(function(){
     案内("error");
     var m = document.getElementById("bootmsg");
     if (m) m.textContent = window.__bootErr.join(" / ");
-  }, true);
+  }, 50);
   var 見張り = setInterval(function(){
     var r = document.getElementById("root"), s = document.getElementById("splash");
     if (!s) { clearInterval(見張り); return; }
@@ -432,21 +448,21 @@ body { position: relative; overscroll-behavior-y: none; }
 })();
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260929h"></script>
-<script src="js/02-api.js?v=20260929h"></script>
-<script src="js/03-utils.js?v=20260929h"></script>
-<script src="js/04-shared.js?v=20260929h"></script>
-<script src="js/05-tab-board.js?v=20260929h"></script>
-<script src="js/06-tab-create.js?v=20260929h"></script>
-<script src="js/07-tab-floor.js?v=20260929h"></script>
-<script src="js/09-tab-info.js?v=20260929h"></script>
-<script src="js/11-tab-check-fish.js?v=20260929h"></script>
-<script src="js/12-tab-learn.js?v=20260929h"></script>
-<script src="js/14-app.js?v=20260929h"></script>
+<script src="js/01-config.js?v=20260929i"></script>
+<script src="js/02-api.js?v=20260929i"></script>
+<script src="js/03-utils.js?v=20260929i"></script>
+<script src="js/04-shared.js?v=20260929i"></script>
+<script src="js/05-tab-board.js?v=20260929i"></script>
+<script src="js/06-tab-create.js?v=20260929i"></script>
+<script src="js/07-tab-floor.js?v=20260929i"></script>
+<script src="js/09-tab-info.js?v=20260929i"></script>
+<script src="js/11-tab-check-fish.js?v=20260929i"></script>
+<script src="js/12-tab-learn.js?v=20260929i"></script>
+<script src="js/14-app.js?v=20260929i"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929h";
+window.APP_VER = "20260929i";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
