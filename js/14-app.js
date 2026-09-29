@@ -510,6 +510,23 @@ function App() {
       localStorage.setItem("badgeSeenVer", notice.badge_ver || "");
     } catch (e) {}
   };
+
+  // パソコンの広い画面では、メニューを左に開いたままにする
+  const [広い, set広い] = useState(() => {
+    try {
+      return window.innerWidth >= 1280;
+    } catch (e) {
+      return false;
+    }
+  });
+  useEffect(() => {
+    const み = () => set広い(window.innerWidth >= 1280);
+    window.addEventListener("resize", み);
+    return () => window.removeEventListener("resize", み);
+  }, []);
+  useEffect(() => {
+    if (広い) setMoreOpen(true);
+  }, [広い]);
   useEffect(() => {
     const sp = document.getElementById("splash");
     if (!sp) return;
@@ -906,7 +923,7 @@ function App() {
     cy: "18",
     r: "2.3",
     fill: "var(--primary)"
-  })), /*#__PURE__*/React.createElement("span", null, showToTop ? "上へ" : "さがす")), moreOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("span", null, showToTop ? "上へ" : "さがす")), (moreOpen || 広い) && /*#__PURE__*/React.createElement(React.Fragment, null, !広い && /*#__PURE__*/React.createElement("div", {
     onClick: () => setMoreOpen(false),
     style: {
       position: "fixed",
@@ -915,7 +932,7 @@ function App() {
       background: "rgba(0,0,0,0.28)"
     }
   }), /*#__PURE__*/React.createElement("div", {
-    className: "fs-top menu-drawer",
+    className: "fs-top menu-drawer" + (広い ? " menu-dock" : ""),
     style: {
       position: "fixed",
       right: 0,
@@ -947,7 +964,7 @@ function App() {
       fontWeight: 900,
       color: "var(--ink)"
     }
-  }, "\u30E1\u30CB\u30E5\u30FC"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30E1\u30CB\u30E5\u30FC"), !広い && /*#__PURE__*/React.createElement("button", {
     onClick: () => setMoreOpen(false),
     "aria-label": "\u9589\u3058\u308B",
     style: {
@@ -974,35 +991,7 @@ function App() {
       opacity: 0.95
     }
   }), /*#__PURE__*/React.createElement("div", {
-    className: "dept-switch",
-    style: {
-      gap: 6,
-      marginBottom: 14,
-      background: "var(--chip)",
-      borderRadius: 11,
-      padding: 4
-    }
-  }, Object.keys(DEPTS).map(k => {
-    const いま = deptKey() === k;
-    return /*#__PURE__*/React.createElement("button", {
-      key: k,
-      onClick: () => setDeptKey(k),
-      "aria-pressed": いま,
-      className: "dept-opt" + (いま ? " dept-on" : ""),
-      style: {
-        flex: 1,
-        border: "none",
-        cursor: いま ? "default" : "pointer",
-        background: いま ? "var(--primary-soft)" : "transparent",
-        color: いま ? "#fff" : "var(--sub)",
-        borderRadius: 8,
-        padding: "9px 6px",
-        fontSize: 13.5,
-        fontWeight: 900,
-        fontFamily: "inherit"
-      }
-    }, DEPTS[k].label);
-  })), /*#__PURE__*/React.createElement("div", {
+    className: "menu-list",
     style: {
       flex: "1 1 auto",
       display: "flex",
@@ -1011,7 +1000,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "archive", "catalog", "gne", "order", "lab", "barcode", "request", "admin"];
+    const ORDER = ["search", "bundle", "archive", "catalog", "gne", "order", "lab", "barcode", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
@@ -1087,7 +1076,22 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  }))))))), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
+  }))))), 広い && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 16,
+      paddingTop: 14,
+      borderTop: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 10
+    }
+  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement(CalendarTab, {
+    細い: true
+  })))), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
     onClose: () => setShowUpload(false),
     onSuccess: () => {

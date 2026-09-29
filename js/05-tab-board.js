@@ -457,40 +457,41 @@ function BoardTab({
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
   }, icon))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => onFeatGo && onFeatGo("bundle"),
-    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u3092\u958B\u304F",
-    title: "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC",
+    onClick: () => setDeptKey(deptNext()),
+    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[deptNext()].label + "に変わります",
+    title: "部門をかえる（いま：" + deptConf().label + "）",
+    className: "bt-btn bt-dept",
     style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: "var(--primary-soft)",
+      border: "1px solid var(--primary-soft)",
+      background: "var(--soft)",
+      color: "var(--soft-text)",
       borderRadius: 10,
-      padding: 0,
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      flexShrink: 0
-    },
-    className: "bt-btn"
+      gap: 3,
+      flexShrink: 0,
+      fontFamily: "inherit",
+      fontSize: 12.5,
+      fontWeight: 900,
+      whiteSpace: "nowrap"
+    }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
+    width: "13",
+    height: "13",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2",
+    strokeWidth: "2.4",
     strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "5",
-    width: "18",
-    height: "16",
-    rx: "2.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M3 10h18M8 3v4M16 3v4"
-  }))), /*#__PURE__*/React.createElement("button", {
+    strokeLinejoin: "round",
+    style: {
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 8h13l-3-3M20 16H7l3 3"
+  })), deptConf().label), /*#__PURE__*/React.createElement("button", {
     onClick: () => setDarkSave(!dark),
     "aria-pressed": dark,
     "aria-label": dark ? "明るい画面にする" : "暗い画面にする",

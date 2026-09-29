@@ -27,7 +27,6 @@ function sbNotifyFail(method, detail) {
 const DEPT_TABLES = ["pops"];
 function sbDept() {
   try {
-    if (window.innerWidth < 1024) return "fish";         // 売場の端末（スマホ・iPad）は必ず鮮魚
     const d = localStorage.getItem("dept"); return (d === "produce") ? d : "fish";
   } catch (e) { return "fish"; }
 }

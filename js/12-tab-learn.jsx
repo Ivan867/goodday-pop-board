@@ -1,7 +1,7 @@
 /* GoodDay 鮮魚共有 — 12-tab-learn （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
-function CalendarTab() {
+function CalendarTab({ 細い } = {}) {
   const today = new Date(); today.setHours(0,0,0,0);
   const [ym, setYm] = useState({ y: today.getFullYear(), m: today.getMonth() }); // m:0-11
 
@@ -28,14 +28,16 @@ function CalendarTab() {
   const jp = ["日","月","火","水","木","金","土"];
 
   return (
-    <div className="min-vh" style={{ background:"var(--bg)" }}>
-      <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
-        <div style={{ maxWidth:1600, margin:"0 auto" }}>
-          <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
-          <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
+    <div className={細い ? "" : "min-vh"} style={{ background: 細い ? "transparent" : "var(--bg)" }}>
+      {!細い && (
+        <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"calc(env(safe-area-inset-top) + 20px) 16px 22px" }}>
+          <div style={{ maxWidth:1600, margin:"0 auto" }}>
+            <div style={{ color:"var(--primary)", fontSize:18, fontWeight:900 }}>行事カレンダー</div>
+            <div style={{ color:"rgba(29,58,87,0.72)", fontSize:12, marginTop:2 }}>売場に関わる行事・ハレの日をチェック</div>
+          </div>
         </div>
-      </div>
-      <div style={{ maxWidth:1600, margin:"0 auto", padding:"16px 16px 120px" }}>
+      )}
+      <div style={{ maxWidth: 細い ? "none" : 1600, margin:"0 auto", padding: 細い ? "0" : "16px 16px 120px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <button onClick={prevM} style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:10, width:38, height:38, fontSize:18, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>‹</button>
           <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)" }}>{ym.y}年 {ym.m+1}月</div>
@@ -57,7 +59,7 @@ function CalendarTab() {
               const wd = (startWd + d - 1) % 7;
               const dayColor = ev ? "var(--primary)" : (hol || wd===0) ? "#c0392b" : wd===6 ? "#2f6fb0" : "var(--text)";
               return (
-                <div key={i} style={{ minHeight:52, borderRadius:8, padding:"3px 2px", background: isToday ? "var(--soft)" : (hol ? "#fdeeee" : "transparent"), border: isToday ? "1.5px solid var(--primary)" : "1px solid transparent", display:"flex", flexDirection:"column", alignItems:"center" }}>
+                <div key={i} style={{ minHeight: 細い ? 42 : 52, borderRadius:8, padding:"3px 2px", background: isToday ? "var(--soft)" : (hol ? "#fdeeee" : "transparent"), border: isToday ? "1.5px solid var(--primary)" : "1px solid transparent", display:"flex", flexDirection:"column", alignItems:"center" }}>
                   <span style={{ fontSize:12.5, fontWeight: isToday?900:700, color: dayColor }}>{d}</span>
                   {ev ? <span style={{ fontSize:12.5, fontWeight:800, color:"var(--soft-text)", lineHeight:1.15, textAlign:"center", marginTop:1 }}>{ev.name.length>4?ev.name.slice(0,4):ev.name}</span>
                     : hol ? <span style={{ fontSize:12.5, fontWeight:800, color:"#c0392b", lineHeight:1.1, textAlign:"center", marginTop:1 }}>{hol.length>4?hol.slice(0,4):hol}</span> : null}
@@ -82,7 +84,7 @@ function CalendarTab() {
             </div>
           </div>
         ))}
-        <div style={{ fontSize:12, color:"var(--faint)", textAlign:"center", marginTop:8, lineHeight:1.7 }}>行事の追加・編集機能は今後対応予定です。<br/>まずは季節の売場づくりの目安にどうぞ。</div>
+        {!細い && <div style={{ fontSize:12, color:"var(--faint)", textAlign:"center", marginTop:8, lineHeight:1.7 }}>行事の追加・編集機能は今後対応予定です。<br/>まずは季節の売場づくりの目安にどうぞ。</div>}
       </div>
     </div>
   );

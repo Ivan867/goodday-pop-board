@@ -202,10 +202,17 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
               ))}
             </div>
 
-            <button onClick={() => onFeatGo && onFeatGo("bundle")} aria-label="行事カレンダーを開く" title="行事カレンダー"
-              style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
-                borderRadius:10, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }} className="bt-btn">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            {/* 部門の切り替え。押すと言葉も色も入れ替わり、読み込み直す。
+                いま何部門かが常に見えているので、間違えたまま投稿しにくい。 */}
+            <button onClick={() => setDeptKey(deptNext())}
+              aria-label={"いまは" + deptConf().label + "。押すと" + DEPTS[deptNext()].label + "に変わります"}
+              title={"部門をかえる（いま：" + deptConf().label + "）"}
+              className="bt-btn bt-dept"
+              style={{ border:"1px solid var(--primary-soft)", background:"var(--soft)", color:"var(--soft-text)",
+                borderRadius:10, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                gap:3, flexShrink:0, fontFamily:"inherit", fontSize:12.5, fontWeight:900, whiteSpace:"nowrap" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>
+              {deptConf().label}
             </button>
 
             

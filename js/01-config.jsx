@@ -42,15 +42,13 @@ const DEPTS = {
   },
 };
 // いま開いている部門。端末が覚える（売場のiPadは一度選べばそのまま）
-// 売場の端末（狭い画面）は、記録がどうであっても必ず鮮魚にする。
-// 切り替えは事務所のパソコンからしかできないので、青果のまま閉じ込められないように。
-const DEPT_PC_MIN = 1024;   // ← index.html の .dept-opt のCSSと、02-api.jsx の sbDept と同じ数字にすること
-function deptOnPhone() {
-  try { return window.innerWidth < DEPT_PC_MIN; } catch (e) { return false; }
-}
 function deptKey() {
-  if (deptOnPhone()) return "fish";
   try { const d = localStorage.getItem("dept"); return DEPTS[d] ? d : "fish"; } catch (e) { return "fish"; }
+}
+// 次の部門（今ひとつしかないので、押すたびに入れ替わる）
+function deptNext() {
+  const ks = Object.keys(DEPTS); const i = ks.indexOf(deptKey());
+  return ks[(i + 1) % ks.length];
 }
 function deptConf() { return DEPTS[deptKey()] || DEPTS.fish; }
 // 部門を変える。色も言葉も全部変わるので、読み込み直すのが一番確実で安全
@@ -100,6 +98,8 @@ const FLOOR_STORES = ["北部店","木次店","大田店","斐川店","医大通
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [
+  { date:"2026-09-29", type:"改善", title:"パソコンでは、メニューと行事カレンダーを左にずっと出します", body:"画面が広いとき、左の余白にメニューを開いたまま置き、その下に行事カレンダーを出します。押して開く手間がなくなり、今月の行事がいつも見えます。" },
+  { date:"2026-09-29", type:"改善", title:"一覧の上に部門のボタンを置きました", body:"カレンダーのボタンがあった所が「鮮魚／青果」の切り替えになりました。押すと言葉も色も入れ替わります。行事カレンダーはメニューの中に移しています。" },
   { date:"2026-09-29", type:"改善", title:"スマホ・iPadは必ず鮮魚になります", body:"メニューに「鮮魚」とだけ出ます。前に青果へ切り替えた端末でも、鮮魚に戻ります。売場の端末で知らないうちに青果になっている事故を防ぐためです。切り替えは事務所のパソコンからだけできます。" },
   { date:"2026-09-29", type:"改善", title:"アプリのしるしを新しくしました", body:"葉と魚がひと続きになった形にしました。起動画面とメニューの中に出ます。ブックマークやホーム画面のアイコンも同じ形に変わります。" },
   { date:"2026-09-29", type:"新機能", title:"部門を切り替えられるようにしました（試し）", body:"メニューの一番上で「鮮魚」と「青果」を切り替えられます。切り替えると言葉も色も変わり、ポップも部門ごとに分かれます。今ある355件はすべて鮮魚のままです。まだ試しの段階です。" },
@@ -493,4 +493,4 @@ function loadScriptOnce(src) {
 
 
 
-;Object.assign(window, { DEPTS, deptKey, deptConf, setDeptKey, deptCategories, deptGenres, deptGenreColors, deptRainNames, GENRE_COLORS_PRODUCE, DEPT_VEG_NAMES, ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSPDF_SRC, JSZIP_SRC, TESSERACT_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });
+;Object.assign(window, { DEPTS, deptKey, deptNext, deptConf, setDeptKey, deptCategories, deptGenres, deptGenreColors, deptRainNames, GENRE_COLORS_PRODUCE, DEPT_VEG_NAMES, ANNOUNCEMENTS, ANN_TYPES, CATEGORIES, FLOOR_CATS, FLOOR_STORES, GENRES, GENRE_COLORS, GNE_FONTS, GNE_FONT_NAME, GNE_FONT_URL, JSBARCODE_SRC, JSPDF_SRC, JSZIP_SRC, TESSERACT_SRC, PDFJS_SRC, PDFJS_WORKER, STORES, TAB_REGISTRY, XLSX_SRC, loadScriptOnce, normJa });

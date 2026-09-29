@@ -5,7 +5,9 @@ var {
   useCallback,
   useRef
 } = React;
-function CalendarTab() {
+function CalendarTab({
+  細い
+} = {}) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const [ym, setYm] = useState({
@@ -53,11 +55,11 @@ function CalendarTab() {
   });
   const jp = ["日", "月", "火", "水", "木", "金", "土"];
   return /*#__PURE__*/React.createElement("div", {
-    className: "min-vh",
+    className: 細い ? "" : "min-vh",
     style: {
-      background: "var(--bg)"
+      background: 細い ? "transparent" : "var(--bg)"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, !細い && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "linear-gradient(180deg,#e7f1fa,#d3e5f4)",
       padding: "calc(env(safe-area-inset-top) + 20px) 16px 22px"
@@ -81,9 +83,9 @@ function CalendarTab() {
     }
   }, "\u58F2\u5834\u306B\u95A2\u308F\u308B\u884C\u4E8B\u30FB\u30CF\u30EC\u306E\u65E5\u3092\u30C1\u30A7\u30C3\u30AF"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1600,
+      maxWidth: 細い ? "none" : 1600,
       margin: "0 auto",
-      padding: "16px 16px 120px"
+      padding: 細い ? "0" : "16px 16px 120px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -165,7 +167,7 @@ function CalendarTab() {
     return /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
-        minHeight: 52,
+        minHeight: 細い ? 42 : 52,
         borderRadius: 8,
         padding: "3px 2px",
         background: isToday ? "var(--soft)" : hol ? "#fdeeee" : "transparent",
@@ -274,7 +276,7 @@ function CalendarTab() {
       color: "var(--soft-text)",
       marginTop: 2
     }
-  }, "\uD83D\uDCA1 ", e.food)))), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCA1 ", e.food)))), !細い && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
