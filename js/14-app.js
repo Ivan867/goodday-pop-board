@@ -63,7 +63,12 @@ var LAZY_TABS = {
   lab: {
     file: "21-tab-lab",
     comp: "LabTab"
-  } // 試作システム（読み込み＋伝票検算）
+  },
+  // 試作システム（読み込み＋伝票検算）
+  guide: {
+    file: "22-tab-guide",
+    comp: "GuideTab"
+  } // 手引き（渡すリンクと使い方）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -165,6 +170,11 @@ const MENU_ICON = (() => {
       rx: "1.5"
     }), /*#__PURE__*/React.createElement("path", {
       d: "M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"
+    }))),
+    guide: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 5.5A2 2 0 016 3.5h13v15H6a2 2 0 00-2 2z"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M8 8h7M8 11.5h7"
     }))),
     admin: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"
@@ -742,6 +752,8 @@ function App() {
     tabKey: "order"
   }), tab === "lab" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "lab"
+  }), tab === "guide" && /*#__PURE__*/React.createElement(LazyTab, {
+    tabKey: "guide"
   }), tab === "bundle" && /*#__PURE__*/React.createElement(BundleTab, null), tab === "trend" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "trend"
   }), tab === "idea" && /*#__PURE__*/React.createElement(LazyTab, {
@@ -1000,7 +1012,7 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "bundle", "archive", "catalog", "gne", "order", "lab", "barcode", "request", "admin"];
+    const ORDER = ["search", "bundle", "archive", "catalog", "gne", "order", "lab", "barcode", "guide", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,

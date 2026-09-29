@@ -16,6 +16,7 @@ var LAZY_TABS = {
   scan:    { file:"19-tab-scan",    comp:"ScanTab" },     // 読み込みシステム（伝票PDF補正の手順）
   check:   { file:"20-tab-check",   comp:"CheckTab" },    // 伝票検算（試作）
   lab:     { file:"21-tab-lab",     comp:"LabTab" },      // 試作システム（読み込み＋伝票検算）
+  guide:   { file:"22-tab-guide",   comp:"GuideTab" },   // 手引き（渡すリンクと使い方）
 };
 
 // 遅延タブの器：まだ読めていなければ読み込み、ロード中はスピナー、失敗時は再試行
@@ -41,6 +42,7 @@ const MENU_ICON = (() => {
     shiokan: P(<><rect x="3.5" y="7" width="17" height="13" rx="1.5"/><path d="M3.5 11h17M9 7V4.5h6V7"/></>),
     gne:     P(<><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M7 9.5h6M7 14h10"/></>),
     archive: P(<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>),
+    guide:   P(<><path d="M4 5.5A2 2 0 016 3.5h13v15H6a2 2 0 00-2 2z"/><path d="M8 8h7M8 11.5h7"/></>),
     admin:   P(<><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></>),
     trend:   P(<><path d="M3.5 17l5-5 3.5 3.5 6-6.5"/><path d="M14.5 9h4v4"/></>),
     __search: P(<><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></>),
@@ -327,6 +329,7 @@ function App() {
       {tab==="catalog" && <CatalogTab />}
       {tab==="order"   && <LazyTab tabKey="order" />}
       {tab==="lab"     && <LazyTab tabKey="lab" />}
+      {tab==="guide"   && <LazyTab tabKey="guide" />}
       {tab==="bundle"  && <BundleTab />}
       {tab==="trend" && <LazyTab tabKey="trend" />}
       {tab==="idea" && <LazyTab tabKey="idea" />}
@@ -407,7 +410,7 @@ function App() {
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","bundle","archive","catalog","gne","order","lab","barcode","request","admin"];
+                const ORDER = ["search","bundle","archive","catalog","gne","order","lab","barcode","guide","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))

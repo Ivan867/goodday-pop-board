@@ -71,6 +71,11 @@ const TAB_REGISTRY = [{
   label: "アーカイブ",
   section: "管理"
 }, {
+  key: "guide",
+  icon: "📘",
+  label: "手引き",
+  section: "管理"
+}, {
   key: "admin",
   icon: "🔒",
   label: "管理画面",
@@ -265,6 +270,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-29",
+  type: "新機能",
+  title: "メニューに「手引き」を追加しました",
+  body: "人に渡すリンク、そのまま送れる文面、ホーム画面への置き方を1ページにまとめました。ボタンを押せばそのままコピーできます。"
+}, {
   date: "2026-09-29",
   type: "新機能",
   title: "リンクで部門を指定できるようにしました",
