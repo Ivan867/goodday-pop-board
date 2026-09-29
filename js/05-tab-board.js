@@ -1514,8 +1514,9 @@ function SearchTab({
     }
   }, allPops.map(pop => /*#__PURE__*/React.createElement("img", {
     key: pop.id,
-    src: pop.image_url,
+    src: pop.thumb_url || pop.image_url,
     loading: "lazy",
+    decoding: "async",
     onClick: () => setSel(pop),
     style: {
       width: "100%",

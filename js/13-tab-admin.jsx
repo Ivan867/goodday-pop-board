@@ -71,6 +71,84 @@ function RainCanvas() {
     style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.5 }} />;
 }
 
+/* 既存のポップに、一覧用の縮小版をあとから作る。
+   端末の中で縮めて上げ直すので、費用はかからない。
+   途中で閉じても、次に開いたときは残りから続く。 */
+function ThumbBackfill() {
+  const [全部, set全部] = useState(null);
+  const [残り, set残り] = useState(0);
+  const [済み, set済み] = useState(0);
+  const [失敗, set失敗] = useState(0);
+  const [動作中, set動作中] = useState(false);
+  const 止める = useRef(false);
+
+  const 数える = useCallback(async () => {
+    try {
+      const a = await api.listAll();
+      const 対象 = (a || []).filter(p => p.image_url && !p.thumb_url);
+      set全部(a ? a.length : 0); set残り(対象.length);
+    } catch (e) { set全部(0); set残り(0); }
+  }, []);
+  useEffect(() => { 数える(); }, [数える]);
+
+  const 始める = async () => {
+    set動作中(true); 止める.current = false; set済み(0); set失敗(0);
+    try {
+      const a = await api.listAll();
+      const 対象 = (a || []).filter(p => p.image_url && !p.thumb_url);
+      set残り(対象.length);
+      for (let i = 0; i < 対象.length; i++) {
+        if (止める.current) break;
+        try { await api.makeThumb(対象[i]); set済み(x => x + 1); }
+        catch (e) { set失敗(x => x + 1); }
+        set残り(対象.length - i - 1);
+        await new Promise(r => setTimeout(r, 60));   // 続けざまに叩かない
+      }
+    } catch (e) {}
+    set動作中(false);
+    数える();
+  };
+
+  const 枠 = { background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, padding:"16px 16px", marginBottom:12 };
+  return (
+    <div style={{ maxWidth:640, margin:"0 auto", padding:"0 16px 40px" }}>
+      <div style={枠}>
+        <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>縮小版を作る</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.9, marginBottom:14 }}>
+          一覧は、撮ったままの大きな画像をそのまま読んでいます。<br />
+          幅520pxの縮小版を作ると、読み込む量が<b>およそ20分の1</b>になります。<br />
+          この端末の中で縮めて上げ直すだけなので、費用はかかりません。<br />
+          元の画像はそのまま残ります（開いたときは元の画像が出ます）。
+        </div>
+        <div style={{ display:"flex", gap:16, marginBottom:14, flexWrap:"wrap" }}>
+          <span style={{ fontSize:13, color:"var(--sub)" }}>ポップ <b style={{ color:"var(--ink)", fontSize:16 }}>{全部 == null ? "…" : 全部}</b> 枚</span>
+          <span style={{ fontSize:13, color:"var(--sub)" }}>縮小版がまだ <b style={{ color:"#c2691a", fontSize:16 }}>{残り}</b> 枚</span>
+          {済み > 0 && <span style={{ fontSize:13, color:"var(--sub)" }}>作った <b style={{ color:"#1d9e75", fontSize:16 }}>{済み}</b> 枚</span>}
+          {失敗 > 0 && <span style={{ fontSize:13, color:"var(--sub)" }}>できず <b style={{ color:"#b3261e", fontSize:16 }}>{失敗}</b> 枚</span>}
+        </div>
+        {動作中 ? (
+          <button onClick={() => { 止める.current = true; }}
+            style={{ width:"100%", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)",
+              borderRadius:11, padding:"13px", fontSize:14.5, fontWeight:800, cursor:"pointer" }}>
+            とめる（ここまでは残ります）
+          </button>
+        ) : (
+          <button onClick={始める} disabled={!残り}
+            style={{ width:"100%", border:"none", background: 残り ? "var(--primary)" : "var(--chip)",
+              color: 残り ? "#fff" : "var(--faint)", borderRadius:11, padding:"13px",
+              fontSize:14.5, fontWeight:800, cursor: 残り ? "pointer" : "default" }}>
+            {残り ? `${残り}枚ぶん作る` : "すべて作り終わっています"}
+          </button>
+        )}
+        <div style={{ fontSize:11.5, color:"var(--faint)", lineHeight:1.8, marginTop:12 }}>
+          途中で閉じても大丈夫です。次に開いたときは、残っているぶんから続きます。<br />
+          電波の良い場所で、画面を開いたままにしてください。
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [unlocked, setUnlocked] = useState(false);
   const [replyDraft, setReplyDraft] = useState({});   // 依頼の返答メモ（{id: 入力中の文字}）
@@ -458,6 +536,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["cat","カタログ",null,"#378add",<><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></>],
             ["dev","更新履歴",null,"#639922",<><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8M12 8v8"/></>],
             ["support","店舗支援の画像",(supPhotos.length+supTrash.length)||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
+            ["thumb","縮小版を作る",null,"#2f6fb0",<><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 16l4.5-4 3.5 3 3-2.5L21 18"/><circle cx="8.5" cy="9" r="1.4"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
           ].map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
@@ -498,6 +577,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "dev" && (window.DevTab ? React.createElement(window.DevTab, { embedded: true })
         : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>)}
 
+      {section === "thumb" && <ThumbBackfill />}
       {section === "rot" && <DimsBackfill />}
       {section === "rot" && <RotateAdmin />}
 

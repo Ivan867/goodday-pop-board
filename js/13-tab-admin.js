@@ -112,6 +112,169 @@ function RainCanvas() {
     }
   });
 }
+
+/* 既存のポップに、一覧用の縮小版をあとから作る。
+   端末の中で縮めて上げ直すので、費用はかからない。
+   途中で閉じても、次に開いたときは残りから続く。 */
+function ThumbBackfill() {
+  const [全部, set全部] = useState(null);
+  const [残り, set残り] = useState(0);
+  const [済み, set済み] = useState(0);
+  const [失敗, set失敗] = useState(0);
+  const [動作中, set動作中] = useState(false);
+  const 止める = useRef(false);
+  const 数える = useCallback(async () => {
+    try {
+      const a = await api.listAll();
+      const 対象 = (a || []).filter(p => p.image_url && !p.thumb_url);
+      set全部(a ? a.length : 0);
+      set残り(対象.length);
+    } catch (e) {
+      set全部(0);
+      set残り(0);
+    }
+  }, []);
+  useEffect(() => {
+    数える();
+  }, [数える]);
+  const 始める = async () => {
+    set動作中(true);
+    止める.current = false;
+    set済み(0);
+    set失敗(0);
+    try {
+      const a = await api.listAll();
+      const 対象 = (a || []).filter(p => p.image_url && !p.thumb_url);
+      set残り(対象.length);
+      for (let i = 0; i < 対象.length; i++) {
+        if (止める.current) break;
+        try {
+          await api.makeThumb(対象[i]);
+          set済み(x => x + 1);
+        } catch (e) {
+          set失敗(x => x + 1);
+        }
+        set残り(対象.length - i - 1);
+        await new Promise(r => setTimeout(r, 60)); // 続けざまに叩かない
+      }
+    } catch (e) {}
+    set動作中(false);
+    数える();
+  };
+  const 枠 = {
+    background: "var(--card, #fff)",
+    border: "1px solid var(--line)",
+    borderRadius: 14,
+    padding: "16px 16px",
+    marginBottom: 12
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 640,
+      margin: "0 auto",
+      padding: "0 16px 40px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: 枠
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: "var(--ink)",
+      marginBottom: 6
+    }
+  }, "\u7E2E\u5C0F\u7248\u3092\u4F5C\u308B"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--sub)",
+      lineHeight: 1.9,
+      marginBottom: 14
+    }
+  }, "\u4E00\u89A7\u306F\u3001\u64AE\u3063\u305F\u307E\u307E\u306E\u5927\u304D\u306A\u753B\u50CF\u3092\u305D\u306E\u307E\u307E\u8AAD\u3093\u3067\u3044\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u5E45520px\u306E\u7E2E\u5C0F\u7248\u3092\u4F5C\u308B\u3068\u3001\u8AAD\u307F\u8FBC\u3080\u91CF\u304C", /*#__PURE__*/React.createElement("b", null, "\u304A\u3088\u305D20\u5206\u306E1"), "\u306B\u306A\u308A\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u3053\u306E\u7AEF\u672B\u306E\u4E2D\u3067\u7E2E\u3081\u3066\u4E0A\u3052\u76F4\u3059\u3060\u3051\u306A\u306E\u3067\u3001\u8CBB\u7528\u306F\u304B\u304B\u308A\u307E\u305B\u3093\u3002", /*#__PURE__*/React.createElement("br", null), "\u5143\u306E\u753B\u50CF\u306F\u305D\u306E\u307E\u307E\u6B8B\u308A\u307E\u3059\uFF08\u958B\u3044\u305F\u3068\u304D\u306F\u5143\u306E\u753B\u50CF\u304C\u51FA\u307E\u3059\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 16,
+      marginBottom: 14,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)"
+    }
+  }, "\u30DD\u30C3\u30D7 ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "var(--ink)",
+      fontSize: 16
+    }
+  }, 全部 == null ? "…" : 全部), " \u679A"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)"
+    }
+  }, "\u7E2E\u5C0F\u7248\u304C\u307E\u3060 ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "#c2691a",
+      fontSize: 16
+    }
+  }, 残り), " \u679A"), 済み > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)"
+    }
+  }, "\u4F5C\u3063\u305F ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "#1d9e75",
+      fontSize: 16
+    }
+  }, 済み), " \u679A"), 失敗 > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)"
+    }
+  }, "\u3067\u304D\u305A ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "#b3261e",
+      fontSize: 16
+    }
+  }, 失敗), " \u679A")), 動作中 ? /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      止める.current = true;
+    },
+    style: {
+      width: "100%",
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "var(--text)",
+      borderRadius: 11,
+      padding: "13px",
+      fontSize: 14.5,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "\u3068\u3081\u308B\uFF08\u3053\u3053\u307E\u3067\u306F\u6B8B\u308A\u307E\u3059\uFF09") : /*#__PURE__*/React.createElement("button", {
+    onClick: 始める,
+    disabled: !残り,
+    style: {
+      width: "100%",
+      border: "none",
+      background: 残り ? "var(--primary)" : "var(--chip)",
+      color: 残り ? "#fff" : "var(--faint)",
+      borderRadius: 11,
+      padding: "13px",
+      fontSize: 14.5,
+      fontWeight: 800,
+      cursor: 残り ? "pointer" : "default"
+    }
+  }, 残り ? `${残り}枚ぶん作る` : "すべて作り終わっています"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--faint)",
+      lineHeight: 1.8,
+      marginTop: 12
+    }
+  }, "\u9014\u4E2D\u3067\u9589\u3058\u3066\u3082\u5927\u4E08\u592B\u3067\u3059\u3002\u6B21\u306B\u958B\u3044\u305F\u3068\u304D\u306F\u3001\u6B8B\u3063\u3066\u3044\u308B\u3076\u3093\u304B\u3089\u7D9A\u304D\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u96FB\u6CE2\u306E\u826F\u3044\u5834\u6240\u3067\u3001\u753B\u9762\u3092\u958B\u3044\u305F\u307E\u307E\u306B\u3057\u3066\u304F\u3060\u3055\u3044\u3002")));
+}
 function AdminTab({
   onNoticeChange,
   onCreateFromPop
@@ -911,6 +1074,18 @@ function AdminTab({
     cx: "8.5",
     cy: "9.5",
     r: "1.3"
+  }))], ["thumb", "縮小版を作る", null, "#2f6fb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "4",
+    width: "18",
+    height: "16",
+    rx: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 16l4.5-4 3.5 3 3-2.5L21 18"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "8.5",
+    cy: "9",
+    r: "1.4"
   }))], ["rot", "向き", null, "#b08968", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
@@ -1006,7 +1181,7 @@ function AdminTab({
       color: "var(--faint)",
       fontSize: 13
     }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "thumb" && /*#__PURE__*/React.createElement(ThumbBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",

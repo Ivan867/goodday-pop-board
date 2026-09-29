@@ -158,13 +158,15 @@ function UploadModal({
       for (const it of items) {
         setProgress(items.length > 1 ? `${done + 1} / ${items.length} 枚目を送っています…` : "");
         const dims = await api.measureImage(it.file); // 縦長か横長かを先に記録しておく
-        const image_url = await api.upload(it.file);
+        const 画 = await api.uploadPair(it.file);
+        const image_url = 画.image_url;
         const nm = single ? product.trim() : it.name.trim();
         last = await api.insert({
           store_name: store,
           product_name: nm,
           category,
           image_url,
+          thumb_url: 画.thumb_url,
           likes: 0,
           author: author.trim(),
           comment: comment.trim(),
@@ -2018,7 +2020,7 @@ function PopCard({
       position: "relative"
     }
   }, pop.image_url ? /*#__PURE__*/React.createElement("img", {
-    src: pop.image_url,
+    src: pop.thumb_url || pop.image_url,
     loading: "lazy",
     decoding: "async",
     className: "fdin pc-img-el",
