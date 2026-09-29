@@ -62,6 +62,11 @@ window.addEventListener("error", function(e){
 })();
 </script>
 <title>Nexus共有</title>
+<!-- 書体：欧文と数字は Manrope、和文は Zen Kaku Gothic New。
+     取りに行けなかった場合は、これまでの端末の書体にそのまま落ちる。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" />
 <!-- React本体：まず今までどおりCDNから。取れなければ、このサイトに置いた控えに切り替える。
      （会社の通信制限やCDN障害で止まらないための二段構え） -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -237,7 +242,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 /* 右下の「さがす」ボタン。スマホは丸、パソコンは横長にする */
 /* 写真の上に重なっても輪郭が消えないよう、明るい縁と濃い影を両方つける */
 .fab-search { box-shadow: 0 0 0 1.5px rgba(255,255,255,0.46), 0 6px 20px rgba(10,20,35,0.42) !important; }
-html[data-theme="dark"] .fab-search { background: #17253a !important;
+html[data-theme="dark"] .fab-search { background: #17253a !important; color: #fff !important;
   box-shadow: 0 0 0 1.5px rgba(255,255,255,0.34), 0 6px 20px rgba(0,0,0,0.55) !important; }
 /* さがす：角丸16px・濃紺・虫眼鏡 */
 .fab-search { right: 16px; bottom: max(10px, env(safe-area-inset-bottom, 0px));
@@ -295,7 +300,7 @@ html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-be
 .hig-pill { -webkit-tap-highlight-color: transparent; }
 
 
-body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
+body { font-family: 'Manrope', 'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
 .min-vh { min-height: 100vh; min-height: 100dvh; }
 /* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
 /* タイトルは常時表示（モックアップ準拠） */
@@ -663,12 +668,12 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zn"></script>
+<script src="js/app.js?v=20260929zo"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zn";
+window.APP_VER = "20260929zo";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
