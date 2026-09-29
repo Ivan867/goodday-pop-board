@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
+  title: "パソコンの左右の柱を濃紺にしました",
+  body: "右上にしるしと「GoodDay NEXUS」、その下に検索欄を置きました。メニューの囲いをなくし、文字とアイコンだけの並びにしています。月のボタンで暗い画面にすると、全体が同じ調子になります。"
+}, {
+  date: "2026-09-29",
+  type: "改善",
   title: "しるしを新しくしました",
   body: "葉と魚がひと続きになった形に「NEXUS」の文字が入りました。起動画面・メニュー・ホーム画面のアイコンが変わります。"
 }, {
@@ -19585,17 +19590,17 @@ function BundleTab({
       d: "M9 6l6 6-6 6"
     })));
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", null, 細い ? /*#__PURE__*/React.createElement("div", {
+    className: "dock-head"
+  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
-      padding: 細い ? "8px 12px" : "9px 16px",
-      color: "#fff",
-      borderRadius: 細い ? 10 : 0,
-      marginBottom: 細い ? 10 : 0
+      padding: "9px 16px",
+      color: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 細い ? 14 : 16.5,
+      fontSize: 16.5,
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
@@ -20918,7 +20923,34 @@ function App() {
       display: "flex",
       flexDirection: "column"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "dock-brand"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "brand-mark.png?v=" + (window.APP_VER || ""),
+    alt: "",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", null, "GoodDay NEXUS")), /*#__PURE__*/React.createElement("button", {
+    className: "dock-search",
+    onClick: () => {
+      try {
+        window.dispatchEvent(new CustomEvent("openSearch"));
+      } catch (e) {}
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "11",
+    cy: "11",
+    r: "7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 20l-3.7-3.7"
+  })), "\u691C\u7D22")) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -20928,7 +20960,8 @@ function App() {
     style: {
       fontSize: 16,
       fontWeight: 900,
-      color: "var(--ink)"
+      color: "var(--ink)",
+      display: 広い ? "none" : "block"
     }
   }, "\u30E1\u30CB\u30E5\u30FC"), !広い && /*#__PURE__*/React.createElement("button", {
     onClick: () => setMoreOpen(false),
@@ -20945,9 +20978,9 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), /*#__PURE__*/React.createElement("img", {
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
     src: "brand-logo.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay \u9BAE\u9B5A\u30FB\u9752\u679C\u5171\u6709",
+    alt: "GoodDay NEXUS",
     style: {
       display: "block",
       width: "70%",

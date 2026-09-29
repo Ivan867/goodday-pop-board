@@ -398,17 +398,29 @@ function App() {
             background:"var(--drawer-bg)", backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)",
             boxShadow:"-6px 0 24px rgba(10,20,35,0.22)", overflowY:"auto",
             animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(18px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
+            {広い ? (
+              <>
+                <div className="dock-brand">
+                  <img src={"brand-mark.png?v=" + (window.APP_VER || "")} alt="" aria-hidden="true" />
+                  <span>GoodDay NEXUS</span>
+                </div>
+                <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
+                  検索
+                </button>
+              </>
+            ) : null}
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>
-              <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)" }}>メニュー</span>
+              <span style={{ fontSize:16, fontWeight:900, color:"var(--ink)", display: 広い ? "none" : "block" }}>メニュー</span>
               {!広い && <button onClick={()=>setMoreOpen(false)} aria-label="閉じる"
                 style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--sub)",
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>}
             </div>
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
-            <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay 鮮魚・青果共有"
+            {!広い && <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS"
               style={{ display:"block", width:"70%", maxWidth:186, height:"auto",
-                margin:"2px auto 12px", opacity:0.95 }} />
+                margin:"2px auto 12px", opacity:0.95 }} />}
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {

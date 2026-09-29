@@ -7105,17 +7105,17 @@ function BundleTab({
       d: "M9 6l6 6-6 6"
     })));
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", null, 細い ? /*#__PURE__*/React.createElement("div", {
+    className: "dock-head"
+  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
-      padding: 細い ? "8px 12px" : "9px 16px",
-      color: "#fff",
-      borderRadius: 細い ? 10 : 0,
-      marginBottom: 細い ? 10 : 0
+      padding: "9px 16px",
+      color: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 細い ? 14 : 16.5,
+      fontSize: 16.5,
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }

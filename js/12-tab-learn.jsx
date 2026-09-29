@@ -2741,10 +2741,13 @@ function BundleTab({ 細い } = {}) {
 
   return (
     <div>
-      <div style={{ background:"var(--primary)", padding: 細い ? "8px 12px" : "9px 16px", color:"#fff",
-        borderRadius: 細い ? 10 : 0, marginBottom: 細い ? 10 : 0 }}>
-        <div style={{ fontSize: 細い ? 14 : 16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
-      </div>
+      {細い ? (
+        <div className="dock-head"><b>行事カレンダー</b><i>SEASONAL CALENDAR</i></div>
+      ) : (
+        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+          <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
+        </div>
+      )}
 
       <div style={{ maxWidth: 細い ? "none" : 1600, margin:"0 auto", padding: 細い ? "0 0 10px" : "14px 16px 150px" }}>
         {loading ? (

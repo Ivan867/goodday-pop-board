@@ -969,7 +969,34 @@ function App() {
       display: "flex",
       flexDirection: "column"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "dock-brand"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "brand-mark.png?v=" + (window.APP_VER || ""),
+    alt: "",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", null, "GoodDay NEXUS")), /*#__PURE__*/React.createElement("button", {
+    className: "dock-search",
+    onClick: () => {
+      try {
+        window.dispatchEvent(new CustomEvent("openSearch"));
+      } catch (e) {}
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "11",
+    cy: "11",
+    r: "7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 20l-3.7-3.7"
+  })), "\u691C\u7D22")) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -979,7 +1006,8 @@ function App() {
     style: {
       fontSize: 16,
       fontWeight: 900,
-      color: "var(--ink)"
+      color: "var(--ink)",
+      display: 広い ? "none" : "block"
     }
   }, "\u30E1\u30CB\u30E5\u30FC"), !広い && /*#__PURE__*/React.createElement("button", {
     onClick: () => setMoreOpen(false),
@@ -996,9 +1024,9 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), /*#__PURE__*/React.createElement("img", {
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
     src: "brand-logo.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay \u9BAE\u9B5A\u30FB\u9752\u679C\u5171\u6709",
+    alt: "GoodDay NEXUS",
     style: {
       display: "block",
       width: "70%",
