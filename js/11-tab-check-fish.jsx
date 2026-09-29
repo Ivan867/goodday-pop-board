@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 11-tab-check-fish （自動分割・window共有） */
+/* Nexus共有 — 11-tab-check-fish （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
 const POPCHECK_TH = {  // 閾値（あとで調整しやすいよう定数化）

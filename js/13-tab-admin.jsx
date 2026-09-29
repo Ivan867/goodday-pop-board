@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 13-tab-admin （自動分割・window共有） */
+/* Nexus共有 — 13-tab-admin （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
 /* 解錠画面の背景に降るカタカナ。この画面を閉じると止まる */

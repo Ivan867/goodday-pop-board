@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 19-tab-scan （読み込みシステム：伝票PDFをブラウザの中で補正する）
+/* Nexus共有 — 19-tab-scan （読み込みシステム：伝票PDFをブラウザの中で補正する）
    外部に画像を送りません。すべてこの端末の中だけで処理します。 */
 var { useState, useRef, useCallback } = React;
 

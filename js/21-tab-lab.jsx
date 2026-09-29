@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 21-tab-lab （試作システム：まだ本番では使わない道具をまとめる） */
+/* Nexus共有 — 21-tab-lab （試作システム：まだ本番では使わない道具をまとめる） */
 var { useState } = React;
 
 const LAB_PIN = "3106";

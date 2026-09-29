@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 18-tab-support （店舗支援：画像を上げて見るだけ） */
+/* Nexus共有 — 18-tab-support （店舗支援：画像を上げて見るだけ） */
 var {
   useState,
   useEffect,

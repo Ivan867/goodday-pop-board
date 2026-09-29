@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 18-tab-support （店舗支援：画像を上げて見るだけ） */
+/* Nexus共有 — 18-tab-support （店舗支援：画像を上げて見るだけ） */
 var { useState, useEffect, useCallback, useRef } = React;
 
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）

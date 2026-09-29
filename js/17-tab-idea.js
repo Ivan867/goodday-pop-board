@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 17-tab-idea （アイデア：見るだけ。投稿は管理画面から） */
+/* Nexus共有 — 17-tab-idea （アイデア：見るだけ。投稿は管理画面から） */
 var {
   useState,
   useEffect,

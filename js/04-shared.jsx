@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 04-shared （自動分割・window共有） */
+/* Nexus共有 — 04-shared （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
 // ═══════════ SHARED UI：投稿・詳細・カードなど共有部品 ═══════════

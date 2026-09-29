@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 01-config （自動分割・window共有） */
+/* Nexus共有 — 01-config （自動分割・window共有） */
 var {
   useState,
   useEffect,
@@ -270,6 +270,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-29",
+  type: "改善",
+  title: "アプリの名前を変えました",
+  body: "ブラウザのタブは「Nexus共有」、ホーム画面は「生鮮共有」になりました。鮮魚と青果の両方を扱うようになったためです。"
+}, {
   date: "2026-09-29",
   type: "改善",
   title: "メニューと上の行の見た目をそろえました",

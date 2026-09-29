@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 20-tab-check （伝票検算：蛍光ペンで塗った金額を読む・試作）
+/* Nexus共有 — 20-tab-check （伝票検算：蛍光ペンで塗った金額を読む・試作）
    伝票の画像は外に出しません。すべてこの端末の中だけで処理します。 */
 var { useState, useRef, useCallback } = React;
 

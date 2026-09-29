@@ -1,4 +1,5 @@
-/* GoodDay 鮮魚共有 — 07-tab-floor （自動分割・window共有） */
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+/* Nexus共有 — 07-tab-floor （自動分割・window共有） */
 var {
   useState,
   useEffect,
@@ -90,7 +91,7 @@ function FloorPhotoTab() {
       fontWeight: 700,
       opacity: 0.9
     }
-  }, "各店の売場写真を共有・比較"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5404\u5E97\u306E\u58F2\u5834\u5199\u771F\u3092\u5171\u6709\u30FB\u6BD4\u8F03"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8
@@ -107,7 +108,7 @@ function FloorPhotoTab() {
       background: mode === "gallery" ? "white" : "rgba(29,58,87,0.12)",
       color: mode === "gallery" ? "#111" : "#17324e"
     }
-  }, "ギャラリー"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30AE\u30E3\u30E9\u30EA\u30FC"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setMode("compare"),
     style: {
       padding: "8px 16px",
@@ -119,7 +120,7 @@ function FloorPhotoTab() {
       background: mode === "compare" ? "white" : "rgba(29,58,87,0.12)",
       color: mode === "compare" ? "#111" : "#17324e"
     }
-  }, "店舗比較"), /*#__PURE__*/React.createElement("button", {
+  }, "\u5E97\u8217\u6BD4\u8F03"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowUp(true),
     style: {
       padding: "8px 16px",
@@ -131,7 +132,7 @@ function FloorPhotoTab() {
       background: "var(--primary)",
       color: "white"
     }
-  }, "＋ 投稿")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
+  }, "\uFF0B \u6295\u7A3F")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -198,7 +199,7 @@ function FloorPhotoTab() {
     style: {
       animation: "pulse 1.5s infinite"
     }
-  }, "読み込み中...")) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D...")) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 80,
@@ -210,12 +211,12 @@ function FloorPhotoTab() {
       fontSize: 16,
       color: "var(--sub)"
     }
-  }, "写真がまだありません"), /*#__PURE__*/React.createElement("div", {
+  }, "\u5199\u771F\u304C\u307E\u3060\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       marginTop: 6
     }
-  }, "「＋ 投稿」ボタンから売場写真を共有しましょう")) : /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\uFF0B \u6295\u7A3F\u300D\u30DC\u30BF\u30F3\u304B\u3089\u58F2\u5834\u5199\u771F\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046")) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))",
@@ -311,7 +312,7 @@ function FloorPhotoTab() {
       color: "var(--ink)",
       marginBottom: 12
     }
-  }, "カテゴリーを選んで各店舗を比較"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30AB\u30C6\u30B4\u30EA\u30FC\u3092\u9078\u3093\u3067\u5404\u5E97\u8217\u3092\u6BD4\u8F03"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -337,7 +338,7 @@ function FloorPhotoTab() {
       padding: 60,
       color: "var(--faint)"
     }
-  }, "読み込み中...") : /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D...") : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
@@ -371,7 +372,7 @@ function FloorPhotoTab() {
       color: "rgba(255,255,255,0.7)",
       marginTop: 2
     }
-  }, storePhotos.length, "枚")), storePhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, storePhotos.length, "\u679A")), storePhotos.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "30px 14px",
       textAlign: "center",
@@ -381,7 +382,7 @@ function FloorPhotoTab() {
     style: {
       fontSize: 12
     }
-  }, "写真なし")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "\u5199\u771F\u306A\u3057")) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       cursor: "pointer",
       position: "relative"
@@ -499,7 +500,7 @@ function FloorPhotoTab() {
       borderRadius: "50%",
       cursor: "pointer"
     }
-  }, "✕"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715"), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       top: 12,
@@ -533,7 +534,7 @@ function FloorPhotoTab() {
       color: "var(--sub)",
       marginTop: 2
     }
-  }, "投稿者：", sel.author)), /*#__PURE__*/React.createElement("div", {
+  }, "\u6295\u7A3F\u8005\uFF1A", sel.author)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)"
@@ -564,13 +565,13 @@ function FloorPhotoTab() {
       color: "#d05050",
       marginBottom: 8
     }
-  }, "本当に削除しますか？"), /*#__PURE__*/React.createElement("div", {
+  }, "\u672C\u5F53\u306B\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8
     }
-  }, "ヒント：本社の郵便番号"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30D2\u30F3\u30C8\uFF1A\u672C\u793E\u306E\u90F5\u4FBF\u756A\u53F7"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8
@@ -583,7 +584,7 @@ function FloorPhotoTab() {
       setPwError("");
     },
     onKeyDown: e => e.key === "Enter" && handleDelete(),
-    placeholder: "パスワード",
+    placeholder: "\u30D1\u30B9\u30EF\u30FC\u30C9",
     autoFocus: true,
     style: {
       flex: 1,
@@ -622,7 +623,7 @@ function FloorPhotoTab() {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "戻る")), pwError && /*#__PURE__*/React.createElement("div", {
+  }, "\u623B\u308B")), pwError && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--primary)",
@@ -641,7 +642,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       color: "#d05050"
     }
-  }, "削除")))));
+  }, "\u524A\u9664")))));
 }
 function FloorUploadModal({
   onClose,
@@ -734,7 +735,7 @@ function FloorUploadModal({
       fontSize: 21,
       fontWeight: 900
     }
-  }, "売場写真を投稿"), /*#__PURE__*/React.createElement("button", {
+  }, "\u58F2\u5834\u5199\u771F\u3092\u6295\u7A3F"), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
     style: {
       background: "none",
@@ -743,7 +744,7 @@ function FloorUploadModal({
       cursor: "pointer",
       color: "var(--sub)"
     }
-  }, "✕")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -765,7 +766,7 @@ function FloorUploadModal({
       color: "var(--text)",
       marginBottom: 5
     }
-  }, "店舗"), /*#__PURE__*/React.createElement("select", {
+  }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
     value: store,
     onChange: e => setStore(e.target.value),
     style: {
@@ -789,7 +790,7 @@ function FloorUploadModal({
       color: "var(--text)",
       marginBottom: 5
     }
-  }, "カテゴリー"), /*#__PURE__*/React.createElement("select", {
+  }, "\u30AB\u30C6\u30B4\u30EA\u30FC"), /*#__PURE__*/React.createElement("select", {
     value: category,
     onChange: e => setCategory(e.target.value),
     style: {
@@ -809,14 +810,14 @@ function FloorUploadModal({
       color: "var(--text)",
       marginBottom: 5
     }
-  }, "お名前 ", /*#__PURE__*/React.createElement("span", {
+  }, "\u304A\u540D\u524D ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
   }, "*")), /*#__PURE__*/React.createElement("input", {
     value: author,
     onChange: e => setAuthor(e.target.value),
-    placeholder: "例：山田 太郎",
+    placeholder: "\u4F8B\uFF1A\u5C71\u7530 \u592A\u90CE",
     style: {
       width: "100%",
       padding: "9px 12px",
@@ -832,15 +833,15 @@ function FloorUploadModal({
       color: "var(--text)",
       marginBottom: 5
     }
-  }, "コメント ", /*#__PURE__*/React.createElement("span", {
+  }, "\u30B3\u30E1\u30F3\u30C8 ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 400,
       color: "var(--faint)"
     }
-  }, "（任意）")), /*#__PURE__*/React.createElement("textarea", {
+  }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("textarea", {
     value: comment,
     onChange: e => setComment(e.target.value),
-    placeholder: "売り場の状況や工夫など...",
+    placeholder: "\u58F2\u308A\u5834\u306E\u72B6\u6CC1\u3084\u5DE5\u592B\u306A\u3069...",
     rows: 2,
     style: {
       width: "100%",
@@ -859,12 +860,11 @@ function FloorUploadModal({
       color: "var(--text)",
       marginBottom: 5
     }
-  }, "写真 ", /*#__PURE__*/React.createElement("span", {
+  }, "\u5199\u771F ", /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--primary)"
     }
-  }, "*")), /*#__PURE__*/React.createElement("label", {
-    ...dzFloor.props,
+  }, "*")), /*#__PURE__*/React.createElement("label", _extends({}, dzFloor.props, {
     style: {
       display: "block",
       border: "2px dashed #e0e0e0",
@@ -875,7 +875,7 @@ function FloorUploadModal({
       background: preview ? "transparent" : "#fafafa",
       ...dzFloor.style
     }
-  }, preview ? /*#__PURE__*/React.createElement("img", {
+  }), preview ? /*#__PURE__*/React.createElement("img", {
     src: preview,
     style: {
       maxWidth: "100%",

@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 03-utils （自動分割・window共有） */
+/* Nexus共有 — 03-utils （自動分割・window共有） */
 var {
   useState,
   useEffect,

@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 07-tab-floor （自動分割・window共有） */
+/* Nexus共有 — 07-tab-floor （自動分割・window共有） */
 var { useState, useEffect, useCallback, useRef } = React;
 
 function FloorPhotoTab() {

@@ -1,5 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-/* GoodDay 鮮魚共有 — 11-tab-check-fish （自動分割・window共有） */
+/* Nexus共有 — 11-tab-check-fish （自動分割・window共有） */
 var {
   useState,
   useEffect,

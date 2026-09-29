@@ -1,4 +1,4 @@
-/* GoodDay 鮮魚共有 — 09-tab-info （自動分割・window共有） */
+/* Nexus共有 — 09-tab-info （自動分割・window共有） */
 var {
   useState,
   useEffect,
@@ -128,7 +128,7 @@ function PromptCard({
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "削除")), /*#__PURE__*/React.createElement("div", {
+  }, "\u524A\u9664")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: "var(--sub)",
@@ -219,7 +219,7 @@ function PromptAddModal({
       color: "var(--ink)",
       marginBottom: 14
     }
-  }, "プロンプトを追加"), /*#__PURE__*/React.createElement("label", {
+  }, "\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8FFD\u52A0"), /*#__PURE__*/React.createElement("label", {
     style: {
       display: "block",
       border: "2px dashed #d8d8e0",
@@ -242,7 +242,7 @@ function PromptAddModal({
       color: "var(--sub)",
       fontWeight: 700
     }
-  }, "画像を選ぶ（任意）"), /*#__PURE__*/React.createElement("input", {
+  }, "\u753B\u50CF\u3092\u9078\u3076\uFF08\u4EFB\u610F\uFF09"), /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: "image/*",
     onChange: e => pick(e.target.files[0]),
@@ -252,12 +252,12 @@ function PromptAddModal({
   })), /*#__PURE__*/React.createElement("input", {
     value: title,
     onChange: e => setTitle(e.target.value),
-    placeholder: "タイトル（例：刺身盛り 縦POP）",
+    placeholder: "\u30BF\u30A4\u30C8\u30EB\uFF08\u4F8B\uFF1A\u523A\u8EAB\u76DB\u308A \u7E26POP\uFF09",
     style: input
   }), /*#__PURE__*/React.createElement("textarea", {
     value: ptext,
     onChange: e => setPtext(e.target.value),
-    placeholder: "使ったプロンプトをここに貼り付け",
+    placeholder: "\u4F7F\u3063\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u3053\u3053\u306B\u8CBC\u308A\u4ED8\u3051",
     rows: 6,
     style: {
       ...input,
@@ -268,7 +268,7 @@ function PromptAddModal({
   }), /*#__PURE__*/React.createElement("input", {
     value: author,
     onChange: e => setAuthor(e.target.value),
-    placeholder: "お名前（任意）",
+    placeholder: "\u304A\u540D\u524D\uFF08\u4EFB\u610F\uFF09",
     style: input
   }), /*#__PURE__*/React.createElement("button", {
     onClick: submit,
@@ -323,67 +323,67 @@ function PromptGuide({
     style: sec
   }, /*#__PURE__*/React.createElement("div", {
     style: hd
-  }, "プロンプトの読み解き方"), /*#__PURE__*/React.createElement("p", {
+  }, "\u30D7\u30ED\u30F3\u30D7\u30C8\u306E\u8AAD\u307F\u89E3\u304D\u65B9"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "良いプロンプトを見つけたら、次の要素に分解すると「どこを変えれば自分用になるか」が見えます。コピーした文を、この単位で書き換えていくのがコツです。"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+  }, "\u826F\u3044\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u898B\u3064\u3051\u305F\u3089\u3001\u6B21\u306E\u8981\u7D20\u306B\u5206\u89E3\u3059\u308B\u3068\u300C\u3069\u3053\u3092\u5909\u3048\u308C\u3070\u81EA\u5206\u7528\u306B\u306A\u308B\u304B\u300D\u304C\u898B\u3048\u307E\u3059\u3002\u30B3\u30D4\u30FC\u3057\u305F\u6587\u3092\u3001\u3053\u306E\u5358\u4F4D\u3067\u66F8\u304D\u63DB\u3048\u3066\u3044\u304F\u306E\u304C\u30B3\u30C4\u3067\u3059\u3002"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "被写体（何を）"), /*#__PURE__*/React.createElement("span", {
+  }, "\u88AB\u5199\u4F53\uFF08\u4F55\u3092\uFF09"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "構図・アングル"), /*#__PURE__*/React.createElement("span", {
+  }, "\u69CB\u56F3\u30FB\u30A2\u30F3\u30B0\u30EB"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "ライティング（光）"), /*#__PURE__*/React.createElement("span", {
+  }, "\u30E9\u30A4\u30C6\u30A3\u30F3\u30B0\uFF08\u5149\uFF09"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "質感・素材"), /*#__PURE__*/React.createElement("span", {
+  }, "\u8CEA\u611F\u30FB\u7D20\u6750"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "背景"), /*#__PURE__*/React.createElement("span", {
+  }, "\u80CC\u666F"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "色味・雰囲気"), /*#__PURE__*/React.createElement("span", {
+  }, "\u8272\u5473\u30FB\u96F0\u56F2\u6C17"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "文字・レイアウト"), /*#__PURE__*/React.createElement("span", {
+  }, "\u6587\u5B57\u30FB\u30EC\u30A4\u30A2\u30A6\u30C8"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "仕上げ（縦横比・解像度）")), /*#__PURE__*/React.createElement("p", {
+  }, "\u4ED5\u4E0A\u3052\uFF08\u7E26\u6A2A\u6BD4\u30FB\u89E3\u50CF\u5EA6\uFF09")), /*#__PURE__*/React.createElement("p", {
     style: {
       ...p,
       margin: "10px 0 0"
     }
-  }, "例：「まぐろの刺身（被写体）を / 真上から（アングル）/ 柔らかい自然光で（光）/ 黒い石の皿に（背景）/ 高級感のある雰囲気で（色味）/ 縦A4（仕上げ）」のように、( )の部分だけ自分の商品に差し替えれば再利用できます。")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F8B\uFF1A\u300C\u307E\u3050\u308D\u306E\u523A\u8EAB\uFF08\u88AB\u5199\u4F53\uFF09\u3092 / \u771F\u4E0A\u304B\u3089\uFF08\u30A2\u30F3\u30B0\u30EB\uFF09/ \u67D4\u3089\u304B\u3044\u81EA\u7136\u5149\u3067\uFF08\u5149\uFF09/ \u9ED2\u3044\u77F3\u306E\u76BF\u306B\uFF08\u80CC\u666F\uFF09/ \u9AD8\u7D1A\u611F\u306E\u3042\u308B\u96F0\u56F2\u6C17\u3067\uFF08\u8272\u5473\uFF09/ \u7E26A4\uFF08\u4ED5\u4E0A\u3052\uFF09\u300D\u306E\u3088\u3046\u306B\u3001( )\u306E\u90E8\u5206\u3060\u3051\u81EA\u5206\u306E\u5546\u54C1\u306B\u5DEE\u3057\u66FF\u3048\u308C\u3070\u518D\u5229\u7528\u3067\u304D\u307E\u3059\u3002")), /*#__PURE__*/React.createElement("div", {
     style: sec
   }, /*#__PURE__*/React.createElement("div", {
     style: hd
-  }, "画像を再利用する手順"), /*#__PURE__*/React.createElement("p", {
+  }, "\u753B\u50CF\u3092\u518D\u5229\u7528\u3059\u308B\u624B\u9806"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "1. 記録集から、近いイメージの画像と「プロンプトをコピー」。"), /*#__PURE__*/React.createElement("p", {
+  }, "1. \u8A18\u9332\u96C6\u304B\u3089\u3001\u8FD1\u3044\u30A4\u30E1\u30FC\u30B8\u306E\u753B\u50CF\u3068\u300C\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u30B3\u30D4\u30FC\u300D\u3002"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "2. GeminiやChatGPTに、その画像を一緒に添付する（「この画像を参考に」と伝える）。"), /*#__PURE__*/React.createElement("p", {
+  }, "2. Gemini\u3084ChatGPT\u306B\u3001\u305D\u306E\u753B\u50CF\u3092\u4E00\u7DD2\u306B\u6DFB\u4ED8\u3059\u308B\uFF08\u300C\u3053\u306E\u753B\u50CF\u3092\u53C2\u8003\u306B\u300D\u3068\u4F1D\u3048\u308B\uFF09\u3002"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "3. コピーしたプロンプトを貼り、変えたい所だけ書き換える。よく使う指示："), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+  }, "3. \u30B3\u30D4\u30FC\u3057\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8CBC\u308A\u3001\u5909\u3048\u305F\u3044\u6240\u3060\u3051\u66F8\u304D\u63DB\u3048\u308B\u3002\u3088\u304F\u4F7F\u3046\u6307\u793A\uFF1A"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "商品だけ差し替え"), /*#__PURE__*/React.createElement("span", {
+  }, "\u5546\u54C1\u3060\u3051\u5DEE\u3057\u66FF\u3048"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "背景だけ変更"), /*#__PURE__*/React.createElement("span", {
+  }, "\u80CC\u666F\u3060\u3051\u5909\u66F4"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "色味はそのまま"), /*#__PURE__*/React.createElement("span", {
+  }, "\u8272\u5473\u306F\u305D\u306E\u307E\u307E"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "文字を入れる/消す"), /*#__PURE__*/React.createElement("span", {
+  }, "\u6587\u5B57\u3092\u5165\u308C\u308B/\u6D88\u3059"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "縦→横にする"), /*#__PURE__*/React.createElement("span", {
+  }, "\u7E26\u2192\u6A2A\u306B\u3059\u308B"), /*#__PURE__*/React.createElement("span", {
     style: tag
-  }, "同じ構図で")), /*#__PURE__*/React.createElement("p", {
+  }, "\u540C\u3058\u69CB\u56F3\u3067")), /*#__PURE__*/React.createElement("p", {
     style: {
       ...p,
       margin: "10px 0 0"
     }
-  }, "「この画像の構図・雰囲気はそのままで、商品を〇〇に変えて」と伝えると、雰囲気を保ったまま中身だけ差し替えられます。")), /*#__PURE__*/React.createElement("div", {
+  }, "\u300C\u3053\u306E\u753B\u50CF\u306E\u69CB\u56F3\u30FB\u96F0\u56F2\u6C17\u306F\u305D\u306E\u307E\u307E\u3067\u3001\u5546\u54C1\u3092\u3007\u3007\u306B\u5909\u3048\u3066\u300D\u3068\u4F1D\u3048\u308B\u3068\u3001\u96F0\u56F2\u6C17\u3092\u4FDD\u3063\u305F\u307E\u307E\u4E2D\u8EAB\u3060\u3051\u5DEE\u3057\u66FF\u3048\u3089\u308C\u307E\u3059\u3002")), /*#__PURE__*/React.createElement("div", {
     style: sec
   }, /*#__PURE__*/React.createElement("div", {
     style: hd
-  }, "うまくいくコツ"), /*#__PURE__*/React.createElement("p", {
+  }, "\u3046\u307E\u304F\u3044\u304F\u30B3\u30C4"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "・POPに文字を入れる時は、画像生成では文字が崩れやすいので、文字なしで作って後から差し込むのも手。"), /*#__PURE__*/React.createElement("p", {
+  }, "\u30FBPOP\u306B\u6587\u5B57\u3092\u5165\u308C\u308B\u6642\u306F\u3001\u753B\u50CF\u751F\u6210\u3067\u306F\u6587\u5B57\u304C\u5D29\u308C\u3084\u3059\u3044\u306E\u3067\u3001\u6587\u5B57\u306A\u3057\u3067\u4F5C\u3063\u3066\u5F8C\u304B\u3089\u5DEE\u3057\u8FBC\u3080\u306E\u3082\u624B\u3002"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "・縦横比は最初に指定（縦A4／横A4）。後から変えると崩れやすい。"), /*#__PURE__*/React.createElement("p", {
+  }, "\u30FB\u7E26\u6A2A\u6BD4\u306F\u6700\u521D\u306B\u6307\u5B9A\uFF08\u7E26A4\uFF0F\u6A2AA4\uFF09\u3002\u5F8C\u304B\u3089\u5909\u3048\u308B\u3068\u5D29\u308C\u3084\u3059\u3044\u3002"), /*#__PURE__*/React.createElement("p", {
     style: p
-  }, "・うまくいったプロンプトは必ずこの「記録集」に画像付きで残す。次から探す手間が消えます。")));
+  }, "\u30FB\u3046\u307E\u304F\u3044\u3063\u305F\u30D7\u30ED\u30F3\u30D7\u30C8\u306F\u5FC5\u305A\u3053\u306E\u300C\u8A18\u9332\u96C6\u300D\u306B\u753B\u50CF\u4ED8\u304D\u3067\u6B8B\u3059\u3002\u6B21\u304B\u3089\u63A2\u3059\u624B\u9593\u304C\u6D88\u3048\u307E\u3059\u3002")));
 }
 function PromptTab({
   embedded
@@ -458,13 +458,13 @@ function PromptTab({
       cursor: "pointer",
       marginBottom: 16
     }
-  }, "＋ プロンプトを追加"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, "\uFF0B \u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8FFD\u52A0"), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "40px 0"
     }
-  }, "読み込み中…") : items.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : items.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
@@ -472,7 +472,7 @@ function PromptTab({
       fontSize: 13.5,
       lineHeight: 1.8
     }
-  }, "まだ登録がありません。", /*#__PURE__*/React.createElement("br", null), "うまくいった画像とプロンプトを「＋ プロンプトを追加」から残しておくと、次から再利用できます。") : items.map(it => /*#__PURE__*/React.createElement(PromptCard, {
+  }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002", /*#__PURE__*/React.createElement("br", null), "\u3046\u307E\u304F\u3044\u3063\u305F\u753B\u50CF\u3068\u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u300C\uFF0B \u30D7\u30ED\u30F3\u30D7\u30C8\u3092\u8FFD\u52A0\u300D\u304B\u3089\u6B8B\u3057\u3066\u304A\u304F\u3068\u3001\u6B21\u304B\u3089\u518D\u5229\u7528\u3067\u304D\u307E\u3059\u3002") : items.map(it => /*#__PURE__*/React.createElement(PromptCard, {
     key: it.id,
     it: it,
     accent: ACCENT,
@@ -965,7 +965,7 @@ function TodayInfoCard() {
         fontWeight: 800,
         marginTop: 5
       }
-    }, "🌊 時化のおそれ：入荷・地物に影響が出るかも"));
+    }, "\uD83C\uDF0A \u6642\u5316\u306E\u304A\u305D\u308C\uFF1A\u5165\u8377\u30FB\u5730\u7269\u306B\u5F71\u97FF\u304C\u51FA\u308B\u304B\u3082"));
   })());
 }
 function WeatherWidget({
@@ -1036,11 +1036,11 @@ function WeatherWidget({
         borderRadius: 9,
         padding: "5px 9px"
       }
-    }, "天気を取得できません", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+    }, "\u5929\u6C17\u3092\u53D6\u5F97\u3067\u304D\u307E\u305B\u3093", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
       style: {
         textDecoration: "underline"
       }
-    }, "タップで再試行"));
+    }, "\u30BF\u30C3\u30D7\u3067\u518D\u8A66\u884C"));
   }
   const wmo = c => {
     if (c === 0) return {
@@ -1126,7 +1126,7 @@ function WeatherWidget({
       style: {
         color: "#fff"
       }
-    }, hi, "°"), /*#__PURE__*/React.createElement("span", {
+    }, hi, "\xB0"), /*#__PURE__*/React.createElement("span", {
       style: {
         color: "rgba(255,255,255,0.55)"
       }
@@ -1134,7 +1134,7 @@ function WeatherWidget({
       style: {
         color: "rgba(255,255,255,0.8)"
       }
-    }, lo, "°")));
+    }, lo, "\xB0")));
   };
 
   // 今日の天気コードから空のグラデーションを決める
@@ -1217,7 +1217,7 @@ function WeatherWidget({
     style: {
       color: "#fff"
     }
-  }, Math.round(daily.temperature_2m_max[0]), "°"), /*#__PURE__*/React.createElement("span", {
+  }, Math.round(daily.temperature_2m_max[0]), "\xB0"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "rgba(255,255,255,0.55)"
     }
@@ -1225,7 +1225,7 @@ function WeatherWidget({
     style: {
       color: "rgba(255,255,255,0.8)"
     }
-  }, Math.round(daily.temperature_2m_min[0]), "°"))), open && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, Math.round(daily.temperature_2m_min[0]), "\xB0"))), open && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     onClick: () => setOpen(false),
     style: {
       position: "fixed",
@@ -1252,7 +1252,7 @@ function WeatherWidget({
       color: "var(--ink)",
       marginBottom: 8
     }
-  }, "📍 天気の観測地点"), /*#__PURE__*/React.createElement("svg", {
+  }, "\uD83D\uDCCD \u5929\u6C17\u306E\u89B3\u6E2C\u5730\u70B9"), /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 220 100",
     style: {
       width: "100%",
@@ -1291,13 +1291,13 @@ function WeatherWidget({
     fontSize: "11",
     fontWeight: "800",
     fill: "#a8480a"
-  }, "出雲"), /*#__PURE__*/React.createElement("text", {
+  }, "\u51FA\u96F2"), /*#__PURE__*/React.createElement("text", {
     x: "196",
     y: "16",
     textAnchor: "middle",
     fontSize: "9",
     fill: "#8fa8c2"
-  }, "松江"), /*#__PURE__*/React.createElement("circle", {
+  }, "\u677E\u6C5F"), /*#__PURE__*/React.createElement("circle", {
     cx: "188",
     cy: "30",
     r: "2.5",
@@ -1307,14 +1307,14 @@ function WeatherWidget({
     y: "60",
     fontSize: "9",
     fill: "#8fa8c2"
-  }, "浜田")), /*#__PURE__*/React.createElement("div", {
+  }, "\u6D5C\u7530")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--text)",
       lineHeight: 1.7,
       fontWeight: 600
     }
-  }, /*#__PURE__*/React.createElement("b", null, "出雲市周辺"), "の予報を表示しています。ホームの「今日の売場情報」の気温も同じ地点です。"), /*#__PURE__*/React.createElement("a", {
+  }, /*#__PURE__*/React.createElement("b", null, "\u51FA\u96F2\u5E02\u5468\u8FBA"), "\u306E\u4E88\u5831\u3092\u8868\u793A\u3057\u3066\u3044\u307E\u3059\u3002\u30DB\u30FC\u30E0\u306E\u300C\u4ECA\u65E5\u306E\u58F2\u5834\u60C5\u5831\u300D\u306E\u6C17\u6E29\u3082\u540C\u3058\u5730\u70B9\u3067\u3059\u3002"), /*#__PURE__*/React.createElement("a", {
     href: "https://tenki.jp/forecast/7/35/6810/32203/10days.html",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -1333,13 +1333,13 @@ function WeatherWidget({
       fontSize: 13,
       fontWeight: 800
     }
-  }, "週間予報を見る（tenki.jp）→"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9031\u9593\u4E88\u5831\u3092\u898B\u308B\uFF08tenki.jp\uFF09\u2192"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10,
       color: "var(--faint)",
       marginTop: 8
     }
-  }, "データ：Open-Meteo"))));
+  }, "\u30C7\u30FC\u30BF\uFF1AOpen-Meteo"))));
 }
 
 // ── 開発・お知らせ Tab ──
@@ -1357,13 +1357,13 @@ function DevTab() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, "お知らせ・更新履歴"), /*#__PURE__*/React.createElement("div", {
+  }, "\u304A\u77E5\u3089\u305B\u30FB\u66F4\u65B0\u5C65\u6B74"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
       marginBottom: 20
     }
-  }, "アプリの更新履歴とお知らせ"), /*#__PURE__*/React.createElement("div", {
+  }, "\u30A2\u30D7\u30EA\u306E\u66F4\u65B0\u5C65\u6B74\u3068\u304A\u77E5\u3089\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -1425,7 +1425,7 @@ function DevTab() {
       fontSize: 13,
       padding: "40px 0"
     }
-  }, "まだお知らせはありません")));
+  }, "\u307E\u3060\u304A\u77E5\u3089\u305B\u306F\u3042\u308A\u307E\u305B\u3093")));
 }
 
 // ── Main App ──
@@ -1512,7 +1512,7 @@ function HeaderWeather() {
     style: {
       color: "#e0555f"
     }
-  }, hi, "°"), /*#__PURE__*/React.createElement("span", {
+  }, hi, "\xB0"), /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
       fontSize: size
@@ -1521,7 +1521,7 @@ function HeaderWeather() {
     style: {
       color: "#4a86c5"
     }
-  }, lo, "°"));
+  }, lo, "\xB0"));
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1562,7 +1562,7 @@ function HeaderWeather() {
       fontWeight: 900,
       color: "var(--sub)"
     }
-  }, "明"), /*#__PURE__*/React.createElement("span", {
+  }, "\u660E"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 16,
       lineHeight: 1
