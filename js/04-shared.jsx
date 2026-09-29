@@ -7,7 +7,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
   const [author, setAuthor] = useState("");
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
-  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [category, setCategory] = useState(deptCategories()[0]);
   const [items, setItems] = useState([]);   // [{file, preview, name, warn}]
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -151,7 +151,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>カテゴリ</div>
             <select value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14 }}>
-              {CATEGORIES.map(c=><option key={c}>{c}</option>)}
+              {deptCategories().map(c=><option key={c}>{c}</option>)}
             </select>
           </div>
           <div>

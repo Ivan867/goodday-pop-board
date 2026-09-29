@@ -390,6 +390,27 @@ function App() {
                 style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--sub)",
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
             </div>
+
+            {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
+            <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay 鮮魚・青果共有"
+              style={{ display:"block", width:"78%", maxWidth:210, height:"auto",
+                margin:"2px auto 12px", opacity:0.95 }} />
+
+            {/* 部門の切り替え（試し）。押すと言葉も色も変わるので、読み込み直す */}
+            <div className="dept-switch" style={{ gap:6, marginBottom:14, background:"var(--chip)",
+              borderRadius:11, padding:4 }}>
+              {Object.keys(DEPTS).map(k => {
+                const いま = deptKey() === k;
+                return (
+                  <button key={k} onClick={() => setDeptKey(k)} aria-pressed={いま}
+                    style={{ flex:1, border:"none", cursor: いま ? "default" : "pointer",
+                      background: いま ? "var(--primary-soft)" : "transparent",
+                      color: いま ? "#fff" : "var(--sub)", borderRadius:8, padding:"9px 6px",
+                      fontSize:13.5, fontWeight:900, fontFamily:"inherit" }}>{DEPTS[k].label}</button>
+                );
+              })}
+            </div>
+
             <div style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
                 const ORDER = ["search","archive","catalog","gne","order","lab","barcode","request","admin"];

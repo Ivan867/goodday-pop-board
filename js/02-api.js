@@ -34,12 +34,45 @@ function sbNotifyFail(method, detail) {
     }));
   } catch (e) {}
 }
+
+// 部門で分かれるテーブル。ここに足せば、そのテーブルも部門ごとになる
+const DEPT_TABLES = ["pops"];
+function sbDept() {
+  try {
+    const d = localStorage.getItem("dept");
+    return d === "produce" ? d : "fish";
+  } catch (e) {
+    return "fish";
+  }
+}
+// 読むときは ?dept=eq.○○ を足し、入れるときは dept を混ぜる。呼ぶ側は何も変えなくていい
+function sbWithDept(path, method, body) {
+  const m = /^\/rest\/v1\/([a-z_]+)/.exec(path);
+  if (!m || DEPT_TABLES.indexOf(m[1]) < 0) return {
+    path,
+    body
+  };
+  const d = sbDept();
+  if (!/[?&]dept=/.test(path)) path += (path.indexOf("?") >= 0 ? "&" : "?") + "dept=eq." + d;
+  if (method === "POST" && body && !Array.isArray(body) && body.dept === undefined) body = {
+    ...body,
+    dept: d
+  };
+  return {
+    path,
+    body
+  };
+}
 async function sbFetch(path, {
   method = "GET",
   body,
   prefer,
   headers = {}
 } = {}) {
+  ({
+    path,
+    body
+  } = sbWithDept(path, method, body));
   const extra = {
     ...(body !== undefined ? {
       "Content-Type": "application/json"
