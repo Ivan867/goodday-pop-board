@@ -403,6 +403,7 @@ function App() {
                 const いま = deptKey() === k;
                 return (
                   <button key={k} onClick={() => setDeptKey(k)} aria-pressed={いま}
+                    className={"dept-opt" + (いま ? " dept-on" : "")}
                     style={{ flex:1, border:"none", cursor: いま ? "default" : "pointer",
                       background: いま ? "var(--primary-soft)" : "transparent",
                       color: いま ? "#fff" : "var(--sub)", borderRadius:8, padding:"9px 6px",

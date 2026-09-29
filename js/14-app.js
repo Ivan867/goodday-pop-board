@@ -988,6 +988,7 @@ function App() {
       key: k,
       onClick: () => setDeptKey(k),
       "aria-pressed": いま,
+      className: "dept-opt" + (いま ? " dept-on" : ""),
       style: {
         flex: 1,
         border: "none",

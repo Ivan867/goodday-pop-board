@@ -161,11 +161,14 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 .bt-seg { height: 36px; min-width: min(34px, 8.5vw); }
 .bt-a-s { font-size: 13px; }
 .bt-a-l { font-size: 19px; }
-/* 部門の切り替えは、事務所のパソコンでだけ出す。
-   売場の端末で間違えて青果に切り替わり、そのまま投稿する事故を防ぐため。 */
-.dept-switch { display: none !important; }
+/* 部門：スマホ・タブレットでは「いま何部門か」だけを出し、切り替えはさせない。
+   売場の端末で間違えて青果に切り替わり、そのまま投稿する事故を防ぐため。
+   事務所のパソコンでだけ、両方出して切り替えられる。 */
+.dept-switch { display: flex !important; }
+.dept-switch .dept-opt { display: none; }
+.dept-switch .dept-on  { display: block; cursor: default; }
 @media (min-width: 700px) {
-  .dept-switch { display: flex !important; }
+  .dept-switch .dept-opt { display: block; }
 }
 @media (min-width: 700px) {
   /* 上の行から開けるので、メニューの中からは外す */
@@ -475,21 +478,21 @@ body { position: relative; overscroll-behavior-y: none; }
 })();
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260929j"></script>
-<script src="js/02-api.js?v=20260929j"></script>
-<script src="js/03-utils.js?v=20260929j"></script>
-<script src="js/04-shared.js?v=20260929j"></script>
-<script src="js/05-tab-board.js?v=20260929j"></script>
-<script src="js/06-tab-create.js?v=20260929j"></script>
-<script src="js/07-tab-floor.js?v=20260929j"></script>
-<script src="js/09-tab-info.js?v=20260929j"></script>
-<script src="js/11-tab-check-fish.js?v=20260929j"></script>
-<script src="js/12-tab-learn.js?v=20260929j"></script>
-<script src="js/14-app.js?v=20260929j"></script>
+<script src="js/01-config.js?v=20260929k"></script>
+<script src="js/02-api.js?v=20260929k"></script>
+<script src="js/03-utils.js?v=20260929k"></script>
+<script src="js/04-shared.js?v=20260929k"></script>
+<script src="js/05-tab-board.js?v=20260929k"></script>
+<script src="js/06-tab-create.js?v=20260929k"></script>
+<script src="js/07-tab-floor.js?v=20260929k"></script>
+<script src="js/09-tab-info.js?v=20260929k"></script>
+<script src="js/11-tab-check-fish.js?v=20260929k"></script>
+<script src="js/12-tab-learn.js?v=20260929k"></script>
+<script src="js/14-app.js?v=20260929k"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929j";
+window.APP_VER = "20260929k";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
