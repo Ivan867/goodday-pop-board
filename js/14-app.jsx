@@ -407,7 +407,7 @@ function App() {
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
             <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay 鮮魚・青果共有"
-              style={{ display:"block", width:"78%", maxWidth:210, height:"auto",
+              style={{ display:"block", width:"70%", maxWidth:186, height:"auto",
                 margin:"2px auto 12px", opacity:0.95 }} />
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>

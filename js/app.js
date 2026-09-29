@@ -273,6 +273,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
+  type: "改善",
+  title: "しるしを新しくしました",
+  body: "葉と魚がひと続きになった形に「NEXUS」の文字が入りました。起動画面・メニュー・ホーム画面のアイコンが変わります。"
+}, {
+  date: "2026-09-29",
   type: "修正",
   title: "開くのが遅くなっていたので、元に戻しました",
   body: "更新を自動で取り直す仕組みを入れたところ、開くのが遅くなりました。いったん取り消して、19時前の状態に戻しています。"
@@ -20945,8 +20950,8 @@ function App() {
     alt: "GoodDay \u9BAE\u9B5A\u30FB\u9752\u679C\u5171\u6709",
     style: {
       display: "block",
-      width: "78%",
-      maxWidth: 210,
+      width: "70%",
+      maxWidth: 186,
       height: "auto",
       margin: "2px auto 12px",
       opacity: 0.95

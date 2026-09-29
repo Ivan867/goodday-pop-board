@@ -1001,8 +1001,8 @@ function App() {
     alt: "GoodDay \u9BAE\u9B5A\u30FB\u9752\u679C\u5171\u6709",
     style: {
       display: "block",
-      width: "78%",
-      maxWidth: 210,
+      width: "70%",
+      maxWidth: 186,
       height: "auto",
       margin: "2px auto 12px",
       opacity: 0.95
