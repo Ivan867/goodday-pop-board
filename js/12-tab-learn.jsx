@@ -2737,11 +2737,17 @@ function BundleTab({ 細い } = {}) {
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
         ) : (
           <>
-            {/* 年間の帯グラフ（月を押すと切り替わる） */}
-            <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"0 0 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:228, WebkitOverflowScrolling:"touch" }}>
-              <div style={{ minWidth:600 }}>
+            {/* 年間の帯グラフ（月を押すと切り替わる）
+                細いとき＝パソコンの左の柱では、横に出ないところまで縮める */}
+            {(() => { const 寸 = 細い
+              ? { 名:52, 字:9.5, 帯:9, 最小:0, 高:190, 行:"3px 3px", 月:(m)=>String(m) }
+              : { 名:84, 字:12.5, 帯:14, 最小:600, 高:228, 行:"7px 4px", 月:(m)=>m+"月" };
+              const 列 = 寸.名 + "px repeat(12, 1fr)";
+              return (
+            <div ref={chartBox} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"0 0 8px", marginBottom:12, overflowX:"auto", overflowY:"auto", maxHeight:寸.高, WebkitOverflowScrolling:"touch" }}>
+              <div style={{ minWidth:寸.最小 }}>
                 {/* 月の見出し＝押せる */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"var(--card, #fff)", padding:"12px 2px 0", borderBottom:"1.5px solid var(--line)", boxShadow:"0 2px 0 var(--card, #fff)" }} data-head="1">
+                <div style={{ display:"grid", gridTemplateColumns:列, gap:0, marginBottom:6, position:"sticky", top:0, zIndex:3, background:"var(--card, #fff)", padding: 細い ? "8px 2px 0" : "12px 2px 0", borderBottom:"1.5px solid var(--line)", boxShadow:"0 2px 0 var(--card, #fff)" }} data-head="1">
                   <div style={{ position:"sticky", left:0, zIndex:4, background:"var(--card, #fff)", borderRight:"1px solid var(--line)" }} />
                   {MONTH_ORDER.map((mm) => {
                     const m = String(mm);
@@ -2751,8 +2757,8 @@ function BundleTab({ 細い } = {}) {
                         style={{ border:"none", borderLeft:"1px solid var(--line)", borderRadius:0,
                           background: isView ? "var(--primary)" : "var(--card, #fff)",
                           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
-                          padding:"5px 0 6px", fontSize:12.5, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
-                        {m}月
+                          padding: 細い ? "3px 0 4px" : "5px 0 6px", fontSize:寸.字, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
+                        {寸.月(m)}
                       </button>
                     );
                   })}
@@ -2765,18 +2771,18 @@ function BundleTab({ 細い } = {}) {
                   const n = counts[b.id] || 0;
                   return (
                     <button key={b.id} onClick={() => openBundle(b)} data-on={on ? "1" : undefined}
-                      style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, width:"100%", alignItems:"stretch",
+                      style={{ display:"grid", gridTemplateColumns:列, gap:0, width:"100%", alignItems:"stretch",
                         border:"none", borderBottom:"1px solid var(--line)", background: on ? "var(--soft)" : "transparent", borderRadius:0, padding:"0 2px", margin:0, cursor:"pointer" }}>
-                      <span style={{ display:"flex", alignItems:"center", gap:4, minWidth:0, paddingLeft:4, padding:"7px 4px", position:"sticky", left:0, zIndex:2, background: on ? "var(--soft)" : "var(--card, #fff)", paddingRight:4, borderRight:"1px solid var(--line)" }}>
-                        <span style={{ fontSize:12.5, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
-                        {n > 0 && <span style={{ fontSize:12.5, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
+                      <span style={{ display:"flex", alignItems:"center", gap:3, minWidth:0, paddingLeft:4, padding:寸.行, position:"sticky", left:0, zIndex:2, background: on ? "var(--soft)" : "var(--card, #fff)", paddingRight:4, borderRight:"1px solid var(--line)" }}>
+                        <span style={{ fontSize:寸.字, fontWeight:800, color: on ? "var(--ink)" : "var(--sub)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
+                        {n > 0 && <span style={{ fontSize:寸.字, fontWeight:900, color:col, flexShrink:0 }}>{n}</span>}
                       </span>
                       {MONTH_ORDER.map((mm) => {
                         const m = String(mm), hit = b.months.includes(mm);
                         return (
-                          <span key={m} style={{ borderLeft:"1px solid var(--line)", display:"flex", alignItems:"center", padding:"0 3px",
+                          <span key={m} style={{ borderLeft:"1px solid var(--line)", display:"flex", alignItems:"center", padding: 細い ? "0 1.5px" : "0 3px",
                             background: mm === viewM ? "rgba(74,122,176,0.08)" : "transparent" }}>
-                            <span style={{ display:"block", width:"100%", height:14, borderRadius:3,
+                            <span style={{ display:"block", width:"100%", height:寸.帯, borderRadius:3,
                               background: hit ? col : "transparent",
                               opacity: hit ? (mm === viewM ? 1 : 0.65) : 1 }} />
                           </span>
@@ -2787,16 +2793,17 @@ function BundleTab({ 細い } = {}) {
                 })}
 
                 {/* 今月の印 */}
-                <div style={{ display:"grid", gridTemplateColumns:"84px repeat(12, 1fr)", gap:0, padding:"0 2px", marginTop:3 }}>
-                  <div style={{ fontSize:12.5, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:6 }}>今月</div>
+                <div style={{ display:"grid", gridTemplateColumns:列, gap:0, padding:"0 2px", marginTop:3 }}>
+                  <div style={{ fontSize:寸.字, fontWeight:800, color:"var(--faint)", textAlign:"right", paddingRight:6 }}>今月</div>
                   {MONTH_ORDER.map((mm) => (
-                    <div key={mm} style={{ textAlign:"center", fontSize:12.5, fontWeight:900, color:"var(--primary-soft)" }}>
+                    <div key={mm} style={{ textAlign:"center", fontSize:寸.字, fontWeight:900, color:"var(--primary-soft)" }}>
                       {mm === NOW_M ? "▲" : ""}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+              ); })()}
 
             {/* 選んだ月 */}
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:9 }}>

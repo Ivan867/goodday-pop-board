@@ -7112,170 +7112,190 @@ function BundleTab({
       padding: "40px 0",
       fontSize: 13
     }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    ref: chartBox,
-    style: {
-      background: "var(--card, #fff)",
-      border: "1px solid var(--line)",
-      borderRadius: 12,
-      padding: "0 0 8px",
-      marginBottom: 12,
-      overflowX: "auto",
-      overflowY: "auto",
-      maxHeight: 228,
-      WebkitOverflowScrolling: "touch"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      minWidth: 600
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "84px repeat(12, 1fr)",
-      gap: 0,
-      marginBottom: 6,
-      position: "sticky",
-      top: 0,
-      zIndex: 3,
-      background: "var(--card, #fff)",
-      padding: "12px 2px 0",
-      borderBottom: "1.5px solid var(--line)",
-      boxShadow: "0 2px 0 var(--card, #fff)"
-    },
-    "data-head": "1"
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "sticky",
-      left: 0,
-      zIndex: 4,
-      background: "var(--card, #fff)",
-      borderRight: "1px solid var(--line)"
-    }
-  }), MONTH_ORDER.map(mm => {
-    const m = String(mm);
-    const isNow = mm === NOW_M,
-      isView = mm === viewM;
-    return /*#__PURE__*/React.createElement("button", {
-      key: m,
-      onClick: () => setViewM(mm),
-      "aria-label": `${mm}月を見る`,
-      "data-month": mm,
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
+    const 寸 = 細い ? {
+      名: 52,
+      字: 9.5,
+      帯: 9,
+      最小: 0,
+      高: 190,
+      行: "3px 3px",
+      月: m => String(m)
+    } : {
+      名: 84,
+      字: 12.5,
+      帯: 14,
+      最小: 600,
+      高: 228,
+      行: "7px 4px",
+      月: m => m + "月"
+    };
+    const 列 = 寸.名 + "px repeat(12, 1fr)";
+    return /*#__PURE__*/React.createElement("div", {
+      ref: chartBox,
       style: {
-        border: "none",
-        borderLeft: "1px solid var(--line)",
-        borderRadius: 0,
-        background: isView ? "var(--primary)" : "var(--card, #fff)",
-        color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
-        padding: "5px 0 6px",
-        fontSize: 12.5,
-        fontWeight: 900,
-        cursor: "pointer",
-        lineHeight: 1.3,
-        whiteSpace: "nowrap"
+        background: "var(--card, #fff)",
+        border: "1px solid var(--line)",
+        borderRadius: 12,
+        padding: "0 0 8px",
+        marginBottom: 12,
+        overflowX: "auto",
+        overflowY: "auto",
+        maxHeight: 寸.高,
+        WebkitOverflowScrolling: "touch"
       }
-    }, m, "\u6708");
-  })), seasonal.map(b => {
-    const col = colorOf(b);
-    const on = b.months.includes(viewM);
-    const n = counts[b.id] || 0;
-    return /*#__PURE__*/React.createElement("button", {
-      key: b.id,
-      onClick: () => openBundle(b),
-      "data-on": on ? "1" : undefined,
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: 寸.最小
+      }
+    }, /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
-        gridTemplateColumns: "84px repeat(12, 1fr)",
+        gridTemplateColumns: 列,
         gap: 0,
-        width: "100%",
-        alignItems: "stretch",
-        border: "none",
-        borderBottom: "1px solid var(--line)",
-        background: on ? "var(--soft)" : "transparent",
-        borderRadius: 0,
-        padding: "0 2px",
-        margin: 0,
-        cursor: "pointer"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
+        marginBottom: 6,
+        position: "sticky",
+        top: 0,
+        zIndex: 3,
+        background: "var(--card, #fff)",
+        padding: 細い ? "8px 2px 0" : "12px 2px 0",
+        borderBottom: "1.5px solid var(--line)",
+        boxShadow: "0 2px 0 var(--card, #fff)"
+      },
+      "data-head": "1"
+    }, /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-        minWidth: 0,
-        paddingLeft: 4,
-        padding: "7px 4px",
         position: "sticky",
         left: 0,
-        zIndex: 2,
-        background: on ? "var(--soft)" : "var(--card, #fff)",
-        paddingRight: 4,
+        zIndex: 4,
+        background: "var(--card, #fff)",
         borderRight: "1px solid var(--line)"
       }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 800,
-        color: on ? "var(--ink)" : "var(--sub)",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap"
-      }
-    }, b.name), n > 0 && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 900,
-        color: col,
-        flexShrink: 0
-      }
-    }, n)), MONTH_ORDER.map(mm => {
-      const m = String(mm),
-        hit = b.months.includes(mm);
-      return /*#__PURE__*/React.createElement("span", {
+    }), MONTH_ORDER.map(mm => {
+      const m = String(mm);
+      const isNow = mm === NOW_M,
+        isView = mm === viewM;
+      return /*#__PURE__*/React.createElement("button", {
         key: m,
+        onClick: () => setViewM(mm),
+        "aria-label": `${mm}月を見る`,
+        "data-month": mm,
         style: {
+          border: "none",
           borderLeft: "1px solid var(--line)",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 3px",
-          background: mm === viewM ? "rgba(74,122,176,0.08)" : "transparent"
+          borderRadius: 0,
+          background: isView ? "var(--primary)" : "var(--card, #fff)",
+          color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
+          padding: 細い ? "3px 0 4px" : "5px 0 6px",
+          fontSize: 寸.字,
+          fontWeight: 900,
+          cursor: "pointer",
+          lineHeight: 1.3,
+          whiteSpace: "nowrap"
+        }
+      }, 寸.月(m));
+    })), seasonal.map(b => {
+      const col = colorOf(b);
+      const on = b.months.includes(viewM);
+      const n = counts[b.id] || 0;
+      return /*#__PURE__*/React.createElement("button", {
+        key: b.id,
+        onClick: () => openBundle(b),
+        "data-on": on ? "1" : undefined,
+        style: {
+          display: "grid",
+          gridTemplateColumns: 列,
+          gap: 0,
+          width: "100%",
+          alignItems: "stretch",
+          border: "none",
+          borderBottom: "1px solid var(--line)",
+          background: on ? "var(--soft)" : "transparent",
+          borderRadius: 0,
+          padding: "0 2px",
+          margin: 0,
+          cursor: "pointer"
         }
       }, /*#__PURE__*/React.createElement("span", {
         style: {
-          display: "block",
-          width: "100%",
-          height: 14,
-          borderRadius: 3,
-          background: hit ? col : "transparent",
-          opacity: hit ? mm === viewM ? 1 : 0.65 : 1
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+          minWidth: 0,
+          paddingLeft: 4,
+          padding: 寸.行,
+          position: "sticky",
+          left: 0,
+          zIndex: 2,
+          background: on ? "var(--soft)" : "var(--card, #fff)",
+          paddingRight: 4,
+          borderRight: "1px solid var(--line)"
         }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 寸.字,
+          fontWeight: 800,
+          color: on ? "var(--ink)" : "var(--sub)",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }
+      }, b.name), n > 0 && /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 寸.字,
+          fontWeight: 900,
+          color: col,
+          flexShrink: 0
+        }
+      }, n)), MONTH_ORDER.map(mm => {
+        const m = String(mm),
+          hit = b.months.includes(mm);
+        return /*#__PURE__*/React.createElement("span", {
+          key: m,
+          style: {
+            borderLeft: "1px solid var(--line)",
+            display: "flex",
+            alignItems: "center",
+            padding: 細い ? "0 1.5px" : "0 3px",
+            background: mm === viewM ? "rgba(74,122,176,0.08)" : "transparent"
+          }
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            display: "block",
+            width: "100%",
+            height: 寸.帯,
+            borderRadius: 3,
+            background: hit ? col : "transparent",
+            opacity: hit ? mm === viewM ? 1 : 0.65 : 1
+          }
+        }));
       }));
-    }));
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "84px repeat(12, 1fr)",
-      gap: 0,
-      padding: "0 2px",
-      marginTop: 3
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
-      color: "var(--faint)",
-      textAlign: "right",
-      paddingRight: 6
-    }
-  }, "\u4ECA\u6708"), MONTH_ORDER.map(mm => /*#__PURE__*/React.createElement("div", {
-    key: mm,
-    style: {
-      textAlign: "center",
-      fontSize: 12.5,
-      fontWeight: 900,
-      color: "var(--primary-soft)"
-    }
-  }, mm === NOW_M ? "▲" : ""))))), /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: 列,
+        gap: 0,
+        padding: "0 2px",
+        marginTop: 3
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 寸.字,
+        fontWeight: 800,
+        color: "var(--faint)",
+        textAlign: "right",
+        paddingRight: 6
+      }
+    }, "\u4ECA\u6708"), MONTH_ORDER.map(mm => /*#__PURE__*/React.createElement("div", {
+      key: mm,
+      style: {
+        textAlign: "center",
+        fontSize: 寸.字,
+        fontWeight: 900,
+        color: "var(--primary-soft)"
+      }
+    }, mm === NOW_M ? "▲" : "")))));
+  })(), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
