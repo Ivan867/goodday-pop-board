@@ -1021,12 +1021,12 @@ function App() {
       fontWeight: 900
     }
   }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
-    src: "brand-logo.png?v=" + (window.APP_VER || ""),
+    src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS",
     style: {
       display: "block",
-      width: "70%",
-      maxWidth: 186,
+      width: "48%",
+      maxWidth: 128,
       height: "auto",
       margin: "2px auto 12px",
       opacity: 0.95

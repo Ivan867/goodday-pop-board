@@ -419,8 +419,8 @@ function App() {
             </div>
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
-            {!広い && <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS"
-              style={{ display:"block", width:"70%", maxWidth:186, height:"auto",
+            {!広い && <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS"
+              style={{ display:"block", width:"48%", maxWidth:128, height:"auto",
                 margin:"2px auto 12px", opacity:0.95 }} />}
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
