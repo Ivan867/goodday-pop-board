@@ -446,6 +446,15 @@ body { position: relative; overscroll-behavior-y: none; }
   var 出した = false;
   function 案内(理由){
     if (出した) return; 出した = true;
+    // 電波が不安定でファイルを取りこぼしただけ、ということが多い。
+    // まず一度だけ黙って読み込み直す。それでも駄目なら案内を出す。
+    try {
+      if (!sessionStorage.getItem("bootRetry")) {
+        sessionStorage.setItem("bootRetry", "1");
+        location.replace(location.pathname + "?r=" + Date.now());
+        return;
+      }
+    } catch (e) {}
     var s = document.getElementById("splash"); if (!s) return;
     var d = document.createElement("div");
     d.style.cssText = "font-size:12px;color:#a05a00;font-weight:700;text-align:center;line-height:1.8;padding:0 28px;margin-top:6px";
@@ -481,6 +490,7 @@ body { position: relative; overscroll-behavior-y: none; }
     var r = document.getElementById("root"), s = document.getElementById("splash");
     if (!s) { clearInterval(見張り); return; }
     if (r && r.childNodes.length > 0 && Date.now() - window.__splashT0 > 900) {
+      try { sessionStorage.removeItem("bootRetry"); } catch (e) {}   // 無事に開けた
       s.classList.add("hide");
       setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 500);
       clearInterval(見張り);
@@ -493,21 +503,21 @@ body { position: relative; overscroll-behavior-y: none; }
 })();
 </script>
 <div id="root"></div>
-<script src="js/01-config.js?v=20260929q"></script>
-<script src="js/02-api.js?v=20260929q"></script>
-<script src="js/03-utils.js?v=20260929q"></script>
-<script src="js/04-shared.js?v=20260929q"></script>
-<script src="js/05-tab-board.js?v=20260929q"></script>
-<script src="js/06-tab-create.js?v=20260929q"></script>
-<script src="js/07-tab-floor.js?v=20260929q"></script>
-<script src="js/09-tab-info.js?v=20260929q"></script>
-<script src="js/11-tab-check-fish.js?v=20260929q"></script>
-<script src="js/12-tab-learn.js?v=20260929q"></script>
-<script src="js/14-app.js?v=20260929q"></script>
+<script src="js/01-config.js?v=20260929r"></script>
+<script src="js/02-api.js?v=20260929r"></script>
+<script src="js/03-utils.js?v=20260929r"></script>
+<script src="js/04-shared.js?v=20260929r"></script>
+<script src="js/05-tab-board.js?v=20260929r"></script>
+<script src="js/06-tab-create.js?v=20260929r"></script>
+<script src="js/07-tab-floor.js?v=20260929r"></script>
+<script src="js/09-tab-info.js?v=20260929r"></script>
+<script src="js/11-tab-check-fish.js?v=20260929r"></script>
+<script src="js/12-tab-learn.js?v=20260929r"></script>
+<script src="js/14-app.js?v=20260929r"></script>
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929q";
+window.APP_VER = "20260929r";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
