@@ -1,4 +1,47 @@
 /* GoodDay 鮮魚共有 — 02-api （自動分割・window共有） */
+
+/* 古いファイルが端末に残っていても落ちないようにする受け皿。
+   新しい01-configが無ければ、これまでの鮮魚の値をそのまま使う。 */
+if (typeof deptCategories !== "function") {
+  window.deptCategories = function () {
+    return typeof CATEGORIES !== "undefined" ? CATEGORIES : [];
+  };
+}
+if (typeof deptGenres !== "function") {
+  window.deptGenres = function () {
+    return typeof GENRES !== "undefined" ? GENRES : [];
+  };
+}
+if (typeof deptGenreColors !== "function") {
+  window.deptGenreColors = function () {
+    return typeof GENRE_COLORS !== "undefined" ? GENRE_COLORS : {};
+  };
+}
+if (typeof deptConf !== "function") {
+  window.deptConf = function () {
+    return {
+      label: "鮮魚",
+      ものの呼び名: "魚",
+      categories: window.deptCategories(),
+      genres: window.deptGenres()
+    };
+  };
+}
+if (typeof deptKey !== "function") {
+  window.deptKey = function () {
+    return "fish";
+  };
+}
+if (typeof setDeptKey !== "function") {
+  window.setDeptKey = function () {};
+}
+if (typeof DEPTS === "undefined") {
+  window.DEPTS = {
+    fish: {
+      label: "鮮魚"
+    }
+  };
+}
 var {
   useState,
   useEffect,
