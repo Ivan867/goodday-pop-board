@@ -6377,7 +6377,9 @@ function prefetchBundles(force) {
   });
   return window.__bundleLoading;
 }
-function BundleTab() {
+function BundleTab({
+  細い
+} = {}) {
   const [sel, setSel] = useState(null); // 開いているPOP詳細
   const [bundles, setBundles] = useState([]);
   const [pops, setPops] = useState([]);
@@ -7086,20 +7088,22 @@ function BundleTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--primary)",
-      padding: "9px 16px",
-      color: "#fff"
+      padding: 細い ? "8px 12px" : "9px 16px",
+      color: "#fff",
+      borderRadius: 細い ? 10 : 0,
+      marginBottom: 細い ? 10 : 0
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 16.5,
+      fontSize: 細い ? 14 : 16.5,
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
   }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 1600,
+      maxWidth: 細い ? "none" : 1600,
       margin: "0 auto",
-      padding: "14px 16px 150px"
+      padding: 細い ? "0 0 10px" : "14px 16px 150px"
     }
   }, loading ? /*#__PURE__*/React.createElement("div", {
     style: {

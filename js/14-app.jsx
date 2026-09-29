@@ -441,8 +441,7 @@ function App() {
       {/* 広い画面：左の柱に行事カレンダーをずっと出しておく */}
       {広い && (
         <aside className="cal-dock fs-top">
-          <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>行事カレンダー</div>
-          <CalendarTab 細い />
+          <BundleTab 細い />
         </aside>
       )}
 

@@ -1095,14 +1095,7 @@ function App() {
     d: "M9 6l6 6-6 6"
   }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 10
-    }
-  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement(CalendarTab, {
+  }, /*#__PURE__*/React.createElement(BundleTab, {
     細い: true
   })), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,

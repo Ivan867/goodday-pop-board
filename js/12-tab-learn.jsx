@@ -2429,7 +2429,7 @@ function prefetchBundles(force) {
   return window.__bundleLoading;
 }
 
-function BundleTab() {
+function BundleTab({ 細い } = {}) {
   const [sel, setSel] = useState(null);          // 開いているPOP詳細
   const [bundles, setBundles] = useState([]);
   const [pops, setPops] = useState([]);
@@ -2727,11 +2727,12 @@ function BundleTab() {
 
   return (
     <div>
-      <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
-        <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
+      <div style={{ background:"var(--primary)", padding: 細い ? "8px 12px" : "9px 16px", color:"#fff",
+        borderRadius: 細い ? 10 : 0, marginBottom: 細い ? 10 : 0 }}>
+        <div style={{ fontSize: 細い ? 14 : 16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
       </div>
 
-      <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 150px" }}>
+      <div style={{ maxWidth: 細い ? "none" : 1600, margin:"0 auto", padding: 細い ? "0 0 10px" : "14px 16px 150px" }}>
         {loading ? (
           <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>
         ) : (
