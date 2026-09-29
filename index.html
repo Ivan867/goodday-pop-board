@@ -545,31 +545,35 @@ body { position: relative; overscroll-behavior-y: none; }
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zb"></script>
+<script src="js/app.js?v=20260929zc"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zb";
+window.APP_VER = "20260929zc";
 /* 版の見張り。
-   ホーム画面に追加したアプリは、Safariとは別の保管庫を持つ。そちらに
-   古い index.html が残ると、中に書いた版の番号ごと古いままになり、
-   こちらから何を直しても届かない。
-   そこで、版だけを書いた小さなファイルを毎回必ず取りに行き、
-   食い違っていたら一度だけ開き直す。 */
+   古い index.html を掴んだ端末を追いつかせるための仕組み。ただし
+   ・起動の前ではなく、画面が出てから静かに確かめる（表示を遅らせない）
+   ・同じ版へ飛ぶのは端末につき一度だけ（localStorage に覚えさせる）
+   ここを session ごとにすると、食い違いが続くかぎり毎回2回読み込むことになる。 */
 (function(){
-  try {
-    var いま = window.APP_VER || "";
-    fetch("version.json?t=" + Date.now(), { cache: "no-store" })
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){
-        if (!j || !j.v || j.v === いま) return;
-        if (sessionStorage.getItem("verJump") === j.v) return;   // 同じ版へは一度だけ
-        sessionStorage.setItem("verJump", j.v);
-        location.replace(location.pathname + "?v=" + j.v);
-      })
-      .catch(function(){});
-  } catch (e) {}
+  function 確かめる(){
+    try {
+      var いま = window.APP_VER || "";
+      fetch("version.json?t=" + Date.now(), { cache: "no-store" })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(j){
+          if (!j || !j.v || j.v === いま) { try { localStorage.removeItem("verJump"); } catch(e){} return; }
+          if (localStorage.getItem("verJump") === j.v) return;   // この版へは既に一度飛んだ
+          localStorage.setItem("verJump", j.v);
+          location.replace(location.pathname + "?v=" + j.v);
+        })
+        .catch(function(){});
+    } catch (e) {}
+  }
+  // 画面が出てから。起動そのものは1ミリ秒も遅らせない。
+  if (document.readyState === "complete") setTimeout(確かめる, 2500);
+  else window.addEventListener("load", function(){ setTimeout(確かめる, 2500); });
 })();
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
