@@ -274,8 +274,8 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
-  title: "左の行事カレンダーを4か月分にしました",
-  body: "1年ぶんを小さく詰め込むのをやめ、先月・今月・来月・再来月だけを大きく出します。「いつでも使うもの」は左には出しません（メニューから開くほうには今までどおりあります）。"
+  title: "左の行事カレンダーを6か月・7行までにしました",
+  body: "1年ぶんを小さく詰め込むのをやめ、先月から5か月先までを、行事は近いものから7つまで出します。「いつでも使うもの」は左には出しません（メニューから開くほうには今までどおりあります）。"
 }, {
   date: "2026-09-29",
   type: "修正",
@@ -19451,7 +19451,7 @@ function BundleTab({
   // 細いとき＝パソコンの左の柱では、前後あわせて4か月だけ見せる。
   // 1年ぶんを詰め込むより、いま動かす月が読めるほうが役に立つ。
   const MONTH_ORDER = 細い ? Array.from({
-    length: 4
+    length: 6
   }, (_, i) => (NOW_M - 2 + i + 12) % 12 + 1) : Array.from({
     length: 12
   }, (_, i) => (NOW_M - 7 + i + 12) % 12 + 1);
@@ -19463,6 +19463,14 @@ function BundleTab({
   // 見ている月の行事／来月の予告
   const nextM = viewM === 12 ? 1 : viewM + 1;
   const inMonth = m => seasonal.filter(b => b.months.includes(m));
+  // 細いときは縦も絞る。窓にかかる行事を先に、多くても7行まで。
+  const 表の行 = (() => {
+    if (!細い) return seasonal;
+    const 窓 = MONTH_ORDER;
+    const 位置 = b => Math.min.apply(null, b.months.map(m => 窓.indexOf(m)).filter(i => i >= 0).concat([99]));
+    const 当 = seasonal.filter(b => 位置(b) < 99).sort((x, y) => 位置(x) - 位置(y));
+    return (当.length ? 当 : seasonal).slice(0, 7);
+  })();
   const viewList = inMonth(viewM);
   const soonList = inMonth(nextM).filter(b => !b.months.includes(viewM)); // 来月から始まるもの
 
@@ -19583,9 +19591,9 @@ function BundleTab({
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, (() => {
     const 寸 = 細い ? {
-      名: 78,
-      字: 11,
-      帯: 11,
+      名: 72,
+      字: 10.5,
+      帯: 10,
       最小: 0,
       高: "none",
       行: "5px 4px",
@@ -19663,7 +19671,7 @@ function BundleTab({
           whiteSpace: "nowrap"
         }
       }, 寸.月(m));
-    })), seasonal.map(b => {
+    })), 表の行.map(b => {
       const col = colorOf(b);
       const on = b.months.includes(viewM);
       const n = counts[b.id] || 0;
@@ -19764,61 +19772,77 @@ function BundleTab({
         color: "var(--primary-soft)"
       }
     }, mm === NOW_M ? "▲" : "")))));
-  })(), /*#__PURE__*/React.createElement("div", {
-    style: {
+  })(), (() => {
+    const 丸 = {
+      border: "1px solid var(--line)",
+      background: "var(--card, #fff)",
+      color: "var(--primary-soft)",
+      borderRadius: 11,
+      width: 34,
+      height: 34,
+      padding: 0,
+      cursor: "pointer",
       display: "flex",
       alignItems: "center",
-      gap: 8,
-      marginBottom: 9
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setViewM(viewM === 1 ? 12 : viewM - 1),
-    "aria-label": "\u524D\u306E\u6708",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 7,
-      width: 28,
-      height: 28,
-      fontSize: 14,
-      fontWeight: 900,
-      color: "var(--sub)",
-      cursor: "pointer"
-    }
-  }, "\u2039"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 13.5,
-      fontWeight: 900,
-      color: "var(--ink)"
-    }
-  }, viewM, "\u6708", viewM === NOW_M ? "（今月）" : ""), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setViewM(viewM === 12 ? 1 : viewM + 1),
-    "aria-label": "\u6B21\u306E\u6708",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 7,
-      width: 28,
-      height: 28,
-      fontSize: 14,
-      fontWeight: 900,
-      color: "var(--sub)",
-      cursor: "pointer"
-    }
-  }, "\u203A"), viewM !== NOW_M && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setViewM(NOW_M),
-    style: {
-      marginLeft: "auto",
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 7,
-      padding: "6px 12px",
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--primary)",
-      cursor: "pointer"
-    }
-  }, "\u4ECA\u6708\u306B\u3082\u3069\u308B")), viewList.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      justifyContent: "center",
+      flexShrink: 0,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+    };
+    const 矢 = d => /*#__PURE__*/React.createElement("svg", {
+      width: "15",
+      height: "15",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2.4",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: d
+    }));
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "hig-pill",
+      onClick: () => setViewM(viewM === 1 ? 12 : viewM - 1),
+      "aria-label": "\u524D\u306E\u6708",
+      style: 丸
+    }, 矢("M15 5l-7 7 7 7")), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 900,
+        color: "var(--ink)",
+        whiteSpace: "nowrap"
+      }
+    }, viewM, "\u6708", viewM === NOW_M ? "（今月）" : ""), /*#__PURE__*/React.createElement("button", {
+      className: "hig-pill",
+      onClick: () => setViewM(viewM === 12 ? 1 : viewM + 1),
+      "aria-label": "\u6B21\u306E\u6708",
+      style: 丸
+    }, 矢("M9 6l6 6-6 6")), viewM !== NOW_M && /*#__PURE__*/React.createElement("button", {
+      className: "hig-pill",
+      onClick: () => setViewM(NOW_M),
+      style: {
+        marginLeft: "auto",
+        border: "1px solid var(--line)",
+        background: "var(--card, #fff)",
+        color: "var(--primary-soft)",
+        borderRadius: 11,
+        padding: "8px 13px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer",
+        fontFamily: "inherit",
+        whiteSpace: "nowrap",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+      }
+    }, "\u4ECA\u6708\u306B\u3082\u3069\u308B"));
+  })(), viewList.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",

@@ -2691,7 +2691,7 @@ function BundleTab({ 細い } = {}) {
   // 細いとき＝パソコンの左の柱では、前後あわせて4か月だけ見せる。
   // 1年ぶんを詰め込むより、いま動かす月が読めるほうが役に立つ。
   const MONTH_ORDER = 細い
-    ? Array.from({ length: 4 },  (_, i) => ((NOW_M - 2 + i + 12) % 12) + 1)
+    ? Array.from({ length: 6 },  (_, i) => ((NOW_M - 2 + i + 12) % 12) + 1)
     : Array.from({ length: 12 }, (_, i) => ((NOW_M - 7 + i + 12) % 12) + 1);
   const BAR_COLORS = ["#d1554f","#c39a3c","#3f9e63","#3b7dd8","#8a5fc4","#c4685f","#3f8f9e","#9e7b3f"];
 
@@ -2702,6 +2702,14 @@ function BundleTab({ 細い } = {}) {
   // 見ている月の行事／来月の予告
   const nextM = viewM === 12 ? 1 : viewM + 1;
   const inMonth = (m) => seasonal.filter(b => b.months.includes(m));
+  // 細いときは縦も絞る。窓にかかる行事を先に、多くても7行まで。
+  const 表の行 = (() => {
+    if (!細い) return seasonal;
+    const 窓 = MONTH_ORDER;
+    const 位置 = (b) => Math.min.apply(null, b.months.map(m => 窓.indexOf(m)).filter(i => i >= 0).concat([99]));
+    const 当 = seasonal.filter(b => 位置(b) < 99).sort((x, y) => 位置(x) - 位置(y));
+    return (当.length ? 当 : seasonal).slice(0, 7);
+  })();
   const viewList = inMonth(viewM);
   const soonList = inMonth(nextM).filter(b => !b.months.includes(viewM));  // 来月から始まるもの
 
@@ -2744,7 +2752,7 @@ function BundleTab({ 細い } = {}) {
             {/* 年間の帯グラフ（月を押すと切り替わる）
                 細いとき＝パソコンの左の柱では、横に出ないところまで縮める */}
             {(() => { const 寸 = 細い
-              ? { 名:78, 字:11, 帯:11, 最小:0, 高:"none", 行:"5px 4px", 月:(m)=>m+"月" }
+              ? { 名:72, 字:10.5, 帯:10, 最小:0, 高:"none", 行:"5px 4px", 月:(m)=>m+"月" }
               : { 名:84, 字:12.5, 帯:14, 最小:600, 高:228, 行:"7px 4px", 月:(m)=>m+"月" };
               const 列 = 寸.名 + "px repeat(" + MONTH_ORDER.length + ", 1fr)";
               return (
@@ -2769,7 +2777,7 @@ function BundleTab({ 細い } = {}) {
                 </div>
 
                 {/* 行事の帯 */}
-                {seasonal.map(b => {
+                {表の行.map(b => {
                   const col = colorOf(b);
                   const on = b.months.includes(viewM);
                   const n = counts[b.id] || 0;
@@ -2809,20 +2817,35 @@ function BundleTab({ 細い } = {}) {
             </div>
               ); })()}
 
-            {/* 選んだ月 */}
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:9 }}>
-              <button onClick={() => setViewM(viewM === 1 ? 12 : viewM - 1)} aria-label="前の月"
-                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>‹</button>
-              <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>
-                {viewM}月{viewM === NOW_M ? "（今月）" : ""}
-              </span>
-              <button onClick={() => setViewM(viewM === 12 ? 1 : viewM + 1)} aria-label="次の月"
-                style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, width:28, height:28, fontSize:14, fontWeight:900, color:"var(--sub)", cursor:"pointer" }}>›</button>
-              {viewM !== NOW_M && (
-                <button onClick={() => setViewM(NOW_M)}
-                  style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:7, padding:"6px 12px", fontSize:12, fontWeight:800, color:"var(--primary)", cursor:"pointer" }}>今月にもどる</button>
-              )}
-            </div>
+            {/* 選んだ月。ボタンはアプリ共通の押しボタン（hig-pill）にそろえる */}
+            {(() => {
+              const 丸 = { border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary-soft)",
+                borderRadius:11, width:34, height:34, padding:0, cursor:"pointer",
+                display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+                boxShadow:"0 1px 3px rgba(0,0,0,0.05)" };
+              const 矢 = (d) => (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
+              );
+              return (
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                  <button className="hig-pill" onClick={() => setViewM(viewM === 1 ? 12 : viewM - 1)}
+                    aria-label="前の月" style={丸}>{矢("M15 5l-7 7 7 7")}</button>
+                  <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap" }}>
+                    {viewM}月{viewM === NOW_M ? "（今月）" : ""}
+                  </span>
+                  <button className="hig-pill" onClick={() => setViewM(viewM === 12 ? 1 : viewM + 1)}
+                    aria-label="次の月" style={丸}>{矢("M9 6l6 6-6 6")}</button>
+                  {viewM !== NOW_M && (
+                    <button className="hig-pill" onClick={() => setViewM(NOW_M)}
+                      style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)",
+                        color:"var(--primary-soft)", borderRadius:11, padding:"8px 13px", fontSize:13, fontWeight:800,
+                        cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap",
+                        boxShadow:"0 1px 3px rgba(0,0,0,0.05)" }}>今月にもどる</button>
+                  )}
+                </div>
+              );
+            })()}
 
             {viewList.length === 0 ? (
               <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 20px", fontSize:12.5, lineHeight:1.7, background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:11, marginBottom:14 }}>
