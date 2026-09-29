@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-09-29",
   type: "改善",
+  title: "メニューと上の行の見た目をそろえました",
+  body: "スマホのメニューも濃紺になりました。一覧の上の行は囲いをやめ、灰色の面に置くだけにしています。部門のボタンだけは、いまどちらかが分かるよう色を残しました。"
+}, {
+  date: "2026-09-29",
+  type: "改善",
   title: "「さがす」を大きくしました",
   body: "1.5倍にしました。売場で手袋のまま押しやすくなります。"
 }, {
@@ -20838,7 +20843,7 @@ function App() {
       whiteSpace: toastBad ? "normal" : "nowrap",
       lineHeight: 1.5
     }
-  }, toast))), tab === "board" && !searchOpen && !moreOpen && /*#__PURE__*/React.createElement("button", {
+  }, toast))), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
@@ -20931,10 +20936,9 @@ function App() {
   }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "dock-brand"
   }, /*#__PURE__*/React.createElement("img", {
-    src: "brand-mark.png?v=" + (window.APP_VER || ""),
-    alt: "",
-    "aria-hidden": "true"
-  }), /*#__PURE__*/React.createElement("span", null, "GoodDay NEXUS")), /*#__PURE__*/React.createElement("button", {
+    src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
+    alt: "GoodDay NEXUS"
+  }), /*#__PURE__*/React.createElement("span", null, "GoodDay")), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
       try {

@@ -394,6 +394,19 @@ body { position: relative; overscroll-behavior-y: none; }
   .gne-preview { position: sticky; top: 12px; }
   .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
 }
+/* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
+.board-head .hig-pill, .board-head .bt-btn {
+  border-color: transparent !important;
+  background: var(--chip) !important;
+  box-shadow: none !important;
+  color: var(--sub) !important;
+}
+.board-head .hig-pill span { color: var(--text) !important; font-weight: 700 !important; }
+.board-head .hig-pill:hover, .board-head .bt-btn:hover { background: var(--line) !important; }
+/* 部門のボタンだけは、いまどちらかが一目で分かるよう色を残す */
+.board-head .bt-dept { background: var(--soft) !important; color: var(--soft-text) !important;
+  border: 1px solid var(--primary-soft) !important; }
+
 /* HIG風ボタン：押した瞬間うっすら透明＋わずかに縮む */
 .hig-pill { transition: opacity .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
 .hig-pill:active { opacity:.55; transform:scale(.96); }
@@ -431,13 +444,68 @@ body { position: relative; overscroll-behavior-y: none; }
   #barcode-print-portal .bc-label { page-break-inside: avoid; break-inside: avoid; }
 }
 
+/* ───── メニューと行事カレンダーの面：濃紺に、白い文字とアイコン ─────
+   中の要素はすべて var(--…) で色を書いているので、この面の中だけ
+   変数を差し替えれば、JSXを触らずに見た目が変わる。 */
+/* ───── 左右の柱の意匠：濃紺の面に、白い文字とアイコン ─────
+ 中の要素はすべて var(--…) で色を書いているので、柱の中だけ
+ その変数を差し替えれば、JSXを一切触らずに見た目が変わる。 */
+.menu-drawer, .cal-dock {
+--ink:#EAF1F8;
+--text: #D6E1EC;
+--sub:#93A6BA;
+--faint:#7F92A6;
+--line: rgba(255,255,255,0.10);
+--card: rgba(255,255,255,0.045);
+--menu-row: transparent;
+--chip: rgba(255,255,255,0.07);
+--soft: rgba(111,163,216,0.16);
+--soft-text:#9CC8F2;
+--primary:#9CC8F2;
+--primary-soft: #7FB2E4;
+--drawer-bg:#0F1A28;
+background: #0F1A28 !important;
+border-color: rgba(255,255,255,0.08) !important;
+color: #EAF1F8;
+letter-spacing: 0.015em;
+}
+/* メニューの項目は、囲いをやめて面に置くだけにする */
+.menu-drawer .menu-list .menu-item {
+border-color: transparent !important;
+background: transparent !important;
+min-height: 44px !important;
+padding: 7px 10px !important;
+}
+.menu-drawer .menu-list .menu-item:hover { background: rgba(255,255,255,0.07) !important; }
+.menu-drawer .menu-list .menu-item span { font-weight: 600 !important; }
+.menu-drawer .menu-list { gap: 2px !important; }
+/* 行事の項目も同じ調子に */
+.cal-dock .menu-item { background: rgba(255,255,255,0.045) !important; }
+.cal-dock .menu-item:hover { background: rgba(255,255,255,0.09) !important; }
+/* 柱の見出し（英字の副題つき） */
+.dock-head { margin: 2px 0 14px; }
+.dock-head b { display:block; font-size: 19px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.01em; }
+.dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
+color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
+/* 右の柱：しるしと名前 */
+.dock-brand { text-align:center; padding: 4px 0 14px; }
+.dock-brand img { display:block; width: 58%; max-width: 132px; height:auto; margin: 0 auto 8px; }
+.dock-brand span { display:block; font-size: 15px; font-weight: 700; color: #E6EEF7; letter-spacing: 0.04em; }
+/* 右の柱：さがす（押すと今までの絞り込みが開く） */
+.dock-search {
+display:flex; align-items:center; gap:9px; width:100%;
+border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+color: #93A6BA; border-radius: 11px; padding: 11px 13px; margin-bottom: 14px;
+font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+}
+.dock-search:hover { background: rgba(255,255,255,0.10); }
+
 /* ───── 広い画面（パソコン）：左に行事カレンダー、右にメニューを置く ───── */
 @media (min-width: 1280px) {
   /* 右の柱：メニュー */
   .menu-dock {
     right: 0 !important; left: auto !important;
     width: 288px !important;
-    background: var(--card) !important;
     backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     border-left: 1px solid var(--line);
@@ -454,7 +522,6 @@ body { position: relative; overscroll-behavior-y: none; }
     position: fixed; left: 0; top: 0; bottom: 0;
     width: 320px; z-index: 120;
     overflow-y: auto;
-    background: var(--card);
     border-right: 1px solid var(--line);
     padding: 14px 14px calc(18px + env(safe-area-inset-bottom));
     box-sizing: border-box;
@@ -467,62 +534,10 @@ body { position: relative; overscroll-behavior-y: none; }
   /* 左に出ているので、メニューの中の行事カレンダーも要らない */
   .menu-row-bundle { display: none !important; }
   /* すぐ上に検索欄があるので、項目の「検索」も要らない */
-  .menu-dock .menu-row-search { display: none !important; }
+  .menu-drawer .menu-row-search { display: none !important; }
   /* さがすボタンは右の柱の内側に寄せる */
   .fab-search { right: 316px !important; }
 
-  /* ───── 左右の柱の意匠：濃紺の面に、白い文字とアイコン ─────
-     中の要素はすべて var(--…) で色を書いているので、柱の中だけ
-     その変数を差し替えれば、JSXを一切触らずに見た目が変わる。 */
-  .menu-dock, .cal-dock {
-    --ink:        #EAF1F8;
-    --text:       #D6E1EC;
-    --sub:        #93A6BA;
-    --faint:      #7F92A6;
-    --line:       rgba(255,255,255,0.10);
-    --card:       rgba(255,255,255,0.045);
-    --menu-row:   transparent;
-    --chip:       rgba(255,255,255,0.07);
-    --soft:       rgba(111,163,216,0.16);
-    --soft-text:  #9CC8F2;
-    --primary:      #9CC8F2;
-    --primary-soft: #7FB2E4;
-    --drawer-bg:  #0F1A28;
-    background: #0F1A28 !important;
-    border-color: rgba(255,255,255,0.08) !important;
-    color: #EAF1F8;
-    letter-spacing: 0.015em;
-  }
-  /* メニューの項目は、囲いをやめて面に置くだけにする */
-  .menu-dock .menu-list .menu-item {
-    border-color: transparent !important;
-    background: transparent !important;
-    min-height: 44px !important;
-    padding: 7px 10px !important;
-  }
-  .menu-dock .menu-list .menu-item:hover { background: rgba(255,255,255,0.07) !important; }
-  .menu-dock .menu-list .menu-item span { font-weight: 600 !important; }
-  .menu-dock .menu-list { gap: 2px !important; }
-  /* 行事の項目も同じ調子に */
-  .cal-dock .menu-item { background: rgba(255,255,255,0.045) !important; }
-  .cal-dock .menu-item:hover { background: rgba(255,255,255,0.09) !important; }
-  /* 柱の見出し（英字の副題つき） */
-  .dock-head { margin: 2px 0 14px; }
-  .dock-head b { display:block; font-size: 19px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.01em; }
-  .dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
-    color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
-  /* 右の柱：しるしと名前 */
-  .dock-brand { text-align:center; padding: 4px 0 14px; }
-  .dock-brand img { display:block; width: 58%; max-width: 132px; height:auto; margin: 0 auto 8px; }
-  .dock-brand span { display:block; font-size: 15px; font-weight: 700; color: #E6EEF7; letter-spacing: 0.04em; }
-  /* 右の柱：さがす（押すと今までの絞り込みが開く） */
-  .dock-search {
-    display:flex; align-items:center; gap:9px; width:100%;
-    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
-    color: #93A6BA; border-radius: 11px; padding: 11px 13px; margin-bottom: 14px;
-    font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
-  }
-  .dock-search:hover { background: rgba(255,255,255,0.10); }
 }
 </style>
 </head>
@@ -601,12 +616,12 @@ body { position: relative; overscroll-behavior-y: none; }
 </script>
 <div id="root"></div>
 <!-- APP-BUNDLE -->
-<script src="js/app.js?v=20260929zh"></script>
+<script src="js/app.js?v=20260929zi"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20260929zh";
+window.APP_VER = "20260929zi";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){
