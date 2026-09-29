@@ -962,7 +962,18 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), /*#__PURE__*/React.createElement("img", {
+    src: "brand-logo.png?v=" + (window.APP_VER || ""),
+    alt: "GoodDay \u9BAE\u9B5A\u30FB\u9752\u679C\u5171\u6709",
+    style: {
+      display: "block",
+      width: "78%",
+      maxWidth: 210,
+      height: "auto",
+      margin: "2px auto 12px",
+      opacity: 0.95
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,

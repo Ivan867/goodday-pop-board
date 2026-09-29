@@ -391,6 +391,11 @@ function App() {
                   borderRadius:9, width:34, height:34, cursor:"pointer", fontSize:15, fontWeight:900 }}>✕</button>
             </div>
 
+            {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
+            <img src={"brand-logo.png?v=" + (window.APP_VER || "")} alt="GoodDay 鮮魚・青果共有"
+              style={{ display:"block", width:"78%", maxWidth:210, height:"auto",
+                margin:"2px auto 12px", opacity:0.95 }} />
+
             {/* 部門の切り替え（試し）。押すと言葉も色も変わるので、読み込み直す */}
             <div style={{ display:"flex", gap:6, marginBottom:14, background:"var(--chip)",
               borderRadius:11, padding:4 }}>
