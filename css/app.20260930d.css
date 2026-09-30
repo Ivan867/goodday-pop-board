@@ -346,12 +346,6 @@ body { position: relative; overscroll-behavior-y: none; }
 /* HIG風ボタン：押した瞬間うっすら透明＋わずかに縮む */
 .hig-pill { transition: opacity .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
 .hig-pill:active { opacity:.55; transform:scale(.96); }
-#splash { position:fixed; inset:0; z-index:9999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .45s ease; }
-#splash.hide { opacity:0; pointer-events:none; }
-#splash .sp-name { font-size:19px; font-weight:900; letter-spacing:.08em; color:#1d4e6b; }
-#splash .sp-note { font-size:12px; font-weight:700; color:#8aa0ad; }
-#splash .sp-logo { width:min(232px, 56vw); height:auto; filter:drop-shadow(0 10px 26px rgba(32,110,120,0.22)); animation:spPop .7s cubic-bezier(.16,1.3,.3,1) both; }
-@keyframes spPop { from { transform:scale(.55); opacity:0; } to { transform:scale(1); opacity:1; } }
 @keyframes spFade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
