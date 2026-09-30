@@ -403,7 +403,7 @@ function App() {
             {広い ? (
               <>
                 <div className="dock-brand">
-                  <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS" />
+                  <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
                 </div>
                 <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
@@ -419,8 +419,8 @@ function App() {
             </div>
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
-            {!広い && <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS"
-              style={{ display:"block", width:"48%", maxWidth:128, height:"auto",
+            {!広い && <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT"
+              style={{ display:"block", width:"62%", maxWidth:166, height:"auto",
                 margin:"2px auto 12px", opacity:0.95 }} />}
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>

@@ -21152,7 +21152,7 @@ function App() {
     className: "dock-brand"
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS"
+    alt: "GoodDay NEXUS PROJECT"
   })), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
@@ -21203,12 +21203,12 @@ function App() {
       fontWeight: 900
     }
   }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
-    src: "brand-logo.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS",
+    src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
+    alt: "GoodDay NEXUS PROJECT",
     style: {
       display: "block",
-      width: "70%",
-      maxWidth: 186,
+      width: "62%",
+      maxWidth: 166,
       height: "auto",
       margin: "2px auto 12px",
       opacity: 0.95
