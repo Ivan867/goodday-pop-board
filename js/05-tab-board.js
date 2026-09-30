@@ -25,25 +25,6 @@ function BoardTab({
   const [fStore, setFStore] = useState("");
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
-  // 上の並びが画面外へ出たら、代わりに細い帯を出す（スマホ）
-  const [沈んだ, set沈んだ] = useState(false);
-  React.useEffect(() => {
-    const 面 = document.getElementById("app-scroll");
-    if (!面) return;
-    let 前 = false;
-    const 見る = () => {
-      const now = 面.scrollTop > 132;
-      if (now !== 前) {
-        前 = now;
-        set沈んだ(now);
-      }
-    };
-    面.addEventListener("scroll", 見る, {
-      passive: true
-    });
-    見る();
-    return () => 面.removeEventListener("scroll", 見る);
-  }, []);
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
   const grpSwipe = React.useRef(null);
   const [reloading, setReloading] = useState(false); // 更新ボタンの回転
@@ -276,51 +257,6 @@ function BoardTab({
   const catPos = arcPositions(catItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "mini-bar" + (沈んだ ? " on" : ""),
-    "aria-hidden": 沈んだ ? "false" : "true"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "mini-b",
-    onClick: () => setShowUp(true),
-    "aria-label": "\u6295\u7A3F\u3059\u308B"
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.4",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M12 5v14M5 12h14"
-  })), "\u6295\u7A3F"), /*#__PURE__*/React.createElement("button", {
-    className: "mini-t",
-    onClick: () => {
-      const 面 = document.getElementById("app-scroll");
-      if (面) 面.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    },
-    "aria-label": "\u3044\u3061\u3070\u3093\u4E0A\u3078\u623B\u308B"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "mini-name"
-  }, "\u751F\u9BAE\u5171\u6709")), /*#__PURE__*/React.createElement("button", {
-    className: "mini-b",
-    onClick: () => onMenu && onMenu(),
-    "aria-label": "\u30E1\u30CB\u30E5\u30FC\u3092\u958B\u304F"
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.2",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 7h16M4 12h16M4 17h16"
-  })), "\u30E1\u30CB\u30E5\u30FC", menuBadge && /*#__PURE__*/React.createElement("span", {
-    className: "mini-dot"
-  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",

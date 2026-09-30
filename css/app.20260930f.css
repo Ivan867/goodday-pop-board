@@ -538,9 +538,8 @@ html[data-dept="produce"] #app-scroll::before {
     radial-gradient(90% 46% at 50% 104%, rgba(74,196,110,.10), transparent 72%);
 }
 /* 一覧の板を少し透かして、下地が透けるようにする（ガラスのような重なり） */
-.pop-grid > div, .pop-grid > button, .ucard, .wcard {
-  backdrop-filter: saturate(1.12); -webkit-backdrop-filter: saturate(1.12);
-}
+/* カード1枚ごとの backdrop-filter は外した。枚数分の合成層ができ、
+   iPhone で描画が破綻する（真っ白になる）恐れがあるため。 */
 /* 上の行は下地の上に浮かせる */
 .board-head { background: transparent !important; }
 

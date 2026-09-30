@@ -273,6 +273,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
   date: "2026-09-30",
+  type: "改善",
+  title: "一覧のカードを作り直しました",
+  body: "角を丸めて影を付け、商品名の下に ジャンル・店名 を小さく出すようにしました。画像の余った所は白ではなく台紙の色にしています。上の並びも少し詰めました。"
+}, {
+  date: "2026-09-30",
   type: "修正",
   title: "真っ白になる不具合を直しました",
   body: "起動画面の絵をHTMLに埋め込んでいたため、通信が途中で切れると画面が完全に白くなっていました。絵を外に出し、文字だけで出るようにしました。"
@@ -5575,11 +5580,13 @@ function PopCard({
   return /*#__PURE__*/React.createElement("div", {
     className: "ucard" + (land ? " pc-land" : "") + (land && pop.__pairLand ? " pc-pair-land" : ""),
     style: {
-      borderRadius: 2,
+      borderRadius: 14,
       overflow: "hidden",
       background: "var(--card, #fff)",
       cursor: "pointer",
-      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`,
+      boxShadow: "var(--card-shadow)",
+      transition: "transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease",
+      animation: `fadeUp 0.42s cubic-bezier(.16,1,.3,1) ${Math.min(index, 11) * 0.045}s both`,
       ...(dims && !rotated ? {
         "--nat-ar": land && pop.__pairLand && pop.__rowAr ? String(pop.__rowAr) : `${dims.w} / ${dims.h}`
       } : {})
@@ -5609,14 +5616,14 @@ function PopCard({
       width: "100%",
       objectFit: "contain",
       display: "block",
-      background: "var(--card, #fff)",
+      background: "var(--mat)",
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       aspectRatio: "1 / 1.414",
-      background: "var(--card, #fff)"
+      background: "var(--mat)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5652,12 +5659,15 @@ function PopCard({
     d: "M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"
   })), pop.__count), hasComment && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "rgba(194,78,0,0.9)",
-      color: "white",
-      fontSize: 12,
-      fontWeight: 900,
-      padding: "2px 7px",
-      borderRadius: 20
+      background: "rgba(20,25,35,0.72)",
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: 800,
+      padding: "3px 8px",
+      borderRadius: 20,
+      letterSpacing: ".02em",
+      backdropFilter: "blur(4px)",
+      WebkitBackdropFilter: "blur(4px)"
     }
   }, "\u30B3\u30E1\u30F3\u30C8"))), /*#__PURE__*/React.createElement("div", {
     className: "pc-body",
@@ -5675,7 +5685,23 @@ function PopCard({
       wordBreak: "break-word",
       color: "var(--ink)"
     }
-  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name)));
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), (pop.store_name || pop.genre) && /*#__PURE__*/React.createElement("div", {
+    className: "pc-sub"
+  }, pop.genre && /*#__PURE__*/React.createElement("span", {
+    className: "pc-dot",
+    style: {
+      background: function () {
+        try {
+          var c = deptGenreColors()[pop.genre];
+          return c && c.solid || "var(--primary-soft)";
+        } catch (e) {
+          return "var(--primary-soft)";
+        }
+      }()
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "pc-sub-t"
+  }, [pop.genre, pop.store_name].filter(Boolean).join(" · ")))));
 }
 
 // ── Board Tab ──
