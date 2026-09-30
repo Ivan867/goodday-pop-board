@@ -8,6 +8,20 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   const [fStore, setFStore] = useState("");
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
+  // 上の並びが画面外へ出たら、代わりに細い帯を出す（スマホ）
+  const [沈んだ, set沈んだ] = useState(false);
+  React.useEffect(() => {
+    const 面 = document.getElementById("app-scroll");
+    if (!面) return;
+    let 前 = false;
+    const 見る = () => {
+      const now = 面.scrollTop > 132;
+      if (now !== 前) { 前 = now; set沈んだ(now); }
+    };
+    面.addEventListener("scroll", 見る, { passive: true });
+    見る();
+    return () => 面.removeEventListener("scroll", 見る);
+  }, []);
   const [openGroup, setOpenGroup] = useState(null);   // 開いているまとまり
   const grpSwipe = React.useRef(null);
   const [reloading, setReloading] = useState(false);   // 更新ボタンの回転
@@ -158,6 +172,21 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
   return (
     <>
+      {/* スクロール中だけ出る細い帯。上まで戻らなくても 投稿・メニュー に手が届く */}
+      <div className={"mini-bar" + (沈んだ ? " on" : "")} aria-hidden={沈んだ ? "false" : "true"}>
+        <button className="mini-b" onClick={() => setShowUp(true)} aria-label="投稿する">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          投稿
+        </button>
+        <button className="mini-t" onClick={() => { const 面 = document.getElementById("app-scroll"); if (面) 面.scrollTo({ top:0, behavior:"smooth" }); }} aria-label="いちばん上へ戻る">
+          <span className="mini-name">生鮮共有</span>
+        </button>
+        <button className="mini-b" onClick={() => onMenu && onMenu()} aria-label="メニューを開く">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          メニュー
+          {menuBadge && <span className="mini-dot" />}
+        </button>
+      </div>
       <div style={{ maxWidth:1600, margin:"0 auto", padding:"9px 16px 110px" }}>
         {/* よく使う機能へのショートカット */}
         <div className="board-head">

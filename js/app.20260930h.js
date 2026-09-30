@@ -272,6 +272,26 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-09-30",
+  type: "改善",
+  title: "スクロールすると上の並びが隠れます",
+  body: "一覧を送ると、投稿やメニューの列が消えてポップが画面いっぱいに出ます。代わりに細い帯が上に出るので、上まで戻らなくても 投稿・メニュー は押せます。帯の「生鮮共有」を押すと先頭へ戻ります。"
+}, {
+  date: "2026-09-30",
+  type: "改善",
+  title: "一覧のカードを作り直しました",
+  body: "角を丸めて影を付け、商品名の下に ジャンル・店名 を小さく出すようにしました。画像の余った所は白ではなく台紙の色にしています。上の並びも少し詰めました。"
+}, {
+  date: "2026-09-30",
+  type: "修正",
+  title: "真っ白になる不具合を直しました",
+  body: "起動画面の絵をHTMLに埋め込んでいたため、通信が途中で切れると画面が完全に白くなっていました。絵を外に出し、文字だけで出るようにしました。"
+}, {
+  date: "2026-09-30",
+  type: "改善",
+  title: "起動画面と背景を作り直しました",
+  body: "起動画面は文字だけの落ち着いた形に。一覧の後ろには、緑と青のごく薄い下地を敷きました。指で送っても背景は動きません。"
+}, {
   date: "2026-09-29",
   type: "修正",
   title: "画像まわりを元に戻しました",
@@ -5565,11 +5585,13 @@ function PopCard({
   return /*#__PURE__*/React.createElement("div", {
     className: "ucard" + (land ? " pc-land" : "") + (land && pop.__pairLand ? " pc-pair-land" : ""),
     style: {
-      borderRadius: 2,
+      borderRadius: 14,
       overflow: "hidden",
       background: "var(--card, #fff)",
       cursor: "pointer",
-      animation: `fadeUp 0.3s ease ${Math.min(index, 10) * 0.04}s both`,
+      boxShadow: "var(--card-shadow)",
+      transition: "transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease",
+      animation: `fadeUp 0.42s cubic-bezier(.16,1,.3,1) ${Math.min(index, 11) * 0.045}s both`,
       ...(dims && !rotated ? {
         "--nat-ar": land && pop.__pairLand && pop.__rowAr ? String(pop.__rowAr) : `${dims.w} / ${dims.h}`
       } : {})
@@ -5599,14 +5621,14 @@ function PopCard({
       width: "100%",
       objectFit: "contain",
       display: "block",
-      background: "var(--card, #fff)",
+      background: "var(--mat)",
       transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none"
     }
   }) : /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       aspectRatio: "1 / 1.414",
-      background: "var(--card, #fff)"
+      background: "var(--mat)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5642,12 +5664,15 @@ function PopCard({
     d: "M3 7.5h6l2 2.5h10v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19z"
   })), pop.__count), hasComment && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "rgba(194,78,0,0.9)",
-      color: "white",
-      fontSize: 12,
-      fontWeight: 900,
-      padding: "2px 7px",
-      borderRadius: 20
+      background: "rgba(20,25,35,0.72)",
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: 800,
+      padding: "3px 8px",
+      borderRadius: 20,
+      letterSpacing: ".02em",
+      backdropFilter: "blur(4px)",
+      WebkitBackdropFilter: "blur(4px)"
     }
   }, "\u30B3\u30E1\u30F3\u30C8"))), /*#__PURE__*/React.createElement("div", {
     className: "pc-body",
@@ -5665,7 +5690,23 @@ function PopCard({
       wordBreak: "break-word",
       color: "var(--ink)"
     }
-  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name)));
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), (pop.store_name || pop.genre) && /*#__PURE__*/React.createElement("div", {
+    className: "pc-sub"
+  }, pop.genre && /*#__PURE__*/React.createElement("span", {
+    className: "pc-dot",
+    style: {
+      background: function () {
+        try {
+          var c = deptGenreColors()[pop.genre];
+          return c && c.solid || "var(--primary-soft)";
+        } catch (e) {
+          return "var(--primary-soft)";
+        }
+      }()
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "pc-sub-t"
+  }, [pop.genre, pop.store_name].filter(Boolean).join(" · ")))));
 }
 
 // ── Board Tab ──
@@ -5706,6 +5747,25 @@ function BoardTab({
   const [fStore, setFStore] = useState("");
   const [fCat, setFCat] = useState("");
   const [showUp, setShowUp] = useState(false);
+  // 上の並びが画面外へ出たら、代わりに細い帯を出す（スマホ）
+  const [沈んだ, set沈んだ] = useState(false);
+  React.useEffect(() => {
+    const 面 = document.getElementById("app-scroll");
+    if (!面) return;
+    let 前 = false;
+    const 見る = () => {
+      const now = 面.scrollTop > 132;
+      if (now !== 前) {
+        前 = now;
+        set沈んだ(now);
+      }
+    };
+    面.addEventListener("scroll", 見る, {
+      passive: true
+    });
+    見る();
+    return () => 面.removeEventListener("scroll", 見る);
+  }, []);
   const [openGroup, setOpenGroup] = useState(null); // 開いているまとまり
   const grpSwipe = React.useRef(null);
   const [reloading, setReloading] = useState(false); // 更新ボタンの回転
@@ -5938,6 +5998,51 @@ function BoardTab({
   const catPos = arcPositions(catItems.length, 152, 158, 22);
   const FAN_BOTTOM = "calc(92px + env(safe-area-inset-bottom))";
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "mini-bar" + (沈んだ ? " on" : ""),
+    "aria-hidden": 沈んだ ? "false" : "true"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "mini-b",
+    onClick: () => setShowUp(true),
+    "aria-label": "\u6295\u7A3F\u3059\u308B"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 5v14M5 12h14"
+  })), "\u6295\u7A3F"), /*#__PURE__*/React.createElement("button", {
+    className: "mini-t",
+    onClick: () => {
+      const 面 = document.getElementById("app-scroll");
+      if (面) 面.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    },
+    "aria-label": "\u3044\u3061\u3070\u3093\u4E0A\u3078\u623B\u308B"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mini-name"
+  }, "\u751F\u9BAE\u5171\u6709")), /*#__PURE__*/React.createElement("button", {
+    className: "mini-b",
+    onClick: () => onMenu && onMenu(),
+    "aria-label": "\u30E1\u30CB\u30E5\u30FC\u3092\u958B\u304F"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 7h16M4 12h16M4 17h16"
+  })), "\u30E1\u30CB\u30E5\u30FC", menuBadge && /*#__PURE__*/React.createElement("span", {
+    className: "mini-dot"
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",

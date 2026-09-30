@@ -569,3 +569,30 @@ html[data-dept="produce"][data-theme="dark"] { --mat: #0E1B15; }
   .board-tools > *, .bt-btn { height: 43px !important; }
   .pop-grid.v-md { gap: 11px; }
 }
+
+/* ─────────── スクロール中だけ出る細い帯（スマホ） ─────────── */
+.mini-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 180;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px;
+  padding: max(6px, env(safe-area-inset-top)) 12px 8px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  transform: translateY(-104%); opacity: 0; pointer-events: none;
+  transition: transform .26s cubic-bezier(.2,.8,.3,1), opacity .2s ease;
+}
+.mini-bar.on { transform: none; opacity: 1; pointer-events: auto; }
+.mini-bar .mini-b {
+  display: flex; align-items: center; gap: 5px; position: relative;
+  border: none; background: var(--chip); color: var(--primary-soft);
+  border-radius: 10px; padding: 8px 12px; font-family: inherit;
+  font-size: 12.5px; font-weight: 800; cursor: pointer; white-space: nowrap;
+}
+.mini-bar .mini-b:active { transform: scale(.95); }
+.mini-bar .mini-t { border: none; background: none; cursor: pointer; min-width: 0; padding: 0; }
+.mini-bar .mini-name { display: block; font-size: 13px; font-weight: 900; letter-spacing: .12em;
+  color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-bar .mini-dot { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px;
+  border-radius: 50%; background: #e0555f; }
+/* パソコンでは横に常時メニューが出ているので要らない */
+@media (min-width: 1280px) { .mini-bar { display: none !important; } }
