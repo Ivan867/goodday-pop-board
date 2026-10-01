@@ -361,7 +361,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const seg = (v, label, n) => (
     <button onClick={() => switchView(v)}
       style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:800,
-        background: view===v ? "var(--primary)" : "#fff", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
+        background: view===v ? "var(--fill)" : "var(--card)", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
       {label}（{n}）
     </button>
   );
@@ -420,7 +420,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     return (
       <button onClick={() => setSection(v)} className="hig-pill"
         style={{ position:"relative", border: on ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-          background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--text)",
+          background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)",
           borderRadius:12, padding:"11px 6px", fontSize:12, fontWeight:800, cursor:"pointer",
           display:"flex", flexDirection:"column", alignItems:"center", gap:5, lineHeight:1.3 }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{SEG_ICON[v]}</svg>
@@ -513,7 +513,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               const done = r.status === "対応済み";
               const urgent = r.priority === "急ぎ";
               return (
-                <div key={r.id} style={{ background: done ? "#f6faf7" : "#fff", borderRadius:14, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
+                <div key={r.id} style={{ background: done ? "#f6faf7" : "var(--card)", borderRadius:14, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
                     {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
                     {done && (
@@ -582,7 +582,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               return (
                 <button key={g} onClick={() => setGFilter(g)}
                   style={{ border: on ? "none" : "1px solid var(--line)",
-                    background: on ? (c ? c.solid : "#222") : "#fff",
+                    background: on ? (c ? c.solid : "#222") : "var(--card)",
                     color: on ? "#fff" : "#777", fontSize:13, fontWeight:800,
                     padding:"8px 12px", borderRadius:9, cursor:"pointer" }}>
                   {g}（{genreCount(g)}）
@@ -610,7 +610,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                         const on = p.genre === g;
                         return (
                           <button key={g} onClick={() => assignGenre(p, g)}
-                            style={{ border:`1.5px solid ${gc.solid}`, background: on ? gc.solid : "#fff",
+                            style={{ border:`1.5px solid ${gc.solid}`, background: on ? gc.solid : "var(--card)",
                               color: on ? "#fff" : gc.solid, fontSize:12, fontWeight:800,
                               padding:"7px 11px", borderRadius:8, cursor:"pointer", whiteSpace:"nowrap" }}>
                             {g}
@@ -654,7 +654,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               月に一度など、ときどき取っておくと安心です。
             </div>
             <button onClick={run} disabled={bkBusy}
-              style={{ width:"100%", border:"none", background: bkBusy ? "#ccc" : "var(--primary)", color:"#fff",
+              style={{ width:"100%", border:"none", background: bkBusy ? "#ccc" : "var(--fill)", color:"#fff",
                 borderRadius:12, padding:"15px", fontSize:15, fontWeight:900, cursor:"pointer" }}>
               {bkBusy ? "書き出しています…" : "控えを取る（ファイルに保存）"}
             </button>
@@ -753,7 +753,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             {[["live", "今ある", supPhotos.length], ["trash", "ゴミ箱", supTrash.length]].map(([k, label, n]) => (
               <button key={k} onClick={() => setSupView(k)}
                 style={{ flex:1, border:"1px solid " + (supView===k ? "var(--primary)" : "var(--line)"),
-                  background: supView===k ? "var(--primary)" : "var(--card, #fff)",
+                  background: supView===k ? "var(--fill)" : "var(--card, #fff)",
                   color: supView===k ? "#fff" : "var(--text)", borderRadius:10, padding:"10px 6px",
                   fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{label}（{n}）</button>
             ))}
@@ -868,7 +868,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                           aria-label={on ? "選ぶのをやめる" : "選ぶ"} aria-pressed={on}
                           style={{ position:"absolute", top:6, right:6, width:28, height:28, borderRadius:"50%", cursor:"pointer",
                             border: on ? "none" : "1.5px solid rgba(255,255,255,0.9)",
-                            background: on ? "var(--primary)" : "rgba(20,25,35,0.45)", color:"#fff",
+                            background: on ? "var(--fill)" : "rgba(20,25,35,0.45)", color:"#fff",
                             display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:900, padding:0 }}>
                           {on ? "✓" : ""}
                         </button>
@@ -903,7 +903,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                     style={{ position:"relative", border: on ? "3px solid var(--primary)" : "1px solid var(--line)", borderRadius:12, overflow:"hidden",
                       background:"var(--card, #fff)", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
                     <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"var(--chip)", opacity: on ? 0.85 : 1 }} />
-                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--primary)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
+                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--fill)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
                     <div style={{ padding:"6px 8px" }}>
                       <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
                       <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
@@ -928,7 +928,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <button onClick={() => { setDelAsk(true); setDelWord(""); }}
             style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>消す</button>
           <button onClick={apply} disabled={applying}
-            style={{ border:"none", background: toArchive ? "var(--primary)" : "#2f6fb0", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
+            style={{ border:"none", background: toArchive ? "var(--fill)" : "#2f6fb0", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
             {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
           </button>
         </div>
@@ -956,7 +956,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   <button key={id} onClick={() => setGrpCover(id)} aria-pressed={on}
                     style={{ flexShrink:0, width:62, border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
                       background:"var(--card, #fff)", borderRadius:9, padding:3, cursor:"pointer" }}>
-                    <img src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"#fff", borderRadius:5, display:"block" }} />
+                    <img src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"var(--card)", borderRadius:5, display:"block" }} />
                   </button>
                 );
               })}
@@ -966,7 +966,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               <button onClick={() => setGrpAsk(false)} disabled={grpBusy}
                 style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
               <button onClick={() => doGroup(grpName.trim(), grpCover)} disabled={grpBusy || !grpName.trim()}
-                style={{ flex:1, border:"none", background: (grpBusy || !grpName.trim()) ? "#ddd" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                style={{ flex:1, border:"none", background: (grpBusy || !grpName.trim()) ? "#ddd" : "var(--fill)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
                 {grpBusy ? "まとめています…" : "まとめる"}
               </button>
             </div>
@@ -1200,7 +1200,7 @@ function RequestTab() {
           
           <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>送信しました</div>
           <div style={{ fontSize:13, color:"var(--sub)", marginBottom:20, lineHeight:1.6 }}>{isPop ? "担当者に届きました。POPができるまでお待ちください。" : "担当者に届きました。内容を確認して対応します。"}</div>
-          <button onClick={reset} style={{ border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて送信する</button>
+          <button onClick={reset} style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて送信する</button>
         </div>
       </div>
     );
@@ -1215,7 +1215,7 @@ function RequestTab() {
           const on = kind === k;
           return (
             <button key={k} onClick={() => { setKind(k); setError(""); }}
-              style={{ flex:1, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--text)", fontWeight:800, fontSize:12, borderRadius:11, padding:"10px 4px", cursor:"pointer", lineHeight:1.3 }}>{k}</button>
+              style={{ flex:1, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)", fontWeight:800, fontSize:12, borderRadius:11, padding:"10px 4px", cursor:"pointer", lineHeight:1.3 }}>{k}</button>
           );
         })}
       </div>
@@ -1238,7 +1238,9 @@ function RequestTab() {
               const on = priority===pr; const urgent = pr==="急ぎ";
               return (
                 <button key={pr} onClick={()=>setPriority(pr)}
-                  style={{ flex:1, border:`2px solid ${on?(urgent?"#e01010":"var(--primary)"):"#eee"}`, background:on?(urgent?"#fff0f0":"#fff3ea"):"#fff", color:on?(urgent?"#e01010":"var(--primary)"):"#999", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
+                  style={{ flex:1, border:`2px solid ${on?(urgent?"#c21a1a":"var(--primary)"):"var(--line)"}`,
+                    background: on ? "var(--soft)" : "var(--card)",
+                    color: on ? (urgent?"#c21a1a":"var(--primary)") : "var(--sub)", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
                   {urgent?"急ぎ":"普通"}
                 </button>
               );
@@ -1251,7 +1253,7 @@ function RequestTab() {
 
           {/* 添付ファイル */}
           <div style={{ marginTop:12 }}>
-            <label style={{ display:"block", position:"relative", overflow:"hidden", border:"1px dashed var(--line)", background: upBusy ? "#f6f6f6" : "#fff",
+            <label style={{ display:"block", position:"relative", overflow:"hidden", border:"1px dashed var(--line)", background: upBusy ? "#f6f6f6" : "var(--card)",
               borderRadius:10, padding:"13px", textAlign:"center", cursor: upBusy ? "default" : "pointer" }}>
               <span style={{ fontSize:13, fontWeight:800, color:"var(--sub)" }}>
                 {upBusy ? "送っています…" : "＋ ファイルを添付する"}
@@ -1288,7 +1290,7 @@ function RequestTab() {
         </div>
         {error && <div style={{ fontSize:13, color:"#e01010", fontWeight:700 }}>{error}</div>}
         <button onClick={submit} disabled={busy}
-          style={{ border:"none", background:"var(--primary)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
+          style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
           {busy ? "送信中…" : "送信する"}
         </button>
       </div>
@@ -1351,7 +1353,7 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>① 緊急お知らせバナーを表示する</div>
           <button onClick={() => setEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"var(--primary)":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"var(--fill)":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: enabled?29:3, width:26, height:26, borderRadius:"50%", background:"var(--card, #fff)", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
@@ -1441,7 +1443,7 @@ function NoticeAdmin({ onNoticeChange }) {
                   border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fafafa",
                   borderRadius:9, padding:"9px 11px", cursor:"pointer" }}>
                 <span style={{ width:20, height:20, borderRadius:6, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
-                  background: on ? "#3f9e63" : "#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  background: on ? "#3f9e63" : "var(--card)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
                 </span>
                 <span style={{ fontSize:17, width:24, textAlign:"center", flexShrink:0, opacity: on ? 1 : 0.4 }}>{t.icon}</span>
@@ -1473,12 +1475,12 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ display:"flex", gap:6, marginBottom:14 }}>
           {[3, 5, 7].map(d => (
             <button key={d} onClick={() => setBadgeDays(d)}
-              style={{ flex:1, border: badgeDays===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: badgeDays===d ? "var(--soft)" : "#fff", color: badgeDays===d ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"9px 0", fontSize:13, fontWeight:800, cursor:"pointer" }}>{d}日間</button>
+              style={{ flex:1, border: badgeDays===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: badgeDays===d ? "var(--soft)" : "var(--card)", color: badgeDays===d ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"9px 0", fontSize:13, fontWeight:800, cursor:"pointer" }}>{d}日間</button>
           ))}
         </div>
 
         <div style={{ fontSize:12, color:"var(--sub)", marginBottom:6, fontWeight:700 }}>プレビュー</div>
-        <div style={{ background:"var(--primary-soft)", borderRadius:14, padding:"22px 14px 12px", display:"flex", justifyContent:"center" }}>
+        <div style={{ background:"var(--fill)", borderRadius:14, padding:"22px 14px 12px", display:"flex", justifyContent:"center" }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:"var(--card, #fff)", color:"var(--primary-soft)", borderRadius:24, padding:"9px 18px" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>
             <span style={{ fontSize:13, fontWeight:800 }}>カタログ</span>
@@ -1491,7 +1493,7 @@ function NoticeAdmin({ onNoticeChange }) {
       </div>
 
       <button onClick={save} disabled={saving}
-        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#2f6fb0":"var(--primary)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
+        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#2f6fb0":"var(--fill)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
         {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "まとめて保存する"}
       </button>
     </div>
@@ -1738,9 +1740,9 @@ function CatalogAdmin() {
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
                 <button onClick={() => toggle(c)}
-                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "#fff", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "var(--card)", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
                 <button onClick={() => toggleDead(c)}
-                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "#fff", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "var(--card)", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
                 <button onClick={() => del(c)}
                   style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>削除</button>
               </div>
@@ -1896,7 +1898,7 @@ function ResourceAdmin() {
               </div>
               <div style={{ display:"flex", gap:6, marginTop:9, flexWrap:"wrap" }}>
                 <button onClick={() => toggleVisible(r)}
-                  style={{ border:"1px solid var(--line)", background: r.visible ? "var(--soft)" : "#fff", color: r.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+                  style={{ border:"1px solid var(--line)", background: r.visible ? "var(--soft)" : "var(--card)", color: r.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                   {r.visible ? "表示中" : "非表示"}
                 </button>
                 <button onClick={() => move(r, -1)} disabled={i === 0}
@@ -1947,7 +1949,7 @@ function DeviceStatsPanel() {
         <span>{label}</span><span>{n}件（{total ? Math.round(n/total*100) : 0}%）</span>
       </div>
       <div style={{ height:8, background:"var(--chip)", borderRadius:5, overflow:"hidden" }}>
-        <div style={{ height:"100%", width: total ? `${n/total*100}%` : "0%", background:"var(--primary)", borderRadius:5 }} />
+        <div style={{ height:"100%", width: total ? `${n/total*100}%` : "0%", background:"var(--fill)", borderRadius:5 }} />
       </div>
     </div>
   );
@@ -2026,7 +2028,7 @@ function RankingPanel({ onCreateFromPop }) {
         <div style={{ display:"flex", gap:6, marginBottom:10 }}>
           {[3,7,30].map(d => (
             <button key={d} onClick={() => setDays(d)}
-              style={{ border: days===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: days===d ? "var(--soft)" : "#fff", color: days===d ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 14px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              style={{ border: days===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: days===d ? "var(--soft)" : "var(--card)", color: days===d ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 14px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
               {d === 30 ? "1か月" : d + "日間"}
             </button>
           ))}
@@ -2037,7 +2039,7 @@ function RankingPanel({ onCreateFromPop }) {
         {METRICS.map(x => (
           <button key={x.key} onClick={() => setMetric(x.key)}
             style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:11, padding:"9px 6px", cursor:"pointer",
-              background: metric === x.key ? "var(--soft)" : "#fff", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>
+              background: metric === x.key ? "var(--soft)" : "var(--card)", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>
             <div style={{ fontSize:13, fontWeight:800 }}>{x.label}</div>
             <div style={{ fontSize:12, fontWeight:700, opacity:0.75, marginTop:2 }}>計 {totals[x.key]}</div>
           </button>
@@ -2109,7 +2111,7 @@ function DimsBackfill() {
         一覧で横長のポップを2列ぶんの幅で並べるために、形を記録します。一度やれば十分です（新しい投稿は自動で記録されます）。
       </div>
       <button onClick={run} disabled={st.busy}
-        style={{ width:"100%", border:"none", background: st.busy ? "#ccc" : "var(--primary)", color:"#fff",
+        style={{ width:"100%", border:"none", background: st.busy ? "#ccc" : "var(--fill)", color:"#fff",
           borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
         {st.busy ? (st.total ? `測っています… ${st.done} / ${st.total}` : "準備しています…") : "まとめて測る"}
       </button>

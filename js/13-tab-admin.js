@@ -603,7 +603,7 @@ function AdminTab({
       padding: "10px",
       fontSize: 14,
       fontWeight: 800,
-      background: view === v ? "var(--primary)" : "#fff",
+      background: view === v ? "var(--fill)" : "var(--card)",
       color: view === v ? "#fff" : "#888",
       cursor: "pointer"
     }
@@ -760,7 +760,7 @@ function AdminTab({
       style: {
         position: "relative",
         border: on ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--text)",
         borderRadius: 12,
         padding: "11px 6px",
@@ -1020,7 +1020,7 @@ function AdminTab({
     return /*#__PURE__*/React.createElement("div", {
       key: r.id,
       style: {
-        background: done ? "#f6faf7" : "#fff",
+        background: done ? "#f6faf7" : "var(--card)",
         borderRadius: 14,
         border: done ? "1px solid #cfe8d8" : "1px solid var(--line)",
         padding: 14,
@@ -1255,7 +1255,7 @@ function AdminTab({
       onClick: () => setGFilter(g),
       style: {
         border: on ? "none" : "1px solid var(--line)",
-        background: on ? c ? c.solid : "#222" : "#fff",
+        background: on ? c ? c.solid : "#222" : "var(--card)",
         color: on ? "#fff" : "#777",
         fontSize: 13,
         fontWeight: 800,
@@ -1340,7 +1340,7 @@ function AdminTab({
       onClick: () => assignGenre(p, g),
       style: {
         border: `1.5px solid ${gc.solid}`,
-        background: on ? gc.solid : "#fff",
+        background: on ? gc.solid : "var(--card)",
         color: on ? "#fff" : gc.solid,
         fontSize: 12,
         fontWeight: 800,
@@ -1402,7 +1402,7 @@ function AdminTab({
       style: {
         width: "100%",
         border: "none",
-        background: bkBusy ? "#ccc" : "var(--primary)",
+        background: bkBusy ? "#ccc" : "var(--fill)",
         color: "#fff",
         borderRadius: 12,
         padding: "15px",
@@ -1618,7 +1618,7 @@ function AdminTab({
       style: {
         flex: 1,
         border: "1px solid " + (supView === k ? "var(--primary)" : "var(--line)"),
-        background: supView === k ? "var(--primary)" : "var(--card, #fff)",
+        background: supView === k ? "var(--fill)" : "var(--card, #fff)",
         color: supView === k ? "#fff" : "var(--text)",
         borderRadius: 10,
         padding: "10px 6px",
@@ -1928,7 +1928,7 @@ function AdminTab({
           borderRadius: "50%",
           cursor: "pointer",
           border: on ? "none" : "1.5px solid rgba(255,255,255,0.9)",
-          background: on ? "var(--primary)" : "rgba(20,25,35,0.45)",
+          background: on ? "var(--fill)" : "rgba(20,25,35,0.45)",
           color: "#fff",
           display: "flex",
           alignItems: "center",
@@ -2008,7 +2008,7 @@ function AdminTab({
         width: 24,
         height: 24,
         borderRadius: "50%",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         display: "flex",
         alignItems: "center",
@@ -2109,7 +2109,7 @@ function AdminTab({
     disabled: applying,
     style: {
       border: "none",
-      background: toArchive ? "var(--primary)" : "#2f6fb0",
+      background: toArchive ? "var(--fill)" : "#2f6fb0",
       color: "#fff",
       borderRadius: 9,
       padding: "10px 16px",
@@ -2214,7 +2214,7 @@ function AdminTab({
         width: "100%",
         aspectRatio: "1/1.414",
         objectFit: "contain",
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 5,
         display: "block"
       }
@@ -2245,7 +2245,7 @@ function AdminTab({
     style: {
       flex: 1,
       border: "none",
-      background: grpBusy || !grpName.trim() ? "#ddd" : "var(--primary)",
+      background: grpBusy || !grpName.trim() ? "#ddd" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",
@@ -2891,7 +2891,7 @@ function RequestTab() {
       onClick: reset,
       style: {
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         fontWeight: 800,
         fontSize: 15,
@@ -2938,7 +2938,7 @@ function RequestTab() {
       style: {
         flex: 1,
         border: on ? "2px solid var(--primary)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--text)",
         fontWeight: 800,
         fontSize: 12,
@@ -2992,9 +2992,9 @@ function RequestTab() {
       onClick: () => setPriority(pr),
       style: {
         flex: 1,
-        border: `2px solid ${on ? urgent ? "#e01010" : "var(--primary)" : "#eee"}`,
-        background: on ? urgent ? "#fff0f0" : "#fff3ea" : "#fff",
-        color: on ? urgent ? "#e01010" : "var(--primary)" : "#999",
+        border: `2px solid ${on ? urgent ? "#c21a1a" : "var(--primary)" : "var(--line)"}`,
+        background: on ? "var(--soft)" : "var(--card)",
+        color: on ? urgent ? "#c21a1a" : "var(--primary)" : "var(--sub)",
         fontWeight: 800,
         fontSize: 14,
         borderRadius: 10,
@@ -3028,7 +3028,7 @@ function RequestTab() {
       position: "relative",
       overflow: "hidden",
       border: "1px dashed var(--line)",
-      background: upBusy ? "#f6f6f6" : "#fff",
+      background: upBusy ? "#f6f6f6" : "var(--card)",
       borderRadius: 10,
       padding: "13px",
       textAlign: "center",
@@ -3153,7 +3153,7 @@ function RequestTab() {
     disabled: busy,
     style: {
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       fontWeight: 800,
       fontSize: 15,
@@ -3282,7 +3282,7 @@ function NoticeAdmin({
       border: "none",
       cursor: "pointer",
       position: "relative",
-      background: enabled ? "var(--primary)" : "#d4d4d8",
+      background: enabled ? "var(--fill)" : "#d4d4d8",
       transition: "background .2s"
     }
   }, /*#__PURE__*/React.createElement("span", {
@@ -3658,7 +3658,7 @@ function NoticeAdmin({
         borderRadius: 6,
         flexShrink: 0,
         border: on ? "none" : "1.5px solid var(--line)",
-        background: on ? "#3f9e63" : "#fff",
+        background: on ? "#3f9e63" : "var(--card)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
@@ -3780,7 +3780,7 @@ function NoticeAdmin({
     style: {
       flex: 1,
       border: badgeDays === d ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: badgeDays === d ? "var(--soft)" : "#fff",
+      background: badgeDays === d ? "var(--soft)" : "var(--card)",
       color: badgeDays === d ? "var(--primary)" : "var(--sub)",
       borderRadius: 9,
       padding: "9px 0",
@@ -3797,7 +3797,7 @@ function NoticeAdmin({
     }
   }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 14,
       padding: "22px 14px 12px",
       display: "flex",
@@ -3863,7 +3863,7 @@ function NoticeAdmin({
     style: {
       width: "100%",
       border: "none",
-      background: saving ? "#bbb" : saved ? "#2f6fb0" : "var(--primary)",
+      background: saving ? "#bbb" : saved ? "#2f6fb0" : "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "13px",
@@ -4564,7 +4564,7 @@ function CatalogAdmin() {
     onClick: () => toggle(c),
     style: {
       border: "1px solid var(--line)",
-      background: c.visible ? "var(--soft)" : "#fff",
+      background: c.visible ? "var(--soft)" : "var(--card)",
       color: c.visible ? "var(--primary)" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
@@ -4576,7 +4576,7 @@ function CatalogAdmin() {
     onClick: () => toggleDead(c),
     style: {
       border: "1px solid var(--line)",
-      background: c.link_status === "dead" ? "#fdeaea" : "#fff",
+      background: c.link_status === "dead" ? "#fdeaea" : "var(--card)",
       color: c.link_status === "dead" ? "#b3261e" : "var(--sub)",
       borderRadius: 7,
       padding: "4px 10px",
@@ -4987,7 +4987,7 @@ function ResourceAdmin() {
     onClick: () => toggleVisible(r),
     style: {
       border: "1px solid var(--line)",
-      background: r.visible ? "var(--soft)" : "#fff",
+      background: r.visible ? "var(--soft)" : "var(--card)",
       color: r.visible ? "var(--primary)" : "var(--sub)",
       borderRadius: 7,
       padding: "5px 11px",
@@ -5095,7 +5095,7 @@ function DeviceStatsPanel() {
     style: {
       height: "100%",
       width: total ? `${n / total * 100}%` : "0%",
-      background: "var(--primary)",
+      background: "var(--fill)",
       borderRadius: 5
     }
   })));
@@ -5280,7 +5280,7 @@ function RankingPanel({
     onClick: () => setDays(d),
     style: {
       border: days === d ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: days === d ? "var(--soft)" : "#fff",
+      background: days === d ? "var(--soft)" : "var(--card)",
       color: days === d ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 14px",
@@ -5303,7 +5303,7 @@ function RankingPanel({
       borderRadius: 11,
       padding: "9px 6px",
       cursor: "pointer",
-      background: metric === x.key ? "var(--soft)" : "#fff",
+      background: metric === x.key ? "var(--soft)" : "var(--card)",
       color: metric === x.key ? "var(--primary)" : "var(--text)"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -5550,7 +5550,7 @@ function DimsBackfill() {
     style: {
       width: "100%",
       border: "none",
-      background: st.busy ? "#ccc" : "var(--primary)",
+      background: st.busy ? "#ccc" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",

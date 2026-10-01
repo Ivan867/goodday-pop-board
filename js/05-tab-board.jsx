@@ -327,7 +327,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
               grpSwipe.current = null;
             }}
             className="fs-top" style={{ position:"fixed", inset:0, zIndex:900, background:"var(--bg)", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
-            <div style={{ position:"sticky", top:0, zIndex:2, background:"var(--primary)", color:"#fff", padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ position:"sticky", top:0, zIndex:2, background:"var(--fill)", color:"#fff", padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
               <button onClick={() => setOpenGroup(null)} aria-label="もどる"
                 style={{ border:"none", background:"rgba(255,255,255,0.22)", color:"#fff", borderRadius:999, padding:"7px 14px 7px 10px",
                   display:"flex", alignItems:"center", gap:4, fontSize:13.5, fontWeight:800, cursor:"pointer", flexShrink:0 }}>
@@ -385,7 +385,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                 <div key={sec.key} style={{ marginBottom:20 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, paddingBottom:9, marginBottom:11,
                     borderBottom:"1px solid var(--line)" }}>
-                    <span style={{ width:4, height:15, borderRadius:2, background:"var(--primary-soft)" }} />
+                    <span style={{ width:4, height:15, borderRadius:2, background:"var(--fill)" }} />
                     <span style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{sec.title}</span>
                   </div>
                   <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
@@ -417,7 +417,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                   color: filterCount ? "var(--text)" : "var(--faint)", borderRadius:11, padding:"13px",
                   fontSize:14, fontWeight:800, cursor:"pointer" }}>絞り込みを解除</button>
               <button onClick={() => setDrawer(false)}
-                style={{ flex:1.4, border:"none", background:"var(--primary)", color:"#fff",
+                style={{ flex:1.4, border:"none", background:"var(--fill)", color:"#fff",
                   borderRadius:11, padding:"13px", fontSize:14.5, fontWeight:900, cursor:"pointer" }}>
                 絞り込む（{filtered.length}件）
               </button>
@@ -558,7 +558,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           })}
         </div>
       {/* 検索ボックス */}
-      <div style={{ background:"white", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20, marginLeft:46 }}>
+      <div style={{ background:"var(--card)", borderRadius:18, padding:"18px 20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.08)", marginBottom:20, marginLeft:46 }}>
         {/* 検索入力（最上部） */}
         <div style={{ position:"relative", marginBottom:12 }}>
           
@@ -639,7 +639,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
           <div style={{ fontSize:12.5, marginTop:6 }}>{(fStore || fCat || fGenre) ? "絞り込みが多すぎるかもしれません" : "別のキーワードで試してみてください"}</div>
           {(fStore || fCat || fGenre || search) && (
             <button onClick={(e)=>{ e.stopPropagation(); setFStore(""); setFCat(""); setFGenre(""); setSearch(""); }}
-              style={{ marginTop:16, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer", boxShadow:"0 2px 8px rgba(74,122,176,0.3)" }}>
+              style={{ marginTop:16, border:"none", background:"var(--fill)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer", boxShadow:"0 2px 8px rgba(74,122,176,0.3)" }}>
               絞り込みを外す
             </button>
           )}

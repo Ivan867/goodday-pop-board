@@ -27,7 +27,7 @@ function IdeaTab({ embedded } = {}) {
 
   return (
     <div style={{ maxWidth:1100, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
-      {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
+      {!embedded && <div style={{ background:"var(--fill)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>アイデア</div>
         <div style={{ fontSize:12.5, opacity:0.85, marginTop:3 }}>ほかの売場を手がかりに起こした、ポップや売場の案です</div>
       </div>}

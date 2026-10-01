@@ -470,7 +470,7 @@ function PopCheckTab() {
       width: "100%",
       marginTop: 11,
       border: "none",
-      background: busy ? "#f0b48a" : "var(--primary)",
+      background: busy ? "#f0b48a" : "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "12px",
@@ -1089,7 +1089,7 @@ function FishTab() {
         fontSize: 9,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 6,
         padding: "2px 6px"
       }
@@ -1190,7 +1190,7 @@ function FishTab() {
         fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 8px"
       }

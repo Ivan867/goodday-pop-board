@@ -105,7 +105,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 700,
-      background: mode === "gallery" ? "white" : "rgba(29,58,87,0.12)",
+      background: mode === "gallery" ? "var(--card)" : "rgba(29,58,87,0.12)",
       color: mode === "gallery" ? "#111" : "#17324e"
     }
   }, "\u30AE\u30E3\u30E9\u30EA\u30FC"), /*#__PURE__*/React.createElement("button", {
@@ -117,7 +117,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 700,
-      background: mode === "compare" ? "white" : "rgba(29,58,87,0.12)",
+      background: mode === "compare" ? "var(--card)" : "rgba(29,58,87,0.12)",
       color: mode === "compare" ? "#111" : "#17324e"
     }
   }, "\u5E97\u8217\u6BD4\u8F03"), /*#__PURE__*/React.createElement("button", {
@@ -129,7 +129,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 900,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white"
     }
   }, "\uFF0B \u6295\u7A3F")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
@@ -165,7 +165,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: fStore === val ? "#17181a" : "#ddd",
-      background: fStore === val ? "#17181a" : "white",
+      background: fStore === val ? "#17181a" : "var(--card)",
       color: fStore === val ? "white" : "#666"
     }
   }, lbl))), /*#__PURE__*/React.createElement("div", {
@@ -186,7 +186,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: fCat === c ? "#111" : "#ddd",
-      background: fCat === c ? "#111" : "white",
+      background: fCat === c ? "#111" : "var(--card)",
       color: fCat === c ? "white" : "#666"
     }
   }, c || "すべて"))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -228,7 +228,7 @@ function FloorPhotoTab() {
     style: {
       borderRadius: 14,
       overflow: "hidden",
-      background: "white",
+      background: "var(--card)",
       boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
       cursor: "pointer",
       animation: `fadeUp 0.3s ease ${Math.min(i, 10) * 0.04}s both`,
@@ -299,7 +299,7 @@ function FloorPhotoTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       padding: "16px 18px",
       marginBottom: 20,
@@ -329,7 +329,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: compareCat === c ? "#17181a" : "#ddd",
-      background: compareCat === c ? "#17181a" : "white",
+      background: compareCat === c ? "#17181a" : "var(--card)",
       color: compareCat === c ? "white" : "#666"
     }
   }, c)))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -350,7 +350,7 @@ function FloorPhotoTab() {
   }) => /*#__PURE__*/React.createElement("div", {
     key: store,
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       overflow: "hidden",
       boxShadow: "0 2px 10px rgba(0,0,0,0.07)"
@@ -460,7 +460,7 @@ function FloorPhotoTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 20,
       width: "100%",
       maxWidth: 500,
@@ -706,7 +706,7 @@ function FloorUploadModal({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       padding: "8px 24px calc(22px + env(safe-area-inset-bottom))",
       width: "100%",

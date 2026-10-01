@@ -34,7 +34,7 @@ function PromptCard({
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 16,
       boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
       marginBottom: 16,
@@ -196,7 +196,7 @@ function PromptAddModal({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card)",
       width: "100%",
       borderRadius: "20px 20px 0 0",
       padding: "10px 18px calc(20px + env(safe-area-inset-bottom))",
@@ -291,7 +291,7 @@ function PromptGuide({
   accent
 }) {
   const sec = {
-    background: "white",
+    background: "var(--card)",
     borderRadius: 16,
     boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
     padding: "16px 18px",
@@ -937,7 +937,7 @@ function TodayInfoCard() {
     return /*#__PURE__*/React.createElement("div", {
       className: "ucard",
       style: {
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 16,
         padding: "11px 14px"
       }
@@ -1238,7 +1238,7 @@ function WeatherWidget({
       top: "calc(100% + 8px)",
       right: 0,
       zIndex: 211,
-      background: "#fff",
+      background: "var(--card)",
       borderRadius: 14,
       boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
       padding: "13px 15px",
@@ -1326,7 +1326,7 @@ function WeatherWidget({
       gap: 6,
       marginTop: 11,
       textDecoration: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "10px",
@@ -1374,7 +1374,7 @@ function DevTab() {
     return /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
-        background: "white",
+        background: "var(--card)",
         borderRadius: 14,
         padding: "16px 18px",
         border: "1px solid #ececec",

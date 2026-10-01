@@ -58,19 +58,19 @@ function FloorPhotoTab() {
           <div style={{ display:"flex", gap:8 }}>
             <button onClick={()=>setMode("gallery")}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
-                background: mode==="gallery" ? "white" : "rgba(29,58,87,0.12)",
+                background: mode==="gallery" ? "var(--card)" : "rgba(29,58,87,0.12)",
                 color: mode==="gallery" ? "#111" : "#17324e" }}>
               ギャラリー
             </button>
             <button onClick={()=>setMode("compare")}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:700,
-                background: mode==="compare" ? "white" : "rgba(29,58,87,0.12)",
+                background: mode==="compare" ? "var(--card)" : "rgba(29,58,87,0.12)",
                 color: mode==="compare" ? "#111" : "#17324e" }}>
               店舗比較
             </button>
             <button onClick={()=>setShowUp(true)}
               style={{ padding:"8px 16px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:900,
-                background:"var(--primary)", color:"white" }}>
+                background:"var(--fill)", color:"white" }}>
               ＋ 投稿
             </button>
           </div>
@@ -85,7 +85,7 @@ function FloorPhotoTab() {
             {[{lbl:"全店舗",val:""},...FLOOR_STORES.map(s=>({lbl:s,val:s}))].map(({lbl,val})=>(
               <button key={lbl} onClick={()=>setFStore(val)}
                 style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer",
-                  borderColor:fStore===val?"#17181a":"#ddd", background:fStore===val?"#17181a":"white", color:fStore===val?"white":"#666" }}>
+                  borderColor:fStore===val?"#17181a":"#ddd", background:fStore===val?"#17181a":"var(--card)", color:fStore===val?"white":"#666" }}>
                 {lbl}
               </button>
             ))}
@@ -94,7 +94,7 @@ function FloorPhotoTab() {
             {["",...FLOOR_CATS].map(c=>(
               <button key={c||"all"} onClick={()=>setFCat(c)}
                 style={{ padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, border:"2px solid", cursor:"pointer",
-                  borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"white", color:fCat===c?"white":"#666" }}>
+                  borderColor:fCat===c?"#111":"#ddd", background:fCat===c?"#111":"var(--card)", color:fCat===c?"white":"#666" }}>
                 {c||"すべて"}
               </button>
             ))}
@@ -115,7 +115,7 @@ function FloorPhotoTab() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(158px, 1fr))", gap:12, alignItems:"start" }}>
               {filtered.map((photo,i)=>(
                 <div key={photo.id}
-                  style={{ borderRadius:14, overflow:"hidden", background:"white",
+                  style={{ borderRadius:14, overflow:"hidden", background:"var(--card)",
                     boxShadow:"0 2px 10px rgba(0,0,0,0.07)", cursor:"pointer", animation:`fadeUp 0.3s ease ${Math.min(i,10)*0.04}s both`, transition:"all 0.15s" }}
                   onClick={()=>setSel(photo)}
                   onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
@@ -140,14 +140,14 @@ function FloorPhotoTab() {
       {mode === "compare" && (
         <div style={{ maxWidth:1400, margin:"0 auto", padding:"16px 16px 40px" }}>
           {/* カテゴリー選択 */}
-          <div style={{ background:"white", borderRadius:14, padding:"16px 18px", marginBottom:20, border:"1px solid var(--line)" }}>
+          <div style={{ background:"var(--card)", borderRadius:14, padding:"16px 18px", marginBottom:20, border:"1px solid var(--line)" }}>
             <div style={{ fontSize:13, fontWeight:800, color:"var(--ink)", marginBottom:12 }}>カテゴリーを選んで各店舗を比較</div>
             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {FLOOR_CATS.map(c=>(
                 <button key={c} onClick={()=>setCompareCat(c)}
                   style={{ padding:"8px 18px", borderRadius:20, fontSize:13, fontWeight:700, border:"2px solid", cursor:"pointer",
                     borderColor:compareCat===c?"#17181a":"#ddd",
-                    background:compareCat===c?"#17181a":"white",
+                    background:compareCat===c?"#17181a":"var(--card)",
                     color:compareCat===c?"white":"#666" }}>
                   {c}
                 </button>
@@ -160,7 +160,7 @@ function FloorPhotoTab() {
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:14 }}>
               {compareData.map(({store, photos:storePhotos})=>(
-                <div key={store} style={{ background:"white", borderRadius:14, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.07)" }}>
+                <div key={store} style={{ background:"var(--card)", borderRadius:14, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.07)" }}>
                   {/* 店舗名ヘッダー */}
                   <div style={{ background:"linear-gradient(180deg,#e7f1fa,#d3e5f4)", padding:"10px 14px" }}>
                     <div style={{ fontSize:13, fontWeight:900, color:"#17324e" }}>{store}</div>
@@ -210,7 +210,7 @@ function FloorPhotoTab() {
       {/* ── 詳細モーダル ── */}
       {sel && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }} onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}>
-          <div style={{ background:"white", borderRadius:20, width:"100%", maxWidth:500, maxHeight:"90vh", overflowY:"auto", animation:"fadeUp 0.2s ease" }} onClick={e=>e.stopPropagation()}>
+          <div style={{ background:"var(--card)", borderRadius:20, width:"100%", maxWidth:500, maxHeight:"90vh", overflowY:"auto", animation:"fadeUp 0.2s ease" }} onClick={e=>e.stopPropagation()}>
             <div style={{ position:"relative" }}>
               <img src={sel.image_url} style={{ width:"100%", display:"block", borderRadius:"20px 20px 0 0" }} />
               <button onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}
@@ -293,7 +293,7 @@ function FloorUploadModal({ onClose, onSuccess }) {
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }}>
-      <div style={{ background:"white", borderRadius:"22px 22px 0 0", padding:"8px 24px calc(22px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
+      <div style={{ background:"var(--card)", borderRadius:"22px 22px 0 0", padding:"8px 24px calc(22px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"92vh", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
         <div style={{ width:40, height:5, background:"var(--line)", borderRadius:3, margin:"6px auto 16px" }} />
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
           <div style={{ fontSize:21, fontWeight:900 }}>売場写真を投稿</div>

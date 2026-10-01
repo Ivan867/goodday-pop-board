@@ -259,7 +259,7 @@ function PopCheckTab() {
               onError={() => setErr("画像を読み込めませんでした。形式が未対応（HEICなど）の可能性があります。")}
               style={{ maxWidth:"100%", maxHeight:260, borderRadius:10, border:"1px solid var(--line)" }} />
             <button onClick={runAnalyze} disabled={busy}
-              style={{ display:"block", width:"100%", marginTop:11, border:"none", background: busy ? "#f0b48a" : "var(--primary)", color:"#fff", borderRadius:11, padding:"12px", fontSize:14.5, fontWeight:900, cursor: busy ? "default" : "pointer" }}>
+              style={{ display:"block", width:"100%", marginTop:11, border:"none", background: busy ? "#f0b48a" : "var(--fill)", color:"#fff", borderRadius:11, padding:"12px", fontSize:14.5, fontWeight:900, cursor: busy ? "default" : "pointer" }}>
               {busy ? "解析中…" : "🩺 このPOPを診断する"}
             </button>
           </div>
@@ -390,7 +390,7 @@ function FishTab() {
             return (
               <div key={f.name} onClick={() => setOpenIdx(idx)}
                 style={{ background:"var(--card, #fff)", border: now ? "1.5px solid var(--primary)" : "1px solid var(--line)", borderRadius:13, padding:"13px 12px", cursor:"pointer", position:"relative", minHeight:92, display:"flex", flexDirection:"column" }}>
-                {now && <span style={{ position:"absolute", top:8, right:8, fontSize:9, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:6, padding:"2px 6px" }}>今が旬</span>}
+                {now && <span style={{ position:"absolute", top:8, right:8, fontSize:9, fontWeight:900, color:"#fff", background:"var(--fill)", borderRadius:6, padding:"2px 6px" }}>今が旬</span>}
                 <div style={{ fontSize:15.5, fontWeight:900, color:"var(--ink)", lineHeight:1.3, marginBottom:4 }}>{f.name}</div>
                 <span style={{ fontSize:11, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"1px 7px", alignSelf:"flex-start", marginBottom:6 }}>{mLabel(f)}</span>
                 <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.55, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{f.point}</div>
@@ -412,7 +412,7 @@ function FishTab() {
               <div style={{ width:40, height:4.5, background:"var(--line)", borderRadius:3, margin:"0 auto 14px" }} />
               <div style={{ display:"flex", alignItems:"center", gap:9, marginBottom:12 }}>
                 <span style={{ fontSize:20, fontWeight:900, color:"var(--ink)" }}>{f.name}</span>
-                {now && <span style={{ fontSize:11.5, fontWeight:900, color:"#fff", background:"var(--primary)", borderRadius:7, padding:"2px 8px" }}>今が旬</span>}
+                {now && <span style={{ fontSize:11.5, fontWeight:900, color:"#fff", background:"var(--fill)", borderRadius:7, padding:"2px 8px" }}>今が旬</span>}
                 <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)", background:"var(--chip)", borderRadius:6, padding:"2px 8px" }}>{mLabel(f)}</span>
                 <button onClick={() => setOpenIdx(null)} style={{ marginLeft:"auto", border:"none", background:"var(--chip)", color:"var(--text)", width:32, height:32, borderRadius:"50%", fontSize:16, fontWeight:800, cursor:"pointer" }}>✕</button>
               </div>

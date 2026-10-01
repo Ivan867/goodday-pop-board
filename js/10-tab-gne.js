@@ -1112,7 +1112,7 @@ function GeneratorTab({
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: gTab === k ? "var(--primary)" : "#fff",
+      background: gTab === k ? "var(--fill)" : "var(--card)",
       color: gTab === k ? "#fff" : "var(--text)"
     }
   }, l))), gTab === "souba" ? window.SoubaTab ? React.createElement(window.SoubaTab, {
@@ -1258,7 +1258,7 @@ function GeneratorTab({
     style: {
       marginLeft: 10,
       fontSize: 12,
-      color: "#2f6fb0",
+      color: "var(--primary)",
       fontWeight: 700
     }
   }, "\u8AAD\u8FBC\u6E08\u307F"), /*#__PURE__*/React.createElement("input", {
@@ -1305,7 +1305,7 @@ function GeneratorTab({
         textAlign: "left",
         width: "100%",
         border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         borderRadius: 9,
         padding: "8px 10px",
         cursor: "pointer"
@@ -1388,7 +1388,7 @@ function GeneratorTab({
         width: 44,
         height: 44,
         border: on ? "2px solid var(--primary)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--text)",
         borderRadius: 10,
         fontSize: 16,
@@ -1565,7 +1565,7 @@ function GeneratorTab({
       onClick: () => setPosTarget(k),
       style: {
         border: posTarget === k ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-        background: posTarget === k ? "var(--soft)" : "#fff",
+        background: posTarget === k ? "var(--soft)" : "var(--card)",
         color: posTarget === k ? "var(--primary)" : "var(--sub)",
         borderRadius: 999,
         padding: "5px 12px",
@@ -1597,7 +1597,7 @@ function GeneratorTab({
       width: 40,
       height: 36,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
@@ -1610,7 +1610,7 @@ function GeneratorTab({
       width: 40,
       height: 36,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
@@ -1636,7 +1636,7 @@ function GeneratorTab({
       width: 40,
       height: 36,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
@@ -1649,7 +1649,7 @@ function GeneratorTab({
       width: 40,
       height: 36,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
@@ -1732,7 +1732,7 @@ function GeneratorTab({
     disabled: pBusy,
     style: {
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 9,
       padding: "8px 13px",
@@ -1911,8 +1911,8 @@ function GeneratorTab({
       style: {
         flexShrink: 0,
         border: `2px solid ${on ? ACC : "#e6e0f5"}`,
-        background: on ? ACC : "#faf8ff",
-        color: on ? "#fff" : "#6b4bb0",
+        background: on ? ACC : "var(--chip)",
+        color: on ? "#fff" : "var(--ink)",
         borderRadius: 12,
         padding: "9px 14px",
         fontSize: 14,
@@ -2021,7 +2021,7 @@ function GeneratorTab({
     "aria-pressed": taxYen === v,
     style: {
       border: "none",
-      background: taxYen === v ? "#fff" : "transparent",
+      background: taxYen === v ? "var(--card)" : "transparent",
       color: taxYen === v ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
       padding: "5px 10px",
@@ -2063,8 +2063,8 @@ function GeneratorTab({
       fontWeight: 800,
       cursor: "pointer",
       border: taxRate === r ? `2px solid ${ACC}` : "1px solid var(--line)",
-      background: taxRate === r ? ACC : "#fff",
-      color: taxRate === r ? "#fff" : "#555"
+      background: taxRate === r ? ACC : "var(--card)",
+      color: taxRate === r ? "#fff" : "var(--text)"
     }
   }, r, "%")))), /*#__PURE__*/React.createElement("button", {
     onClick: downloadOne,
@@ -2155,8 +2155,8 @@ function GeneratorTab({
     style: {
       width: "100%",
       border: "none",
-      background: !rows.length || busy ? "#cbb8ef" : "#2f6fb0",
-      color: "#fff",
+      background: !rows.length || busy ? "var(--chip)" : "var(--fill)",
+      color: !rows.length || busy ? "var(--faint)" : "#fff",
       borderRadius: 10,
       padding: "12px",
       fontSize: 15,

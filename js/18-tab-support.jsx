@@ -49,7 +49,7 @@ function SupportTab() {
               fontSize:16, textAlign:"center", outline:"none", marginBottom: 誤り ? 8 : 16 }} />
           {誤り && <div style={{ fontSize:13, color:"#b3261e", fontWeight:700, marginBottom:12 }}>{誤り}</div>}
           <button onClick={ひらく}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:10,
+            style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff", borderRadius:10,
               padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
         </div>
       </div>
@@ -63,7 +63,7 @@ function SupportTab() {
         {[["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => (
           <button key={k} onClick={() => 選ぶ(k)}
             style={{ flex:1, border:"1px solid " + (どれ===k ? "var(--primary)" : "var(--line)"),
-              background: どれ===k ? "var(--primary)" : "var(--card, #fff)",
+              background: どれ===k ? "var(--fill)" : "var(--card, #fff)",
               color: どれ===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
               fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
         ))}
@@ -201,7 +201,7 @@ function SupportPhotos() {
             style={{ maxWidth:"100%", maxHeight:"calc(100vh - 150px)", objectFit:"contain", borderRadius:6 }} />
           <div onClick={e => e.stopPropagation()} style={{ display:"flex", gap:10, marginTop:16 }}>
             <a href={open.image_url} download target="_blank" rel="noopener noreferrer"
-              style={{ border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:10,
+              style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:10,
                 padding:"12px 22px", fontSize:14, fontWeight:800, textDecoration:"none" }}>保存する</a>
             <button onClick={() => setOpen(null)}
               style={{ border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff",

@@ -446,7 +446,7 @@ function App() {
                     flex:"0 0 auto", minHeight:58 }}>
                   <span style={{ position:"relative", width:38, height:38, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
-                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
+                    {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--fill)", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
                   </span>
                   <span style={{ flex:1, minWidth:0, fontSize:17, fontWeight:800, color: tab===o.key ? "var(--primary)" : "var(--ink)", lineHeight:1.3, textAlign:"left", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{o.label}</span>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M9 6l6 6-6 6"/></svg>
@@ -490,7 +490,7 @@ class ErrBoundary extends React.Component {
           style={{ width:"100%", boxSizing:"border-box", height:180, fontSize:12, lineHeight:1.6, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", background:"var(--card, #fff)", fontFamily:"monospace" }} />
         <div style={{ display:"flex", gap:8, marginTop:12 }}>
           <button onClick={() => { try { navigator.clipboard.writeText(msg); } catch(e) {} }}
-            style={{ flex:1, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>コピーする</button>
+            style={{ flex:1, border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>コピーする</button>
           <button onClick={() => { this.setState({ err: null }); }}
             style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>戻る</button>
         </div>

@@ -420,7 +420,7 @@ function ScanTab() {
       width: 19,
       height: 19,
       borderRadius: "50%",
-      background: "#fff",
+      background: "var(--card)",
       transition: "left .15s",
       boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
     }

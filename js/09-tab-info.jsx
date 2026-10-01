@@ -13,7 +13,7 @@ function PromptCard({ it, accent, onDelete }) {
     else fb();
   };
   return (
-    <div style={{ background:"white", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16, overflow:"hidden" }}>
+    <div style={{ background:"var(--card)", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16, overflow:"hidden" }}>
       {it.image_url && <img src={it.image_url} alt="" onClick={()=>setOpen(o=>!o)} style={{ width:"100%", maxHeight: open?"none":340, objectFit:"cover", display:"block", cursor:"zoom-in" }} />}
       <div style={{ padding:"13px 15px 15px" }}>
         {it.title && <div style={{ fontSize:15, fontWeight:800, color:"var(--ink)", marginBottom:9 }}>{it.title}</div>}
@@ -53,7 +53,7 @@ function PromptAddModal({ accent, onClose, onPosted }) {
   };
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:1000, display:"flex", alignItems:"flex-end" }}>
-      <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", width:"100%", borderRadius:"20px 20px 0 0", padding:"10px 18px calc(20px + env(safe-area-inset-bottom))", maxHeight:"90vh", overflowY:"auto", animation:"sheetUp 0.28s ease" }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:"var(--card)", width:"100%", borderRadius:"20px 20px 0 0", padding:"10px 18px calc(20px + env(safe-area-inset-bottom))", maxHeight:"90vh", overflowY:"auto", animation:"sheetUp 0.28s ease" }}>
         <div style={{ width:40, height:4, background:"#ddd", borderRadius:2, margin:"6px auto 14px" }} />
         <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:14 }}>プロンプトを追加</div>
         <label style={{ display:"block", border:"2px dashed #d8d8e0", borderRadius:12, padding: preview?0:"22px", textAlign:"center", cursor:"pointer", overflow:"hidden", marginBottom:13 }}>
@@ -70,7 +70,7 @@ function PromptAddModal({ accent, onClose, onPosted }) {
 }
 
 function PromptGuide({ accent }) {
-  const sec = { background:"white", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", padding:"16px 18px", marginBottom:14 };
+  const sec = { background:"var(--card)", borderRadius:16, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", padding:"16px 18px", marginBottom:14 };
   const hd  = { fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:10 };
   const p   = { fontSize:13.5, lineHeight:1.8, color:"var(--text)", margin:"0 0 10px" };
   const tag = { display:"inline-block", background:"#f1edff", color:accent, fontWeight:700, fontSize:12.5, borderRadius:7, padding:"3px 9px", margin:"0 6px 6px 0" };
@@ -363,7 +363,7 @@ function TodayInfoCard() {
         if (!chips.length) return null;
         const shike = warns.some(w => ["波浪警報","波浪注意報","強風注意報","暴風警報","波浪特別警報","暴風特別警報"].includes(w.n));
         return (
-          <div className="ucard" style={{ background:"#fff", borderRadius:16, padding:"11px 14px" }}>
+          <div className="ucard" style={{ background:"var(--card)", borderRadius:16, padding:"11px 14px" }}>
             <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
               {chips.map((c,i) => (
                 <span key={i} style={{ fontSize:11, fontWeight:800, borderRadius:8, padding:"3px 9px",
@@ -468,7 +468,7 @@ function WeatherWidget({ onTheme }) {
       {open && (
         <>
           <div onClick={() => setOpen(false)} style={{ position:"fixed", inset:0, zIndex:210 }} />
-          <div style={{ position:"absolute", top:"calc(100% + 8px)", right:0, zIndex:211, background:"#fff", borderRadius:14, boxShadow:"0 8px 30px rgba(0,0,0,0.18)", padding:"13px 15px", width:230, animation:"fadeUp .2s ease" }}>
+          <div style={{ position:"absolute", top:"calc(100% + 8px)", right:0, zIndex:211, background:"var(--card)", borderRadius:14, boxShadow:"0 8px 30px rgba(0,0,0,0.18)", padding:"13px 15px", width:230, animation:"fadeUp .2s ease" }}>
             <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:8 }}>📍 天気の観測地点</div>
             <svg viewBox="0 0 220 100" style={{ width:"100%", display:"block", marginBottom:8 }}>
               <path d="M8,62 L30,72 L58,78 L92,74 L112,66 L128,60 L150,50 L172,40 L196,28 L210,20 L212,30 L196,44 L176,56 L154,66 L132,74 L110,82 L86,88 L56,90 L26,84 L6,72 Z"
@@ -486,7 +486,7 @@ function WeatherWidget({ onTheme }) {
             </div>
             <a href="https://tenki.jp/forecast/7/35/6810/32203/10days.html" target="_blank" rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginTop:11, textDecoration:"none", background:"var(--primary)", color:"#fff", borderRadius:10, padding:"10px", fontSize:13, fontWeight:800 }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginTop:11, textDecoration:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"10px", fontSize:13, fontWeight:800 }}>
               週間予報を見る（tenki.jp）→
             </a>
             <div style={{ fontSize:10, color:"var(--faint)", marginTop:8 }}>データ：Open-Meteo</div>
@@ -507,7 +507,7 @@ function DevTab() {
         {ANNOUNCEMENTS.map((a,i)=>{
           const t = ANN_TYPES[a.type] || ANN_TYPES["お知らせ"];
           return (
-            <div key={i} style={{ background:"white", borderRadius:14, padding:"16px 18px", border:"1px solid #ececec", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div key={i} style={{ background:"var(--card)", borderRadius:14, padding:"16px 18px", border:"1px solid #ececec", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
                 <span style={{ background:t.bg, color:t.color, border:`1px solid ${t.border}`, borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:800 }}>{a.type}</span>
                 <span style={{ fontSize:11, color:"var(--faint)", fontWeight:700 }}>{a.date}</span>

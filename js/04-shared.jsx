@@ -122,7 +122,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }}>
-      <div style={{ background:"white", borderRadius:"22px 22px 0 0", padding:"8px 22px calc(20px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
+      <div style={{ background:"var(--card)", borderRadius:"22px 22px 0 0", padding:"8px 22px calc(20px + env(safe-area-inset-bottom))", width:"100%", maxWidth:560, maxHeight:"min(92vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px))", overflowY:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }}>
         <div style={{ width:40, height:5, background:"var(--line)", borderRadius:3, margin:"6px auto 16px" }} />
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
           <div style={{ fontSize:21, fontWeight:900 }}>ポップをアップロード</div>
@@ -188,7 +188,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             )}
           </div>
           {error && <div style={{ color:"var(--primary)", fontSize:13, fontWeight:600 }}>{error}</div>}
-          <button onClick={submit} disabled={loading} style={{ background:"var(--primary)", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
+          <button onClick={submit} disabled={loading} style={{ background:"var(--fill)", color:"white", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:900, cursor:"pointer", opacity:loading?0.6:1 }}>
             {loading ? (progress || "アップロード中...") : items.length > 1 ? `${items.length}枚をアップロード` : "アップロード"}
           </button>
         </div>
@@ -532,7 +532,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                   <button onClick={()=>{ setShowArcConfirm(false); setPwInput(""); setPwError(""); }}
                     style={{ flex:1, padding:"10px", background:"var(--chip)", color:"var(--text)", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer" }}>戻る</button>
                   <button onClick={handleArchiveConfirm} disabled={arcBusy}
-                    style={{ flex:1, padding:"10px", background:"var(--primary-soft, #4a7ab0)", color:"#fff", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer", opacity:arcBusy?0.6:1 }}>{arcBusy ? "移動中…" : "移す"}</button>
+                    style={{ flex:1, padding:"10px", background:"var(--fill)", color:"#fff", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer", opacity:arcBusy?0.6:1 }}>{arcBusy ? "移動中…" : "移す"}</button>
                 </div>
               </div>
             </div>
@@ -554,7 +554,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
               <button onClick={() => setRenaming(false)} disabled={rnBusy}
                 style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
               <button onClick={doRename} disabled={rnBusy || !newName.trim()}
-                style={{ flex:1, border:"none", background: (rnBusy || !newName.trim()) ? "#ccc" : "var(--primary)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                style={{ flex:1, border:"none", background: (rnBusy || !newName.trim()) ? "#ccc" : "var(--fill)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
                 {rnBusy ? "直しています…" : "直す"}
               </button>
             </div>
@@ -580,7 +580,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
                 style={{ display:"flex", alignItems:"center", gap:12, width:"100%", textAlign:"left", border:"1px solid var(--line)", background:"var(--card, #fff)", borderRadius:12, padding:"13px 14px", marginBottom:8, cursor:"pointer" }}>
                 <span style={{ width:32, height:44, flexShrink:0, border:"1.5px solid var(--primary-soft)", borderRadius:3, display:"grid",
                   gridTemplateColumns: n === 4 ? "1fr 1fr" : "1fr", gridTemplateRows: n === 1 ? "1fr" : "1fr 1fr", gap:1.5, padding:1.5 }}>
-                  {Array.from({ length: n }, (_, i) => <span key={i} style={{ background:"var(--primary-soft)", opacity:0.35, borderRadius:1 }} />)}
+                  {Array.from({ length: n }, (_, i) => <span key={i} style={{ background:"var(--fill)", opacity:0.35, borderRadius:1 }} />)}
                 </span>
                 <span style={{ minWidth:0 }}>
                   <span style={{ display:"block", fontSize:14, fontWeight:900, color:"var(--ink)" }}>{title}</span>
@@ -632,7 +632,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             style={{ display:"flex", alignItems:"center", gap:7, width:"100%", border:"none", background:"transparent",
               padding:"3px 0", cursor:"pointer", marginBottom: cOpen ? 9 : 0, minHeight:34 }}>
             <span style={{ fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>コメント</span>
-            {comments.length > 0 && <span style={{ fontSize:12.5, fontWeight:800, color:"#fff", background:"var(--primary-soft)", borderRadius:9, padding:"1px 8px" }}>{comments.length}</span>}
+            {comments.length > 0 && <span style={{ fontSize:12.5, fontWeight:800, color:"#fff", background:"var(--fill)", borderRadius:9, padding:"1px 8px" }}>{comments.length}</span>}
             <span style={{ marginLeft:"auto", display:"flex", color:"var(--faint)", transform: cOpen ? "rotate(90deg)" : "none", transition:"transform .15s" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
             </span>
@@ -661,7 +661,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             <textarea value={cText} onChange={e=>setCText(e.target.value)} placeholder="コメントを入力…" rows={1}
               style={{ flex:1, padding:"10px 11px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:13.5, resize:"none", fontFamily:"inherit", outline:"none", lineHeight:1.5, maxHeight:90 }} />
             <button onClick={handleAddComment} disabled={cSubmitting}
-              style={{ background:"var(--primary)", color:"#fff", border:"none", borderRadius:9, padding:"10px 15px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1, flexShrink:0 }}>{cSubmitting ? "…" : "送信"}</button>
+              style={{ background:"var(--fill)", color:"#fff", border:"none", borderRadius:9, padding:"10px 15px", fontSize:13, fontWeight:900, cursor:"pointer", opacity:cSubmitting?0.6:1, flexShrink:0 }}>{cSubmitting ? "…" : "送信"}</button>
           </div>}
           {cOpen && cError && <div style={{ fontSize:12, color:"var(--primary)", marginTop:6 }}>{cError}</div>}
         </div>

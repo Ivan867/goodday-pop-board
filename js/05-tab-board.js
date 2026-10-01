@@ -767,7 +767,7 @@ function BoardTab({
         position: "sticky",
         top: 0,
         zIndex: 2,
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         padding: "10px 14px",
         display: "flex",
@@ -972,7 +972,7 @@ function BoardTab({
       width: 4,
       height: 15,
       borderRadius: 2,
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -1048,7 +1048,7 @@ function BoardTab({
     style: {
       flex: 1.4,
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "13px",
@@ -1287,7 +1287,7 @@ function SearchTab({
     }, g === "切身" ? "切身・生食" : g);
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 18,
       padding: "18px 20px 16px",
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
@@ -1577,7 +1577,7 @@ function SearchTab({
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",

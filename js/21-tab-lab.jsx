@@ -41,7 +41,7 @@ function LabTab() {
               fontSize:16, textAlign:"center", outline:"none", marginBottom: 誤り ? 8 : 16 }} />
           {誤り && <div style={{ fontSize:13, color:"#b3261e", fontWeight:700, marginBottom:12 }}>{誤り}</div>}
           <button onClick={ひらく}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:10,
+            style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff", borderRadius:10,
               padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
         </div>
       </div>
@@ -55,7 +55,7 @@ function LabTab() {
           {品.map(([k, 名, 説明]) => (
             <button key={k} onClick={() => 選ぶ(k)}
               style={{ flex:1, border:"1px solid " + (どれ===k ? "var(--primary)" : "var(--line)"),
-                background: どれ===k ? "var(--primary)" : "var(--card, #fff)",
+                background: どれ===k ? "var(--fill)" : "var(--card, #fff)",
                 color: どれ===k ? "#fff" : "var(--text)", borderRadius:11, padding:"11px 8px",
                 cursor:"pointer", textAlign:"left" }}>
               <span style={{ display:"block", fontSize:13.5, fontWeight:900 }}>{名}</span>

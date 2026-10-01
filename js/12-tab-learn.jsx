@@ -384,7 +384,7 @@ function IndustryTab() {
           {[["news","📰 記事・売り方"],["fish","🐠 魚図鑑"]].map(([k,l]) => (
             <button key={k} onClick={() => setSubTab(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                background: subTab===k ? "var(--primary)" : "#fff", color: subTab===k ? "#fff" : "var(--text)" }}>{l}</button>
+                background: subTab===k ? "var(--fill)" : "var(--card)", color: subTab===k ? "#fff" : "var(--text)" }}>{l}</button>
           ))}
         </div>
 
@@ -480,7 +480,7 @@ function IndustryTab() {
                 <ul style={{ margin:0, paddingLeft:17, listStyle:"none" }}>
                   {(Array.isArray(t.points) ? t.points : []).map((pt, i) => (
                     <li key={i} style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.75, marginBottom:5, position:"relative" }}>
-                      <span style={{ position:"absolute", left:-15, top:7, width:5, height:5, borderRadius:"50%", background:"var(--primary-soft)" }} />
+                      <span style={{ position:"absolute", left:-15, top:7, width:5, height:5, borderRadius:"50%", background:"var(--fill)" }} />
                       {pt}
                     </li>
                   ))}
@@ -590,7 +590,7 @@ function SoubaTab({ onCreatePop }) {
             {[["souba","相場計算"],["arari","粗利"],["budomari","歩留まり"],["nebiki","値引き"],["gram","グラム"],["shio","立て塩"]].map(([k,l]) => (
               <button key={k} onClick={() => setSub(k)}
                 style={{ flexShrink:0, border:"none", borderRadius:16, padding:"7px 14px", fontSize:13, fontWeight:800, cursor:"pointer",
-                  background: sub===k ? "#fff" : "rgba(29,58,87,0.14)", color: sub===k ? "#2f6fb0" : "#17324e" }}>{l}</button>
+                  background: sub===k ? "var(--card)" : "rgba(29,58,87,0.14)", color: sub===k ? "#2f6fb0" : "#17324e" }}>{l}</button>
             ))}
           </div>
         </div>
@@ -1133,7 +1133,7 @@ function CatalogTab() {
       {[["event",["競合他社","企画行事"]],["daily",["競合他社","の売場"]],["tool",["作成"]],["trend",["トレンド"]],["idea",["アイデア"]]].map(([k,l]) => (
         <button key={k} onClick={() => setPageModeSave(k)}
           style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", lineHeight:1.35,
-            background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
+            background: pageMode===k ? "var(--fill)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
       ))}
     </div>
   );
@@ -1141,7 +1141,7 @@ function CatalogTab() {
   if (pageMode === "idea") {
     return (
       <div>
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
           <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
         </div>
         <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 0" }}>{modeSwitch}</div>
@@ -1153,7 +1153,7 @@ function CatalogTab() {
   if (pageMode === "trend") {
     return (
       <div>
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
           <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
         </div>
         <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 0" }}>{modeSwitch}</div>
@@ -1165,7 +1165,7 @@ function CatalogTab() {
   if (pageMode === "tool") {
     return (
       <div>
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
           <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
         </div>
         <div style={{ maxWidth:1600, margin:"0 auto", padding:"14px 16px 0" }}>{modeSwitch}</div>
@@ -1176,7 +1176,7 @@ function CatalogTab() {
 
   return (
     <div>
-      <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+      <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>カタログ</div>
       </div>
 
@@ -1187,7 +1187,7 @@ function CatalogTab() {
           {[["event",["競合他社","企画行事"]],["daily",["競合他社","の売場"]],["tool",["作成"]],["trend",["トレンド"]],["idea",["アイデア"]]].map(([k,l]) => (
             <button key={k} onClick={() => setPageModeSave(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"11px 2px", fontSize:12.5, fontWeight:800, cursor:"pointer", lineHeight:1.35,
-                background: pageMode===k ? "var(--primary)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
+                background: pageMode===k ? "var(--fill)" : "var(--card, #fff)", color: pageMode===k ? "#fff" : "var(--text)" }}>{l.map((t,i) => <React.Fragment key={i}>{i>0 && <br/>}{t}</React.Fragment>)}</button>
           ))}
         </div>
 
@@ -1203,7 +1203,7 @@ function CatalogTab() {
                 ["lg", "大", <svg key="4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
               ].map(([k, label, icon]) => (
                 <button key={k} onClick={() => setCviewSave(k)} title={label} aria-label={"表示を" + label + "にする"} aria-pressed={cview===k}
-                  style={{ border:"none", background: cview===k ? "#fff" : "transparent", color: cview===k ? "var(--ink)" : "var(--sub)", borderRadius:6, padding:"4px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{icon}</button>
+                  style={{ border:"none", background: cview===k ? "var(--card)" : "transparent", color: cview===k ? "var(--ink)" : "var(--sub)", borderRadius:6, padding:"4px 8px", cursor:"pointer", display:"flex", alignItems:"center", boxShadow: cview===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{icon}</button>
               ))}
             </div>
           </div>
@@ -1267,9 +1267,9 @@ function CatalogTab() {
                 const used = ws.words.filter(hasWord).length;
                 return (
                   <button key={ws.key} onClick={() => setOpenWordSet(on ? "" : ws.key)} aria-expanded={on}
-                    style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"4px 11px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                    style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"4px 11px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
                     {ws.label}
-                    {used > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{used}</span>}
+                    {used > 0 && <span style={{ background:"var(--fill)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{used}</span>}
                     <span style={{ fontSize:12.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block", transition:"transform .2s" }}>▼</span>
                   </button>
                 );
@@ -1282,7 +1282,7 @@ function CatalogTab() {
                   const on = hasWord(w);
                   return (
                     <button key={w} onClick={() => toggleWord(w)} aria-pressed={on}
-                      style={{ border: on ? "none" : "1px solid var(--line)", background: on ? "var(--primary-soft)" : "#fff", color: on ? "#fff" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
+                      style={{ border: on ? "none" : "1px solid var(--line)", background: on ? "var(--primary-soft)" : "var(--card)", color: on ? "#fff" : "var(--text)", borderRadius:7, padding:"5px 10px", fontSize:12, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
                       {w}
                     </button>
                   );
@@ -1308,16 +1308,16 @@ function CatalogTab() {
           <>
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
               <button onClick={() => setGrp("")} aria-pressed={!grp}
-                style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "#fff", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
+                style={{ border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: !grp ? "var(--soft)" : "var(--card)", color: !grp ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>すべて</button>
               {groupsIn.map(g => (
                 <button key={g.key} onClick={() => setGrp(g.key)} aria-pressed={grp===g.key}
-                  style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "#fff", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
+                  style={{ border: grp===g.key ? `2px solid ${g.color}` : "1px solid var(--line)", background: grp===g.key ? g.color + "14" : "var(--card)", color: grp===g.key ? g.color : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                   {g.label}
                 </button>
               ))}
               {favCount > 0 && (
                 <button onClick={() => setFavOnly(v => !v)} aria-pressed={favOnly}
-                  style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "#fff", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+                  style={{ border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)", background: favOnly ? "#fdf3e0" : "var(--card)", color: favOnly ? "#b8860b" : "var(--sub)", borderRadius:999, padding:"5px 13px", fontSize:12.5, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
                   重点調査 {favCount}
                 </button>
               )}
@@ -1330,7 +1330,7 @@ function CatalogTab() {
                 <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>該当するお店がありません</div>
                 <div style={{ marginTop:6 }}>絞り込みを外してみてください</div>
                 <button onClick={() => { setGrp(""); setFavOnly(false); }}
-                  style={{ marginTop:16, border:"none", background:"var(--primary-soft, #4a7ab0)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer" }}>絞り込みを外す</button>
+                  style={{ marginTop:16, border:"none", background:"var(--fill)", color:"#fff", borderRadius:999, padding:"10px 22px", fontSize:13, fontWeight:800, cursor:"pointer" }}>絞り込みを外す</button>
               </div>
             ) : (
               <>
@@ -1763,7 +1763,7 @@ function OrderTab() {
   if (!unlocked) {
     return (
       <div>
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
           <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>管理</div>
         </div>
         <div style={{ maxWidth:420, margin:"0 auto", padding:"56px 24px" }}>
@@ -1789,7 +1789,7 @@ function OrderTab() {
           </span>
           {pwErr && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:800, textAlign:"center", marginBottom:12 }}>{pwErr}</div>}
           <button onClick={tryUnlock}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
+            style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
         </div>
       </div>
     );
@@ -1797,7 +1797,7 @@ function OrderTab() {
 
   return (
     <div>
-      <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+      <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
         <div style={{ display:"flex", alignItems:"center", gap:9 }}>
           <span style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>塩干発注</span>
           {store && (
@@ -1813,7 +1813,7 @@ function OrderTab() {
           {[["today","本日の発注"],["sheet","管理"],["print","印刷"],["docs","資料"],["cal","カレンダー"],["items",`品目（${active.length}）`]].map(([k,l]) => (
             <button key={k} onClick={() => setTab(k)}
               style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                background: tab===k ? "var(--primary)" : "#fff", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
+                background: tab===k ? "var(--fill)" : "var(--card)", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
           ))}
         </div>
 
@@ -1844,7 +1844,7 @@ function OrderTab() {
                       return (
                         <button key={k} onClick={() => setPickDay(d)}
                           style={{ flex:1, border: sel ? "none" : "1px solid var(--line)",
-                            background: sel ? "var(--primary)" : "#fff", color: sel ? "#fff" : (i===6 ? "#d1554f" : i===5 ? "#3b7dd8" : "var(--text)"),
+                            background: sel ? "var(--fill)" : "var(--card)", color: sel ? "#fff" : (i===6 ? "#d1554f" : i===5 ? "#3b7dd8" : "var(--text)"),
                             borderRadius:10, padding:"7px 0 6px", cursor:"pointer", position:"relative" }}>
                           <span style={{ display:"block", fontSize:12.5, fontWeight:800, opacity: sel ? 0.85 : 0.7 }}>{OI_WDAY[d.getDay()]}</span>
                           <span style={{ display:"block", fontSize:16, fontWeight:900, lineHeight:1.25 }}>{d.getDate()}</span>
@@ -1889,12 +1889,12 @@ function OrderTab() {
                           const on = !!chk[r.id];
                           return (
                             <div key={r.id} style={{ display:"flex", alignItems:"center", gap:11,
-                              border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fff",
+                              border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "var(--card)",
                               borderRadius:12, padding:"11px 12px" }}>
                               <button onClick={() => { const n = { ...chk }; if (on) delete n[r.id]; else n[r.id] = true; saveTodayChecked(dayKey, n); }}
                                 aria-label={on ? "まだにする" : "済みにする"} aria-pressed={on}
                                 style={{ width:28, height:28, borderRadius:9, flexShrink:0, cursor:"pointer",
-                                  border: on ? "none" : "2px solid var(--line)", background: on ? "#3f9e63" : "#fff",
+                                  border: on ? "none" : "2px solid var(--line)", background: on ? "#3f9e63" : "var(--card)",
                                   display:"flex", alignItems:"center", justifyContent:"center", padding:0 }}>
                                 {on && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
                               </button>
@@ -1990,7 +1990,7 @@ function OrderTab() {
                       return (
                         <button key={dnum} onClick={() => setSheetDay(dnum)}
                           style={{ flex:1, border: sel ? "none" : "1px solid var(--line)",
-                            background: sel ? "var(--primary)" : "#fff",
+                            background: sel ? "var(--fill)" : "var(--card)",
                             color: sel ? "#fff" : (dnum===0 ? "#d1554f" : dnum===6 ? "#3b7dd8" : "var(--text)"),
                             borderRadius:10, padding:"7px 0 6px", cursor:"pointer" }}>
                           <span style={{ display:"block", fontSize:12, fontWeight:900 }}>{OI_WDAY[dnum]}</span>
@@ -2050,10 +2050,10 @@ function OrderTab() {
                             rows.some(r => r.item_id === it.id && r[dk] != null && r[dk] !== "")).length;
                           return (
                             <button key={c} onClick={() => setOpenCat(on ? "" : c)} aria-expanded={on}
-                              style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff",
+                              style={{ border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)",
                                 color: on ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                               {c}
-                              {n > 0 && <span style={{ background:"var(--primary-soft)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{n}</span>}
+                              {n > 0 && <span style={{ background:"var(--fill)", color:"#fff", borderRadius:999, fontSize:12.5, fontWeight:900, padding:"0 5px", lineHeight:1.6 }}>{n}</span>}
                               <span style={{ fontSize:12.5, transform: on ? "rotate(180deg)" : "none", display:"inline-block" }}>▼</span>
                             </button>
                           );
@@ -2068,10 +2068,10 @@ function OrderTab() {
                             return (
                               <button key={it.id} onClick={() => tapItem(it)} disabled={sheetBusy} aria-pressed={on}
                                 style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
-                                  border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fff",
+                                  border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "var(--card)",
                                   borderRadius:8, padding:"8px 9px", cursor:"pointer" }}>
                                 <span style={{ width:20, height:20, borderRadius:6, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
-                                  background: on ? "#3f9e63" : "#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                  background: on ? "#3f9e63" : "var(--card)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                                   {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
                                 </span>
                                 {it.thumb && <img src={it.thumb} alt="" style={{ width:34, height:34, objectFit:"cover", borderRadius:6, flexShrink:0 }} />}
@@ -2123,7 +2123,7 @@ function OrderTab() {
                     )}
                     {rows.length > 0 && (
                       <button onClick={() => window.print()}
-                        style={{ flex:1, border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"13px", fontSize:14, fontWeight:900, cursor:"pointer" }}>印刷する（A4）</button>
+                        style={{ flex:1, border:"none", background:"var(--fill)", color:"#fff", borderRadius:11, padding:"13px", fontSize:14, fontWeight:900, cursor:"pointer" }}>印刷する（A4）</button>
                     )}
                   </div>
                 </>
@@ -2182,7 +2182,7 @@ function OrderTab() {
                 </div>
 
                 <button onClick={() => window.print()}
-                  style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:900, cursor:"pointer" }}>
+                  style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff", borderRadius:11, padding:"14px", fontSize:15, fontWeight:900, cursor:"pointer" }}>
                   1週間分を印刷する（A4）
                 </button>
                 <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.7, marginTop:12 }}>
@@ -2284,7 +2284,7 @@ function OrderTab() {
                 <div key={w.no} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7 }}>
                   <span style={{ fontSize:12, fontWeight:800, color:"var(--sub)", width:52, flexShrink:0 }}>第{w.no}週</span>
                   <div style={{ flex:1, height:16, background:"var(--bg)", borderRadius:5, overflow:"hidden", minWidth:0 }}>
-                    <div style={{ width: `${(w.count / maxW) * 100}%`, height:"100%", background:"var(--primary-soft)", borderRadius:5, transition:"width .3s" }} />
+                    <div style={{ width: `${(w.count / maxW) * 100}%`, height:"100%", background:"var(--fill)", borderRadius:5, transition:"width .3s" }} />
                   </div>
                   <span style={{ fontSize:12, fontWeight:900, color:"var(--ink)", width:34, textAlign:"right", flexShrink:0 }}>{w.count}回</span>
                   <span style={{ fontSize:12, fontWeight:800, color:"var(--primary-soft)", width:46, textAlign:"right", flexShrink:0 }}>{w.qty > 0 ? w.qty : "—"}</span>
@@ -2337,7 +2337,7 @@ function OrderTab() {
                           style={{ width:64, flexShrink:0, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:7, padding:"6px 8px", fontSize:12.5, outline:"none", textAlign:"right", fontFamily:"inherit" }} />
                         <span style={{ fontSize:12, color:"var(--faint)", width:32, flexShrink:0 }}>{it.unit || ""}</span>
                         <button onClick={() => addLog(it)} disabled={busy}
-                          style={{ border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:7, padding:"6px 13px", fontSize:12, fontWeight:800, cursor:"pointer", flexShrink:0 }}>記録</button>
+                          style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:7, padding:"6px 13px", fontSize:12, fontWeight:800, cursor:"pointer", flexShrink:0 }}>記録</button>
                       </div>
                     ))}
                   </div>
@@ -2350,8 +2350,8 @@ function OrderTab() {
           <>
             <div style={{ display:"flex", gap:8, marginBottom:12 }}>
               <button onClick={openNew}
-                style={{ flex:1, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:10, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>＋ 品目を追加</button>
-              <label style={{ flex:1, border:"1px solid var(--line)", background: impBusy ? "#f0f0f0" : "#fff", color:"var(--text)", borderRadius:10, padding:"11px", fontSize:13, fontWeight:800, cursor: impBusy ? "default" : "pointer", textAlign:"center", display:"block", boxSizing:"border-box", position:"relative", overflow:"hidden" }}>
+                style={{ flex:1, border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"11px", fontSize:13.5, fontWeight:800, cursor:"pointer" }}>＋ 品目を追加</button>
+              <label style={{ flex:1, border:"1px solid var(--line)", background: impBusy ? "#f0f0f0" : "var(--card)", color:"var(--text)", borderRadius:10, padding:"11px", fontSize:13, fontWeight:800, cursor: impBusy ? "default" : "pointer", textAlign:"center", display:"block", boxSizing:"border-box", position:"relative", overflow:"hidden" }}>
                 {impBusy ? "読み込み中…" : "早見表を取り込む"}
                 <input ref={xlsxRef} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" disabled={impBusy}
                   style={{ position:"absolute", inset:0, opacity:0, width:"100%", height:"100%", cursor:"pointer" }}
@@ -2686,7 +2686,7 @@ function BundleTab({ 細い } = {}) {
       .filter(p => !q.trim() || (p.product_name || "").includes(q.trim()) || (p.store_name || "").includes(q.trim()));
     return (
       <div>
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff", display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff", display:"flex", alignItems:"center", gap:10 }}>
           <button onClick={() => { setInner(false); setOpenId(""); setQ(""); }} aria-label="もどる"
             style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", borderRadius:8, width:30, height:30, fontSize:16, fontWeight:900, cursor:"pointer" }}>‹</button>
           <div style={{ minWidth:0 }}>
@@ -2701,7 +2701,7 @@ function BundleTab({ 細い } = {}) {
             {[["pop", `POP（${items.length}）`], ["prompt", `プロンプト（${prompts.length}）`]].map(([k, l]) => (
               <button key={k} onClick={() => setTab(k)}
                 style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-                  background: tab===k ? "var(--primary)" : "#fff", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
+                  background: tab===k ? "var(--fill)" : "var(--card)", color: tab===k ? "#fff" : "var(--text)" }}>{l}</button>
             ))}
           </div>
 
@@ -2851,7 +2851,7 @@ function BundleTab({ 細い } = {}) {
         <span style={{ minWidth:0, flex:1 }}>
           <span style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
             <span style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.name}</span>
-            {soon && <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background:"var(--primary-soft)", borderRadius:7, padding:"2px 7px", flexShrink:0 }}>来月</span>}
+            {soon && <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background:"var(--fill)", borderRadius:7, padding:"2px 7px", flexShrink:0 }}>来月</span>}
           </span>
           {b.note && <span style={{ display:"block", fontSize:12.5, color:"var(--sub)", lineHeight:1.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.note}</span>}
         </span>
@@ -2869,7 +2869,7 @@ function BundleTab({ 細い } = {}) {
       {細い ? (
         <div className="dock-head"><b>行事カレンダー</b><i>SEASONAL CALENDAR</i></div>
       ) : (
-        <div style={{ background:"var(--primary)", padding:"9px 16px", color:"#fff" }}>
+        <div style={{ background:"var(--fill)", padding:"9px 16px", color:"#fff" }}>
           <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>行事カレンダー</div>
         </div>
       )}
@@ -2897,7 +2897,7 @@ function BundleTab({ 細い } = {}) {
                     return (
                       <button key={m} onClick={() => setViewM(mm)} aria-label={`${mm}月を見る`} data-month={mm}
                         style={{ border:"none", borderLeft:"1px solid var(--line)", borderRadius:0,
-                          background: isView ? "var(--primary)" : "var(--card, #fff)",
+                          background: isView ? "var(--fill)" : "var(--card, #fff)",
                           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
                           padding: 細い ? "3px 0 4px" : "5px 0 6px", fontSize:寸.字, fontWeight:900, cursor:"pointer", lineHeight:1.3, whiteSpace:"nowrap" }}>
                         {寸.月(m)}

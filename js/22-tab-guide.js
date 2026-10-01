@@ -42,6 +42,17 @@ function GuideTab() {
   const 鮮魚URL = 基;
   const 文面青果 = "生鮮共有ページです。\n" + 青果URL + "\n\n" + "・下のリンクを開くと、青果の売場ポップが見られます。\n" + "・写真を撮って上げるだけで、他店にも共有されます。\n" + "・毎回ひらくのが面倒なら、ブラウザの共有ボタンから「ホーム画面に追加」しておくと、アプリのように開けます。";
   const 文面鮮魚 = "生鮮共有ページです。\n" + 鮮魚URL + "\n\n" + "・下のリンクを開くと、鮮魚の売場ポップが見られます。\n" + "・写真を撮って上げるだけで、他店にも共有されます。\n" + "・毎回ひらくのが面倒なら、ブラウザの共有ボタンから「ホーム画面に追加」しておくと、アプリのように開けます。";
+
+  // 緑は画面の明暗で変える。暗い画面で濃い緑のままだと地に沈んで読めない。
+  const 暗い = (() => {
+    try {
+      return document.documentElement.getAttribute("data-theme") === "dark";
+    } catch (e) {
+      return false;
+    }
+  })();
+  const 青果色 = 暗い ? "#7FCB8B" : "#2f6b38"; // 文字として使う緑
+  const 青果塗 = "#35743d"; // 白文字を載せる塗り
   const 枠 = {
     background: "var(--card, #fff)",
     border: "1px solid var(--line)",
@@ -71,7 +82,7 @@ function GuideTab() {
     fontSize: 13,
     fontWeight: 900,
     whiteSpace: "nowrap",
-    background: 写した === 印 ? "#1d9e75" : "var(--primary-soft)",
+    background: 写した === 印 ? "#1d7d5d" : "var(--fill)",
     color: "#fff"
   });
   const 字 = 印 => 写した === 印 ? "写した" : 写した === "失敗:" + 印 ? "できず" : "コピー";
@@ -144,10 +155,10 @@ function GuideTab() {
     style: {
       fontSize: 12.5,
       fontWeight: 900,
-      color: "#3f8447",
+      color: 青果色,
       marginBottom: 6
     }
-  }, "\u9752\u679C\u306E\u4EBA\u3078"), 一行("seika", 青果URL, "#1d6b2e"), /*#__PURE__*/React.createElement("div", {
+  }, "\u9752\u679C\u306E\u4EBA\u3078"), 一行("seika", 青果URL, 青果色), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 12
     }
@@ -175,7 +186,7 @@ function GuideTab() {
     style: {
       ...写すボタン("文青"),
       flex: 1,
-      background: 写した === "文青" ? "#1d9e75" : "#3f8447"
+      background: 写した === "文青" ? "#1d7d5d" : 青果塗
     }
   }, 写した === "文青" ? "写した" : "青果むけの文面をコピー")), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -242,7 +253,7 @@ function GuideTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "9px 11px",
-      color: "#1d6b2e"
+      color: 青果色
     }
   }, a), /*#__PURE__*/React.createElement("div", {
     style: {

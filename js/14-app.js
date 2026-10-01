@@ -1090,7 +1090,7 @@ function App() {
       position: "absolute",
       top: -5,
       right: -9,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       fontSize: 12.5,
       fontWeight: 900,
@@ -1209,7 +1209,7 @@ class ErrBoundary extends React.Component {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary-soft, #4a7ab0)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 10,
         padding: "12px",

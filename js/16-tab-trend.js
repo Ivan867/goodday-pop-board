@@ -104,7 +104,7 @@ function TrendTab({
     }
   }, !embedded && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 14,
       padding: "14px 16px",
@@ -138,7 +138,7 @@ function TrendTab({
     style: {
       flex: 1,
       border: "none",
-      background: tab === k ? "#fff" : "transparent",
+      background: tab === k ? "var(--card)" : "transparent",
       color: tab === k ? "var(--ink)" : "var(--sub)",
       borderRadius: 7,
       padding: "9px 6px",
@@ -392,7 +392,7 @@ function TrendTab({
     style: {
       width: "100%",
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 12,
       padding: "14px",
@@ -595,7 +595,7 @@ function TrendTab({
     style: {
       flex: 1,
       border: "none",
-      background: addBusy || !term.trim() ? "#ccc" : "var(--primary)",
+      background: addBusy || !term.trim() ? "#ccc" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",

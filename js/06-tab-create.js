@@ -43,7 +43,7 @@ function NewPostForm({
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 16,
       padding: 20,
       marginBottom: 20,
@@ -150,7 +150,7 @@ function PostCard({
   return /*#__PURE__*/React.createElement("div", {
     onClick: () => onOpen(post),
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       overflow: "hidden",
       cursor: "pointer",
@@ -227,7 +227,7 @@ function PostModal({
     onClick: onClose
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       width: "100%",
       maxWidth: 560,
@@ -408,7 +408,7 @@ function PopToolTab({
       fontWeight: 800,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      background: toolSub === k ? "var(--primary)" : "#fff",
+      background: toolSub === k ? "var(--fill)" : "var(--card)",
       color: toolSub === k ? "#fff" : "var(--text)"
     }
   }, l))), toolSub === "create" ? /*#__PURE__*/React.createElement(PopCreateInner, {

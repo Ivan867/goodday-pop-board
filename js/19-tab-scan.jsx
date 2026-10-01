@@ -278,7 +278,7 @@ function ScanTab() {
             <span style={{ flex:"0 0 42px", height:25, borderRadius:999, position:"relative",
               background: 設定[k] ? "var(--primary-soft)" : "var(--chip)", transition:"background .15s" }}>
               <span style={{ position:"absolute", top:3, left: 設定[k] ? 20 : 3, width:19, height:19,
-                borderRadius:"50%", background:"#fff", transition:"left .15s",
+                borderRadius:"50%", background:"var(--card)", transition:"left .15s",
                 boxShadow:"0 1px 3px rgba(0,0,0,0.25)" }} />
             </span>
             <span style={{ flex:1, minWidth:0 }}>

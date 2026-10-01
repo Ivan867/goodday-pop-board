@@ -401,7 +401,7 @@ function CheckTab() {
     style: {
       flex: 1,
       border: "1px solid " + (画面 === k ? "var(--primary)" : "var(--line)"),
-      background: 画面 === k ? "var(--primary)" : "var(--card, #fff)",
+      background: 画面 === k ? "var(--fill)" : "var(--card, #fff)",
       color: 画面 === k ? "#fff" : "var(--text)",
       borderRadius: 10,
       padding: "11px 6px",
@@ -647,7 +647,7 @@ function CheckTab() {
         objectFit: "contain",
         border: "1px solid var(--line)",
         borderRadius: 6,
-        background: "#fff",
+        background: "var(--card)",
         flexShrink: 0
       }
     }), /*#__PURE__*/React.createElement("span", {
@@ -702,7 +702,7 @@ function CheckTab() {
     style: {
       width: "100%",
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 12,
       padding: "15px",

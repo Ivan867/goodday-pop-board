@@ -72,7 +72,7 @@ function TrendTab({ embedded } = {}) {
 
   return (
     <div style={{ maxWidth:900, margin:"0 auto", padding: embedded ? "0 16px 120px" : "10px 16px 120px" }}>
-      {!embedded && <div style={{ background:"var(--primary)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
+      {!embedded && <div style={{ background:"var(--fill)", color:"#fff", borderRadius:14, padding:"14px 16px", marginBottom:14 }}>
         <div style={{ fontSize:16.5, fontWeight:800, letterSpacing:"-0.3px" }}>トレンド</div>
         <div style={{ fontSize:12.5, opacity:0.85, marginTop:3 }}>魚ごとに、いま使える売り文句をためておく場所です</div>
       </div>}
@@ -81,7 +81,7 @@ function TrendTab({ embedded } = {}) {
       <div style={{ display:"flex", gap:2, background:"var(--chip)", borderRadius:9, padding:3, marginBottom:14 }}>
         {[["fish","魚から見る"],["week","この1週間"]].map(([k,l]) => (
           <button key={k} onClick={() => setTab(k)} aria-pressed={tab===k}
-            style={{ flex:1, border:"none", background: tab===k ? "#fff" : "transparent",
+            style={{ flex:1, border:"none", background: tab===k ? "var(--card)" : "transparent",
               color: tab===k ? "var(--ink)" : "var(--sub)", borderRadius:7, padding:"9px 6px",
               fontSize:13, fontWeight:800, cursor:"pointer",
               boxShadow: tab===k ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{l}</button>
@@ -188,7 +188,7 @@ function TrendTab({ embedded } = {}) {
           </div>
 
           <button onClick={() => { setAddOpen(true); setAddMsg(""); }}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff",
+            style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff",
               borderRadius:12, padding:"14px", fontSize:14.5, fontWeight:900, cursor:"pointer" }}>
             ＋ この魚の切り口を足す
           </button>
@@ -263,7 +263,7 @@ function TrendTab({ embedded } = {}) {
                 style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)",
                   borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
               <button onClick={submitNote} disabled={addBusy || !term.trim()}
-                style={{ flex:1, border:"none", background:(addBusy || !term.trim()) ? "#ccc" : "var(--primary)",
+                style={{ flex:1, border:"none", background:(addBusy || !term.trim()) ? "#ccc" : "var(--fill)",
                   color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
                 {addBusy ? "入れています…" : "入れる"}
               </button>

@@ -39,13 +39,17 @@ function GuideTab() {
     + "・写真を撮って上げるだけで、他店にも共有されます。\n"
     + "・毎回ひらくのが面倒なら、ブラウザの共有ボタンから「ホーム画面に追加」しておくと、アプリのように開けます。";
 
+  // 緑は画面の明暗で変える。暗い画面で濃い緑のままだと地に沈んで読めない。
+  const 暗い = (() => { try { return document.documentElement.getAttribute("data-theme") === "dark"; } catch(e) { return false; } })();
+  const 青果色 = 暗い ? "#7FCB8B" : "#2f6b38";      // 文字として使う緑
+  const 青果塗 = "#35743d";                          // 白文字を載せる塗り
   const 枠 = { background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, padding:"14px 15px", marginBottom:12 };
   const 見出し = { fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:4 };
   const 説明 = { fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:11 };
   const 写すボタン = (印) => ({
     border:"none", borderRadius:9, padding:"10px 14px", cursor:"pointer", flexShrink:0,
     fontFamily:"inherit", fontSize:13, fontWeight:900, whiteSpace:"nowrap",
-    background: 写した === 印 ? "#1d9e75" : "var(--primary-soft)", color:"#fff",
+    background: 写した === 印 ? "#1d7d5d" : "var(--fill)", color:"#fff",
   });
   const 字 = (印) => 写した === 印 ? "写した" : 写した === "失敗:" + 印 ? "できず" : "コピー";
 
@@ -76,8 +80,8 @@ function GuideTab() {
           <div style={説明}>
             相手の部門に合わせて渡してください。<b>一度ひらけばその端末が覚える</b>ので、次からは合言葉なしのリンクでも同じ部門で開きます。
           </div>
-          <div style={{ fontSize:12.5, fontWeight:900, color:"#3f8447", marginBottom:6 }}>青果の人へ</div>
-          {一行("seika", 青果URL, "#1d6b2e")}
+          <div style={{ fontSize:12.5, fontWeight:900, color:青果色, marginBottom:6 }}>青果の人へ</div>
+          {一行("seika", 青果URL, 青果色)}
           <div style={{ height:12 }} />
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--primary-soft)", marginBottom:6 }}>鮮魚の人へ</div>
           {一行("sengyo", 鮮魚URL)}
@@ -88,7 +92,7 @@ function GuideTab() {
           <div style={見出し}>② そのまま送れる文面</div>
           <div style={説明}>LINEやメールに貼るだけの形にしてあります。名前や一言を足して使ってください。</div>
           <div style={{ display:"flex", gap:8, marginBottom:8 }}>
-            <button onClick={() => 写す("文青", 文面青果)} style={{ ...写すボタン("文青"), flex:1, background: 写した==="文青" ? "#1d9e75" : "#3f8447" }}>
+            <button onClick={() => 写す("文青", 文面青果)} style={{ ...写すボタン("文青"), flex:1, background: 写した==="文青" ? "#1d7d5d" : 青果塗 }}>
               {写した==="文青" ? "写した" : "青果むけの文面をコピー"}
             </button>
           </div>
@@ -116,7 +120,7 @@ function GuideTab() {
               <div key={a} style={{ display:"grid", gridTemplateColumns:"1fr 1fr",
                 borderTop:"1px solid var(--line)", fontSize:12.5, fontWeight:700,
                 fontFamily:"ui-monospace, Menlo, monospace" }}>
-                <div style={{ padding:"9px 11px", color:"#1d6b2e" }}>{a}</div>
+                <div style={{ padding:"9px 11px", color:青果色 }}>{a}</div>
                 <div style={{ padding:"9px 11px", borderLeft:"1px solid var(--line)", color:"var(--soft-text)" }}>{b}</div>
               </div>
             ))}

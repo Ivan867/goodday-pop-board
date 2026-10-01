@@ -319,7 +319,7 @@ function BarcodeTab() {
     <div key={pi} className="bc-page"
       style={ forPrint
         ? { breakAfter:"page", pageBreakAfter:"always", position:"relative", height:"192mm" }
-        : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"#fff", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
+        : { position:"relative", aspectRatio:"297 / 210", border:"1px solid #d8dbe0", borderRadius:6, background:"var(--card)", padding:"5mm", marginBottom:22, boxShadow:"0 1px 6px rgba(0,0,0,0.07)" } }>
       {!forPrint && <div style={{ position:"absolute", top:-9, left:14, background:"var(--bg)", padding:"0 8px", fontSize:12, fontWeight:800, color:"var(--sub)" }}>{pi+1}ページ目（{pg.length}枚）</div>}
       <div className="bc-grid" style={{ display:"grid", gridTemplateColumns:`repeat(${cols},minmax(0,1fr))`, gridTemplateRows: forPrint?`repeat(${ROWS}, 40mm)`:`repeat(${ROWS}, minmax(0,1fr))`, gridAutoFlow:"column", gap: forPrint?"3mm":"2mm", height: forPrint?"auto":"100%" }}>
         {pg.map(it => {
@@ -328,13 +328,13 @@ function BarcodeTab() {
           const tags = useTags[it.bcode] || [];
           return (
           <div key={it.bcode} className="bc-label"
-            style={{ position:"relative", border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", paddingTop: comp ? (forPrint?"7mm":"17px") : undefined, breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"#fff", overflow:"hidden", textAlign:"center" }}>
+            style={{ position:"relative", border:"1px solid #cfd8de", borderRadius:4, padding: forPrint?"2mm 1.5mm":"3px", paddingTop: comp ? (forPrint?"7mm":"17px") : undefined, breakInside:"avoid", display:"grid", minWidth:0, minHeight:0, gridTemplateRows: showName?"auto auto auto":"auto auto", alignContent:"center", justifyItems:"center", rowGap: forPrint?"1.5mm":"2px", background:"var(--card)", overflow:"hidden", textAlign:"center" }}>
             {comp && (
               <div style={{ position:"absolute", top:0, left:0, right:0, height: forPrint?"6mm":"15px", ...companyPatStyle(comp, forPrint), borderBottom:`1.5px solid ${comp.color}`, display:"flex", alignItems:"center" }}>
-                <span style={{ marginLeft: forPrint?"1.5mm":"3px", background:"#fff", border:`1px solid ${comp.color}`, color:comp.color, fontWeight:900, fontSize: forPrint?"8pt":"8px", borderRadius:3, padding: forPrint?"0.3mm 1.5mm":"1px 4px", lineHeight:1.4, whiteSpace:"nowrap" }}>{comp.name}</span>
+                <span style={{ marginLeft: forPrint?"1.5mm":"3px", background:"var(--card)", border:`1px solid ${comp.color}`, color:comp.color, fontWeight:900, fontSize: forPrint?"8pt":"8px", borderRadius:3, padding: forPrint?"0.3mm 1.5mm":"1px 4px", lineHeight:1.4, whiteSpace:"nowrap" }}>{comp.name}</span>
               </div>
             )}
-            {tags.length>0 && <div style={{ position:"absolute", top: comp ? (forPrint?"1.2mm":"3px") : (forPrint?"1mm":"2px"), right: forPrint?"1.5mm":"3px", fontSize: forPrint?"8pt":"7px", fontWeight:800, color:cc, background: comp?"#fff":"transparent", borderRadius:3, padding: comp?"0 3px":0, lineHeight:1.5 }}>{tags[0]}</div>}
+            {tags.length>0 && <div style={{ position:"absolute", top: comp ? (forPrint?"1.2mm":"3px") : (forPrint?"1mm":"2px"), right: forPrint?"1.5mm":"3px", fontSize: forPrint?"8pt":"7px", fontWeight:800, color:cc, background: comp?"var(--card)":"transparent", borderRadius:3, padding: comp?"0 3px":0, lineHeight:1.5 }}>{tags[0]}</div>}
             {showName && <div style={{ fontSize: forPrint ? nameFitPt(it.name)+"pt" : "9.5px", fontWeight:800, lineHeight:1.2, color:"#000", width:"100%", overflow:"hidden", whiteSpace:"normal", wordBreak:"break-word" }}>{it.name}</div>}
             <div style={{ width:"100%", height: forPrint?"16mm":"28px" }}>
               <svg data-code={it.bcode} preserveAspectRatio="none" style={{ width:"100%", height:"100%", display:"block" }}></svg>
@@ -347,8 +347,8 @@ function BarcodeTab() {
     </div>
   ));
 
-  const seg = (active) => ({ padding:"7px 14px", border:"none", fontSize:13, fontWeight:700, cursor:"pointer", background: active?ACCENT:"#fff", color: active?"#fff":"#888" });
-  const card = { background:"white", borderRadius:16, padding:"18px 20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 };
+  const seg = (active) => ({ padding:"7px 14px", border:"none", fontSize:13, fontWeight:700, cursor:"pointer", background: active?ACCENT:"var(--card)", color: active?"#fff":"#888" });
+  const card = { background:"var(--card)", borderRadius:16, padding:"18px 20px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)", marginBottom:16 };
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:"20px 16px 80px" }}>
@@ -376,9 +376,9 @@ function BarcodeTab() {
           <>
             <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid var(--line)", marginBottom:12 }}>
               <button onClick={()=>setShTab("pdf")}
-                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="pdf"?"#222":"#fff", color: shTab==="pdf"?"#fff":"#888" }}>PDF（すぐ印刷）</button>
+                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="pdf"?"#222":"var(--card)", color: shTab==="pdf"?"#fff":"#888" }}>PDF（すぐ印刷）</button>
               <button onClick={()=>setShTab("text")}
-                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="text"?"#222":"#fff", color: shTab==="text"?"#fff":"#888" }}>テキスト・プリセット</button>
+                style={{ flex:1, border:"none", padding:"9px", fontSize:13, fontWeight:800, cursor:"pointer", background: shTab==="text"?"#222":"var(--card)", color: shTab==="text"?"#fff":"#888" }}>テキスト・プリセット</button>
             </div>
 
             {sharedLoad ? (
@@ -502,7 +502,7 @@ function BarcodeTab() {
                     <span style={{ width:9, height:9, borderRadius:"50%", background:companyColor(it), flexShrink:0 }} title={(companyOf(it)||{}).name || ("発注先 "+(it.haccyu||"不明"))} />
                     <span style={{ fontSize:12, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
                     {(useTags[it.bcode]||[]).map(t => (
-                      <span key={t} style={{ fontSize:9, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:4, padding:"1px 5px" }}>{t}</span>
+                      <span key={t} style={{ fontSize:9, color:"#fff", background:"var(--fill)", fontWeight:800, borderRadius:4, padding:"1px 5px" }}>{t}</span>
                     ))}
                   </div>
                 </div>
@@ -557,13 +557,13 @@ function BarcodeTab() {
                 <div style={{ display:"flex", gap:7, alignItems:"center", marginBottom:10, overflowX:"auto", paddingBottom:2 }}>
                   <span style={{ fontSize:12, color:"var(--faint)", fontWeight:800, flexShrink:0 }}>用途:</span>
                   <button onClick={()=>setUseFilter("")}
-                    style={{ flexShrink:0, border: useFilter===""?"2px solid var(--primary)":"1px solid var(--line)", background: useFilter===""?"var(--soft)":"#fff", color: useFilter===""?"var(--primary)":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
+                    style={{ flexShrink:0, border: useFilter===""?"2px solid var(--primary)":"1px solid var(--line)", background: useFilter===""?"var(--soft)":"var(--card)", color: useFilter===""?"var(--primary)":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>すべて</button>
                   {USE_TAGS.map(t => {
                     const on = useFilter===t;
                     const cnt = srcFilteredRaw.filter(it => (useTags[it.bcode]||[]).includes(t)).length;
                     return (
                       <button key={t} onClick={()=>setUseFilter(on?"":t)}
-                        style={{ flexShrink:0, border: on?"2px solid var(--primary)":"1px solid var(--line)", background: on?"var(--primary)":"#fff", color: on?"#fff":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{t}<span style={{ fontSize:11, marginLeft:4, opacity:0.8 }}>{cnt}</span></button>
+                        style={{ flexShrink:0, border: on?"2px solid var(--primary)":"1px solid var(--line)", background: on?"var(--fill)":"var(--card)", color: on?"#fff":"var(--sub)", borderRadius:16, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{t}<span style={{ fontSize:11, marginLeft:4, opacity:0.8 }}>{cnt}</span></button>
                     );
                   })}
                 </div>
@@ -587,7 +587,7 @@ function BarcodeTab() {
                               <span style={{ fontSize:12, color:"var(--sub)", fontFamily:"monospace" }}>{it.bcode}</span>
                               <span style={{ fontSize:9.5, color:cc, fontWeight:800, border:"1px solid "+cc, borderRadius:5, padding:"0 5px" }}>{comp ? comp.name : (it.haccyu||"—")}</span>
                               {tags.map(t => (
-                                <span key={t} style={{ fontSize:9.5, color:"#fff", background:"var(--primary)", fontWeight:800, borderRadius:5, padding:"1px 6px" }}>{t}</span>
+                                <span key={t} style={{ fontSize:9.5, color:"#fff", background:"var(--fill)", fontWeight:800, borderRadius:5, padding:"1px 6px" }}>{t}</span>
                               ))}
                             </div>
                           </div>
@@ -606,7 +606,7 @@ function BarcodeTab() {
                           const active = bcCompany[tagEditFor] === c.key;
                           return (
                             <button key={c.key} onClick={()=>setCompanyFor(tagEditFor, active ? null : c.key)}
-                              style={{ display:"flex", alignItems:"center", gap:6, border: active?`2px solid ${c.color}`:"1px solid var(--line)", background: active?"#fff":"#fff", color: active?c.color:"var(--text)", borderRadius:9, padding:"6px 11px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>
+                              style={{ display:"flex", alignItems:"center", gap:6, border: active?`2px solid ${c.color}`:"1px solid var(--line)", background: active?"var(--card)":"var(--card)", color: active?c.color:"var(--text)", borderRadius:9, padding:"6px 11px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>
                               <span style={{ width:22, height:12, borderRadius:3, border:`1px solid ${c.color}`, ...companyPatStyle(c) }} />
                               {c.name}
                             </button>
@@ -619,7 +619,7 @@ function BarcodeTab() {
                           const active = (useTags[tagEditFor] || []).includes(t);
                           return (
                             <button key={t} onClick={()=>toggleUseTag(tagEditFor, t)}
-                              style={{ border: active?"2px solid var(--primary)":"1px solid var(--line)", background: active?"var(--primary)":"#fff", color: active?"#fff":"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{t}</button>
+                              style={{ border: active?"2px solid var(--primary)":"1px solid var(--line)", background: active?"var(--fill)":"var(--card)", color: active?"#fff":"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{t}</button>
                           );
                         })}
                       </div>

@@ -122,7 +122,7 @@ function SupportTab() {
       style: {
         width: "100%",
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 10,
         padding: "13px",
@@ -152,7 +152,7 @@ function SupportTab() {
     style: {
       flex: 1,
       border: "1px solid " + (どれ === k ? "var(--primary)" : "var(--line)"),
-      background: どれ === k ? "var(--primary)" : "var(--card, #fff)",
+      background: どれ === k ? "var(--fill)" : "var(--card, #fff)",
       color: どれ === k ? "#fff" : "var(--text)",
       borderRadius: 10,
       padding: "11px 6px",
@@ -425,7 +425,7 @@ function SupportPhotos() {
     rel: "noopener noreferrer",
     style: {
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px 22px",

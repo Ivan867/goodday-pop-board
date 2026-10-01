@@ -274,6 +274,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 const ANNOUNCEMENTS = [{
   date: "2026-10-01",
   type: "改善",
+  title: "読みにくい文字をまとめて直しました",
+  body: "手引き・入力支援・カタログなどで、背景と文字の色が近く読みにくい所がありました。全ページの文字を機械で測り、基準（4.5:1）を満たすようそろえています。暗い画面でとくに効きます。"
+}, {
+  date: "2026-10-01",
+  type: "改善",
   title: "投稿のときの「お名前」をなくしました",
   body: "店舗とポップ名だけで投稿できます。すでに上がっているポップの名前はそのまま残ります。"
 }, {
@@ -3842,7 +3847,7 @@ function UploadModal({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       padding: "8px 22px calc(20px + env(safe-area-inset-bottom))",
       width: "100%",
@@ -4103,7 +4108,7 @@ function UploadModal({
     onClick: submit,
     disabled: loading,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white",
       border: "none",
       borderRadius: 12,
@@ -4905,7 +4910,7 @@ function PopDetail({
     style: {
       flex: 1,
       padding: "10px",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,
@@ -5021,7 +5026,7 @@ function PopDetail({
     style: {
       flex: 1,
       border: "none",
-      background: rnBusy || !newName.trim() ? "#ccc" : "var(--primary)",
+      background: rnBusy || !newName.trim() ? "#ccc" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",
@@ -5098,7 +5103,7 @@ function PopDetail({
   }, (_, i) => /*#__PURE__*/React.createElement("span", {
     key: i,
     style: {
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       opacity: 0.35,
       borderRadius: 1
     }
@@ -5312,7 +5317,7 @@ function PopDetail({
       fontSize: 12.5,
       fontWeight: 800,
       color: "#fff",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 9,
       padding: "1px 8px"
     }
@@ -5435,7 +5440,7 @@ function PopDetail({
     onClick: handleAddComment,
     disabled: cSubmitting,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,
@@ -6491,7 +6496,7 @@ function BoardTab({
         position: "sticky",
         top: 0,
         zIndex: 2,
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         padding: "10px 14px",
         display: "flex",
@@ -6696,7 +6701,7 @@ function BoardTab({
       width: 4,
       height: 15,
       borderRadius: 2,
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -6772,7 +6777,7 @@ function BoardTab({
     style: {
       flex: 1.4,
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "13px",
@@ -7011,7 +7016,7 @@ function SearchTab({
     }, g === "切身" ? "切身・生食" : g);
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 18,
       padding: "18px 20px 16px",
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
@@ -7301,7 +7306,7 @@ function SearchTab({
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",
@@ -7495,7 +7500,7 @@ function NewPostForm({
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 16,
       padding: 20,
       marginBottom: 20,
@@ -7602,7 +7607,7 @@ function PostCard({
   return /*#__PURE__*/React.createElement("div", {
     onClick: () => onOpen(post),
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       overflow: "hidden",
       cursor: "pointer",
@@ -7679,7 +7684,7 @@ function PostModal({
     onClick: onClose
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       width: "100%",
       maxWidth: 560,
@@ -7860,7 +7865,7 @@ function PopToolTab({
       fontWeight: 800,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      background: toolSub === k ? "var(--primary)" : "#fff",
+      background: toolSub === k ? "var(--fill)" : "var(--card)",
       color: toolSub === k ? "#fff" : "var(--text)"
     }
   }, l))), toolSub === "create" ? /*#__PURE__*/React.createElement(PopCreateInner, {
@@ -8808,7 +8813,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 700,
-      background: mode === "gallery" ? "white" : "rgba(29,58,87,0.12)",
+      background: mode === "gallery" ? "var(--card)" : "rgba(29,58,87,0.12)",
       color: mode === "gallery" ? "#111" : "#17324e"
     }
   }, "\u30AE\u30E3\u30E9\u30EA\u30FC"), /*#__PURE__*/React.createElement("button", {
@@ -8820,7 +8825,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 700,
-      background: mode === "compare" ? "white" : "rgba(29,58,87,0.12)",
+      background: mode === "compare" ? "var(--card)" : "rgba(29,58,87,0.12)",
       color: mode === "compare" ? "#111" : "#17324e"
     }
   }, "\u5E97\u8217\u6BD4\u8F03"), /*#__PURE__*/React.createElement("button", {
@@ -8832,7 +8837,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 900,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white"
     }
   }, "\uFF0B \u6295\u7A3F")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
@@ -8868,7 +8873,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: fStore === val ? "#17181a" : "#ddd",
-      background: fStore === val ? "#17181a" : "white",
+      background: fStore === val ? "#17181a" : "var(--card)",
       color: fStore === val ? "white" : "#666"
     }
   }, lbl))), /*#__PURE__*/React.createElement("div", {
@@ -8889,7 +8894,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: fCat === c ? "#111" : "#ddd",
-      background: fCat === c ? "#111" : "white",
+      background: fCat === c ? "#111" : "var(--card)",
       color: fCat === c ? "white" : "#666"
     }
   }, c || "すべて"))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -8931,7 +8936,7 @@ function FloorPhotoTab() {
     style: {
       borderRadius: 14,
       overflow: "hidden",
-      background: "white",
+      background: "var(--card)",
       boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
       cursor: "pointer",
       animation: `fadeUp 0.3s ease ${Math.min(i, 10) * 0.04}s both`,
@@ -9002,7 +9007,7 @@ function FloorPhotoTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       padding: "16px 18px",
       marginBottom: 20,
@@ -9032,7 +9037,7 @@ function FloorPhotoTab() {
       border: "2px solid",
       cursor: "pointer",
       borderColor: compareCat === c ? "#17181a" : "#ddd",
-      background: compareCat === c ? "#17181a" : "white",
+      background: compareCat === c ? "#17181a" : "var(--card)",
       color: compareCat === c ? "white" : "#666"
     }
   }, c)))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -9053,7 +9058,7 @@ function FloorPhotoTab() {
   }) => /*#__PURE__*/React.createElement("div", {
     key: store,
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 14,
       overflow: "hidden",
       boxShadow: "0 2px 10px rgba(0,0,0,0.07)"
@@ -9163,7 +9168,7 @@ function FloorPhotoTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 20,
       width: "100%",
       maxWidth: 500,
@@ -9409,7 +9414,7 @@ function FloorUploadModal({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       padding: "8px 24px calc(22px + env(safe-area-inset-bottom))",
       width: "100%",
@@ -9746,7 +9751,7 @@ function PromptCard({
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: 16,
       boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
       marginBottom: 16,
@@ -9908,7 +9913,7 @@ function PromptAddModal({
   }, /*#__PURE__*/React.createElement("div", {
     onClick: e => e.stopPropagation(),
     style: {
-      background: "#fff",
+      background: "var(--card)",
       width: "100%",
       borderRadius: "20px 20px 0 0",
       padding: "10px 18px calc(20px + env(safe-area-inset-bottom))",
@@ -10003,7 +10008,7 @@ function PromptGuide({
   accent
 }) {
   const sec = {
-    background: "white",
+    background: "var(--card)",
     borderRadius: 16,
     boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
     padding: "16px 18px",
@@ -10649,7 +10654,7 @@ function TodayInfoCard() {
     return /*#__PURE__*/React.createElement("div", {
       className: "ucard",
       style: {
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 16,
         padding: "11px 14px"
       }
@@ -10950,7 +10955,7 @@ function WeatherWidget({
       top: "calc(100% + 8px)",
       right: 0,
       zIndex: 211,
-      background: "#fff",
+      background: "var(--card)",
       borderRadius: 14,
       boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
       padding: "13px 15px",
@@ -11038,7 +11043,7 @@ function WeatherWidget({
       gap: 6,
       marginTop: 11,
       textDecoration: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "10px",
@@ -11086,7 +11091,7 @@ function DevTab() {
     return /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
-        background: "white",
+        background: "var(--card)",
         borderRadius: 14,
         padding: "16px 18px",
         border: "1px solid #ececec",
@@ -11770,7 +11775,7 @@ function PopCheckTab() {
       width: "100%",
       marginTop: 11,
       border: "none",
-      background: busy ? "#f0b48a" : "var(--primary)",
+      background: busy ? "#f0b48a" : "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "12px",
@@ -12389,7 +12394,7 @@ function FishTab() {
         fontSize: 9,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 6,
         padding: "2px 6px"
       }
@@ -12490,7 +12495,7 @@ function FishTab() {
         fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 8px"
       }
@@ -13533,7 +13538,7 @@ function IndustryTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: subTab === k ? "var(--primary)" : "#fff",
+      background: subTab === k ? "var(--fill)" : "var(--card)",
       color: subTab === k ? "#fff" : "var(--text)"
     }
   }, l))), subTab === "fish" ? window.FishTab ? React.createElement(window.FishTab, {
@@ -13820,7 +13825,7 @@ function IndustryTab() {
       width: 5,
       height: 5,
       borderRadius: "50%",
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -14083,7 +14088,7 @@ function SoubaTab({
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: sub === k ? "#fff" : "rgba(29,58,87,0.14)",
+      background: sub === k ? "var(--card)" : "rgba(29,58,87,0.14)",
       color: sub === k ? "#2f6fb0" : "#17324e"
     }
   }, l))))), /*#__PURE__*/React.createElement("div", {
@@ -15375,7 +15380,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -15384,7 +15389,7 @@ function CatalogTab() {
   if (pageMode === "idea") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15410,7 +15415,7 @@ function CatalogTab() {
   if (pageMode === "trend") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15436,7 +15441,7 @@ function CatalogTab() {
   if (pageMode === "tool") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15460,7 +15465,7 @@ function CatalogTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -15494,7 +15499,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -15645,7 +15650,7 @@ function CatalogTab() {
     "aria-pressed": cview === k,
     style: {
       border: "none",
-      background: cview === k ? "#fff" : "transparent",
+      background: cview === k ? "var(--card)" : "transparent",
       color: cview === k ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
       padding: "4px 8px",
@@ -15826,7 +15831,7 @@ function CatalogTab() {
       "aria-expanded": on,
       style: {
         border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--sub)",
         borderRadius: 999,
         padding: "4px 11px",
@@ -15839,7 +15844,7 @@ function CatalogTab() {
       }
     }, ws.label, used > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 999,
         fontSize: 12.5,
@@ -15876,7 +15881,7 @@ function CatalogTab() {
       "aria-pressed": on,
       style: {
         border: on ? "none" : "1px solid var(--line)",
-        background: on ? "var(--primary-soft)" : "#fff",
+        background: on ? "var(--primary-soft)" : "var(--card)",
         color: on ? "#fff" : "var(--text)",
         borderRadius: 7,
         padding: "5px 10px",
@@ -15936,7 +15941,7 @@ function CatalogTab() {
     "aria-pressed": !grp,
     style: {
       border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: !grp ? "var(--soft)" : "#fff",
+      background: !grp ? "var(--soft)" : "var(--card)",
       color: !grp ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 13px",
@@ -15950,7 +15955,7 @@ function CatalogTab() {
     "aria-pressed": grp === g.key,
     style: {
       border: grp === g.key ? `2px solid ${g.color}` : "1px solid var(--line)",
-      background: grp === g.key ? g.color + "14" : "#fff",
+      background: grp === g.key ? g.color + "14" : "var(--card)",
       color: grp === g.key ? g.color : "var(--sub)",
       borderRadius: 999,
       padding: "5px 12px",
@@ -15966,7 +15971,7 @@ function CatalogTab() {
     "aria-pressed": favOnly,
     style: {
       border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)",
-      background: favOnly ? "#fdf3e0" : "#fff",
+      background: favOnly ? "#fdf3e0" : "var(--card)",
       color: favOnly ? "#b8860b" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 13px",
@@ -16010,7 +16015,7 @@ function CatalogTab() {
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",
@@ -16751,7 +16756,7 @@ function OrderTab() {
   if (!unlocked) {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -16872,7 +16877,7 @@ function OrderTab() {
       style: {
         width: "100%",
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "14px",
@@ -16884,7 +16889,7 @@ function OrderTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -16951,7 +16956,7 @@ function OrderTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: tab === k ? "var(--primary)" : "#fff",
+      background: tab === k ? "var(--fill)" : "var(--card)",
       color: tab === k ? "#fff" : "var(--text)"
     }
   }, l))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -16997,7 +17002,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "var(--card)",
           color: sel ? "#fff" : i === 6 ? "#d1554f" : i === 5 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -17142,7 +17147,7 @@ function OrderTab() {
           alignItems: "center",
           gap: 11,
           border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
-          background: on ? "#f4faf6" : "#fff",
+          background: on ? "#f4faf6" : "var(--card)",
           borderRadius: 12,
           padding: "11px 12px"
         }
@@ -17163,7 +17168,7 @@ function OrderTab() {
           flexShrink: 0,
           cursor: "pointer",
           border: on ? "none" : "2px solid var(--line)",
-          background: on ? "#3f9e63" : "#fff",
+          background: on ? "#3f9e63" : "var(--card)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -17404,7 +17409,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "var(--card)",
           color: sel ? "#fff" : dnum === 0 ? "#d1554f" : dnum === 6 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -17623,7 +17628,7 @@ function OrderTab() {
         "aria-expanded": on,
         style: {
           border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
-          background: on ? "var(--soft)" : "#fff",
+          background: on ? "var(--soft)" : "var(--card)",
           color: on ? "var(--primary)" : "var(--sub)",
           borderRadius: 999,
           padding: "5px 12px",
@@ -17636,7 +17641,7 @@ function OrderTab() {
         }
       }, c, n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
-          background: "var(--primary-soft)",
+          background: "var(--fill)",
           color: "#fff",
           borderRadius: 999,
           fontSize: 12.5,
@@ -17675,7 +17680,7 @@ function OrderTab() {
           textAlign: "left",
           width: "100%",
           border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
-          background: on ? "#f4faf6" : "#fff",
+          background: on ? "#f4faf6" : "var(--card)",
           borderRadius: 8,
           padding: "8px 9px",
           cursor: "pointer"
@@ -17687,7 +17692,7 @@ function OrderTab() {
           borderRadius: 6,
           flexShrink: 0,
           border: on ? "none" : "1.5px solid var(--line)",
-          background: on ? "#3f9e63" : "#fff",
+          background: on ? "#3f9e63" : "var(--card)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center"
@@ -17846,7 +17851,7 @@ function OrderTab() {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "13px",
@@ -18020,7 +18025,7 @@ function OrderTab() {
     style: {
       width: "100%",
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "14px",
@@ -18320,7 +18325,7 @@ function OrderTab() {
     style: {
       width: `${w.count / maxW * 100}%`,
       height: "100%",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 5,
       transition: "width .3s"
     }
@@ -18498,7 +18503,7 @@ function OrderTab() {
     disabled: busy,
     style: {
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 7,
       padding: "6px 13px",
@@ -18525,7 +18530,7 @@ function OrderTab() {
     style: {
       flex: 1,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "11px",
@@ -18537,7 +18542,7 @@ function OrderTab() {
     style: {
       flex: 1,
       border: "1px solid var(--line)",
-      background: impBusy ? "#f0f0f0" : "#fff",
+      background: impBusy ? "#f0f0f0" : "var(--card)",
       color: "var(--text)",
       borderRadius: 10,
       padding: "11px",
@@ -19306,7 +19311,7 @@ function BundleTab({
     const cands = pops.filter(p => !inIds.includes(p.id)).filter(p => !q.trim() || (p.product_name || "").includes(q.trim()) || (p.store_name || "").includes(q.trim()));
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff",
         display: "flex",
@@ -19374,7 +19379,7 @@ function BundleTab({
         fontSize: 13,
         fontWeight: 800,
         cursor: "pointer",
-        background: tab === k ? "var(--primary)" : "#fff",
+        background: tab === k ? "var(--fill)" : "var(--card)",
         color: tab === k ? "#fff" : "var(--text)"
       }
     }, l))), tab === "pop" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
@@ -19821,7 +19826,7 @@ function BundleTab({
         fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 7px",
         flexShrink: 0
@@ -19864,7 +19869,7 @@ function BundleTab({
     className: "dock-head"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -19959,7 +19964,7 @@ function BundleTab({
           border: "none",
           borderLeft: "1px solid var(--line)",
           borderRadius: 0,
-          background: isView ? "var(--primary)" : "var(--card, #fff)",
+          background: isView ? "var(--fill)" : "var(--card, #fff)",
           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
           padding: 細い ? "3px 0 4px" : "5px 0 6px",
           fontSize: 寸.字,
@@ -21262,13 +21267,16 @@ function App() {
       flex: "1 1 auto",
       display: "flex",
       flexDirection: "column",
+      justifyContent: "flex-start",
       gap: 8,
-      minHeight: 0
+      minHeight: 0,
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch"
     }
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["search", "archive", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
       ...o,
       label: "管理"
@@ -21293,8 +21301,8 @@ function App() {
       flexDirection: "row",
       alignItems: "center",
       gap: 13,
-      flex: "1 1 0",
-      minHeight: 56
+      flex: "0 0 auto",
+      minHeight: 58
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -21312,7 +21320,7 @@ function App() {
       position: "absolute",
       top: -5,
       right: -9,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       fontSize: 12.5,
       fontWeight: 900,
@@ -21431,7 +21439,7 @@ class ErrBoundary extends React.Component {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary-soft, #4a7ab0)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 10,
         padding: "12px",

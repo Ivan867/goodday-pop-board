@@ -45,7 +45,7 @@ function IdeaTab({
     }
   }, !embedded && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 14,
       padding: "14px 16px",

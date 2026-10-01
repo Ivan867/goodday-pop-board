@@ -273,6 +273,16 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
   date: "2026-10-01",
+  type: "改善",
+  title: "投稿のときの「お名前」をなくしました",
+  body: "店舗とポップ名だけで投稿できます。すでに上がっているポップの名前はそのまま残ります。"
+}, {
+  date: "2026-10-01",
+  type: "新機能",
+  title: "青果の管理ができるようになりました",
+  body: "青果のページでは メニューが 検索・アーカイブ・管理 の3つになります。「管理」からは青果のポップだけを、ジャンル分け・アーカイブ・ゴミ箱・ピン留めできます。鮮魚のポップには手が届きません。"
+}, {
+  date: "2026-10-01",
   type: "お知らせ",
   title: "管理画面を整理しました",
   body: "「アイデア」と「制作メモ」をなくし、「操作の記録」と「更新履歴」をひとつにまとめました。中で切り替えて見られます。"
@@ -3644,7 +3654,8 @@ function UploadModal({
   onSuccess
 }) {
   const [store, setStore] = useState("木次店");
-  const [author, setAuthor] = useState("");
+  const author = ""; // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
+  const 青果か = typeof deptKey === "function" && deptKey() === "produce";
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
   const [category, setCategory] = useState(deptCategories()[0]);
@@ -3901,53 +3912,6 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "\u304A\u540D\u524D ", /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "var(--faint)",
-      fontWeight: 600
-    }
-  }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      alignItems: "stretch"
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    value: author,
-    onChange: e => setAuthor(e.target.value),
-    placeholder: "\u4F8B\uFF1A\u5C71\u7530 \u592A\u90CE",
-    style: {
-      flex: 1,
-      minWidth: 0,
-      padding: "10px 12px",
-      border: "2px solid var(--line)",
-      borderRadius: 10,
-      fontSize: 14,
-      outline: "none"
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: () => setAuthor("勝部"),
-    title: "\u52DD\u90E8\u3092\u5165\u529B",
-    style: {
-      flexShrink: 0,
-      width: 46,
-      border: "2px solid #ffd9bd",
-      background: "#fff3ea",
-      color: "var(--primary)",
-      fontWeight: 900,
-      fontSize: 18,
-      borderRadius: 10,
-      cursor: "pointer",
-      lineHeight: 1
-    }
-  }, "\u203B"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: "var(--text)",
-      marginBottom: 6
-    }
   }, items.length > 1 ? "まとまりの名前" : "商品名", items.length > 1 && /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
@@ -3956,7 +3920,7 @@ function UploadModal({
   }, "\uFF08\u4E00\u89A7\u306B\u306F\u3053\u306E\u540D\u524D\u3067\u51FA\u307E\u3059\uFF09")), /*#__PURE__*/React.createElement("input", {
     value: product,
     onChange: e => setProduct(e.target.value),
-    placeholder: items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ",
+    placeholder: items.length > 1 ? "例：9月8日の月曜販促" : 青果か ? "例：ご家庭用 新高梨" : "例：本マグロ大トロ",
     style: {
       width: "100%",
       padding: "10px 12px",
@@ -3999,7 +3963,7 @@ function UploadModal({
   }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("textarea", {
     value: comment,
     onChange: e => setComment(e.target.value),
-    placeholder: "\u4F8B\uFF1A\u8102\u304C\u306E\u3063\u3066\u3044\u3066\u304A\u3059\u3059\u3081\uFF01\u523A\u8EAB\u30FB\u5869\u713C\u304D\u306B\u3002",
+    placeholder: 青果か ? "例：甘みがのっています。冷やしてそのまま。" : "例：脂がのっていておすすめ！刺身・塩焼きに。",
     rows: 3,
     style: {
       width: "100%",
@@ -4139,7 +4103,7 @@ function UploadModal({
     onClick: submit,
     disabled: loading,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white",
       border: "none",
       borderRadius: 12,
@@ -4941,7 +4905,7 @@ function PopDetail({
     style: {
       flex: 1,
       padding: "10px",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,
@@ -5057,7 +5021,7 @@ function PopDetail({
     style: {
       flex: 1,
       border: "none",
-      background: rnBusy || !newName.trim() ? "#ccc" : "var(--primary)",
+      background: rnBusy || !newName.trim() ? "#ccc" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",
@@ -5134,7 +5098,7 @@ function PopDetail({
   }, (_, i) => /*#__PURE__*/React.createElement("span", {
     key: i,
     style: {
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       opacity: 0.35,
       borderRadius: 1
     }
@@ -5348,7 +5312,7 @@ function PopDetail({
       fontSize: 12.5,
       fontWeight: 800,
       color: "#fff",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 9,
       padding: "1px 8px"
     }
@@ -5471,7 +5435,7 @@ function PopDetail({
     onClick: handleAddComment,
     disabled: cSubmitting,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,
@@ -6527,7 +6491,7 @@ function BoardTab({
         position: "sticky",
         top: 0,
         zIndex: 2,
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         padding: "10px 14px",
         display: "flex",
@@ -6732,7 +6696,7 @@ function BoardTab({
       width: 4,
       height: 15,
       borderRadius: 2,
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -6808,7 +6772,7 @@ function BoardTab({
     style: {
       flex: 1.4,
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "13px",
@@ -7337,7 +7301,7 @@ function SearchTab({
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",
@@ -7896,7 +7860,7 @@ function PopToolTab({
       fontWeight: 800,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      background: toolSub === k ? "var(--primary)" : "#fff",
+      background: toolSub === k ? "var(--fill)" : "#fff",
       color: toolSub === k ? "#fff" : "var(--text)"
     }
   }, l))), toolSub === "create" ? /*#__PURE__*/React.createElement(PopCreateInner, {
@@ -8868,7 +8832,7 @@ function FloorPhotoTab() {
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 900,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white"
     }
   }, "\uFF0B \u6295\u7A3F")))), mode === "gallery" && /*#__PURE__*/React.createElement("div", {
@@ -11074,7 +11038,7 @@ function WeatherWidget({
       gap: 6,
       marginTop: 11,
       textDecoration: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "10px",
@@ -11806,7 +11770,7 @@ function PopCheckTab() {
       width: "100%",
       marginTop: 11,
       border: "none",
-      background: busy ? "#f0b48a" : "var(--primary)",
+      background: busy ? "#f0b48a" : "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "12px",
@@ -12425,7 +12389,7 @@ function FishTab() {
         fontSize: 9,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 6,
         padding: "2px 6px"
       }
@@ -12526,7 +12490,7 @@ function FishTab() {
         fontSize: 11.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 8px"
       }
@@ -13569,7 +13533,7 @@ function IndustryTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: subTab === k ? "var(--primary)" : "#fff",
+      background: subTab === k ? "var(--fill)" : "#fff",
       color: subTab === k ? "#fff" : "var(--text)"
     }
   }, l))), subTab === "fish" ? window.FishTab ? React.createElement(window.FishTab, {
@@ -13856,7 +13820,7 @@ function IndustryTab() {
       width: 5,
       height: 5,
       borderRadius: "50%",
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -15411,7 +15375,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -15420,7 +15384,7 @@ function CatalogTab() {
   if (pageMode === "idea") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15446,7 +15410,7 @@ function CatalogTab() {
   if (pageMode === "trend") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15472,7 +15436,7 @@ function CatalogTab() {
   if (pageMode === "tool") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -15496,7 +15460,7 @@ function CatalogTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -15530,7 +15494,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -15875,7 +15839,7 @@ function CatalogTab() {
       }
     }, ws.label, used > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 999,
         fontSize: 12.5,
@@ -16046,7 +16010,7 @@ function CatalogTab() {
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",
@@ -16787,7 +16751,7 @@ function OrderTab() {
   if (!unlocked) {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -16908,7 +16872,7 @@ function OrderTab() {
       style: {
         width: "100%",
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "14px",
@@ -16920,7 +16884,7 @@ function OrderTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -16987,7 +16951,7 @@ function OrderTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: tab === k ? "var(--primary)" : "#fff",
+      background: tab === k ? "var(--fill)" : "#fff",
       color: tab === k ? "#fff" : "var(--text)"
     }
   }, l))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -17033,7 +16997,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "#fff",
           color: sel ? "#fff" : i === 6 ? "#d1554f" : i === 5 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -17440,7 +17404,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "#fff",
           color: sel ? "#fff" : dnum === 0 ? "#d1554f" : dnum === 6 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -17672,7 +17636,7 @@ function OrderTab() {
         }
       }, c, n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
-          background: "var(--primary-soft)",
+          background: "var(--fill)",
           color: "#fff",
           borderRadius: 999,
           fontSize: 12.5,
@@ -17882,7 +17846,7 @@ function OrderTab() {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "13px",
@@ -18056,7 +18020,7 @@ function OrderTab() {
     style: {
       width: "100%",
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "14px",
@@ -18356,7 +18320,7 @@ function OrderTab() {
     style: {
       width: `${w.count / maxW * 100}%`,
       height: "100%",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 5,
       transition: "width .3s"
     }
@@ -18534,7 +18498,7 @@ function OrderTab() {
     disabled: busy,
     style: {
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 7,
       padding: "6px 13px",
@@ -18561,7 +18525,7 @@ function OrderTab() {
     style: {
       flex: 1,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "11px",
@@ -19342,7 +19306,7 @@ function BundleTab({
     const cands = pops.filter(p => !inIds.includes(p.id)).filter(p => !q.trim() || (p.product_name || "").includes(q.trim()) || (p.store_name || "").includes(q.trim()));
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff",
         display: "flex",
@@ -19410,7 +19374,7 @@ function BundleTab({
         fontSize: 13,
         fontWeight: 800,
         cursor: "pointer",
-        background: tab === k ? "var(--primary)" : "#fff",
+        background: tab === k ? "var(--fill)" : "#fff",
         color: tab === k ? "#fff" : "var(--text)"
       }
     }, l))), tab === "pop" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
@@ -19857,7 +19821,7 @@ function BundleTab({
         fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 7px",
         flexShrink: 0
@@ -19900,7 +19864,7 @@ function BundleTab({
     className: "dock-head"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -19995,7 +19959,7 @@ function BundleTab({
           border: "none",
           borderLeft: "1px solid var(--line)",
           borderRadius: 0,
-          background: isView ? "var(--primary)" : "var(--card, #fff)",
+          background: isView ? "var(--fill)" : "var(--card, #fff)",
           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
           padding: 細い ? "3px 0 4px" : "5px 0 6px",
           fontSize: 寸.字,
@@ -21298,13 +21262,16 @@ function App() {
       flex: "1 1 auto",
       display: "flex",
       flexDirection: "column",
+      justifyContent: "flex-start",
       gap: 8,
-      minHeight: 0
+      minHeight: 0,
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch"
     }
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["search", "archive", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
     return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
       ...o,
       label: "管理"
@@ -21329,8 +21296,8 @@ function App() {
       flexDirection: "row",
       alignItems: "center",
       gap: 13,
-      flex: "1 1 0",
-      minHeight: 56
+      flex: "0 0 auto",
+      minHeight: 58
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -21348,7 +21315,7 @@ function App() {
       position: "absolute",
       top: -5,
       right: -9,
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       fontSize: 12.5,
       fontWeight: 900,
@@ -21467,7 +21434,7 @@ class ErrBoundary extends React.Component {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary-soft, #4a7ab0)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 10,
         padding: "12px",

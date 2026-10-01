@@ -965,7 +965,7 @@ function IndustryTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: subTab === k ? "var(--primary)" : "#fff",
+      background: subTab === k ? "var(--fill)" : "var(--card)",
       color: subTab === k ? "#fff" : "var(--text)"
     }
   }, l))), subTab === "fish" ? window.FishTab ? React.createElement(window.FishTab, {
@@ -1252,7 +1252,7 @@ function IndustryTab() {
       width: 5,
       height: 5,
       borderRadius: "50%",
-      background: "var(--primary-soft)"
+      background: "var(--fill)"
     }
   }), pt))), t.source && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1515,7 +1515,7 @@ function SoubaTab({
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: sub === k ? "#fff" : "rgba(29,58,87,0.14)",
+      background: sub === k ? "var(--card)" : "rgba(29,58,87,0.14)",
       color: sub === k ? "#2f6fb0" : "#17324e"
     }
   }, l))))), /*#__PURE__*/React.createElement("div", {
@@ -2807,7 +2807,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -2816,7 +2816,7 @@ function CatalogTab() {
   if (pageMode === "idea") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -2842,7 +2842,7 @@ function CatalogTab() {
   if (pageMode === "trend") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -2868,7 +2868,7 @@ function CatalogTab() {
   if (pageMode === "tool") {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -2892,7 +2892,7 @@ function CatalogTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -2926,7 +2926,7 @@ function CatalogTab() {
       fontWeight: 800,
       cursor: "pointer",
       lineHeight: 1.35,
-      background: pageMode === k ? "var(--primary)" : "var(--card, #fff)",
+      background: pageMode === k ? "var(--fill)" : "var(--card, #fff)",
       color: pageMode === k ? "#fff" : "var(--text)"
     }
   }, l.map((t, i) => /*#__PURE__*/React.createElement(React.Fragment, {
@@ -3077,7 +3077,7 @@ function CatalogTab() {
     "aria-pressed": cview === k,
     style: {
       border: "none",
-      background: cview === k ? "#fff" : "transparent",
+      background: cview === k ? "var(--card)" : "transparent",
       color: cview === k ? "var(--ink)" : "var(--sub)",
       borderRadius: 6,
       padding: "4px 8px",
@@ -3258,7 +3258,7 @@ function CatalogTab() {
       "aria-expanded": on,
       style: {
         border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
-        background: on ? "var(--soft)" : "#fff",
+        background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--sub)",
         borderRadius: 999,
         padding: "4px 11px",
@@ -3271,7 +3271,7 @@ function CatalogTab() {
       }
     }, ws.label, used > 0 && /*#__PURE__*/React.createElement("span", {
       style: {
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 999,
         fontSize: 12.5,
@@ -3308,7 +3308,7 @@ function CatalogTab() {
       "aria-pressed": on,
       style: {
         border: on ? "none" : "1px solid var(--line)",
-        background: on ? "var(--primary-soft)" : "#fff",
+        background: on ? "var(--primary-soft)" : "var(--card)",
         color: on ? "#fff" : "var(--text)",
         borderRadius: 7,
         padding: "5px 10px",
@@ -3368,7 +3368,7 @@ function CatalogTab() {
     "aria-pressed": !grp,
     style: {
       border: !grp ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
-      background: !grp ? "var(--soft)" : "#fff",
+      background: !grp ? "var(--soft)" : "var(--card)",
       color: !grp ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 13px",
@@ -3382,7 +3382,7 @@ function CatalogTab() {
     "aria-pressed": grp === g.key,
     style: {
       border: grp === g.key ? `2px solid ${g.color}` : "1px solid var(--line)",
-      background: grp === g.key ? g.color + "14" : "#fff",
+      background: grp === g.key ? g.color + "14" : "var(--card)",
       color: grp === g.key ? g.color : "var(--sub)",
       borderRadius: 999,
       padding: "5px 12px",
@@ -3398,7 +3398,7 @@ function CatalogTab() {
     "aria-pressed": favOnly,
     style: {
       border: favOnly ? "2px solid #e0a020" : "1px solid var(--line)",
-      background: favOnly ? "#fdf3e0" : "#fff",
+      background: favOnly ? "#fdf3e0" : "var(--card)",
       color: favOnly ? "#b8860b" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 13px",
@@ -3442,7 +3442,7 @@ function CatalogTab() {
     style: {
       marginTop: 16,
       border: "none",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 999,
       padding: "10px 22px",
@@ -4183,7 +4183,7 @@ function OrderTab() {
   if (!unlocked) {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff"
       }
@@ -4304,7 +4304,7 @@ function OrderTab() {
       style: {
         width: "100%",
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "14px",
@@ -4316,7 +4316,7 @@ function OrderTab() {
   }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -4383,7 +4383,7 @@ function OrderTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: tab === k ? "var(--primary)" : "#fff",
+      background: tab === k ? "var(--fill)" : "var(--card)",
       color: tab === k ? "#fff" : "var(--text)"
     }
   }, l))), loading ? /*#__PURE__*/React.createElement("div", {
@@ -4429,7 +4429,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "var(--card)",
           color: sel ? "#fff" : i === 6 ? "#d1554f" : i === 5 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -4574,7 +4574,7 @@ function OrderTab() {
           alignItems: "center",
           gap: 11,
           border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
-          background: on ? "#f4faf6" : "#fff",
+          background: on ? "#f4faf6" : "var(--card)",
           borderRadius: 12,
           padding: "11px 12px"
         }
@@ -4595,7 +4595,7 @@ function OrderTab() {
           flexShrink: 0,
           cursor: "pointer",
           border: on ? "none" : "2px solid var(--line)",
-          background: on ? "#3f9e63" : "#fff",
+          background: on ? "#3f9e63" : "var(--card)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -4836,7 +4836,7 @@ function OrderTab() {
         style: {
           flex: 1,
           border: sel ? "none" : "1px solid var(--line)",
-          background: sel ? "var(--primary)" : "#fff",
+          background: sel ? "var(--fill)" : "var(--card)",
           color: sel ? "#fff" : dnum === 0 ? "#d1554f" : dnum === 6 ? "#3b7dd8" : "var(--text)",
           borderRadius: 10,
           padding: "7px 0 6px",
@@ -5055,7 +5055,7 @@ function OrderTab() {
         "aria-expanded": on,
         style: {
           border: on ? "1.5px solid var(--primary-soft)" : "1px solid var(--line)",
-          background: on ? "var(--soft)" : "#fff",
+          background: on ? "var(--soft)" : "var(--card)",
           color: on ? "var(--primary)" : "var(--sub)",
           borderRadius: 999,
           padding: "5px 12px",
@@ -5068,7 +5068,7 @@ function OrderTab() {
         }
       }, c, n > 0 && /*#__PURE__*/React.createElement("span", {
         style: {
-          background: "var(--primary-soft)",
+          background: "var(--fill)",
           color: "#fff",
           borderRadius: 999,
           fontSize: 12.5,
@@ -5107,7 +5107,7 @@ function OrderTab() {
           textAlign: "left",
           width: "100%",
           border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
-          background: on ? "#f4faf6" : "#fff",
+          background: on ? "#f4faf6" : "var(--card)",
           borderRadius: 8,
           padding: "8px 9px",
           cursor: "pointer"
@@ -5119,7 +5119,7 @@ function OrderTab() {
           borderRadius: 6,
           flexShrink: 0,
           border: on ? "none" : "1.5px solid var(--line)",
-          background: on ? "#3f9e63" : "#fff",
+          background: on ? "#3f9e63" : "var(--card)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center"
@@ -5278,7 +5278,7 @@ function OrderTab() {
       style: {
         flex: 1,
         border: "none",
-        background: "var(--primary)",
+        background: "var(--fill)",
         color: "#fff",
         borderRadius: 11,
         padding: "13px",
@@ -5452,7 +5452,7 @@ function OrderTab() {
     style: {
       width: "100%",
       border: "none",
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 11,
       padding: "14px",
@@ -5752,7 +5752,7 @@ function OrderTab() {
     style: {
       width: `${w.count / maxW * 100}%`,
       height: "100%",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 5,
       transition: "width .3s"
     }
@@ -5930,7 +5930,7 @@ function OrderTab() {
     disabled: busy,
     style: {
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 7,
       padding: "6px 13px",
@@ -5957,7 +5957,7 @@ function OrderTab() {
     style: {
       flex: 1,
       border: "none",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "11px",
@@ -5969,7 +5969,7 @@ function OrderTab() {
     style: {
       flex: 1,
       border: "1px solid var(--line)",
-      background: impBusy ? "#f0f0f0" : "#fff",
+      background: impBusy ? "#f0f0f0" : "var(--card)",
       color: "var(--text)",
       borderRadius: 10,
       padding: "11px",
@@ -6738,7 +6738,7 @@ function BundleTab({
     const cands = pops.filter(p => !inIds.includes(p.id)).filter(p => !q.trim() || (p.product_name || "").includes(q.trim()) || (p.store_name || "").includes(q.trim()));
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "var(--primary)",
+        background: "var(--fill)",
         padding: "9px 16px",
         color: "#fff",
         display: "flex",
@@ -6806,7 +6806,7 @@ function BundleTab({
         fontSize: 13,
         fontWeight: 800,
         cursor: "pointer",
-        background: tab === k ? "var(--primary)" : "#fff",
+        background: tab === k ? "var(--fill)" : "var(--card)",
         color: tab === k ? "#fff" : "var(--text)"
       }
     }, l))), tab === "pop" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
@@ -7253,7 +7253,7 @@ function BundleTab({
         fontSize: 12.5,
         fontWeight: 900,
         color: "#fff",
-        background: "var(--primary-soft)",
+        background: "var(--fill)",
         borderRadius: 7,
         padding: "2px 7px",
         flexShrink: 0
@@ -7296,7 +7296,7 @@ function BundleTab({
     className: "dock-head"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       padding: "9px 16px",
       color: "#fff"
     }
@@ -7391,7 +7391,7 @@ function BundleTab({
           border: "none",
           borderLeft: "1px solid var(--line)",
           borderRadius: 0,
-          background: isView ? "var(--primary)" : "var(--card, #fff)",
+          background: isView ? "var(--fill)" : "var(--card, #fff)",
           color: isView ? "#fff" : isNow ? "var(--primary)" : "var(--sub)",
           padding: 細い ? "3px 0 4px" : "5px 0 6px",
           fontSize: 寸.字,

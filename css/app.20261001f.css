@@ -1,7 +1,7 @@
 
 :root {
   --primary: #1d3a57;
-  --primary-soft: #4a7ab0;
+  --primary-soft: #426c9c;
   --chip: #e8edf2;
   --bg: #e6ebf2;
   --btn-ring: rgba(16,32,52,0.10);
@@ -10,7 +10,7 @@
   --ink: #16242f;
   --text: #2e3a47;
   --sub: #5c6b7a;
-  --faint: #616c79;
+  --faint: #59636f;
   --soft: #e7f1fa;
   --soft-text: #1d5a94;
   --card: #ffffff;
@@ -32,8 +32,8 @@ html[data-dept="produce"][data-theme="dark"] {
 }
 /* 暗い画面 */
 html[data-theme="dark"] {
-  --primary: #3a6d9e;
-  --primary-soft: #5590CC;
+  --primary: #95B9DC;
+  --primary-soft: #7FB2E4;
   --chip: #1C2A3A;
   --bg: #0B1420;
   --btn-ring: rgba(255,255,255,0.10);
@@ -545,10 +545,10 @@ html[data-dept="produce"] #app-scroll::before {
 
 
 /* ─────────── 一覧のカード：影・丸み・台紙・小さな見出し ─────────── */
-:root { --mat: #EDF1F5; --card-shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.08); }
-html[data-theme="dark"] { --mat: #0E1926; --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.34); }
-html[data-dept="produce"] { --mat: #ECF3EC; }
-html[data-dept="produce"][data-theme="dark"] { --mat: #0E1B15; }
+:root { --fill: #426c9c; --mat: #EDF1F5; --card-shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.08); }
+html[data-theme="dark"] { --fill: #3a6b9e; --mat: #0E1926; --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.34); }
+html[data-dept="produce"] { --fill: #35743d; --mat: #ECF3EC; }
+html[data-dept="produce"][data-theme="dark"] { --fill: #35743d; --mat: #0E1B15; }
 
 .pop-grid > div, .pop-grid > button { border: none !important; }
 .pop-grid .ucard:active { transform: scale(.975); }

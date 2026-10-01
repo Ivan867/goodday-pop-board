@@ -28,7 +28,7 @@ function NewPostForm({ onPost, onCancel }) {
   };
 
   return (
-    <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:20, boxShadow:"0 2px 12px rgba(0,0,0,0.08)" }}>
+    <div style={{ background:"var(--card)", borderRadius:16, padding:20, marginBottom:20, boxShadow:"0 2px 12px rgba(0,0,0,0.08)" }}>
       <div style={{ fontWeight:900, fontSize:15, marginBottom:14, color:"#2d6a4f" }}>新しい投稿</div>
       <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="売り場の様子、発見、コツなど..." rows={4} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none", marginBottom:10 }} />
       <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:10, padding:12, textAlign:"center", cursor:"pointer", marginBottom:10, background:preview?"transparent":"#fafafa" }}>
@@ -48,7 +48,7 @@ function NewPostForm({ onPost, onCancel }) {
 
 function PostCard({ post, onOpen }) {
   return (
-    <div onClick={()=>onOpen(post)} style={{ background:"white", borderRadius:14, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", transition:"all 0.15s" }}
+    <div onClick={()=>onOpen(post)} style={{ background:"var(--card)", borderRadius:14, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", transition:"all 0.15s" }}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)"}}
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
       {post.image_url && <img src={post.image_url} style={{ width:"100%", height:200, objectFit:"cover", display:"block" }} />}
@@ -67,7 +67,7 @@ function PostModal({ post, onClose, onViewed }) {
   useEffect(() => { onViewed && onViewed(post.id, post.views); }, []);
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
-      <div style={{ background:"white", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflow:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
+      <div style={{ background:"var(--card)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflow:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
         <div style={{ position:"relative" }}>
           <button onClick={onClose} style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.5)", border:"none", color:"white", fontSize:16, width:32, height:32, borderRadius:"50%", cursor:"pointer", zIndex:1 }}>✕</button>
           {post.image_url && <img src={post.image_url} style={{ width:"100%", display:"block", borderRadius:"22px 22px 0 0" }} />}
@@ -142,7 +142,7 @@ function PopToolTab({ seed, onSeedConsumed }) {
         {[["create","✏️ 作成"],["check","🩺 診断"],["prompts","💡 プロンプト集"]].map(([k,l]) => (
           <button key={k} onClick={()=>setToolSub(k)}
             style={{ flex:1, border:"1px solid var(--line)", borderRadius:11, padding:"10px 4px", fontSize:12.5, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap",
-              background: toolSub===k ? "var(--primary)" : "#fff", color: toolSub===k ? "#fff" : "var(--text)" }}>{l}</button>
+              background: toolSub===k ? "var(--fill)" : "var(--card)", color: toolSub===k ? "#fff" : "var(--text)" }}>{l}</button>
         ))}
       </div>
       {toolSub === "create" ? <PopCreateInner seed={seed} onSeedConsumed={onSeedConsumed} />

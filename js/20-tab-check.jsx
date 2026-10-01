@@ -279,7 +279,7 @@ function CheckTab() {
         {[["読取", "読み取る"], ["一覧", `貯まった分（${貯蔵.length}）`]].map(([k, l]) => (
           <button key={k} onClick={() => set画面(k)}
             style={{ flex:1, border:"1px solid " + (画面===k ? "var(--primary)" : "var(--line)"),
-              background: 画面===k ? "var(--primary)" : "var(--card, #fff)",
+              background: 画面===k ? "var(--fill)" : "var(--card, #fff)",
               color: 画面===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
               fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
         ))}
@@ -385,7 +385,7 @@ function CheckTab() {
                     {r.金額.map((m, j) => (
                       <div key={j} style={{ display:"flex", alignItems:"center", gap:10 }}>
                         <img src={m.画像} alt="" style={{ height:34, maxWidth:210, objectFit:"contain",
-                          border:"1px solid var(--line)", borderRadius:6, background:"#fff", flexShrink:0 }} />
+                          border:"1px solid var(--line)", borderRadius:6, background:"var(--card)", flexShrink:0 }} />
                         <span style={{ fontSize:17, fontWeight:900,
                           color: m.値 == null ? "#b3261e" : "var(--ink)" }}>
                           {m.値 == null ? "読めず" : m.値.toLocaleString()}
@@ -415,7 +415,7 @@ function CheckTab() {
           })}
 
           <button onClick={保存する}
-            style={{ width:"100%", border:"none", background:"var(--primary)", color:"#fff",
+            style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff",
               borderRadius:12, padding:"15px", fontSize:15, fontWeight:900, cursor:"pointer",
               marginBottom:8 }}>この内容を保存する（{行.length}件）</button>
           <div style={{ fontSize:11.5, color:"var(--sub)", textAlign:"center", lineHeight:1.8 }}>

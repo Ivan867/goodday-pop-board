@@ -202,7 +202,7 @@ function UploadModal({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "white",
+      background: "var(--card)",
       borderRadius: "22px 22px 0 0",
       padding: "8px 22px calc(20px + env(safe-area-inset-bottom))",
       width: "100%",
@@ -463,7 +463,7 @@ function UploadModal({
     onClick: submit,
     disabled: loading,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "white",
       border: "none",
       borderRadius: 12,
@@ -1265,7 +1265,7 @@ function PopDetail({
     style: {
       flex: 1,
       padding: "10px",
-      background: "var(--primary-soft, #4a7ab0)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,
@@ -1381,7 +1381,7 @@ function PopDetail({
     style: {
       flex: 1,
       border: "none",
-      background: rnBusy || !newName.trim() ? "#ccc" : "var(--primary)",
+      background: rnBusy || !newName.trim() ? "#ccc" : "var(--fill)",
       color: "#fff",
       borderRadius: 10,
       padding: "12px",
@@ -1458,7 +1458,7 @@ function PopDetail({
   }, (_, i) => /*#__PURE__*/React.createElement("span", {
     key: i,
     style: {
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       opacity: 0.35,
       borderRadius: 1
     }
@@ -1672,7 +1672,7 @@ function PopDetail({
       fontSize: 12.5,
       fontWeight: 800,
       color: "#fff",
-      background: "var(--primary-soft)",
+      background: "var(--fill)",
       borderRadius: 9,
       padding: "1px 8px"
     }
@@ -1795,7 +1795,7 @@ function PopDetail({
     onClick: handleAddComment,
     disabled: cSubmitting,
     style: {
-      background: "var(--primary)",
+      background: "var(--fill)",
       color: "#fff",
       border: "none",
       borderRadius: 9,

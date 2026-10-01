@@ -389,7 +389,7 @@ function GeneratorTab({ onCreatePop }) {
         {[["gne","POP画像をつくる"],["souba","便利機能"]].map(([k, l]) => (
           <button key={k} onClick={() => setGTab(k)}
             style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
-              background: gTab===k ? "var(--primary)" : "#fff", color: gTab===k ? "#fff" : "var(--text)" }}>{l}</button>
+              background: gTab===k ? "var(--fill)" : "var(--card)", color: gTab===k ? "#fff" : "var(--text)" }}>{l}</button>
         ))}
       </div>
 
@@ -433,7 +433,7 @@ function GeneratorTab({ onCreatePop }) {
         <div style={card}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>テンプレ画像（文字なし・1200×1697推奨）</div>
           <button {...dzTpl.props} onClick={() => tplInput.current && tplInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", ...dzTpl.style }}>{dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"}</button>
-          {tpl && <span style={{ marginLeft:10, fontSize:12, color:"#2f6fb0", fontWeight:700 }}>読込済み</span>}
+          {tpl && <span style={{ marginLeft:10, fontSize:12, color:"var(--primary)", fontWeight:700 }}>読込済み</span>}
           <input ref={tplInput} type="file" accept="image/*" onChange={(e) => onTpl(e.target.files[0])} style={{ display:"none" }} />
         </div>
 
@@ -452,7 +452,7 @@ function GeneratorTab({ onCreatePop }) {
                   offRate:r.offRate == null ? "" : String(r.offRate) })}
                 style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
                   border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-                  background: on ? "var(--soft)" : "#fff", borderRadius:9, padding:"8px 10px", cursor:"pointer" }}>
+                  background: on ? "var(--soft)" : "var(--card)", borderRadius:9, padding:"8px 10px", cursor:"pointer" }}>
                 <span style={{ fontSize:12.5, fontWeight:900, color:"var(--faint)", width:20, flexShrink:0 }}>{i + 1}</span>
                 <span style={{ minWidth:0, flex:1 }}>
                   <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
@@ -484,7 +484,7 @@ function GeneratorTab({ onCreatePop }) {
                 const on = gx === px && gy === py;
                 return (
                   <button key={i} onClick={() => { setGx(px); setGy(py); }}
-                    style={{ width:44, height:44, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "#fff", color: on ? "var(--primary)" : "var(--text)", borderRadius:10, fontSize:16, fontWeight:900, cursor:"pointer" }}>{lbl}</button>
+                    style={{ width:44, height:44, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)", borderRadius:10, fontSize:16, fontWeight:900, cursor:"pointer" }}>{lbl}</button>
                 );
               })}
             </div>
@@ -520,7 +520,7 @@ function GeneratorTab({ onCreatePop }) {
               const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
               return (
                 <button key={k} onClick={() => setPosTarget(k)}
-                  style={{ border: posTarget===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: posTarget===k ? "var(--soft)" : "#fff", color: posTarget===k ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+                  style={{ border: posTarget===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: posTarget===k ? "var(--soft)" : "var(--card)", color: posTarget===k ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
                   {lbl}{moved ? " ●" : ""}
                 </button>
               );
@@ -529,13 +529,13 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginBottom:8 }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 40px)", gridTemplateRows:"repeat(3, 36px)", gap:4, alignItems:"center", justifyItems:"center" }}>
               <span />
-              <button onClick={() => nudge(posTarget, "y", -10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↑</button>
+              <button onClick={() => nudge(posTarget, "y", -10)} style={{ width:40, height:36, border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↑</button>
               <span />
-              <button onClick={() => nudge(posTarget, "x", -10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>←</button>
+              <button onClick={() => nudge(posTarget, "x", -10)} style={{ width:40, height:36, border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>←</button>
               <button onClick={() => resetOne(posTarget)} style={{ width:40, height:36, border:"1px solid var(--line)", background:"var(--bg)", borderRadius:8, fontSize:12.5, fontWeight:800, color:"var(--sub)", cursor:"pointer" }}>戻す</button>
-              <button onClick={() => nudge(posTarget, "x", 10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>→</button>
+              <button onClick={() => nudge(posTarget, "x", 10)} style={{ width:40, height:36, border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>→</button>
               <span />
-              <button onClick={() => nudge(posTarget, "y", 10)} style={{ width:40, height:36, border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↓</button>
+              <button onClick={() => nudge(posTarget, "y", 10)} style={{ width:40, height:36, border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, fontSize:15, fontWeight:900, cursor:"pointer" }}>↓</button>
               <span />
             </div>
             <div style={{ fontSize:12, color:"var(--sub)", fontWeight:800, lineHeight:1.7, minWidth:96 }}>
@@ -554,7 +554,7 @@ function GeneratorTab({ onCreatePop }) {
             <button onClick={saveLocal}
               style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:9, padding:"8px 13px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>この端末に保存</button>
             <button onClick={saveShared} disabled={pBusy}
-              style={{ border:"none", background:"var(--primary-soft)", color:"#fff", borderRadius:9, padding:"8px 13px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>みんなと共有</button>
+              style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:9, padding:"8px 13px", fontSize:12, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>みんなと共有</button>
           </div>
           {pMsg && <div style={{ fontSize:12, color:"var(--primary)", fontWeight:800, marginBottom:8 }}>{pMsg}</div>}
 
@@ -606,7 +606,7 @@ function GeneratorTab({ onCreatePop }) {
               const on = o.id === fontId;
               return (
                 <button key={o.id} onClick={() => setFontId(o.id)}
-                  style={{ flexShrink:0, border:`2px solid ${on?ACC:"#e6e0f5"}`, background:on?ACC:"#faf8ff", color:on?"#fff":"#6b4bb0",
+                  style={{ flexShrink:0, border:`2px solid ${on?ACC:"#e6e0f5"}`, background:on?ACC:"var(--chip)", color:on?"#fff":"var(--ink)",
                     borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
                   {o.label}
                 </button>
@@ -644,7 +644,7 @@ function GeneratorTab({ onCreatePop }) {
               <div style={{ display:"flex", gap:2, background:"rgba(120,120,128,0.12)", borderRadius:8, padding:2 }}>
                 {[[true, "円あり"], [false, "数字だけ"]].map(([v, l]) => (
                   <button key={l} onClick={() => setTaxYenSave(v)} aria-pressed={taxYen === v}
-                    style={{ border:"none", background: taxYen === v ? "#fff" : "transparent", color: taxYen === v ? "var(--ink)" : "var(--sub)",
+                    style={{ border:"none", background: taxYen === v ? "var(--card)" : "transparent", color: taxYen === v ? "var(--ink)" : "var(--sub)",
                       borderRadius:6, padding:"5px 10px", fontSize:12, fontWeight:800, cursor:"pointer",
                       boxShadow: taxYen === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>{l}</button>
                 ))}
@@ -657,8 +657,8 @@ function GeneratorTab({ onCreatePop }) {
                 <button key={r} onClick={() => setTaxRate(r)}
                   style={{ minWidth:36, padding:"6px 0", borderRadius:8, fontSize:13, fontWeight:800, cursor:"pointer",
                     border: taxRate === r ? `2px solid ${ACC}` : "1px solid var(--line)",
-                    background: taxRate === r ? ACC : "#fff",
-                    color: taxRate === r ? "#fff" : "#555" }}>{r}%</button>
+                    background: taxRate === r ? ACC : "var(--card)",
+                    color: taxRate === r ? "#fff" : "var(--text)" }}>{r}%</button>
               ))}
             </div>
           </div>
@@ -676,7 +676,7 @@ function GeneratorTab({ onCreatePop }) {
           <button {...dzXlsx.props} onClick={() => xlsxInput.current && xlsxInput.current.click()} style={{ border:"1px dashed #ccc", background:"var(--bg)", borderRadius:10, padding:"10px 14px", fontSize:14, fontWeight:700, color:"var(--text)", cursor:"pointer", width:"fit-content", ...dzXlsx.style }}>{dzXlsx.over ? "ここに離す" : ".xlsx を選択（ドラッグでもOK）"}</button>
           <input ref={xlsxInput} type="file" accept=".xlsx,.xls" onChange={(e) => onExcel(e.target.files[0])} style={{ display:"none" }} />
           <button onClick={generateZip} disabled={!rows.length || busy}
-            style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "#cbb8ef" : "#2f6fb0", color:"#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>
+            style={{ width:"100%", border:"none", background:(!rows.length || busy) ? "var(--chip)" : "var(--fill)", color:(!rows.length || busy) ? "var(--faint)" : "#fff", borderRadius:10, padding:"12px", fontSize:15, fontWeight:800, cursor:(!rows.length || busy) ? "default" : "pointer" }}>
             {busy ? "生成中…" : (rows.length ? `${rows.length} 件を ZIP 出力` : "ファイル未読込")}
           </button>
           {status && <div style={{ fontSize:12, color:"var(--sub)" }}>{status}</div>}

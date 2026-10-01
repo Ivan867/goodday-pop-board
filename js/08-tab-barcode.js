@@ -583,7 +583,7 @@ function BarcodeTab() {
       aspectRatio: "297 / 210",
       border: "1px solid #d8dbe0",
       borderRadius: 6,
-      background: "#fff",
+      background: "var(--card)",
       padding: "5mm",
       marginBottom: 22,
       boxShadow: "0 1px 6px rgba(0,0,0,0.07)"
@@ -630,7 +630,7 @@ function BarcodeTab() {
         alignContent: "center",
         justifyItems: "center",
         rowGap: forPrint ? "1.5mm" : "2px",
-        background: "#fff",
+        background: "var(--card)",
         overflow: "hidden",
         textAlign: "center"
       }
@@ -649,7 +649,7 @@ function BarcodeTab() {
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: forPrint ? "1.5mm" : "3px",
-        background: "#fff",
+        background: "var(--card)",
         border: `1px solid ${comp.color}`,
         color: comp.color,
         fontWeight: 900,
@@ -667,7 +667,7 @@ function BarcodeTab() {
         fontSize: forPrint ? "8pt" : "7px",
         fontWeight: 800,
         color: cc,
-        background: comp ? "#fff" : "transparent",
+        background: comp ? "var(--card)" : "transparent",
         borderRadius: 3,
         padding: comp ? "0 3px" : 0,
         lineHeight: 1.5
@@ -722,11 +722,11 @@ function BarcodeTab() {
     fontSize: 13,
     fontWeight: 700,
     cursor: "pointer",
-    background: active ? ACCENT : "#fff",
+    background: active ? ACCENT : "var(--card)",
     color: active ? "#fff" : "#888"
   });
   const card = {
-    background: "white",
+    background: "var(--card)",
     borderRadius: 16,
     padding: "18px 20px",
     boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
@@ -851,7 +851,7 @@ function BarcodeTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: shTab === "pdf" ? "#222" : "#fff",
+      background: shTab === "pdf" ? "#222" : "var(--card)",
       color: shTab === "pdf" ? "#fff" : "#888"
     }
   }, "PDF\uFF08\u3059\u3050\u5370\u5237\uFF09"), /*#__PURE__*/React.createElement("button", {
@@ -863,7 +863,7 @@ function BarcodeTab() {
       fontSize: 13,
       fontWeight: 800,
       cursor: "pointer",
-      background: shTab === "text" ? "#222" : "#fff",
+      background: shTab === "text" ? "#222" : "var(--card)",
       color: shTab === "text" ? "#fff" : "#888"
     }
   }, "\u30C6\u30AD\u30B9\u30C8\u30FB\u30D7\u30EA\u30BB\u30C3\u30C8")), sharedLoad ? /*#__PURE__*/React.createElement("div", {
@@ -1358,7 +1358,7 @@ function BarcodeTab() {
     style: {
       fontSize: 9,
       color: "#fff",
-      background: "var(--primary)",
+      background: "var(--fill)",
       fontWeight: 800,
       borderRadius: 4,
       padding: "1px 5px"
@@ -1563,7 +1563,7 @@ function BarcodeTab() {
     style: {
       flexShrink: 0,
       border: useFilter === "" ? "2px solid var(--primary)" : "1px solid var(--line)",
-      background: useFilter === "" ? "var(--soft)" : "#fff",
+      background: useFilter === "" ? "var(--soft)" : "var(--card)",
       color: useFilter === "" ? "var(--primary)" : "var(--sub)",
       borderRadius: 16,
       padding: "5px 12px",
@@ -1580,7 +1580,7 @@ function BarcodeTab() {
       style: {
         flexShrink: 0,
         border: on ? "2px solid var(--primary)" : "1px solid var(--line)",
-        background: on ? "var(--primary)" : "#fff",
+        background: on ? "var(--fill)" : "var(--card)",
         color: on ? "#fff" : "var(--sub)",
         borderRadius: 16,
         padding: "5px 12px",
@@ -1691,7 +1691,7 @@ function BarcodeTab() {
       style: {
         fontSize: 9.5,
         color: "#fff",
-        background: "var(--primary)",
+        background: "var(--fill)",
         fontWeight: 800,
         borderRadius: 5,
         padding: "1px 6px"
@@ -1749,7 +1749,7 @@ function BarcodeTab() {
         alignItems: "center",
         gap: 6,
         border: active ? `2px solid ${c.color}` : "1px solid var(--line)",
-        background: active ? "#fff" : "#fff",
+        background: active ? "var(--card)" : "var(--card)",
         color: active ? c.color : "var(--text)",
         borderRadius: 9,
         padding: "6px 11px",
@@ -1786,7 +1786,7 @@ function BarcodeTab() {
       onClick: () => toggleUseTag(tagEditFor, t),
       style: {
         border: active ? "2px solid var(--primary)" : "1px solid var(--line)",
-        background: active ? "var(--primary)" : "#fff",
+        background: active ? "var(--fill)" : "var(--card)",
         color: active ? "#fff" : "var(--text)",
         borderRadius: 9,
         padding: "7px 13px",
