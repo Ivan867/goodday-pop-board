@@ -568,3 +568,16 @@ html[data-dept="produce"][data-theme="dark"] { --fill: #35743d; --mat: #0E1B15; 
   .board-tools > *, .bt-btn { height: 43px !important; }
   .pop-grid.v-md { gap: 11px; }
 }
+
+/* 青果では手引きを目立たせる（渡した人が最初に開く場所なので） */
+.menu-drawer .menu-item.menu-push, .menu-dock .menu-item.menu-push {
+  background: linear-gradient(100deg, rgba(74,196,110,.22), rgba(74,196,110,.08)) !important;
+  border-color: rgba(120,210,140,.5) !important;
+  box-shadow: 0 0 0 1px rgba(120,210,140,.18) inset;
+}
+.menu-item.menu-push { position: relative; }
+.menu-item.menu-push::after {
+  content: "はじめに"; position: absolute; right: 38px; top: 50%; transform: translateY(-50%);
+  background: #35743d; color: #fff; font-size: 10.5px; font-weight: 900;
+  letter-spacing: .06em; padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+}

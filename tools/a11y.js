@@ -14,6 +14,16 @@ const 測る = () => {
   const 重ね = (上, 下) => ({
     r: 上.r*上.a + 下.r*(1-上.a), g: 上.g*上.a + 下.g*(1-上.a), b: 上.b*上.a + 下.b*(1-上.a), a:1
   });
+  // 祖先にグラデーションや画像の背景があると、単色として測れない。
+  // その場合は「測れない」として除く（誤検出を出さないため）。
+  const 測れない = (el) => {
+    for (let e = el; e; e = e.parentElement) {
+      const st = getComputedStyle(e);
+      if (st.backgroundImage && st.backgroundImage !== "none") return true;
+      if (数(st.backgroundColor).a >= 0.999) return false;
+    }
+    return false;
+  };
   const 地色 = (el) => {
     let 下 = { r:255, g:255, b:255, a:1 }, 積 = [];
     for (let e = el; e; e = e.parentElement) {
@@ -43,6 +53,7 @@ const 測る = () => {
     const st = getComputedStyle(el);
     if (st.visibility === "hidden" || st.opacity === "0" || st.display === "none") continue;
     済.add(el);
+    if (測れない(el)) continue;      // 柄の上は単色で測れない
     const 字 = 数(st.color);
     if (字.a < 0.05) continue;
     const 地 = 地色(el);

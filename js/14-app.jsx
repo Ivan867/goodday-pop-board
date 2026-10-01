@@ -253,6 +253,16 @@ function App() {
     try { localStorage.setItem("badgeSeenVer", notice.badge_ver || ""); } catch(e) {}
   };
 
+  // 青果の人が初めて開いたときだけ、手引きを先に出す。二度目からは一覧から始まる。
+  React.useEffect(() => {
+    try {
+      if (typeof deptKey !== "function" || deptKey() !== "produce") return;
+      if (localStorage.getItem("guideSeen")) return;
+      localStorage.setItem("guideSeen", "1");
+      setTab("guide");
+    } catch (e) {}
+  }, []);
+
   // パソコンの広い画面では、メニューを左に開いたままにする
   const [広い, set広い] = useState(() => { try { return window.innerWidth >= 1280; } catch (e) { return false; } });
   useEffect(() => {
@@ -435,11 +445,13 @@ function App() {
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
                   .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
-                  .map(o => (青果 && o.key === "admin") ? { ...o, label: "管理" } : o);
+                  .map(o => 青果
+                    ? { ...o, label: o.key === "admin" ? "管理" : o.label, __押し: o.key === "guide" }
+                    : o);
               })().map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
-                  className={"menu-item menu-row-" + o.key}
+                  className={"menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : "")}
                   style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
                     background: tab===o.key ? "var(--soft)" : "var(--menu-row, #fff)", borderRadius:12,
                     padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13,

@@ -533,6 +533,16 @@ function App() {
     } catch (e) {}
   };
 
+  // 青果の人が初めて開いたときだけ、手引きを先に出す。二度目からは一覧から始まる。
+  React.useEffect(() => {
+    try {
+      if (typeof deptKey !== "function" || deptKey() !== "produce") return;
+      if (localStorage.getItem("guideSeen")) return;
+      localStorage.setItem("guideSeen", "1");
+      setTab("guide");
+    } catch (e) {}
+  }, []);
+
   // パソコンの広い画面では、メニューを左に開いたままにする
   const [広い, set広い] = useState(() => {
     try {
@@ -1047,9 +1057,10 @@ function App() {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
     const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
+    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
-      label: "管理"
+      label: o.key === "admin" ? "管理" : o.label,
+      __押し: o.key === "guide"
     } : o);
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
@@ -1059,7 +1070,7 @@ function App() {
     },
     "aria-label": o.label,
     "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item menu-row-" + o.key,
+    className: "menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : ""),
     style: {
       width: "100%",
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
