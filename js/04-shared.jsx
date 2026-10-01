@@ -4,7 +4,8 @@ var { useState, useEffect, useCallback, useRef } = React;
 // ═══════════ SHARED UI：投稿・詳細・カードなど共有部品 ═══════════
 function UploadModal({ currentStore, onClose, onSuccess }) {
   const [store, setStore] = useState("木次店");
-  const [author, setAuthor] = useState("");
+  const author = "";          // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
+  const 青果か = (typeof deptKey === "function" && deptKey() === "produce");
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
   const [category, setCategory] = useState(deptCategories()[0]);
@@ -135,18 +136,11 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             </select>
           </div>
           <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>お名前 <span style={{ color:"var(--faint)", fontWeight:600 }}>（任意）</span></div>
-            <div style={{ display:"flex", gap:8, alignItems:"stretch" }}>
-              <input value={author} onChange={e=>setAuthor(e.target.value)} placeholder="例：山田 太郎" style={{ flex:1, minWidth:0, padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
-              <button type="button" onClick={()=>setAuthor("勝部")} title="勝部を入力" style={{ flexShrink:0, width:46, border:"2px solid #ffd9bd", background:"#fff3ea", color:"var(--primary)", fontWeight:900, fontSize:18, borderRadius:10, cursor:"pointer", lineHeight:1 }}>※</button>
-            </div>
-          </div>
-          <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>
               {items.length > 1 ? "まとまりの名前" : "商品名"}
               {items.length > 1 && <span style={{ color:"var(--faint)", fontWeight:600 }}>（一覧にはこの名前で出ます）</span>}
             </div>
-            <input value={product} onChange={e=>setProduct(e.target.value)} placeholder={items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ"} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
+            <input value={product} onChange={e=>setProduct(e.target.value)} placeholder={items.length > 1 ? "例：9月8日の月曜販促" : (青果か ? "例：ご家庭用 新高梨" : "例：本マグロ大トロ")} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>カテゴリ</div>
@@ -156,7 +150,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>コメント <span style={{ fontWeight:400, color:"var(--faint)" }}>（任意）</span></div>
-            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder="例：脂がのっていておすすめ！刺身・塩焼きに。" rows={3} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
+            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder={青果か ? "例：甘みがのっています。冷やしてそのまま。" : "例：脂がのっていておすすめ！刺身・塩焼きに。"} rows={3} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none" }} />
           </div>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>画像</div>

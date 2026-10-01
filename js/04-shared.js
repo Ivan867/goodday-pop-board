@@ -14,7 +14,8 @@ function UploadModal({
   onSuccess
 }) {
   const [store, setStore] = useState("木次店");
-  const [author, setAuthor] = useState("");
+  const author = ""; // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
+  const 青果か = typeof deptKey === "function" && deptKey() === "produce";
   const [product, setProduct] = useState("");
   const [comment, setComment] = useState("");
   const [category, setCategory] = useState(deptCategories()[0]);
@@ -271,53 +272,6 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "\u304A\u540D\u524D ", /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: "var(--faint)",
-      fontWeight: 600
-    }
-  }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      alignItems: "stretch"
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    value: author,
-    onChange: e => setAuthor(e.target.value),
-    placeholder: "\u4F8B\uFF1A\u5C71\u7530 \u592A\u90CE",
-    style: {
-      flex: 1,
-      minWidth: 0,
-      padding: "10px 12px",
-      border: "2px solid var(--line)",
-      borderRadius: 10,
-      fontSize: 14,
-      outline: "none"
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: () => setAuthor("勝部"),
-    title: "\u52DD\u90E8\u3092\u5165\u529B",
-    style: {
-      flexShrink: 0,
-      width: 46,
-      border: "2px solid #ffd9bd",
-      background: "#fff3ea",
-      color: "var(--primary)",
-      fontWeight: 900,
-      fontSize: 18,
-      borderRadius: 10,
-      cursor: "pointer",
-      lineHeight: 1
-    }
-  }, "\u203B"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: "var(--text)",
-      marginBottom: 6
-    }
   }, items.length > 1 ? "まとまりの名前" : "商品名", items.length > 1 && /*#__PURE__*/React.createElement("span", {
     style: {
       color: "var(--faint)",
@@ -326,7 +280,7 @@ function UploadModal({
   }, "\uFF08\u4E00\u89A7\u306B\u306F\u3053\u306E\u540D\u524D\u3067\u51FA\u307E\u3059\uFF09")), /*#__PURE__*/React.createElement("input", {
     value: product,
     onChange: e => setProduct(e.target.value),
-    placeholder: items.length > 1 ? "例：9月8日の月曜販促" : "例：本マグロ大トロ",
+    placeholder: items.length > 1 ? "例：9月8日の月曜販促" : 青果か ? "例：ご家庭用 新高梨" : "例：本マグロ大トロ",
     style: {
       width: "100%",
       padding: "10px 12px",
@@ -369,7 +323,7 @@ function UploadModal({
   }, "\uFF08\u4EFB\u610F\uFF09")), /*#__PURE__*/React.createElement("textarea", {
     value: comment,
     onChange: e => setComment(e.target.value),
-    placeholder: "\u4F8B\uFF1A\u8102\u304C\u306E\u3063\u3066\u3044\u3066\u304A\u3059\u3059\u3081\uFF01\u523A\u8EAB\u30FB\u5869\u713C\u304D\u306B\u3002",
+    placeholder: 青果か ? "例：甘みがのっています。冷やしてそのまま。" : "例：脂がのっていておすすめ！刺身・塩焼きに。",
     rows: 3,
     style: {
       width: "100%",
