@@ -423,12 +423,13 @@ function App() {
               style={{ display:"block", width:"62%", maxWidth:166, height:"auto",
                 margin:"2px auto 12px", opacity:0.95 }} />}
 
-            <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
+            <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column",
+              justifyContent:"flex-start", gap:8, minHeight:0, overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
               {(() => {
                 // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
                 const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
                 const ORDER = 青果
-                  ? ["search","archive","admin"]
+                  ? ["search","archive","guide","admin"]
                   : ["search","bundle","archive","guide","catalog","gne","order","lab","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
@@ -441,7 +442,8 @@ function App() {
                   className={"menu-item menu-row-" + o.key}
                   style={{ width:"100%", border: tab===o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
                     background: tab===o.key ? "var(--soft)" : "var(--menu-row, #fff)", borderRadius:12,
-                    padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13, flex:"1 1 0", minHeight:56 }}>
+                    padding:"10px 14px", cursor:"pointer", display:"flex", flexDirection:"row", alignItems:"center", gap:13,
+                    flex:"0 0 auto", minHeight:58 }}>
                   <span style={{ position:"relative", width:38, height:38, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", color: tab===o.key ? "var(--primary)" : "var(--primary-soft)" }}>
                     {MENU_ICON[o.key] || MENU_ICON.search}
                     {o.badge && <span style={{ position:"absolute", top:-5, right:-9, background:"var(--primary)", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 5px", borderRadius:7, letterSpacing:0.4 }}>{o.badge}</span>}
