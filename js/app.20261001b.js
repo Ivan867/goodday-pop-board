@@ -272,6 +272,11 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-10-01",
+  type: "お知らせ",
+  title: "管理画面を整理しました",
+  body: "「アイデア」と「制作メモ」をなくし、「操作の記録」と「更新履歴」をひとつにまとめました。中で切り替えて見られます。"
+}, {
   date: "2026-09-30",
   type: "改善",
   title: "一覧のカードを作り直しました",
@@ -2311,6 +2316,29 @@ const POP_LIMIT = 500;
 // 照合に成功したパスワードを用途別にメモリ保持（危険操作RPCに添える。ページを閉じると消える）
 const PW_CACHE = {};
 
+// 青果の副管理者で入っているか（鮮魚の管理合言葉を持っていない＝権限は青果に限る）
+function 青果副管理() {
+  return !!PW_CACHE.admin_produce && !PW_CACHE.admin;
+}
+// 管理の操作を、入っている立場に応じて正しい関数へ振り分ける。
+// 青果の副管理者には、dept='produce' の行しか触らない関数を使わせる。
+const 管理差替 = {
+  admin_set_archived: "produce_set_archived",
+  admin_set_genre: "produce_set_genre",
+  admin_set_pinned: "produce_set_pinned",
+  admin_restore_pops: "produce_restore_pops"
+};
+function 管理RPC(名) {
+  if (青果副管理() && 管理差替[名]) return {
+    rpc: 管理差替[名],
+    pw: PW_CACHE.admin_produce
+  };
+  return {
+    rpc: 名,
+    pw: PW_CACHE.admin || ""
+  };
+}
+
 // 共通fetch：REST/RPCの定型（headers・エラー処理）を1箇所に集約。
 // body があれば JSON 化、prefer は Prefer ヘッダー（"return=representation" 等）。
 // 書き込みが失敗したときに、画面へ知らせる（黙って失敗しないようにする）
@@ -2559,11 +2587,12 @@ const api = {
   },
   async restorePops(ids) {
     if (!ids || !ids.length) return 0;
-    return sbJson(`/rest/v1/rpc/admin_restore_pops`, {
+    const r = 管理RPC("admin_restore_pops");
+    return sbJson(`/rest/v1/rpc/${r.rpc}`, {
       method: "POST",
       body: {
         p_ids: ids,
-        p_password: PW_CACHE.admin || ""
+        p_password: r.pw
       }
     });
   },
@@ -2605,23 +2634,25 @@ const api = {
   },
   // POPのジャンルを設定（管理画面の選別用）。genre は文字列 or null（未分類）。
   async setGenre(id, genre) {
-    await sbFetch(`/rest/v1/rpc/admin_set_genre`, {
+    const r = 管理RPC("admin_set_genre");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, {
       method: "POST",
       body: {
         p_id: id,
         p_genre: genre,
-        p_password: PW_CACHE.admin || ""
+        p_password: r.pw
       }
     });
   },
   async setArchivedMany(ids, archived) {
     if (!ids.length) return;
-    await sbFetch(`/rest/v1/rpc/admin_set_archived`, {
+    const r = 管理RPC("admin_set_archived");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, {
       method: "POST",
       body: {
         p_ids: ids,
         p_archived: archived,
-        p_password: PW_CACHE.admin || ""
+        p_password: r.pw
       }
     });
   },
@@ -2660,6 +2691,17 @@ const api = {
     return true;
   },
   async del(id) {
+    if (青果副管理()) {
+      // 青果の副管理者は、青果のポップだけをゴミ箱へ入れられる
+      await sbFetch(`/rest/v1/rpc/produce_delete_pops`, {
+        method: "POST",
+        body: {
+          p_ids: [id],
+          p_password: PW_CACHE.admin_produce
+        }
+      });
+      return;
+    }
     await sbFetch(`/rest/v1/rpc/delete_pop_secure`, {
       method: "POST",
       body: {
@@ -2720,11 +2762,12 @@ const api = {
   },
   async setPinned(popId) {
     // 全POPのis_pinnedを1回のRPCで切替（旧実装は全件PATCHでN回通信だった）
-    await sbFetch(`/rest/v1/rpc/admin_set_pinned`, {
+    const r = 管理RPC("admin_set_pinned");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, {
       method: "POST",
       body: {
         p_id: popId,
-        p_password: PW_CACHE.admin || ""
+        p_password: r.pw
       }
     });
     return {
@@ -21259,8 +21302,13 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+    // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
+    const 青果 = typeof deptKey === "function" && deptKey() === "produce";
+    const ORDER = 青果 ? ["search", "archive", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
+      ...o,
+      label: "管理"
+    } : o);
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
     onClick: () => {

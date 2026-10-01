@@ -157,6 +157,7 @@ function AdminTab({
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
   const [oplogTab, setOplogTab] = useState("op"); // 記録・更新履歴のどちらを見ているか
+  const [scope, setScope] = useState("all"); // "all"=鮮魚の管理者 / "produce"=青果だけの副管理者
   const [bkDone, setBkDone] = useState("");
   const [idMsg, setIdMsg] = useState("");
   const [idDel, setIdDel] = useState(null);
@@ -254,7 +255,21 @@ function AdminTab({
     setGChecking(true);
     setGErr("");
     try {
-      const r = await api.verifyPasswordEx("admin", pw);
+      const 青果 = typeof deptKey === "function" && deptKey() === "produce";
+      let r = {
+        ok: false,
+        locked: false
+      };
+      if (青果) {
+        // 青果の副管理者。通れば、青果のポップだけを扱える立場になる
+        r = await api.verifyPasswordEx("admin_produce", pw);
+        if (r.ok) setScope("produce");
+      }
+      if (!r.ok) {
+        const r2 = await api.verifyPasswordEx("admin", pw);
+        if (r2.ok) setScope("all");
+        if (r2.ok || !青果) r = r2; // 青果で両方外れたときは、青果側の残り回数を見せる
+      }
       if (r.ok) {
         setGErr("");
         setGOK(true);
@@ -803,9 +818,16 @@ function AdminTab({
       fontSize: 22,
       fontWeight: 900,
       color: "var(--ink)",
-      marginBottom: 12
+      marginBottom: scope === "produce" ? 4 : 12
     }
-  }, "\u7BA1\u7406\u753B\u9762"), section === "home" ? /*#__PURE__*/React.createElement("div", {
+  }, scope === "produce" ? "青果の管理" : "管理画面"), scope === "produce" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 14
+    }
+  }, "\u6271\u3048\u308B\u306E\u306F", /*#__PURE__*/React.createElement("b", null, "\u9752\u679C\u306E\u30DD\u30C3\u30D7\u3060\u3051"), "\u3067\u3059\u3002\u9BAE\u9B5A\u306E\u30DD\u30C3\u30D7\u306B\u306F\u3001\u3053\u3053\u304B\u3089\u306F\u624B\u304C\u5C4A\u304D\u307E\u305B\u3093\u3002"), section === "home" ? /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))",
@@ -879,7 +901,7 @@ function AdminTab({
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M20 4v5h-5"
-  }))]].map(([k, label, n, col, icon]) => /*#__PURE__*/React.createElement("button", {
+  }))]].filter(([k]) => scope !== "produce" || ["genre", "archive", "trash", "pinned"].includes(k)).map(([k, label, n, col, icon]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setSection(k),
     style: {

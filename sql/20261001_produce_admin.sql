@@ -1,0 +1,21 @@
+-- 2026-10-01 適用済み（Supabase migration: produce_scoped_admin）
+-- 青果だけを扱える「副管理者」を足した。既存の表・関数には一切手を触れていない。追加のみ。
+--
+-- なぜ新しい関数が要るか
+--   既存の admin_* はポップの id しか見ておらず、部門を確かめていない。
+--   同じ合言葉を青果の担当者に渡すと、鮮魚のポップまで操作できてしまう。
+--   画面に出さなくても id は見えるので、隠すだけでは防げない。
+--   そこで dept='produce' の行しか触らない関数を別に用意した。
+--
+-- 追加したもの
+--   app_secrets に key='admin_produce'（値は sha256）
+--   produce_set_archived / produce_set_genre / produce_set_pinned
+--   produce_delete_pops（ゴミ箱へ）/ produce_restore_pops（戻す）
+--   ※ 完全削除（purge）は渡していない
+--
+-- 確認（anon になって実測）
+--   produce_set_archived（鮮魚のid）  → 0件、その行は変化なし
+--   produce_delete_pops（鮮魚のid）   → 0件、その行は変化なし
+--   produce_set_genre（鮮魚のid）     → 0件、その行は変化なし
+--   produce_set_pinned（鮮魚のid）    → not_produce で拒否
+--   admin_set_archived（青果の合言葉）→ bad_password で拒否

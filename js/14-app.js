@@ -1041,8 +1041,13 @@ function App() {
       minHeight: 0
     }
   }, (() => {
-    const ORDER = ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+    // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
+    const 青果 = typeof deptKey === "function" && deptKey() === "produce";
+    const ORDER = 青果 ? ["search", "archive", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
+      ...o,
+      label: "管理"
+    } : o);
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
     onClick: () => {

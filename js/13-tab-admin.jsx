@@ -113,6 +113,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
   const [oplogTab, setOplogTab] = useState("op");   // 記録・更新履歴のどちらを見ているか
+  const [scope, setScope] = useState("all");        // "all"=鮮魚の管理者 / "produce"=青果だけの副管理者
   const [bkDone, setBkDone] = useState("");
   const [idMsg, setIdMsg] = useState("");
   const [idDel, setIdDel] = useState(null);
@@ -174,7 +175,18 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
     if (gChecking) return;
     setGChecking(true); setGErr("");
     try {
-      const r = await api.verifyPasswordEx("admin", pw);
+      const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
+      let r = { ok:false, locked:false };
+      if (青果) {
+        // 青果の副管理者。通れば、青果のポップだけを扱える立場になる
+        r = await api.verifyPasswordEx("admin_produce", pw);
+        if (r.ok) setScope("produce");
+      }
+      if (!r.ok) {
+        const r2 = await api.verifyPasswordEx("admin", pw);
+        if (r2.ok) setScope("all");
+        if (r2.ok || !青果) r = r2;        // 青果で両方外れたときは、青果側の残り回数を見せる
+      }
       if (r.ok) { setGErr(""); setGOK(true); setTimeout(() => setUnlocked(true), 620); }
       else {
         setGErr(r.locked
@@ -420,7 +432,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:140, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>管理画面</div>
+      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom: scope === "produce" ? 4 : 12 }}>
+        {scope === "produce" ? "青果の管理" : "管理画面"}
+      </div>
+      {scope === "produce" && (
+        <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>
+          扱えるのは<b>青果のポップだけ</b>です。鮮魚のポップには、ここからは手が届きません。
+        </div>
+      )}
 
       {section === "home" ? (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(104px, 1fr))", gap:10 }}>
@@ -439,7 +458,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["cat","カタログ",null,"#378add",<><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></>],
             ["support","店舗支援の画像",(supPhotos.length+supTrash.length)||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
-          ].map(([k,label,n,col,icon]) => (
+          ].filter(([k]) => scope !== "produce" || ["genre","archive","trash","pinned"].includes(k))
+           .map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
               style={{ position:"relative", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14,
                 padding:"18px 8px 13px", cursor:"pointer", display:"flex", flexDirection:"column",

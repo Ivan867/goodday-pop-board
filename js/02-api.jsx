@@ -35,6 +35,21 @@ const POP_LIMIT = 500;
 // 照合に成功したパスワードを用途別にメモリ保持（危険操作RPCに添える。ページを閉じると消える）
 const PW_CACHE = {};
 
+// 青果の副管理者で入っているか（鮮魚の管理合言葉を持っていない＝権限は青果に限る）
+function 青果副管理() { return !!PW_CACHE.admin_produce && !PW_CACHE.admin; }
+// 管理の操作を、入っている立場に応じて正しい関数へ振り分ける。
+// 青果の副管理者には、dept='produce' の行しか触らない関数を使わせる。
+const 管理差替 = {
+  admin_set_archived: "produce_set_archived",
+  admin_set_genre:    "produce_set_genre",
+  admin_set_pinned:   "produce_set_pinned",
+  admin_restore_pops: "produce_restore_pops",
+};
+function 管理RPC(名) {
+  if (青果副管理() && 管理差替[名]) return { rpc: 管理差替[名], pw: PW_CACHE.admin_produce };
+  return { rpc: 名, pw: PW_CACHE.admin || "" };
+}
+
 // 共通fetch：REST/RPCの定型（headers・エラー処理）を1箇所に集約。
 // body があれば JSON 化、prefer は Prefer ヘッダー（"return=representation" 等）。
 // 書き込みが失敗したときに、画面へ知らせる（黙って失敗しないようにする）
@@ -205,7 +220,8 @@ const api = {
   async listDeleted() { return sbJson(`/rest/v1/pops?select=${POP_COLS},deleted_at&deleted_at=not.is.null&order=deleted_at.desc`); },
   async restorePops(ids) {
     if (!ids || !ids.length) return 0;
-    return sbJson(`/rest/v1/rpc/admin_restore_pops`, { method:"POST", body:{ p_ids: ids, p_password: PW_CACHE.admin || "" } });
+    const r = 管理RPC("admin_restore_pops");
+    return sbJson(`/rest/v1/rpc/${r.rpc}`, { method:"POST", body:{ p_ids: ids, p_password: r.pw } });
   },
   // アーカイブ済みのみ（アーカイブタブ用）。
   async listArchived() { return sbJson(`/rest/v1/pops?select=${POP_COLS}&archived=eq.true&deleted_at=is.null&order=created_at.desc&limit=${POP_LIMIT}`); },
@@ -224,10 +240,12 @@ const api = {
   },
   async insert(data) { return sbOne(`/rest/v1/pops`, { method:"POST", body:data, prefer:"return=representation" }); },
   // POPのジャンルを設定（管理画面の選別用）。genre は文字列 or null（未分類）。
-  async setGenre(id, genre) { await sbFetch(`/rest/v1/rpc/admin_set_genre`, { method:"POST", body:{ p_id:id, p_genre:genre, p_password: PW_CACHE.admin || "" } }); },
+  async setGenre(id, genre) { const r = 管理RPC("admin_set_genre");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, { method:"POST", body:{ p_id:id, p_genre:genre, p_password: r.pw } }); },
   async setArchivedMany(ids, archived) {
     if (!ids.length) return;
-    await sbFetch(`/rest/v1/rpc/admin_set_archived`, { method:"POST", body:{ p_ids: ids, p_archived: archived, p_password: PW_CACHE.admin || "" } });
+    const r = 管理RPC("admin_set_archived");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, { method:"POST", body:{ p_ids: ids, p_archived: archived, p_password: r.pw } });
   },
   async groupPops(ids, name, cover) {
     if (!ids || !ids.length) return 0;
@@ -242,7 +260,12 @@ const api = {
     if (!r.ok) throw new Error(await r.text());
     return true;
   },
-  async del(id) { await sbFetch(`/rest/v1/rpc/delete_pop_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
+  async del(id) {
+    if (青果副管理()) {   // 青果の副管理者は、青果のポップだけをゴミ箱へ入れられる
+      await sbFetch(`/rest/v1/rpc/produce_delete_pops`, { method:"POST", body:{ p_ids:[id], p_password: PW_CACHE.admin_produce } });
+      return;
+    }
+    await sbFetch(`/rest/v1/rpc/delete_pop_secure`, { method:"POST", body:{ p_id:id, p_password: PW_CACHE.delete || "" } }); },
   async like(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_likes`, { method:"POST", body:{ p_id:id } }); },
   async markUsed(id, current) { return sbOne(`/rest/v1/rpc/increment_pop_used`, { method:"POST", body:{ p_id:id } }); },
   // 閲覧数：同じ端末からは3時間に1回だけカウント（localStorageで判定）
@@ -267,7 +290,8 @@ const api = {
   },
   async setPinned(popId) {
     // 全POPのis_pinnedを1回のRPCで切替（旧実装は全件PATCHでN回通信だった）
-    await sbFetch(`/rest/v1/rpc/admin_set_pinned`, { method:"POST", body:{ p_id: popId, p_password: PW_CACHE.admin || "" } });
+    const r = 管理RPC("admin_set_pinned");
+    await sbFetch(`/rest/v1/rpc/${r.rpc}`, { method:"POST", body:{ p_id: popId, p_password: r.pw } });
     return { pinned_id: popId };
   },
 

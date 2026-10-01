@@ -425,11 +425,16 @@ function App() {
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column", gap:8, minHeight:0 }}>
               {(() => {
-                const ORDER = ["search","bundle","archive","guide","catalog","gne","order","lab","request","admin"];
+                // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
+                const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
+                const ORDER = 青果
+                  ? ["search","archive","admin"]
+                  : ["search","bundle","archive","guide","catalog","gne","order","lab","request","admin"];
                 return TAB_REGISTRY
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
                     && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
-                  .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key));
+                  .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
+                  .map(o => (青果 && o.key === "admin") ? { ...o, label: "管理" } : o);
               })().map(o=>(
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
