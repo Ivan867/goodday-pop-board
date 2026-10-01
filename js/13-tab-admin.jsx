@@ -95,11 +95,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [reqs, setReqs] = useState([]);
   const [reqLoading, setReqLoading] = useState(true);
 
-  // ピン留め・制作メモ用
+  // ピン留め用
   const [pinnedPopId, setPinnedPopId] = useState(null);
-  const [memoText, setMemoText] = useState("");
-  const [memoLoading, setMemoLoading] = useState(false);
-  const [memoDirty, setMemoDirty] = useState(false);
   const [pinnedBusy, setPinnedBusy] = useState(false);
   const [delAsk, setDelAsk] = useState(false);   // 一括削除の確認中か
   const [delWord, setDelWord] = useState("");    // 確認の入力
@@ -115,14 +112,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
+  const [oplogTab, setOplogTab] = useState("op");   // 記録・更新履歴のどちらを見ているか
   const [bkDone, setBkDone] = useState("");
-  // アイデア（管理画面から投稿）
-  const [ideas, setIdeas] = useState([]);
-  const [idFiles, setIdFiles] = useState([]);     // { file, preview }
-  const [idTitle, setIdTitle] = useState("");
-  const [idMemo, setIdMemo] = useState("");
-  const [idTags, setIdTags] = useState("");
-  const [idBusy, setIdBusy] = useState(false);
   const [idMsg, setIdMsg] = useState("");
   const [idDel, setIdDel] = useState(null);
   const [grpAsk, setGrpAsk] = useState(false);    // まとめる確認中か
@@ -151,11 +142,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       // ピン留めPOPを取得
       const pp = d.find(x => x.is_pinned);
       setPinnedPopId(pp ? pp.id : null);
-      // 制作メモを取得
-      try {
-        const memo = await api.getMemo();
-        setMemoText(memo?.text || "");
-      } catch(e) {}
     }
     catch (e) { console.error(e); } finally { setLoading(false); }
   }, []);
@@ -167,9 +153,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const loadTrash = useCallback(async () => {
     try { setDelPops(await api.listDeleted() || []); } catch(e) { setDelPops([]); }
   }, []);
-  const loadIdeas = useCallback(async () => {
-    try { setIdeas(await api.listIdeas() || []); } catch(e) { setIdeas([]); }
-  }, []);
   const loadSupport = useCallback(async () => {
     try { setSupPhotos(await api.listFloorPhotos(null, "店舗支援") || []); } catch(e) { setSupPhotos([]); }
     try { setSupTrash(await api.listFloorPhotos(null, "店舗支援ゴミ箱") || []); } catch(e) { setSupTrash([]); }
@@ -177,7 +160,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   const loadOpLogs = useCallback(async () => {
     try { setOpLogs(await api.listOpLogs(200) || []); } catch(e) { setOpLogs([]); }
   }, []);
-  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadIdeas(); loadSupport(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas, loadSupport]);
+  useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadSupport(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadSupport]);
 
   useEffect(() => {
     if (unlocked) return;
@@ -446,17 +429,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["genre","ジャンル",genreCount("未分類")||0,"#6b4ea0",<><path d="M20.6 13.4L12 4.8H4v8l8.6 8.6a2 2 0 002.8 0l5.2-5.2a2 2 0 000-2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></>],
             ["archive","アーカイブ",arCount,"#2f6fb0",<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>],
             ["trash","ゴミ箱",delPops.length||0,"#b3261e",<><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"/></>],
-            ["oplog","操作の記録",opLogs.length||0,"#3f8f9e",<><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></>],
-            ["idea","アイデア",ideas.length||0,"#c39a3c",<><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"/></>],
+            ["oplog","操作の記録・更新履歴",opLogs.length||0,"#3f8f9e",<><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></>],
             ["backup","控えを取る",null,"#3f9e63",<><path d="M12 3v11M8 10.5l4 4 4-4"/><path d="M4 16.5v2.5a1.5 1.5 0 001.5 1.5h13a1.5 1.5 0 001.5-1.5v-2.5"/></>],
             ["notice","お知らせ",null,"#c39a3c",<><path d="M4 9.5h4l7-4.5v14l-7-4.5H4z"/><path d="M18 9a4 4 0 010 6"/></>],
             ["pinned","ピン留め",pinnedCount,"#d1554f",<><path d="M12 17v4M8 3h8l-1 6 3 3v2H6v-2l3-3z"/></>],
-            ["memo","制作メモ",null,"#9e7b3f",<><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></>],
             ["ranking","記録",null,"#2aa3a3",<><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></>],
             ["device","端末",null,"#8a9099",<><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M11 18h2"/></>],
             ["res","資料",null,"#1d9e75",<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5"/></>],
             ["cat","カタログ",null,"#378add",<><path d="M4 5.5h7v14H4zM13 5.5h7v14h-7z"/></>],
-            ["dev","更新履歴",null,"#639922",<><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8M12 8v8"/></>],
             ["support","店舗支援の画像",(supPhotos.length+supTrash.length)||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
           ].map(([k,label,n,col,icon]) => (
@@ -494,9 +474,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "res" && <ResourceAdmin />}
 
       {section === "cat" && <CatalogAdmin />}
-
-      {section === "dev" && (window.DevTab ? React.createElement(window.DevTab, { embedded: true })
-        : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>)}
 
       {section === "rot" && <DimsBackfill />}
       {section === "rot" && <RotateAdmin />}
@@ -629,97 +606,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         </div>
       )}
 
-      {section === "idea" && (() => {
-        const pick = (list) => {
-          const fs2 = Array.from(list || []).filter(f => /^image\//.test(f.type || ""));
-          setIdFiles(v => v.concat(fs2.map(f => ({ file:f, preview:URL.createObjectURL(f) }))));
-          setIdMsg("");
-        };
-        const submit = async () => {
-          if (!idFiles.length) { setIdMsg("画像を選んでください"); return; }
-          if (!idTitle.trim()) { setIdMsg("名前を入れてください"); return; }
-          setIdBusy(true); setIdMsg("");
-          try {
-            const urls = [];
-            for (let i = 0; i < idFiles.length; i++) {
-              setIdMsg(`画像を上げています… ${i+1}/${idFiles.length}`);
-              urls.push(await api.upload(idFiles[i].file));
-            }
-            const tags = idTags.split(/[、,\s]+/).map(x => x.trim()).filter(Boolean);
-            await api.addIdea(idTitle.trim(), idMemo.trim(), urls, tags);
-            setIdFiles([]); setIdTitle(""); setIdMemo(""); setIdTags("");
-            setIdMsg("のせました");
-            loadIdeas(); loadOpLogs();
-          } catch(e) { setIdMsg("のせられませんでした"); }
-          finally { setIdBusy(false); }
-        };
-        const inp = { width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10,
-          padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", background:"var(--card, #fff)", color:"var(--ink)" };
-        const lbl = { fontSize:12, fontWeight:800, color:"var(--sub)", margin:"12px 0 6px" };
-        return (
-          <div>
-            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:6 }}>
-              ほかの売場を手がかりにAIで起こしたポップ・バナーなどをのせる場所です。<br/>
-              ここにのせたものは一覧には出ず、一覧の電球マークから見られます。
-            </div>
-
-            <label style={{ display:"block", border:"1.5px dashed var(--line)", borderRadius:12, padding:"18px 12px",
-              textAlign:"center", cursor:"pointer", background:"var(--card, #fff)", color:"var(--primary-soft)", fontSize:14, fontWeight:800, marginTop:10 }}>
-              ＋ 画像を選ぶ（何枚でも）
-              <input type="file" accept="image/*" multiple onChange={e => { const l = Array.from(e.target.files || []); e.target.value = ""; pick(l); }}
-                style={{ position:"absolute", opacity:0, width:1, height:1, pointerEvents:"none" }} />
-            </label>
-            {idFiles.length > 0 && (
-              <div style={{ display:"flex", gap:7, overflowX:"auto", padding:"10px 0 2px" }}>
-                {idFiles.map((f, i) => (
-                  <div key={i} style={{ position:"relative", flexShrink:0 }}>
-                    <img src={f.preview} alt="" style={{ width:70, height:90, objectFit:"cover", borderRadius:6, border:"1px solid var(--line)", display:"block" }} />
-                    <button onClick={() => setIdFiles(v => v.filter((_, k) => k !== i))} aria-label="外す"
-                      style={{ position:"absolute", top:-6, right:-6, width:22, height:22, borderRadius:11, border:"none",
-                        background:"#b3261e", color:"#fff", fontSize:13, fontWeight:900, cursor:"pointer", lineHeight:1 }}>×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div style={lbl}>名前（必須）</div>
-            <input value={idTitle} onChange={e => setIdTitle(e.target.value)} placeholder="例：さんまの炭火焼き 実演バナー" style={inp} />
-            <div style={lbl}>メモ（元にした売場・ねらいなど）</div>
-            <textarea value={idMemo} onChange={e => setIdMemo(e.target.value)} rows={3} placeholder="例：○○スーパーの秋の売場を参考に" style={{ ...inp, resize:"vertical", lineHeight:1.6 }} />
-            <div style={lbl}>タグ（読点で区切る）</div>
-            <input value={idTags} onChange={e => setIdTags(e.target.value)} placeholder="例：さんま、バナー、秋" style={inp} />
-
-            <button onClick={submit} disabled={idBusy}
-              style={{ width:"100%", border:"none", background: idBusy ? "#ccc" : "var(--primary)", color:"#fff",
-                borderRadius:12, padding:"14px", fontSize:15, fontWeight:900, cursor:"pointer", marginTop:16 }}>
-              {idBusy ? "のせています…" : "アイデアにのせる"}
-            </button>
-            {idMsg && <div style={{ marginTop:10, fontSize:13, fontWeight:800, textAlign:"center",
-              color: idMsg === "のせました" ? "#2c6b45" : idMsg.includes("…") ? "var(--sub)" : "#b3261e" }}>{idMsg}</div>}
-
-            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", margin:"24px 0 8px" }}>のせたもの（{ideas.length}）</div>
-            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
-              {ideas.map(it => (
-                <div key={it.id} style={{ display:"flex", alignItems:"center", gap:10, background:"var(--card, #fff)",
-                  border:"1px solid var(--line)", borderRadius:10, padding:"8px 10px" }}>
-                  <img src={(it.images || [])[0]} alt="" style={{ width:44, height:56, objectFit:"cover", borderRadius:4, flexShrink:0, background:"var(--bg)" }} />
-                  <span style={{ flex:1, minWidth:0 }}>
-                    <span style={{ display:"block", fontSize:13.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{it.title}</span>
-                    <span style={{ display:"block", fontSize:12.5, color:"var(--faint)" }}>{fmtDate(it.created_at)} ／ {(it.images || []).length}枚</span>
-                  </span>
-                  {idDel === it.id ? (
-                    <button onClick={async () => { try { await api.deleteIdea(it.id); setIdDel(null); loadIdeas(); loadOpLogs(); } catch(e) { alert("消せませんでした"); } }}
-                      style={{ border:"none", background:"#b3261e", color:"#fff", borderRadius:8, padding:"7px 11px", fontSize:12.5, fontWeight:900, cursor:"pointer" }}>本当に消す</button>
-                  ) : (
-                    <button onClick={() => setIdDel(it.id)}
-                      style={{ border:"1px solid var(--line)", background:"transparent", color:"var(--sub)", borderRadius:8, padding:"7px 11px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>消す</button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-      );})()}
-
       {section === "backup" && (() => {
         const run = async () => {
           setBkBusy(true); setBkDone(""); setBkMsg("はじめます…");
@@ -773,10 +659,31 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       )}
 
       {section === "oplog" && (() => {
+        const 札 = (k, label) => (
+          <button key={k} onClick={() => setOplogTab(k)} aria-pressed={oplogTab === k}
+            style={{ flex:1, border:"none", borderRadius:8, padding:"9px 0", cursor:"pointer", fontFamily:"inherit",
+              fontSize:13, fontWeight:800,
+              background: oplogTab === k ? "var(--card, #fff)" : "transparent",
+              color: oplogTab === k ? "var(--ink)" : "var(--sub)",
+              boxShadow: oplogTab === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
+        );
+        const 切替 = (
+          <div style={{ display:"flex", gap:3, background:"var(--chip)", borderRadius:10, padding:3, marginBottom:14 }}>
+            {札("op", "操作の記録")}{札("dev", "更新履歴")}
+          </div>
+        );
+        if (oplogTab === "dev") return (
+          <div>
+            {切替}
+            {window.DevTab ? React.createElement(window.DevTab, { embedded: true })
+              : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>}
+          </div>
+        );
         const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた", idea_add:"アイデアをのせた", idea_del:"アイデアを消した" };
         const COLOR = { delete:"#c2691a", rename:"#2f6fb0", restore:"#3f9e63", purge:"#b3261e", group:"#6b4ea0", idea_add:"#c39a3c", idea_del:"#8a9099" };
         return (
           <div>
+            {切替}
             <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>
               消したり名前を直したりした記録です。新しい順に200件まで見られます。
             </div>
@@ -1106,19 +1013,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 ))}
               </div>
             </>
-          )}
-        </div>
-      )}
-
-      {section === "memo" && (
-        <div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:12 }}>制作時の気づき・失敗点・工夫を箇条書きで記録。メモ内のPOP名は自動でリンクになります</div>
-          <textarea value={memoText} onChange={e => { setMemoText(e.target.value); setMemoDirty(true); }} placeholder="・商品名／キャンペーン名&#10;・用途／売場&#10;・メイン訴求&#10;・デザイン方向&#10;・修正した点&#10;・AIが失敗した点&#10;・次回流用できる点"
-            style={{ width:"100%", minHeight:200, boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:12, fontSize:13, fontFamily:"monospace", lineHeight:1.7, marginBottom:12 }} />
-          {memoDirty && (
-            <button onClick={async () => { setMemoLoading(true); try { await api.saveMemo(memoText); setMemoDirty(false); } catch(e) { alert("保存に失敗しました"); } finally { setMemoLoading(false); } }}
-              disabled={memoLoading}
-              style={{ border:"none", background: memoLoading ? "#f0b48a" : "var(--primary)", color:"#fff", borderRadius:10, padding:"10px 16px", fontSize:14, fontWeight:800, cursor: memoLoading ? "default" : "pointer" }}>{memoLoading ? "保存中…" : "保存する"}</button>
           )}
         </div>
       )}

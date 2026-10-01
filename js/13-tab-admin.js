@@ -139,11 +139,8 @@ function AdminTab({
   const [reqs, setReqs] = useState([]);
   const [reqLoading, setReqLoading] = useState(true);
 
-  // ピン留め・制作メモ用
+  // ピン留め用
   const [pinnedPopId, setPinnedPopId] = useState(null);
-  const [memoText, setMemoText] = useState("");
-  const [memoLoading, setMemoLoading] = useState(false);
-  const [memoDirty, setMemoDirty] = useState(false);
   const [pinnedBusy, setPinnedBusy] = useState(false);
   const [delAsk, setDelAsk] = useState(false); // 一括削除の確認中か
   const [delWord, setDelWord] = useState(""); // 確認の入力
@@ -159,14 +156,8 @@ function AdminTab({
   const [opLogs, setOpLogs] = useState([]);
   const [bkBusy, setBkBusy] = useState(false);
   const [bkMsg, setBkMsg] = useState("");
+  const [oplogTab, setOplogTab] = useState("op"); // 記録・更新履歴のどちらを見ているか
   const [bkDone, setBkDone] = useState("");
-  // アイデア（管理画面から投稿）
-  const [ideas, setIdeas] = useState([]);
-  const [idFiles, setIdFiles] = useState([]); // { file, preview }
-  const [idTitle, setIdTitle] = useState("");
-  const [idMemo, setIdMemo] = useState("");
-  const [idTags, setIdTags] = useState("");
-  const [idBusy, setIdBusy] = useState(false);
   const [idMsg, setIdMsg] = useState("");
   const [idDel, setIdDel] = useState(null);
   const [grpAsk, setGrpAsk] = useState(false); // まとめる確認中か
@@ -195,11 +186,6 @@ function AdminTab({
       // ピン留めPOPを取得
       const pp = d.find(x => x.is_pinned);
       setPinnedPopId(pp ? pp.id : null);
-      // 制作メモを取得
-      try {
-        const memo = await api.getMemo();
-        setMemoText(memo?.text || "");
-      } catch (e) {}
     } catch (e) {
       console.error(e);
     } finally {
@@ -222,13 +208,6 @@ function AdminTab({
       setDelPops((await api.listDeleted()) || []);
     } catch (e) {
       setDelPops([]);
-    }
-  }, []);
-  const loadIdeas = useCallback(async () => {
-    try {
-      setIdeas((await api.listIdeas()) || []);
-    } catch (e) {
-      setIdeas([]);
     }
   }, []);
   const loadSupport = useCallback(async () => {
@@ -256,10 +235,9 @@ function AdminTab({
       loadReqs();
       loadTrash();
       loadOpLogs();
-      loadIdeas();
       loadSupport();
     }
-  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadIdeas, loadSupport]);
+  }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadSupport]);
   useEffect(() => {
     if (unlocked) return;
     const t = "> 接続中 ... OK\n> 端末を確認 ... OK\n> 認証待ち";
@@ -853,16 +831,12 @@ function AdminTab({
     d: "M5 9v9.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V9M10 13h4"
   }))], ["trash", "ゴミ箱", delPops.length || 0, "#b3261e", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"
-  }))], ["oplog", "操作の記録", opLogs.length || 0, "#3f8f9e", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  }))], ["oplog", "操作の記録・更新履歴", opLogs.length || 0, "#3f8f9e", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
     cx: "12",
     cy: "12",
     r: "8.5"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M12 7.5V12l3 2"
-  }))], ["idea", "アイデア", ideas.length || 0, "#c39a3c", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
-    d: "M9 18h6M10 21h4"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 3a6 6 0 00-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0012 3z"
   }))], ["backup", "控えを取る", null, "#3f9e63", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M12 3v11M8 10.5l4 4 4-4"
   }), /*#__PURE__*/React.createElement("path", {
@@ -873,10 +847,6 @@ function AdminTab({
     d: "M18 9a4 4 0 010 6"
   }))], ["pinned", "ピン留め", pinnedCount, "#d1554f", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M12 17v4M8 3h8l-1 6 3 3v2H6v-2l3-3z"
-  }))], ["memo", "制作メモ", null, "#9e7b3f", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
-    d: "M12 20h9"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"
   }))], ["ranking", "記録", null, "#2aa3a3", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M4 20V10M10 20V4M16 20v-7M22 20H2"
   }))], ["device", "端末", null, "#8a9099", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
@@ -893,12 +863,6 @@ function AdminTab({
     d: "M14 4.5v5h5"
   }))], ["cat", "カタログ", null, "#378add", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M4 5.5h7v14H4zM13 5.5h7v14h-7z"
-  }))], ["dev", "更新履歴", null, "#639922", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
-    cx: "12",
-    cy: "12",
-    r: "8.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M8 12h8M12 8v8"
   }))], ["support", "店舗支援の画像", supPhotos.length + supTrash.length || 0, "#7a5cb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
     x: "3",
     y: "5",
@@ -997,16 +961,7 @@ function AdminTab({
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
-  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "cat" && /*#__PURE__*/React.createElement(CatalogAdmin, null), section === "dev" && (window.DevTab ? React.createElement(window.DevTab, {
-    embedded: true
-  }) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      padding: 40,
-      color: "var(--faint)",
-      fontSize: 13
-    }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026")), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "cat" && /*#__PURE__*/React.createElement(CatalogAdmin, null), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -1373,284 +1328,7 @@ function AdminTab({
         whiteSpace: "nowrap"
       }
     }, g);
-  }))))))), section === "idea" && (() => {
-    const pick = list => {
-      const fs2 = Array.from(list || []).filter(f => /^image\//.test(f.type || ""));
-      setIdFiles(v => v.concat(fs2.map(f => ({
-        file: f,
-        preview: URL.createObjectURL(f)
-      }))));
-      setIdMsg("");
-    };
-    const submit = async () => {
-      if (!idFiles.length) {
-        setIdMsg("画像を選んでください");
-        return;
-      }
-      if (!idTitle.trim()) {
-        setIdMsg("名前を入れてください");
-        return;
-      }
-      setIdBusy(true);
-      setIdMsg("");
-      try {
-        const urls = [];
-        for (let i = 0; i < idFiles.length; i++) {
-          setIdMsg(`画像を上げています… ${i + 1}/${idFiles.length}`);
-          urls.push(await api.upload(idFiles[i].file));
-        }
-        const tags = idTags.split(/[、,\s]+/).map(x => x.trim()).filter(Boolean);
-        await api.addIdea(idTitle.trim(), idMemo.trim(), urls, tags);
-        setIdFiles([]);
-        setIdTitle("");
-        setIdMemo("");
-        setIdTags("");
-        setIdMsg("のせました");
-        loadIdeas();
-        loadOpLogs();
-      } catch (e) {
-        setIdMsg("のせられませんでした");
-      } finally {
-        setIdBusy(false);
-      }
-    };
-    const inp = {
-      width: "100%",
-      boxSizing: "border-box",
-      border: "1px solid var(--line)",
-      borderRadius: 10,
-      padding: "11px 12px",
-      fontSize: 15,
-      outline: "none",
-      fontFamily: "inherit",
-      background: "var(--card, #fff)",
-      color: "var(--ink)"
-    };
-    const lbl = {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      margin: "12px 0 6px"
-    };
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12.5,
-        color: "var(--sub)",
-        lineHeight: 1.8,
-        marginBottom: 6
-      }
-    }, "\u307B\u304B\u306E\u58F2\u5834\u3092\u624B\u304C\u304B\u308A\u306BAI\u3067\u8D77\u3053\u3057\u305F\u30DD\u30C3\u30D7\u30FB\u30D0\u30CA\u30FC\u306A\u3069\u3092\u306E\u305B\u308B\u5834\u6240\u3067\u3059\u3002", /*#__PURE__*/React.createElement("br", null), "\u3053\u3053\u306B\u306E\u305B\u305F\u3082\u306E\u306F\u4E00\u89A7\u306B\u306F\u51FA\u305A\u3001\u4E00\u89A7\u306E\u96FB\u7403\u30DE\u30FC\u30AF\u304B\u3089\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("label", {
-      style: {
-        display: "block",
-        border: "1.5px dashed var(--line)",
-        borderRadius: 12,
-        padding: "18px 12px",
-        textAlign: "center",
-        cursor: "pointer",
-        background: "var(--card, #fff)",
-        color: "var(--primary-soft)",
-        fontSize: 14,
-        fontWeight: 800,
-        marginTop: 10
-      }
-    }, "\uFF0B \u753B\u50CF\u3092\u9078\u3076\uFF08\u4F55\u679A\u3067\u3082\uFF09", /*#__PURE__*/React.createElement("input", {
-      type: "file",
-      accept: "image/*",
-      multiple: true,
-      onChange: e => {
-        const l = Array.from(e.target.files || []);
-        e.target.value = "";
-        pick(l);
-      },
-      style: {
-        position: "absolute",
-        opacity: 0,
-        width: 1,
-        height: 1,
-        pointerEvents: "none"
-      }
-    })), idFiles.length > 0 && /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 7,
-        overflowX: "auto",
-        padding: "10px 0 2px"
-      }
-    }, idFiles.map((f, i) => /*#__PURE__*/React.createElement("div", {
-      key: i,
-      style: {
-        position: "relative",
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("img", {
-      src: f.preview,
-      alt: "",
-      style: {
-        width: 70,
-        height: 90,
-        objectFit: "cover",
-        borderRadius: 6,
-        border: "1px solid var(--line)",
-        display: "block"
-      }
-    }), /*#__PURE__*/React.createElement("button", {
-      onClick: () => setIdFiles(v => v.filter((_, k) => k !== i)),
-      "aria-label": "\u5916\u3059",
-      style: {
-        position: "absolute",
-        top: -6,
-        right: -6,
-        width: 22,
-        height: 22,
-        borderRadius: 11,
-        border: "none",
-        background: "#b3261e",
-        color: "#fff",
-        fontSize: 13,
-        fontWeight: 900,
-        cursor: "pointer",
-        lineHeight: 1
-      }
-    }, "\xD7")))), /*#__PURE__*/React.createElement("div", {
-      style: lbl
-    }, "\u540D\u524D\uFF08\u5FC5\u9808\uFF09"), /*#__PURE__*/React.createElement("input", {
-      value: idTitle,
-      onChange: e => setIdTitle(e.target.value),
-      placeholder: "\u4F8B\uFF1A\u3055\u3093\u307E\u306E\u70AD\u706B\u713C\u304D \u5B9F\u6F14\u30D0\u30CA\u30FC",
-      style: inp
-    }), /*#__PURE__*/React.createElement("div", {
-      style: lbl
-    }, "\u30E1\u30E2\uFF08\u5143\u306B\u3057\u305F\u58F2\u5834\u30FB\u306D\u3089\u3044\u306A\u3069\uFF09"), /*#__PURE__*/React.createElement("textarea", {
-      value: idMemo,
-      onChange: e => setIdMemo(e.target.value),
-      rows: 3,
-      placeholder: "\u4F8B\uFF1A\u25CB\u25CB\u30B9\u30FC\u30D1\u30FC\u306E\u79CB\u306E\u58F2\u5834\u3092\u53C2\u8003\u306B",
-      style: {
-        ...inp,
-        resize: "vertical",
-        lineHeight: 1.6
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: lbl
-    }, "\u30BF\u30B0\uFF08\u8AAD\u70B9\u3067\u533A\u5207\u308B\uFF09"), /*#__PURE__*/React.createElement("input", {
-      value: idTags,
-      onChange: e => setIdTags(e.target.value),
-      placeholder: "\u4F8B\uFF1A\u3055\u3093\u307E\u3001\u30D0\u30CA\u30FC\u3001\u79CB",
-      style: inp
-    }), /*#__PURE__*/React.createElement("button", {
-      onClick: submit,
-      disabled: idBusy,
-      style: {
-        width: "100%",
-        border: "none",
-        background: idBusy ? "#ccc" : "var(--primary)",
-        color: "#fff",
-        borderRadius: 12,
-        padding: "14px",
-        fontSize: 15,
-        fontWeight: 900,
-        cursor: "pointer",
-        marginTop: 16
-      }
-    }, idBusy ? "のせています…" : "アイデアにのせる"), idMsg && /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 10,
-        fontSize: 13,
-        fontWeight: 800,
-        textAlign: "center",
-        color: idMsg === "のせました" ? "#2c6b45" : idMsg.includes("…") ? "var(--sub)" : "#b3261e"
-      }
-    }, idMsg), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 800,
-        color: "var(--sub)",
-        margin: "24px 0 8px"
-      }
-    }, "\u306E\u305B\u305F\u3082\u306E\uFF08", ideas.length, "\uFF09"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        flexDirection: "column",
-        gap: 7
-      }
-    }, ideas.map(it => /*#__PURE__*/React.createElement("div", {
-      key: it.id,
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        background: "var(--card, #fff)",
-        border: "1px solid var(--line)",
-        borderRadius: 10,
-        padding: "8px 10px"
-      }
-    }, /*#__PURE__*/React.createElement("img", {
-      src: (it.images || [])[0],
-      alt: "",
-      style: {
-        width: 44,
-        height: 56,
-        objectFit: "cover",
-        borderRadius: 4,
-        flexShrink: 0,
-        background: "var(--bg)"
-      }
-    }), /*#__PURE__*/React.createElement("span", {
-      style: {
-        flex: 1,
-        minWidth: 0
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "block",
-        fontSize: 13.5,
-        fontWeight: 800,
-        color: "var(--ink)",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap"
-      }
-    }, it.title), /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "block",
-        fontSize: 12.5,
-        color: "var(--faint)"
-      }
-    }, fmtDate(it.created_at), " \uFF0F ", (it.images || []).length, "\u679A")), idDel === it.id ? /*#__PURE__*/React.createElement("button", {
-      onClick: async () => {
-        try {
-          await api.deleteIdea(it.id);
-          setIdDel(null);
-          loadIdeas();
-          loadOpLogs();
-        } catch (e) {
-          alert("消せませんでした");
-        }
-      },
-      style: {
-        border: "none",
-        background: "#b3261e",
-        color: "#fff",
-        borderRadius: 8,
-        padding: "7px 11px",
-        fontSize: 12.5,
-        fontWeight: 900,
-        cursor: "pointer"
-      }
-    }, "\u672C\u5F53\u306B\u6D88\u3059") : /*#__PURE__*/React.createElement("button", {
-      onClick: () => setIdDel(it.id),
-      style: {
-        border: "1px solid var(--line)",
-        background: "transparent",
-        color: "var(--sub)",
-        borderRadius: 8,
-        padding: "7px 11px",
-        fontSize: 12.5,
-        fontWeight: 800,
-        cursor: "pointer"
-      }
-    }, "\u6D88\u3059")))));
-  })(), section === "backup" && (() => {
+  }))))))), section === "backup" && (() => {
     const run = async () => {
       setBkBusy(true);
       setBkDone("");
@@ -1748,6 +1426,44 @@ function AdminTab({
     navList: delPops,
     onNav: p => setTrashOpen(p)
   }), section === "oplog" && (() => {
+    const 札 = (k, label) => /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => setOplogTab(k),
+      "aria-pressed": oplogTab === k,
+      style: {
+        flex: 1,
+        border: "none",
+        borderRadius: 8,
+        padding: "9px 0",
+        cursor: "pointer",
+        fontFamily: "inherit",
+        fontSize: 13,
+        fontWeight: 800,
+        background: oplogTab === k ? "var(--card, #fff)" : "transparent",
+        color: oplogTab === k ? "var(--ink)" : "var(--sub)",
+        boxShadow: oplogTab === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+      }
+    }, label);
+    const 切替 = /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 3,
+        background: "var(--chip)",
+        borderRadius: 10,
+        padding: 3,
+        marginBottom: 14
+      }
+    }, 札("op", "操作の記録"), 札("dev", "更新履歴"));
+    if (oplogTab === "dev") return /*#__PURE__*/React.createElement("div", null, 切替, window.DevTab ? React.createElement(window.DevTab, {
+      embedded: true
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center",
+        padding: 40,
+        color: "var(--faint)",
+        fontSize: 13
+      }
+    }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026"));
     const LABEL = {
       delete: "消した",
       rename: "名前を直した",
@@ -1766,7 +1482,7 @@ function AdminTab({
       idea_add: "#c39a3c",
       idea_del: "#8a9099"
     };
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/React.createElement("div", null, 切替, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12.5,
         color: "var(--sub)",
@@ -2718,55 +2434,7 @@ function AdminTab({
       justifyContent: "center",
       fontSize: 24
     }
-  }, "\uD83D\uDCCC")))))), section === "memo" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "var(--sub)",
-      marginBottom: 12
-    }
-  }, "\u5236\u4F5C\u6642\u306E\u6C17\u3065\u304D\u30FB\u5931\u6557\u70B9\u30FB\u5DE5\u592B\u3092\u7B87\u6761\u66F8\u304D\u3067\u8A18\u9332\u3002\u30E1\u30E2\u5185\u306EPOP\u540D\u306F\u81EA\u52D5\u3067\u30EA\u30F3\u30AF\u306B\u306A\u308A\u307E\u3059"), /*#__PURE__*/React.createElement("textarea", {
-    value: memoText,
-    onChange: e => {
-      setMemoText(e.target.value);
-      setMemoDirty(true);
-    },
-    placeholder: "\u30FB\u5546\u54C1\u540D\uFF0F\u30AD\u30E3\u30F3\u30DA\u30FC\u30F3\u540D\n\u30FB\u7528\u9014\uFF0F\u58F2\u5834\n\u30FB\u30E1\u30A4\u30F3\u8A34\u6C42\n\u30FB\u30C7\u30B6\u30A4\u30F3\u65B9\u5411\n\u30FB\u4FEE\u6B63\u3057\u305F\u70B9\n\u30FBAI\u304C\u5931\u6557\u3057\u305F\u70B9\n\u30FB\u6B21\u56DE\u6D41\u7528\u3067\u304D\u308B\u70B9",
-    style: {
-      width: "100%",
-      minHeight: 200,
-      boxSizing: "border-box",
-      border: "1px solid var(--line)",
-      borderRadius: 10,
-      padding: 12,
-      fontSize: 13,
-      fontFamily: "monospace",
-      lineHeight: 1.7,
-      marginBottom: 12
-    }
-  }), memoDirty && /*#__PURE__*/React.createElement("button", {
-    onClick: async () => {
-      setMemoLoading(true);
-      try {
-        await api.saveMemo(memoText);
-        setMemoDirty(false);
-      } catch (e) {
-        alert("保存に失敗しました");
-      } finally {
-        setMemoLoading(false);
-      }
-    },
-    disabled: memoLoading,
-    style: {
-      border: "none",
-      background: memoLoading ? "#f0b48a" : "var(--primary)",
-      color: "#fff",
-      borderRadius: 10,
-      padding: "10px 16px",
-      fontSize: 14,
-      fontWeight: 800,
-      cursor: memoLoading ? "default" : "pointer"
-    }
-  }, memoLoading ? "保存中…" : "保存する")));
+  }, "\uD83D\uDCCC")))))));
 }
 
 // ===== アーカイブ：販売終了POPの保管庫（誰でも閲覧可・読み取り専用） =====
