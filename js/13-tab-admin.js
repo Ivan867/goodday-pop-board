@@ -5396,6 +5396,7 @@ function DeviceStatsPanel() {
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
   const [日数, set日数] = useState(30);
+  const [機能, set機能] = useState([]);
   useEffect(() => {
     let alive = true;
     setLoading(true);
@@ -5403,7 +5404,13 @@ function DeviceStatsPanel() {
       try {
         const d = await api.listDeviceVisits(1500);
         if (alive) setRows(d || []);
-      } catch (e) {} finally {
+      } catch (e) {}
+      try {
+        const f = await api.listFeatureUses(90);
+        if (alive) set機能(f || []);
+      } catch (e) {
+        if (alive) set機能([]);
+      } finally {
         if (alive) setLoading(false);
       }
     })();
@@ -5516,7 +5523,78 @@ function DeviceStatsPanel() {
   }, "\u30D6\u30E9\u30A6\u30B6"), /*#__PURE__*/React.createElement(横棒, {
     items: 数える(対象, r => r.browser),
     単位: "\u53F0"
-  }), /*#__PURE__*/React.createElement("div", {
+  }), (() => {
+    // 10/2 から記録している項目。それより前の行は空欄なので、記録のある行だけで数える
+    const 新 = 対象.filter(r => r.launch);
+    const 機能対象 = 期間内(機能, 日数, 0);
+    const 名前 = f => {
+      if (f.startsWith("画面:")) {
+        const k = f.slice(3);
+        if (k === "board") return "一覧";
+        const t = (typeof TAB_REGISTRY !== "undefined" ? TAB_REGISTRY : []).find(x => x.key === k);
+        return t ? t.label : k;
+      }
+      return f;
+    };
+    const 幅 = w => !w ? null : w < 600 ? "スマホ（〜599px）" : w < 1024 ? "タブレット（600〜1023px）" : "PC（1024px〜）";
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(見出し, {
+      補: `直近${日数}日・何が、だけ数えています`
+    }, "\u3088\u304F\u4F7F\u308F\u308C\u308B\u6A5F\u80FD"), 機能対象.length ? /*#__PURE__*/React.createElement(横棒, {
+      items: 数える(機能対象, f => 名前(f.feature)),
+      単位: "\u56DE",
+      上限: 12
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        padding: "4px 0"
+      }
+    }, "10/2 \u304B\u3089\u8A18\u9332\u3092\u59CB\u3081\u307E\u3057\u305F\u3002\u4F7F\u308F\u308C\u308B\u3068\u3001\u3053\u3053\u306B\u51FA\u307E\u3059\u3002"), /*#__PURE__*/React.createElement(見出し, {
+      補: 新.length ? `記録のある${新.length}台` : "10/2 から記録"
+    }, "\u3069\u3053\u304B\u3089\u6765\u305F\u304B"), 新.length ? /*#__PURE__*/React.createElement(横棒, {
+      items: 数える(新, r => r.source),
+      単位: "\u53F0"
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        padding: "4px 0"
+      }
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement(見出し, {
+      補: 新.length ? `記録のある${新.length}台` : "10/2 から記録"
+    }, "\u30DB\u30FC\u30E0\u753B\u9762\u304B\u3001\u30D6\u30E9\u30A6\u30B6\u304B"), 新.length ? /*#__PURE__*/React.createElement(横棒, {
+      items: 数える(新, r => r.launch === "アプリ" ? "ホーム画面のアプリ" : "ブラウザ"),
+      単位: "\u53F0"
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        padding: "4px 0"
+      }
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement(見出し, {
+      補: 新.length ? `記録のある${新.length}台` : "10/2 から記録"
+    }, "\u753B\u9762\u306E\u5927\u304D\u3055"), 新.length ? /*#__PURE__*/React.createElement(横棒, {
+      items: 数える(新, r => 幅(r.screen_w)),
+      単位: "\u53F0"
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        padding: "4px 0"
+      }
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement(見出し, {
+      補: 新.length ? `記録のある${新.length}台` : "10/2 から記録"
+    }, "\u90E8\u9580"), 新.length ? /*#__PURE__*/React.createElement(横棒, {
+      items: 数える(新, r => r.dept === "produce" ? "青果" : r.dept === "fish" ? "鮮魚" : null),
+      単位: "\u53F0"
+    }) : /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12.5,
+        color: "var(--sub)",
+        padding: "4px 0"
+      }
+    }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002"));
+  })(), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11.5,
       color: "var(--sub)",

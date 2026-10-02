@@ -289,6 +289,17 @@ function App() {
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false); // さがす（右のドロワー）が開いているか
+  // 使われた機能を数える（何が、だけ。誰が、は記録しない）
+  useEffect(() => {
+    try {
+      api.logFeature("画面:" + tab);
+    } catch (e) {}
+  }, [tab]);
+  useEffect(() => {
+    if (searchOpen) try {
+      api.logFeature("さがす");
+    } catch (e) {}
+  }, [searchOpen]);
   useEffect(() => {
     const on = () => setSearchOpen(true),
       off = () => setSearchOpen(false);

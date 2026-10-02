@@ -3,6 +3,7 @@ var { useState, useEffect, useCallback, useRef } = React;
 
 // ═══════════ SHARED UI：投稿・詳細・カードなど共有部品 ═══════════
 function UploadModal({ currentStore, onClose, onSuccess }) {
+  useEffect(() => { try { api.logFeature("投稿画面"); } catch (e) {} }, []);
   const [store, setStore] = useState("木次店");
   const author = "";          // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
   const 青果か = (typeof deptKey === "function" && deptKey() === "produce");
@@ -115,6 +116,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
         done++;
       }
       try { window.dispatchEvent(new CustomEvent("appToast", { detail: done > 1 ? `${done}枚を投稿しました` : "投稿しました" })); } catch(e) {}
+      try { api.logFeature("投稿した"); } catch (e) {}
       onSuccess(last);
     } catch(e) { setError("エラー: " + e.message); }
     finally { setLoading(false); setProgress(""); }

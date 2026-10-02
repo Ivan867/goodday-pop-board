@@ -2059,6 +2059,7 @@ function DeviceStatsPanel() {
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
   const [日数, set日数] = useState(30);
+  const [機能, set機能] = useState([]);
 
   useEffect(() => {
     let alive = true;
@@ -2066,6 +2067,8 @@ function DeviceStatsPanel() {
     (async () => {
       try { const d = await api.listDeviceVisits(1500); if (alive) setRows(d || []); }
       catch(e) {}
+      try { const f = await api.listFeatureUses(90); if (alive) set機能(f || []); }
+      catch(e) { if (alive) set機能([]); }
       finally { if (alive) setLoading(false); }
     })();
     return () => { alive = false; };
@@ -2118,6 +2121,42 @@ function DeviceStatsPanel() {
           <横棒 items={数える(対象, r => r.platform)} 単位="台" />
           <見出し 補={`直近${日数}日`}>ブラウザ</見出し>
           <横棒 items={数える(対象, r => r.browser)} 単位="台" />
+
+          {(() => {
+            // 10/2 から記録している項目。それより前の行は空欄なので、記録のある行だけで数える
+            const 新 = 対象.filter(r => r.launch);
+            const 機能対象 = 期間内(機能, 日数, 0);
+            const 名前 = (f) => {
+              if (f.startsWith("画面:")) {
+                const k = f.slice(3);
+                if (k === "board") return "一覧";
+                const t = (typeof TAB_REGISTRY !== "undefined" ? TAB_REGISTRY : []).find(x => x.key === k);
+                return t ? t.label : k;
+              }
+              return f;
+            };
+            const 幅 = (w) => !w ? null : w < 600 ? "スマホ（〜599px）" : w < 1024 ? "タブレット（600〜1023px）" : "PC（1024px〜）";
+            return (
+              <>
+                <見出し 補={`直近${日数}日・何が、だけ数えています`}>よく使われる機能</見出し>
+                {機能対象.length
+                  ? <横棒 items={数える(機能対象, f => 名前(f.feature))} 単位="回" 上限={12} />
+                  : <div style={{ fontSize:12.5, color:"var(--sub)", padding:"4px 0" }}>10/2 から記録を始めました。使われると、ここに出ます。</div>}
+
+                <見出し 補={新.length ? `記録のある${新.length}台` : "10/2 から記録"}>どこから来たか</見出し>
+                {新.length ? <横棒 items={数える(新, r => r.source)} 単位="台" /> : <div style={{ fontSize:12.5, color:"var(--sub)", padding:"4px 0" }}>まだ記録がありません。</div>}
+
+                <見出し 補={新.length ? `記録のある${新.length}台` : "10/2 から記録"}>ホーム画面か、ブラウザか</見出し>
+                {新.length ? <横棒 items={数える(新, r => r.launch === "アプリ" ? "ホーム画面のアプリ" : "ブラウザ")} 単位="台" /> : <div style={{ fontSize:12.5, color:"var(--sub)", padding:"4px 0" }}>まだ記録がありません。</div>}
+
+                <見出し 補={新.length ? `記録のある${新.length}台` : "10/2 から記録"}>画面の大きさ</見出し>
+                {新.length ? <横棒 items={数える(新, r => 幅(r.screen_w))} 単位="台" /> : <div style={{ fontSize:12.5, color:"var(--sub)", padding:"4px 0" }}>まだ記録がありません。</div>}
+
+                <見出し 補={新.length ? `記録のある${新.length}台` : "10/2 から記録"}>部門</見出し>
+                {新.length ? <横棒 items={数える(新, r => r.dept === "produce" ? "青果" : r.dept === "fish" ? "鮮魚" : null)} 単位="台" /> : <div style={{ fontSize:12.5, color:"var(--sub)", padding:"4px 0" }}>まだ記録がありません。</div>}
+              </>
+            );
+          })()}
 
           <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.8, marginTop:16 }}>
             ※ 店舗別の集計は出していません。これまでの記録は、どの店で開いても「北部店」として残っていたためです。

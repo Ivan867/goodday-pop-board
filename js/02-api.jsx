@@ -113,15 +113,54 @@ function parseDeviceUA(ua) {
   return { platform, browser };
 }
 
+// ── 使われ方の手がかり（個人は特定しない） ──
+// ホーム画面のアプリとして開いたか、ブラウザで開いたか
+function 開き方() {
+  try {
+    const 単独 = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+    return 単独 ? "アプリ" : "ブラウザ";
+  } catch (e) { return "ブラウザ"; }
+}
+// どこから来たか。LINE の中のブラウザ、ホーム画面、ほかのサイトのリンク、直接（入力・ブックマーク）
+function 来た道() {
+  try {
+    if (開き方() === "アプリ") return "ホーム画面";
+    if (/ Line\//i.test(navigator.userAgent || "")) return "LINE";
+    const r = document.referrer;
+    if (r) { const host = new URL(r).hostname; if (host && host !== location.hostname) return ("リンク:" + host).slice(0, 40); }
+    return "直接";
+  } catch (e) { return "直接"; }
+}
+// 日本時間の日付（以前は世界標準時で作っていたため、朝9時で日付が切り替わっていた）
+function 今日の札() { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+// 記録の失敗で画面に警告を出さないよう、集計の送信は素の fetch で黙って送る
+function 黙って送る(path, body) {
+  try {
+    fetch(`${SB_URL}${path}`, { method:"POST", headers: h({ "Content-Type":"application/json" }), body: JSON.stringify(body), keepalive: true }).catch(() => {});
+  } catch (e) {}
+}
+const 機能の最終 = {};
+
 const api = {
+  // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
+  logFeature(名) {
+    try {
+      const 今 = Date.now();
+      if (機能の最終[名] && 今 - 機能の最終[名] < 60000) return;
+      機能の最終[名] = 今;
+      黙って送る(`/rest/v1/feature_uses`, { feature: String(名).slice(0, 32), dept: sbDept(), launch: 開き方() });
+    } catch (e) {}
+  },
   // ── 端末記録：同じ端末からは1日1回だけ記録（localStorageで判定）。個人は特定しない。
   async logDeviceVisit(storeName) {
     try {
-      const day = new Date().toISOString().slice(0,10);
+      const day = 今日の札();
       const key = `deviceLogged:${day}`;
       if (localStorage.getItem(key)) return false;
       const { platform, browser } = parseDeviceUA(navigator.userAgent);
-      await sbFetch(`/rest/v1/device_visits`, { method:"POST", body:{ platform, browser, store_name: storeName || null } });
+      // 店名は送らない：起動時は店が分からず、これまで先頭の「北部店」が入り続けていた
+      await sbFetch(`/rest/v1/device_visits`, { method:"POST", body:{ platform, browser, store_name: null,
+        launch: 開き方(), source: 来た道(), screen_w: Math.round(window.innerWidth || screen.width || 0), dept: sbDept() } });
       localStorage.setItem(key, "1");
       // 古い日の記録キーは掃除
       try {
@@ -134,7 +173,11 @@ const api = {
     } catch(e) { return false; }
   },
   async listDeviceVisits(limit=500) {
-    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,created_at&order=created_at.desc&limit=${limit}`);
+    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,launch,source,screen_w,dept,created_at&order=created_at.desc&limit=${limit}`);
+  },
+  async listFeatureUses(days) {
+    const since = new Date(Date.now() - (days || 30) * 86400000).toISOString();
+    return sbJson(`/rest/v1/feature_uses?select=feature,dept,launch,created_at&created_at=gte.${since}&order=created_at.desc&limit=10000`);
   },
   // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
