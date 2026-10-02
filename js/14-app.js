@@ -533,15 +533,21 @@ function App() {
     } catch (e) {}
   };
 
-  // 青果の人が初めて開いたときだけ、手引きを先に出す。二度目からは一覧から始まる。
-  React.useEffect(() => {
+  // 青果では、一覧の下に「初めての方はこちら」の案内を小さく出す（画面を乗っ取らない）。
+  // 手引きを開くか × で閉じたら、次からは出さない。
+  const [手引き案内, set手引き案内] = useState(() => {
     try {
-      if (typeof deptKey !== "function" || deptKey() !== "produce") return;
-      if (localStorage.getItem("guideSeen")) return;
+      return typeof deptKey === "function" && deptKey() === "produce" && !localStorage.getItem("guideSeen");
+    } catch (e) {
+      return false;
+    }
+  });
+  const 案内を閉じる = () => {
+    try {
       localStorage.setItem("guideSeen", "1");
-      setTab("guide");
     } catch (e) {}
-  }, []);
+    set手引き案内(false);
+  };
 
   // パソコンの広い画面では、メニューを左に開いたままにする
   const [広い, set広い] = useState(() => {
@@ -904,7 +910,46 @@ function App() {
       whiteSpace: toastBad ? "normal" : "nowrap",
       lineHeight: 1.5
     }
-  }, toast))), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
+  }, toast))), 手引き案内 && tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("div", {
+    className: "guide-hint",
+    role: "dialog",
+    "aria-label": "\u521D\u3081\u3066\u306E\u65B9\u3078\u306E\u6848\u5185"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "gh-main",
+    onClick: () => {
+      案内を閉じる();
+      setTab("guide");
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "gh-icon",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h16v13H4z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 9.5h8M8 13h5"
+  }))), /*#__PURE__*/React.createElement("span", {
+    className: "gh-text"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "gh-t"
+  }, "\u521D\u3081\u3066\u306E\u65B9\u306F\u3053\u3061\u3089"), /*#__PURE__*/React.createElement("span", {
+    className: "gh-s"
+  }, "\u4F7F\u3044\u65B9\u306E\u624B\u5F15\u304D\u3092\u898B\u308B")), /*#__PURE__*/React.createElement("span", {
+    className: "gh-go",
+    "aria-hidden": "true"
+  }, "\u203A")), /*#__PURE__*/React.createElement("button", {
+    className: "gh-x",
+    onClick: 案内を閉じる,
+    "aria-label": "\u6848\u5185\u3092\u9589\u3058\u308B"
+  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
