@@ -1,0 +1,571 @@
+
+:root {
+  --primary: #1d3a57;
+  --primary-soft: #4a7ab0;
+  --chip: #e8edf2;
+  --bg: #e6ebf2;
+  --btn-ring: rgba(16,32,52,0.10);
+  --btn-shadow: rgba(16,32,52,0.08);
+  --line: #d4dae1;
+  --ink: #16242f;
+  --text: #2e3a47;
+  --sub: #5c6b7a;
+  --faint: #616c79;
+  --soft: #e7f1fa;
+  --soft-text: #1d5a94;
+  --card: #ffffff;
+  --drawer-bg: rgba(248, 250, 252, 0.62);
+  --menu-row: rgba(255, 255, 255, 0.82);
+}
+/* 青果のときの色（鮮魚は上のまま。差すのはアクセントの4つだけ） */
+html[data-dept="produce"] {
+  --primary: #1f4a2a;
+  --primary-soft: #3f8447;
+  --soft: #e9f4ea;
+  --soft-text: #1d6b2e;
+}
+html[data-dept="produce"][data-theme="dark"] {
+  --primary: #35743d;
+  --primary-soft: #5d9e64;
+  --soft: #1e3a26;
+  --soft-text: #9ad6a1;
+}
+/* 暗い画面 */
+html[data-theme="dark"] {
+  --primary: #3a6d9e;
+  --primary-soft: #5590CC;
+  --chip: #1C2A3A;
+  --bg: #0B1420;
+  --btn-ring: rgba(255,255,255,0.10);
+  --btn-shadow: rgba(0,0,0,0.45);
+  --line: #24323F;
+  --ink: #EAF1F8;
+  --text: #D6E1EC;
+  --sub: #93A6BA;
+  --faint: #7F92A6;
+  --soft: rgba(111,163,216,0.16);
+  --soft-text: #9CC8F2;
+  --card: #14202E;
+  --drawer-bg: #0F1A28;
+  --menu-row: rgba(255,255,255,0.045);
+}
+html[data-theme="dark"] body { background: var(--bg); }
+html[data-theme="dark"] .ucard, html[data-theme="dark"] .wcard { background: var(--card); }
+html[data-theme="dark"] input:not([type="range"]), html[data-theme="dark"] textarea,
+html[data-theme="dark"] select { background: var(--card); color: var(--ink); border-color: var(--line); }
+html[data-theme="dark"] input::placeholder, html[data-theme="dark"] textarea::placeholder { color: var(--faint); }
+/* 白地を前提にしていた箇所を、暗い画面でも読めるようにそろえる */
+html[data-theme="dark"] .pop-grid > div,
+html[data-theme="dark"] .pop-grid > button { background: var(--card); }
+html[data-theme="dark"] .pc-name { color: var(--ink); }
+html[data-theme="dark"] .hig-pill { background: var(--card) !important; color: var(--primary-soft) !important; border-color: var(--line) !important; }
+html[data-theme="dark"] .imgskel, html[data-theme="dark"] .sk {
+  background: linear-gradient(90deg, #232c36 25%, #2b3540 50%, #232c36 75%);
+  background-size: 200% 100%;
+}
+/* まとまり・詳細の白い面 */
+html[data-theme="dark"] [data-popdetail="1"] > div { background: var(--card); }
+/* いまどきの見た目：角は大きめに丸く、影はごく薄く */
+.wcard { border-radius: 16px; }
+.ucard { border-radius: 2px; }   /* ポップは紙のまま見せる */
+button { border-radius: 12px; }
+/* 押したときの反応をはっきりさせる（触った実感） */
+button:active, .ucard:active { transform: scale(.97); }
+button, .ucard, .wcard { transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+/* 文字の間隔を少し広げて読みやすく */
+body { letter-spacing: .01em; line-height: 1.55; }
+
+/* 文字が小さくなりすぎないようにする（年配の方にも読めるように） */
+body { font-size: 15px; -webkit-font-smoothing: antialiased; }
+/* 押せるところは指で押しやすい大きさを確保 */
+button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
+
+/* 左のジャンルタブ：数が増えても全部たどれるように */
+.genre-tabs::-webkit-scrollbar { width: 0; height: 0; }
+.genre-tabs { scrollbar-width: none; }
+
+@keyframes drawerL { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes drawerIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes spinR { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* ポップの並べ方：縦長どうし・横長どうしを同じ段に。横長どうしの段は元の形のまま（低い段になる） */
+.ucard .pc-img-el { aspect-ratio: 1 / 1.414; }
+.pop-grid.v-md .ucard.pc-pair-land .pc-img-el { aspect-ratio: var(--nat-ar, 1 / 1.414); }
+/* 1まい表示は、すべて元の形のまま（余白なし） */
+.pop-grid.v-lg .ucard .pc-img-el { aspect-ratio: var(--nat-ar, 1 / 1.414); }
+
+/* 一覧の上の並び：スマホは小さめ、PC・タブレットでは大きく */
+/* 投稿・操作列・さがす の並び（スマホは2段、PCは1段で 投稿 … さがす） */
+.board-head { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 520px; margin-bottom: 10px; align-items: stretch; }
+/* 上の並び：すべて同じ大きさの箱で、行をぴったり埋める */
+.board-head .bh-menu, .board-head .bh-post, .board-head .bh-search { min-height: 46px !important; height: 46px; }
+.board-tools { gap: 8px !important; }
+.board-tools { display: grid !important; grid-template-columns: repeat(4, 1fr); }
+.board-tools > * { min-width: 0; height: 46px; box-sizing: border-box; padding-left: 3px !important; padding-right: 3px !important; }
+.bt-btn { width: auto !important; height: 46px !important; }
+.bt-seg { flex: 1 1 0; height: 100% !important; min-width: 0 !important; }
+.board-head .bh-post { grid-column: 1; grid-row: 1; }
+.board-head .bh-menu { grid-column: 2; grid-row: 1; }
+/* カタログ・入力支援はパソコンでだけ出す */
+.board-head .bh-catalog { display: none !important; }
+.board-head .board-tools { grid-column: 1 / -1; grid-row: 2; }
+.board-tools { max-width: none; }
+.bt-btn { width: min(42px, 10.5vw); height: 42px; }
+.bt-dept { width: auto !important; min-width: min(64px, 17vw); padding: 0 7px !important; }
+.bt-seg { height: 36px; min-width: min(34px, 8.5vw); }
+.bt-a-s { font-size: 13px; }
+.bt-a-l { font-size: 19px; }
+@media (min-width: 700px) {
+  /* 上の行から開けるので、メニューの中からは外す */
+  .menu-row-catalog { display: none !important; }
+  /* パソコン：上の行を1列に、画面いっぱいまで広げる */
+  .board-head { display: flex; align-items: center; gap: 12px; max-width: none; }
+  .board-head .bh-post, .board-head .bh-catalog,
+  .board-head .bh-menu, .board-head .bh-search {
+    display: flex !important; flex: 1 1 0; min-width: 0;
+    padding-left: 12px; padding-right: 12px;
+    min-height: 56px !important; height: 56px; }
+  .board-head .board-tools { flex: 2.2 1 0; max-width: none; margin-bottom: 0 !important; }
+  .board-head .bh-post    { order: 1; }
+  .board-head .board-tools { order: 2; }
+  .board-head .bh-catalog { order: 3; }
+  .board-head .bh-menu    { order: 4; }
+  .board-head .bh-search  { order: 5; }
+  .board-tools > * { height: 56px; }
+  .bt-btn { width: auto !important; height: 56px !important; border-radius: 12px; }
+  .bt-btn svg { width: 24px; height: 24px; }
+  .bt-seg { height: 100% !important; min-width: 0 !important; }
+  .bt-seg svg { width: 22px; height: 22px; }
+  .bt-a-s { font-size: 16px; }
+  .bt-a-l { font-size: 24px; }
+  .board-top button { font-size: 15.5px; }
+  .board-top button span { font-size: 15.5px !important; }
+  .board-top button svg { width: 20px; height: 20px; }
+}
+
+/* 画面いっぱいに出るものは、上の時計・切り欠きにかからないようにする */
+.fs-top { padding-top: env(safe-area-inset-top, 0px); box-sizing: border-box; }
+/* 右から出るメニュー：上の時計・切り欠きに「メニュー」と✕がかぶらないようにする */
+/* 管理画面の解錠（端末風の演出） */
+@keyframes gsweep { 0% { transform: translateY(-12%); opacity: 0; } 12% { opacity: .9; } 88% { opacity: .9; } 100% { transform: translateY(1100%); opacity: 0; } }
+@keyframes gblink { 50% { opacity: .15; } }
+@keyframes gripple { from { transform: translate(-50%,-50%) scale(.6); opacity: .55; } to { transform: translate(-50%,-50%) scale(2.1); opacity: 0; } }
+@keyframes gpulse { 50% { box-shadow: 0 0 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,220,174,0.13), 0 0 34px rgba(240,164,74,0.10); } }
+@keyframes gglitch { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
+.g-panel { animation: gpulse 4.5s ease-in-out infinite; }
+.g-sweep { position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,164,74,.55), transparent);
+  animation: gsweep 5.2s linear infinite; pointer-events: none; }
+.g-corner { position: absolute; width: 13px; height: 13px; border-color: rgba(240,164,74,.55); border-style: solid; opacity: .9; }
+.g-blink { animation: gblink 1.4s steps(2) infinite; }
+.g-ripple { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; border-radius: 50%;
+  border: 1px solid #f0a44a; animation: gripple .5s ease-out forwards; pointer-events: none; }
+.g-shake { animation: gglitch .32s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .g-panel, .g-sweep, .g-blink, .g-ripple, .g-shake { animation: none !important; }
+  .g-sweep { opacity: .25; }
+}
+/* 右下の「さがす」ボタン。スマホは丸、パソコンは横長にする */
+/* 写真の上に重なっても輪郭が消えないよう、明るい縁と濃い影を両方つける */
+.fab-search { box-shadow: 0 0 0 1.5px rgba(255,255,255,0.46), 0 6px 20px rgba(10,20,35,0.42) !important; }
+html[data-theme="dark"] .fab-search { background: #17253a !important; color: #fff !important;
+  box-shadow: 0 0 0 1.5px rgba(255,255,255,0.34), 0 6px 20px rgba(0,0,0,0.55) !important; }
+/* さがす：角丸16px・濃紺・虫眼鏡 */
+.fab-search { right: 16px; bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  width: auto; min-width: 158px; height: 68px; border-radius: 16px;
+  flex-direction: row; gap: 10px; padding: 0 24px; }
+.fab-search svg { width: 28px; height: 28px; }
+.fab-search span { font-size: 19px; font-weight: 800; letter-spacing: 0.03em; line-height: 1; }
+@media (min-width: 700px) {
+  .fab-search { right: 28px; bottom: 20px;
+    width: auto; min-width: 176px; height: 74px; border-radius: 16px;
+    flex-direction: row; gap: 12px; padding: 0 30px; }
+  .fab-search svg { width: 30px; height: 30px; }
+  .fab-search span { font-size: 20px; }
+}
+.menu-drawer { padding-top: calc(env(safe-area-inset-top, 0px) + 14px) !important; }
+@media (max-width: 699px) {
+  .menu-drawer { padding-top: max(29px, calc(env(safe-area-inset-top, 0px) + 14px)) !important; }
+}
+
+/* キーボードで操作したときに、どこを選んでいるか分かるように */
+:focus-visible { outline: 3px solid #4a7ab0; outline-offset: 2px; border-radius: 6px; }
+.menu-item:focus-visible { outline-offset: 4px; }
+.menu-item:active > span:first-child { transform: scale(.94); }
+.menu-item > span:first-child { transition: transform .12s ease, border-color .12s ease, background .12s ease; }
+
+/* 押せるものは白く浮かせて、背景と見分けやすくする */
+button, .hig-pill, label[style*="cursor"] { -webkit-tap-highlight-color: transparent; }
+button[style*="background:#fff"], button[style*="background: #fff"],
+button[style*="background:\"#fff\""] {
+  box-shadow: 0 1px 2px rgba(20,35,55,0.07);
+}
+/* 入力欄も背景から少し立たせる */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+textarea, select { background:#fff; }
+
+.wcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:8px 11px; margin-bottom:9px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); }
+.sk { background:linear-gradient(90deg, #EDEAE2 25%, #F7F4EE 50%, #EDEAE2 75%); background-size:200% 100%; animation:skm 1.3s infinite; }
+@keyframes skm { from { background-position:200% 0; } to { background-position:-200% 0; } }
+img.fdin { opacity:0; transition:opacity .35s ease; }
+img.fdin.ld { opacity:1; }
+/* カード共通：統一した影＋タップで沈む */
+.ucard { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05); transition: transform .16s ease, box-shadow .16s ease; }
+.ucard:active { transform: scale(.975); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+/* 画像スケルトン（読み込み中の淡い明滅） */
+.imgskel { background: linear-gradient(100deg, #eceef1 30%, #f5f6f8 50%, #eceef1 70%); background-size: 200% 100%; animation: skm 1.3s linear infinite; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overscroll-behavior: none; }
+html { background: #8FA0B0; }
+/* 固定シェル：ページ(window)は一切スクロールさせない。スクロールは #app-scroll の内側だけ。
+   これによりiOSのラバーバンドで画面全体がずれる問題を構造的に根絶する。
+   高さは 100dvh（動的ビューポート）でアドレスバーの出入りに追従させ、下部のすき間を防ぐ。 */
+html, body { position:fixed; inset:0; width:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation; }
+#root { position:fixed; inset:0; }
+#app-scroll { position:fixed; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; background: var(--bg); }
+.hig-pill { -webkit-tap-highlight-color: transparent; }
+
+
+body { font-family: 'Manrope', 'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: var(--bg); }
+.min-vh { min-height: 100vh; min-height: 100dvh; }
+/* スマホではヘッダーのタイトルを隠してボタンにスペースを譲る */
+/* タイトルは常時表示（モックアップ準拠） */
+/* ポップ一覧：表示サイズを4段階で切り替え（リスト／小／中／大） */
+.pop-grid { display: grid; gap: 12px; align-items: stretch; }
+
+/* 中（標準） */
+.pop-grid.v-md { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 620px)  { .pop-grid.v-md { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .pop-grid.v-md { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .pop-grid.v-md { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .pop-grid.v-md { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* 小（たくさん並べる） */
+.pop-grid.v-sm { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 620px)  { .pop-grid.v-sm { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .pop-grid.v-sm { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .pop-grid.v-sm { grid-template-columns: repeat(9, minmax(0, 1fr)); } }
+.pop-grid.v-sm .pc-name { font-size: 11px; }
+.pop-grid.v-sm .pc-meta { display: none; }
+.pop-grid.v-sm .pc-body { padding: 5px 7px; }
+
+/* 大（じっくり見る） */
+.pop-grid.v-lg { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 700px)  { .pop-grid.v-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .pop-grid.v-lg { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pop-grid.v-lg .pc-name { font-size: 15px; }
+
+/* リスト（文字中心・横並び） */
+.pop-grid.v-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+.pop-grid.v-list .ucard { display: flex; align-items: center; }
+.pop-grid.v-list .pc-img { width: 62px; height: 62px; flex-shrink: 0; min-height: 0 !important; }
+.pop-grid.v-list .pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.pop-grid.v-list .pc-body { flex: 1; min-width: 0; padding: 8px 12px; }
+.pop-grid.v-list .pc-name { font-size: 13.5px; }
+/* iPhoneで入力欄をタップしたときに画面が勝手に拡大するのを防ぐ。
+   iOSは文字が16px未満の入力欄でズームするため、入力欄だけ16pxに揃える */
+html, body { overflow-x: hidden; max-width: 100%; }
+* { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+@supports (-webkit-touch-callout: none) {
+  /* iOSは16px未満の入力欄でズームするため、実サイズを16pxに揃える。
+     幅の広い入力欄（本文・品名など）だけが対象で、狭い欄は個別に維持 */
+  input[type="text"], input[type="password"], input[type="search"],
+  input[type="tel"], input[type="email"], input[type="date"],
+  input[type="number"], input:not([type]), textarea, select {
+    font-size: 16px !important;
+  }
+  /* 数量など、幅の狭い欄は文字が溢れないよう詰める */
+  input[inputmode="decimal"], input[inputmode="numeric"] {
+    font-size: 16px !important;
+    letter-spacing: -0.5px;
+    padding-left: 1px !important; padding-right: 1px !important;
+  }
+  select { font-size: 16px !important; }
+}
+/* 入力中に画面が横へずれないようにする */
+body { position: relative; overscroll-behavior-y: none; }
+/* 画面いっぱいの要素がはみ出さないように */
+#root { max-width: 100vw; overflow-x: hidden; }
+
+/* 発注表：A4横に印刷する */
+@media print {
+  body * { visibility: hidden; }
+  #sheetPrint, #sheetPrint * { visibility: visible; }
+  #sheetPrint { position: absolute; left: 0; top: 0; width: 100%; }
+  @page { size: A4 landscape; margin: 8mm; }
+}
+#sheetPrint { display: none; }
+/* 曜日ごとのまとまりを枠で囲む */
+.day-box { border: 1.2px solid #333; border-radius: 1mm; overflow: hidden; margin-bottom: 3mm; break-inside: avoid; }
+.day-head { padding: 1.2mm 2.5mm; font-weight: 700; border-bottom: 1px solid #333; background: #f2f2f2; }
+.sheet-tbl { width: 100%; border-collapse: collapse; }
+.sheet-tbl th, .sheet-tbl td { border: 1px solid #333; padding: 2px 3px; font-size: 8.5pt; text-align: center; }
+.sheet-tbl th { background: #eee; font-weight: 700; }
+.sheet-tbl td.nm { text-align: left; font-weight: 700; padding-left: 6px; white-space: nowrap; }
+.sheet-tbl td.sun { color: #c00; }
+.sheet-tbl th.sun { color: #c00; }
+.sheet-tbl th.sat, .sheet-tbl td.sat { color: #06c; }
+/* 予約カタログ：表示サイズを4段階で切り替え */
+.cat-grid { display: grid; gap: 11px; align-items: start; }
+.cat-grid.c-md { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 620px)  { .cat-grid.c-md { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .cat-grid.c-md { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1300px) { .cat-grid.c-md { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+.cat-grid.c-lg { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 760px)  { .cat-grid.c-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .cat-grid.c-lg { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.cat-grid.c-sm { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 620px)  { .cat-grid.c-sm { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px)  { .cat-grid.c-sm { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1300px) { .cat-grid.c-sm { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+.cat-grid.c-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+/* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
+@media (min-width: 900px) {
+  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
+  .gne-preview { position: sticky; top: 12px; }
+  .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
+}
+/* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
+.board-head .hig-pill, .board-head .bt-btn {
+  border-color: transparent !important;
+  background: var(--card) !important;
+  box-shadow: 0 0 0 1px var(--btn-ring), 0 1px 3px var(--btn-shadow) !important;
+  color: var(--primary-soft) !important;
+}
+.board-head .hig-pill span { color: var(--ink) !important; font-weight: 800 !important; }
+.board-head .hig-pill:hover, .board-head .bt-btn:hover { background: var(--soft) !important; }
+/* 文字サイズ・まいすうの切り替えは、押されている側だけ白く浮かせる */
+.board-tools > div { box-shadow: 0 0 0 1px var(--btn-ring) !important; }
+/* 部門のボタンだけは、いまどちらかが一目で分かるよう色を残す */
+.board-head .bt-dept { background: var(--soft) !important; color: var(--soft-text) !important;
+  border: 1px solid var(--primary-soft) !important; }
+
+/* HIG風ボタン：押した瞬間うっすら透明＋わずかに縮む */
+.hig-pill { transition: opacity .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
+.hig-pill:active { opacity:.55; transform:scale(.96); }
+@keyframes spFade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+@keyframes radialPulse { 0% { transform:scale(1); } 35% { transform:scale(1.16); } 100% { transform:scale(1); } }
+@keyframes liked { 0% { transform:scale(1); } 40% { transform:scale(1.4); } 100% { transform:scale(1); } }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner { width:32px; height:32px; border:3px solid var(--line); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes sheetUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.hscroll::-webkit-scrollbar { display:none; }
+.hscroll { scrollbar-width:none; }
+@keyframes gneFloat { 0% { opacity:0; transform:translateY(8px) scale(0.5); } 25% { opacity:1; } 100% { opacity:0; transform:translateY(-20px) scale(1.15); } }
+@keyframes gneBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+@keyframes gneGlow { 0%,100% { box-shadow:0 3px 12px rgba(194,78,0,0.45); } 50% { box-shadow:0 4px 22px rgba(255,150,40,0.95); } }
+.like-btn:active { animation: liked 0.3s ease; }
+#barcode-print-portal { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  /* 印刷時に背景（納品会社の色・模様）を省略させない */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  /* 固定シェル（画面ずれ対策）を印刷時だけ解除：しないと1ページ分で切れて2枚目以降が消える */
+  html, body { position: static !important; overflow: visible !important; width: auto !important; height: auto !important; }
+  #root { position: static !important; overflow: visible !important; height: auto !important; }
+  #app-scroll { position: static !important; overflow: visible !important; height: auto !important; }
+  body > #root { display: none !important; }
+  #barcode-print-portal { display: block !important; position: static !important; overflow: visible !important; }
+  #barcode-print-portal .bc-page { break-after: page; page-break-after: always; }
+  #barcode-print-portal .bc-page:last-child { break-after: auto; page-break-after: auto; }
+  #barcode-print-portal .bc-label { page-break-inside: avoid; break-inside: avoid; }
+}
+
+/* ───── メニューと行事カレンダーの面：濃紺に、白い文字とアイコン ─────
+   中の要素はすべて var(--…) で色を書いているので、この面の中だけ
+   変数を差し替えれば、JSXを触らずに見た目が変わる。 */
+/* ───── 左右の柱の意匠：濃紺の面に、白い文字とアイコン ─────
+ 中の要素はすべて var(--…) で色を書いているので、柱の中だけ
+ その変数を差し替えれば、JSXを一切触らずに見た目が変わる。 */
+.menu-drawer, .cal-dock {
+--ink:#EAF1F8;
+--text: #D6E1EC;
+--sub:#93A6BA;
+--faint:#7F92A6;
+--line: rgba(255,255,255,0.10);
+--card: rgba(255,255,255,0.045);
+--menu-row: transparent;
+--chip: rgba(255,255,255,0.07);
+--soft: rgba(111,163,216,0.16);
+--soft-text:#9CC8F2;
+--primary:#9CC8F2;
+--primary-soft: #7FB2E4;
+--drawer-bg:#0F1A28;
+background: #0F1A28 !important;
+border-color: rgba(255,255,255,0.08) !important;
+color: #EAF1F8;
+letter-spacing: 0.015em;
+}
+/* メニューの項目は、囲いをやめて面に置くだけにする */
+.menu-drawer .menu-list .menu-item {
+border-color: transparent !important;
+background: transparent !important;
+min-height: 44px !important;
+padding: 7px 10px !important;
+}
+.menu-drawer .menu-list .menu-item:hover { background: rgba(255,255,255,0.07) !important; }
+.menu-drawer .menu-list .menu-item span { font-weight: 600 !important; }
+.menu-drawer .menu-list { gap: 2px !important; }
+/* 行事の項目も同じ調子に */
+.cal-dock .menu-item { background: rgba(255,255,255,0.045) !important; }
+.cal-dock .menu-item:hover { background: rgba(255,255,255,0.09) !important; }
+/* 柱の見出し（英字の副題つき） */
+.dock-head { display:block; width:100%; text-align:left; border:none; background:transparent;
+  font-family:inherit; cursor:pointer; padding:4px 2px; border-radius:9px; margin: 2px 0 12px; }
+.dock-head:hover { background: rgba(255,255,255,0.06); }
+.dock-head b { display:block; font-size: 19px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.01em; }
+.dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
+color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
+/* 右の柱：しるしと名前 */
+.dock-brand { text-align:center; padding: 6px 0 16px; }
+.dock-brand img { display:block; width: 60%; max-width: 140px; height:auto; margin: 0 auto; }
+/* 右の柱：さがす（押すと今までの絞り込みが開く） */
+.dock-search {
+display:flex; align-items:center; gap:9px; width:100%;
+border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+color: #93A6BA; border-radius: 11px; padding: 11px 13px; margin-bottom: 14px;
+font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+}
+.dock-search:hover { background: rgba(255,255,255,0.10); }
+
+/* ── 左の柱の行事カレンダー ── */
+.cd-month { display:flex; align-items:center; justify-content:space-between;
+  background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10);
+  border-radius: 12px; padding: 7px 8px; margin-bottom: 14px; }
+.cd-month span { font-size: 14.5px; font-weight: 800; color: #EAF1F8; letter-spacing: 0.02em; }
+.cd-month button { border:none; background:transparent; color:#93A6BA; cursor:pointer;
+  width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.cd-month button:hover { background: rgba(255,255,255,0.09); color:#EAF1F8; }
+
+.cd-row { display:flex; align-items:center; position:relative; padding: 5px 0; }
+.cd-row::before { content:""; position:absolute; left:53px; top:0; bottom:0; width:1px;
+  background: rgba(255,255,255,0.13); }
+.cd-row:first-child::before { top:50%; }
+.cd-row:last-child::before  { bottom:50%; }
+.cd-day { width:44px; flex-shrink:0; text-align:center; border-radius:10px; padding:5px 0;
+  background: rgba(255,255,255,0.90); }
+.cd-day b { display:block; font-size:16px; font-weight:800; color:#16242F; line-height:1.15; }
+.cd-day i { display:block; font-style:normal; font-size:10px; font-weight:700; color:#5C6B7A; }
+.cd-day.cd-now { background:#9CC8F2; }
+.cd-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; margin:0 9px 0 5px;
+  box-shadow: 0 0 0 3px #0F1A28; position:relative; z-index:1; }
+.cd-name { font-size:13.5px; font-weight:700; color:#E3EBF4; line-height:1.45;
+  min-width:0; overflow:hidden; }
+.cd-name em { font-style:normal; font-weight:600; color:#8398AE; }
+
+.cd-more { border:none; background:transparent; color:#8FB6DC; cursor:pointer;
+  margin-left:auto; font-size:12px; font-weight:700; font-family:inherit; padding:0; }
+.cd-more:hover { color:#BFD9F2; }
+.cd-next { display:flex; align-items:center; padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.07); }
+.cd-next-d { width:46px; flex-shrink:0; font-size:12.5px; font-weight:800; color:#B9C8D8; }
+
+.cd-cat { display:flex; align-items:center; gap:10px; width:100%; border:none;
+  background:transparent; border-radius:9px; padding:8px; cursor:pointer;
+  font-family:inherit; text-align:left; }
+.cd-cat:hover { background: rgba(255,255,255,0.07); }
+.cd-cat .cd-name { flex:1; white-space:nowrap; text-overflow:ellipsis; }
+.cd-chip { width:24px; height:24px; border-radius:7px; flex-shrink:0; }
+.cd-num { font-size:12.5px; font-weight:800; color:#8398AE; flex-shrink:0; }
+
+/* ───── 広い画面（パソコン）：左に行事カレンダー、右にメニューを置く ───── */
+@media (min-width: 1280px) {
+  /* 右の柱：メニュー */
+  .menu-dock {
+    right: 0 !important; left: auto !important;
+    width: 288px !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-left: 1px solid var(--line);
+    animation: none !important;
+    z-index: 120 !important;
+  }
+  /* 項目を縦に引き伸ばさない */
+  .menu-dock .menu-list { flex: 0 0 auto !important; }
+  .menu-dock .menu-list .menu-item { flex: 0 0 auto !important; min-height: 48px !important; padding: 8px 12px !important; }
+  .menu-dock .menu-list .menu-item span { font-size: 15px !important; }
+
+  /* 左の柱：行事カレンダー */
+  .cal-dock {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 320px; z-index: 120;
+    overflow-y: auto;
+    border-right: 1px solid var(--line);
+    padding: 14px 14px calc(18px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+  }
+
+  /* 本体は両側の柱の分だけ内側へ */
+  #app-scroll { padding-left: 320px; padding-right: 288px; }
+  /* 右にずっと出ているので、上の行のメニューのボタンは要らない */
+  .board-head .bh-menu { display: none !important; }
+  /* 左に出ているので、メニューの中の行事カレンダーも要らない */
+  .menu-row-bundle { display: none !important; }
+  /* すぐ上に検索欄があるので、項目の「検索」も要らない */
+  .menu-drawer .menu-row-search { display: none !important; }
+  /* さがすボタンは右の柱の内側に寄せる */
+  .fab-search { right: 316px !important; }
+
+}
+
+/* ─────────── 背景の下地（スマホで効く。絵は使わず、色の重ねだけで作る） ───────────
+   スクロールする面の下に、ブランドの緑と青をごく薄く敷く。
+   固定なので、指で送っても背景は動かない＝奥に景色がある感じになる。 */
+#app-scroll::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.16), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(40,130,230,.18), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(40,130,230,.10), transparent 72%);
+}
+#app-scroll { background: var(--bg); }
+html[data-theme="dark"] #app-scroll::before {
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.16), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(44,120,210,.24), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(30,90,170,.18),  transparent 72%);
+}
+/* 青果のときは緑側を強めて、部門が色でも分かるようにする */
+html[data-dept="produce"] #app-scroll::before {
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.22), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(120,200,90,.16), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(74,196,110,.10), transparent 72%);
+}
+/* 一覧の板を少し透かして、下地が透けるようにする（ガラスのような重なり） */
+.pop-grid > div, .pop-grid > button, .ucard, .wcard {
+  backdrop-filter: saturate(1.12); -webkit-backdrop-filter: saturate(1.12);
+}
+/* 上の行は下地の上に浮かせる */
+.board-head { background: transparent !important; }
+
+
+/* ─────────── 一覧のカード：影・丸み・台紙・小さな見出し ─────────── */
+:root { --mat: #EDF1F5; --card-shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.08); }
+html[data-theme="dark"] { --mat: #0E1926; --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.34); }
+html[data-dept="produce"] { --mat: #ECF3EC; }
+html[data-dept="produce"][data-theme="dark"] { --mat: #0E1B15; }
+
+.pop-grid > div, .pop-grid > button { border: none !important; }
+.pop-grid .ucard:active { transform: scale(.975); }
+.pc-body { padding: 9px 11px 11px !important; }
+.pc-sub { display: flex; align-items: center; gap: 5px; margin-top: 4px; min-width: 0; }
+.pc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pc-sub-t { font-size: 10.5px; font-weight: 700; letter-spacing: .02em; color: var(--faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pop-grid.v-sm .pc-sub { display: none; }
+.pop-grid.v-lg .pc-sub-t { font-size: 12px; }
+
+/* 上の並びを詰めて、一覧が1枚でも多く見えるようにする */
+@media (max-width: 619px) {
+  .board-head { margin-bottom: 8px; gap: 7px; }
+  .board-head .bh-menu, .board-head .bh-post, .board-head .bh-search { min-height: 43px !important; height: 43px; }
+  .board-tools { gap: 7px !important; }
+  .board-tools > *, .bt-btn { height: 43px !important; }
+  .pop-grid.v-md { gap: 11px; }
+}

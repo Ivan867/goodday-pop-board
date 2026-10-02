@@ -80,15 +80,9 @@ window.__記す = 記す;
      取りに行けなかった場合は、これまでの端末の書体にそのまま落ちる。 -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" />
-<!-- React本体：まず今までどおりCDNから。取れなければ、このサイトに置いた控えに切り替える。
-     （会社の通信制限やCDN障害で止まらないための二段構え） -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script>if (!window.React) document.write('<script src="vendor/react-18.2.0.min.js"><\/script>');</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script>if (!window.ReactDOM) document.write('<script src="vendor/react-dom-18.2.0.min.js"><\/script>');</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'" />
 <style>#splash{position:fixed;inset:0;z-index:9999;background:#0B1420;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .5s ease;overflow:hidden}#splash::before{content:"";position:absolute;inset:-30%;background:radial-gradient(38% 30% at 30% 38%,rgba(74,196,110,.22),transparent 70%),radial-gradient(38% 30% at 70% 46%,rgba(40,130,230,.24),transparent 70%);filter:blur(8px);animation:spGlow 5s ease-in-out infinite alternate}#splash.hide{opacity:0;pointer-events:none}#splash .sp-mark{position:relative;text-align:center;animation:spUp .8s cubic-bezier(.16,1,.3,1) both}#splash .sp-good{font-size:13px;font-weight:800;letter-spacing:.34em;text-indent:.34em;color:#7FD0A0;opacity:.92}#splash .sp-nexus{font-size:min(46px,13vw);font-weight:900;letter-spacing:.14em;text-indent:.14em;color:#fff;line-height:1.1;margin-top:4px}#splash .sp-rule{width:min(210px,52vw);height:2px;margin:15px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,#58C878 22%,#2E9BE8 78%,transparent);animation:spRule 1.1s cubic-bezier(.16,1,.3,1) both}#splash .sp-name{position:relative;margin-top:15px;font-size:13px;font-weight:800;letter-spacing:.3em;text-indent:.3em;color:#9FB4C6;animation:spUp .8s .12s cubic-bezier(.16,1,.3,1) both}#splash .sp-note{position:relative;margin-top:30px;font-size:11px;font-weight:700;letter-spacing:.12em;color:#5E7488;animation:spFade 1.4s .3s ease both}@keyframes spUp{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}@keyframes spRule{from{transform:scaleX(0);opacity:0}to{transform:none;opacity:1}}@keyframes spFade{from{opacity:0}to{opacity:1}}@keyframes spGlow{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(2%,2%,0) scale(1.08)}}</style>
-<link rel="stylesheet" href="css/app.20261001g.css" />
+<link rel="stylesheet" href="css/app.20261002a.css" media="print" onload="this.media='all';window.__cssOK=1" onerror="window.__cssNG=1" />
 </head>
 <body>
 <div id="splash">
@@ -145,7 +139,7 @@ window.__記す = 記す;
   var 見張り = setInterval(function(){
     var r = document.getElementById("root"), s = document.getElementById("splash");
     if (!s) { clearInterval(見張り); return; }
-    if (r && r.childNodes.length > 0 && Date.now() - window.__splashT0 > 900) {
+    if (r && r.childNodes.length > 0 && window.__cssOK && Date.now() - window.__splashT0 > 900) {
       try { sessionStorage.removeItem("bootRetry"); } catch (e) {}   // 無事に開けた
       s.classList.add("hide");
       setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 500);
@@ -154,8 +148,25 @@ window.__記す = 記す;
   }, 300);
   setTimeout(function(){
     var r = document.getElementById("root");
-    if (r && r.childNodes.length === 0) 案内("slow");
+    if (!document.getElementById("splash")) return;          // もう開けている
+    if ((r && r.childNodes.length === 0) || !window.__cssOK) 案内("slow");
   }, 5000);
+  // 見た目のCSSが読めなかったら、待たずに案内を出す
+  var CSS見張り = setInterval(function(){
+    // 読み終わりの合図（onload）が来ない端末への保険：読めたかを直接確かめて、こちらで切り替える
+    try {
+      var ls = document.querySelectorAll('link[rel="stylesheet"][media="print"]');
+      for (var i = 0; i < ls.length; i++) {
+        if (ls[i].sheet) {
+          ls[i].media = "all";
+          if (ls[i].href.indexOf("/css/app.") >= 0) window.__cssOK = 1;
+        }
+      }
+    } catch (e) {}
+    if (window.__cssOK || !document.getElementById("splash")) { clearInterval(CSS見張り); return; }
+    if (window.__cssNG) { clearInterval(CSS見張り); 案内("error");
+      var m = document.getElementById("bootmsg"); if (m) m.textContent = "読めない: 見た目の指定（css）"; }
+  }, 400);
 
   /* 起動したあとでも、画面が空になったら必ず出す逃げ道。
      起動画面はもう消えているので、ここが出ないと真っ白のままになる。 */
@@ -205,13 +216,20 @@ window.__記す = 記す;
 })();
 </script>
 <div id="root"></div>
+<!-- React は起動画面と見張りの後ろで読む。外部が止まっても、画面と「読み込み直す」は先に出る。 -->
+<!-- React本体：まず今までどおりCDNから。取れなければ、このサイトに置いた控えに切り替える。
+     （会社の通信制限やCDN障害で止まらないための二段構え） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script>if (!window.React) document.write('<script src="vendor/react-18.2.0.min.js"><\/script>');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>if (!window.ReactDOM) document.write('<script src="vendor/react-dom-18.2.0.min.js"><\/script>');</script>
 <!-- APP-BUNDLE -->
-<script src="js/app.20261001g.js"></script>
+<script src="js/app.20261002a.js"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20261001g";
+window.APP_VER = "20261002a";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

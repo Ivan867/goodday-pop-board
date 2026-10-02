@@ -34,20 +34,37 @@ html = re.sub(r'window\.APP_VER = "[^"]*"', 'window.APP_VER = "%s"' % ver, html,
 html, n = re.subn(r'<script src="js/app[^"]*\.js[^"]*"></script>',
                   '<script src="%s"></script>' % out, html)
 if n != 1: sys.exit("★ 起動用のタグは1本のはず: %d" % n)
-html, n = re.subn(r'<link rel="stylesheet" href="css/app[^"]*\.css[^"]*" />',
-                  '<link rel="stylesheet" href="%s" />' % css出, html)
+html, n = re.subn(r'(<link rel="stylesheet" href=")css/app[^"]*\.css[^"]*(")',
+                  r'\g<1>%s\g<2>' % css出, html)
 if n != 1: sys.exit("★ 見た目の指定タグは1本のはず: %d" % n)
 io.open("index.html", "w", encoding="utf-8").write(html)
 
-# ④ 古いまとめファイルは、直近3つだけ残す
-古い = sorted(glob.glob("js/app.*.js"), key=os.path.getmtime, reverse=True)[3:]
-古い += sorted(glob.glob("css/app.*.css"), key=os.path.getmtime, reverse=True)[3:]
+# ④ 古いまとめファイルは、直近15個まで残す。
+#    3個だと、1日に何度も出した日に、少し前の画面を握った端末が
+#    「もう無いファイル」を探しに行き、起動画面で止まる。
+残す = 15
+#    並びはファイル名（＝日付＋記号）で決める。更新時刻だと、履歴から戻した古い版が
+#    「新しい」と見なされ、いま出したばかりの版が消される恐れがある。
+古い = sorted(glob.glob("js/app.*.js"), reverse=True)[残す:]
+古い += sorted(glob.glob("css/app.*.css"), reverse=True)[残す:]
+if out in 古い: sys.exit("★ いま出す版が消される並びになっています。中止します")
 for f in 古い: os.remove(f)
 
 # ⑤ 起動画面より手前が太っていないか見張る。ここが切れると真っ白になる。
 先頭 = html.index('<div id="splash">')
 if 先頭 > 6000:
     sys.exit("★ 起動画面が先頭から %d バイト目。太りすぎです（通信が途切れると真っ白になります）" % 先頭)
+
+# ⑥ 起動画面より手前に、描画を止める外部読み込みを置かない。
+#    1本でもぶら下がると、起動画面も「読み込み直す」も出ず、真っ白のまま止まる（2026-10-02 実測）。
+頭 = html[:先頭]
+止める = []
+for m in re.finditer(r'<(link|script)\b[^>]*>', 頭):
+    t = m.group(0)
+    if 'rel="stylesheet"' in t and 'media="print"' not in t: 止める.append(t[:90])
+    if t.startswith('<script') and 'src=' in t and ' async' not in t and ' defer' not in t: 止める.append(t[:90])
+if 止める:
+    sys.exit("★ 起動画面より前に、描画を止める読み込みがあります：\n  " + "\n  ".join(止める))
 
 print("まとめました %s : %d本 → %d KB ／ %s ／ 起動画面まで %d バイト ／ 古いもの %d 件を削除" %
       (out, len(ORDER), os.path.getsize(out)//1024, css出, 先頭, len(古い)))

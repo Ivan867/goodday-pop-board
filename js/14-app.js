@@ -563,11 +563,19 @@ function App() {
     const sp = document.getElementById("splash");
     if (!sp) return;
     const t0 = window.__splashT0 || 0;
-    const wait = Math.max(0, 900 - (Date.now() - t0));
-    const h = setTimeout(() => {
-      sp.classList.add("hide");
-      setTimeout(() => sp.remove(), 500);
-    }, wait);
+    // 見た目のCSSが届くまでは外さない。届く前に外すと、崩れた画面が見えてしまう。
+    // 届かないときは index.html 側の見張りが「読み込み直す」を出す。
+    let h = 0;
+    const 試す = () => {
+      if (!document.getElementById("splash")) return;
+      if (window.__cssOK && Date.now() - t0 >= 900) {
+        sp.classList.add("hide");
+        setTimeout(() => sp.remove(), 500);
+        return;
+      }
+      h = setTimeout(試す, 150);
+    };
+    試す();
     return () => clearTimeout(h);
   }, []);
   const handleCreateFromPop = pop => {
