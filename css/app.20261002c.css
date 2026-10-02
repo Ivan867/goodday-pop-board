@@ -1,7 +1,7 @@
 
 :root {
   --primary: #1d3a57;
-  --primary-soft: #4a7ab0;
+  --primary-soft: #426c9c;
   --chip: #e8edf2;
   --bg: #e6ebf2;
   --btn-ring: rgba(16,32,52,0.10);
@@ -10,7 +10,7 @@
   --ink: #16242f;
   --text: #2e3a47;
   --sub: #5c6b7a;
-  --faint: #616c79;
+  --faint: #59636f;
   --soft: #e7f1fa;
   --soft-text: #1d5a94;
   --card: #ffffff;
@@ -32,8 +32,8 @@ html[data-dept="produce"][data-theme="dark"] {
 }
 /* 暗い画面 */
 html[data-theme="dark"] {
-  --primary: #3a6d9e;
-  --primary-soft: #5590CC;
+  --primary: #95B9DC;
+  --primary-soft: #7FB2E4;
   --chip: #1C2A3A;
   --bg: #0B1420;
   --btn-ring: rgba(255,255,255,0.10);
@@ -346,12 +346,6 @@ body { position: relative; overscroll-behavior-y: none; }
 /* HIG風ボタン：押した瞬間うっすら透明＋わずかに縮む */
 .hig-pill { transition: opacity .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
 .hig-pill:active { opacity:.55; transform:scale(.96); }
-#splash { position:fixed; inset:0; z-index:9999; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .45s ease; }
-#splash.hide { opacity:0; pointer-events:none; }
-#splash .sp-name { font-size:19px; font-weight:900; letter-spacing:.08em; color:#1d4e6b; }
-#splash .sp-note { font-size:12px; font-weight:700; color:#8aa0ad; }
-#splash .sp-logo { width:min(232px, 56vw); height:auto; filter:drop-shadow(0 10px 26px rgba(32,110,120,0.22)); animation:spPop .7s cubic-bezier(.16,1.3,.3,1) both; }
-@keyframes spPop { from { transform:scale(.55); opacity:0; } to { transform:scale(1); opacity:1; } }
 @keyframes spFade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
@@ -518,3 +512,82 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
   .fab-search { right: 316px !important; }
 
 }
+
+/* ─────────── 背景の下地（スマホで効く。絵は使わず、色の重ねだけで作る） ───────────
+   スクロールする面の下に、ブランドの緑と青をごく薄く敷く。
+   固定なので、指で送っても背景は動かない＝奥に景色がある感じになる。 */
+#app-scroll::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.16), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(40,130,230,.18), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(40,130,230,.10), transparent 72%);
+}
+#app-scroll { background: var(--bg); }
+html[data-theme="dark"] #app-scroll::before {
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.16), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(44,120,210,.24), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(30,90,170,.18),  transparent 72%);
+}
+/* 青果のときは緑側を強めて、部門が色でも分かるようにする */
+html[data-dept="produce"] #app-scroll::before {
+  background:
+    radial-gradient(58% 34% at 12% 0%,   rgba(74,196,110,.22), transparent 68%),
+    radial-gradient(64% 38% at 92% 6%,   rgba(120,200,90,.16), transparent 70%),
+    radial-gradient(90% 46% at 50% 104%, rgba(74,196,110,.10), transparent 72%);
+}
+/* 一覧の板を少し透かして、下地が透けるようにする（ガラスのような重なり） */
+/* カード1枚ごとの backdrop-filter は外した。枚数分の合成層ができ、
+   iPhone で描画が破綻する（真っ白になる）恐れがあるため。 */
+/* 上の行は下地の上に浮かせる */
+.board-head { background: transparent !important; }
+
+
+/* ─────────── 一覧のカード：影・丸み・台紙・小さな見出し ─────────── */
+:root { --fill: #426c9c; --mat: #EDF1F5; --card-shadow: 0 1px 2px rgba(16,32,48,.06), 0 6px 18px rgba(16,32,48,.08); }
+html[data-theme="dark"] { --fill: #3a6b9e; --mat: #0E1926; --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.34); }
+html[data-dept="produce"] { --fill: #35743d; --mat: #ECF3EC; }
+html[data-dept="produce"][data-theme="dark"] { --fill: #35743d; --mat: #0E1B15; }
+
+.pop-grid > div, .pop-grid > button { border: none !important; }
+.pop-grid .ucard:active { transform: scale(.975); }
+.pc-body { padding: 9px 11px 11px !important; }
+.pc-sub { display: flex; align-items: center; gap: 5px; margin-top: 4px; min-width: 0; }
+.pc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pc-sub-t { font-size: 10.5px; font-weight: 700; letter-spacing: .02em; color: var(--faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pop-grid.v-sm .pc-sub { display: none; }
+.pop-grid.v-lg .pc-sub-t { font-size: 12px; }
+
+/* 上の並びを詰めて、一覧が1枚でも多く見えるようにする */
+@media (max-width: 619px) {
+  .board-head { margin-bottom: 8px; gap: 7px; }
+  .board-head .bh-menu, .board-head .bh-post, .board-head .bh-search { min-height: 43px !important; height: 43px; }
+  .board-tools { gap: 7px !important; }
+  .board-tools > *, .bt-btn { height: 43px !important; }
+  .pop-grid.v-md { gap: 11px; }
+}
+
+/* 青果の一覧に出す「初めての方はこちら」 */
+.guide-hint {
+  position: fixed; z-index: 170; left: 16px; right: 16px;
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 80px);   /* 「さがす」の真上 */
+  max-width: 420px; margin: 0 auto; display: flex; align-items: stretch;
+  background: #1f5a2c; color: #fff; border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(10,40,20,.32);
+  animation: ghIn .5s cubic-bezier(.16,1,.3,1) .6s both;
+}
+.guide-hint .gh-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+  border: none; background: none; color: inherit; font-family: inherit; text-align: left;
+  padding: 11px 6px 11px 13px; cursor: pointer; }
+.guide-hint .gh-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.16);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.guide-hint .gh-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.guide-hint .gh-t { font-size: 14px; font-weight: 900; white-space: nowrap; }
+.guide-hint .gh-s { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.guide-hint .gh-go { margin-left: auto; font-size: 22px; font-weight: 700; opacity: .8; padding-right: 2px; }
+.guide-hint .gh-x { border: none; background: none; color: rgba(255,255,255,.8); font-size: 14px;
+  width: 38px; cursor: pointer; border-left: 1px solid rgba(255,255,255,.18); border-radius: 0 16px 16px 0; }
+@media (min-width: 1280px) { .guide-hint { left: 340px; right: auto; width: 360px; margin: 0; bottom: 104px; } }
+@keyframes ghIn { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }

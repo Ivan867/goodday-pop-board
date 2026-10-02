@@ -5039,41 +5039,299 @@ function ResourceAdmin() {
 
 // ═══════════ DeviceStatsPanel：管理画面内の端末アクセス集計 ═══════════
 // 一般メニューには出さない。個人は特定せず、機種・ブラウザの傾向だけを見る。
-function DeviceStatsPanel() {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [ver, setVer] = useState(0);
-  useEffect(() => {
-    let alive = true;
-    setLoading(true);
-    (async () => {
-      try {
-        const d = await api.listDeviceVisits(500);
-        if (alive) setRows(d);
-      } catch (e) {} finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [ver]);
-  const count = (arr, key) => {
-    const m = {};
-    arr.forEach(r => {
-      m[r[key]] = (m[r[key]] || 0) + 1;
-    });
-    return Object.entries(m).sort((a, b) => b[1] - a[1]);
-  };
-  const platforms = count(rows, "platform");
-  const browsers = count(rows, "browser");
-  const total = rows.length;
-  const Bar = ({
-    label,
-    n
-  }) => /*#__PURE__*/React.createElement("div", {
+/* ───────────── 集計の部品（端末・記録で共用） ─────────────
+   色は塗り色1つだけ（1系列なので凡例は付けない）。数値はタップで出す。 */
+const 日キー = d => {
+  const x = new Date(d);
+  return x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate();
+};
+const 直近の日 = n => {
+  const 出 = [],
+    今 = new Date();
+  今.setHours(0, 0, 0, 0);
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(今);
+    d.setDate(今.getDate() - i);
+    出.push(d);
+  }
+  return 出;
+};
+const 曜 = ["日", "月", "火", "水", "木", "金", "土"];
+const 期間内 = (rows, 何日前から, 何日前まで) => {
+  const 今 = Date.now();
+  return rows.filter(r => {
+    const t = 今 - new Date(r.created_at).getTime();
+    return t >= 何日前まで * 86400000 && t < 何日前から * 86400000;
+  });
+};
+function 数字札({
+  名,
+  値,
+  差,
+  単位,
+  注
+}) {
+  const 上 = 差 > 0,
+    下 = 差 < 0;
+  return /*#__PURE__*/React.createElement("div", {
     style: {
-      marginBottom: 9
+      flex: "1 1 0",
+      minWidth: 0,
+      background: "var(--card)",
+      borderRadius: 12,
+      padding: "11px 12px",
+      boxShadow: "var(--card-shadow)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      color: "var(--sub)",
+      whiteSpace: "nowrap"
+    }
+  }, 名), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24,
+      fontWeight: 900,
+      color: "var(--ink)",
+      lineHeight: 1.15,
+      marginTop: 3,
+      fontVariantNumeric: "tabular-nums"
+    }
+  }, 値, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      marginLeft: 2
+    }
+  }, 単位)), 差 != null && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 800,
+      marginTop: 2,
+      color: 上 ? "var(--ink)" : "var(--sub)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      color: "var(--sub)"
+    }
+  }, 注 || "先週より "), 上 ? "▲" : 下 ? "▼" : "±", Math.abs(差)));
+}
+function 見出し({
+  children,
+  補
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 8,
+      margin: "20px 0 9px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, children), 補 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)"
+    }
+  }, 補));
+}
+
+// 日ごとの縦棒。押した棒の値を上に出す。
+function 日別棒({
+  rows,
+  日数,
+  単位
+}) {
+  const [選, set選] = useState(null);
+  const 日 = 直近の日(日数);
+  const 数 = {};
+  rows.forEach(r => {
+    const k = 日キー(r.created_at);
+    数[k] = (数[k] || 0) + 1;
+  });
+  const 値 = 日.map(d => 数[日キー(d)] || 0);
+  const 最大 = Math.max(1, ...値);
+  const 合計 = 値.reduce((a, b) => a + b, 0);
+  const i = 選 == null ? null : 選;
+  const 表示 = i == null ? `${日数}日で ${合計}${単位}・最多 ${最大}${単位}/日` : `${日[i].getMonth() + 1}/${日[i].getDate()}（${曜[日[i].getDay()]}） ${値[i]}${単位}`;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--card)",
+      borderRadius: 12,
+      padding: "12px 12px 10px",
+      boxShadow: "var(--card-shadow)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: i == null ? "var(--sub)" : "var(--ink)",
+      marginBottom: 8,
+      minHeight: 18
+    }
+  }, 表示), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-end",
+      gap: 2,
+      height: 96,
+      borderBottom: "1px solid var(--line)"
+    }
+  }, 値.map((v, k) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => set選(選 === k ? null : k),
+    title: `${日[k].getMonth() + 1}/${日[k].getDate()} ${v}${単位}`,
+    "aria-label": `${日[k].getMonth() + 1}月${日[k].getDate()}日 ${v}${単位}`,
+    style: {
+      flex: "1 1 0",
+      minWidth: 0,
+      height: "100%",
+      border: "none",
+      padding: 0,
+      background: "transparent",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "flex-end"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      width: "100%",
+      height: v ? `${Math.max(4, v / 最大 * 100)}%` : 0,
+      background: "var(--fill)",
+      borderRadius: "4px 4px 0 0",
+      opacity: i == null || i === k ? 1 : .35,
+      transition: "opacity .15s"
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 10.5,
+      color: "var(--sub)",
+      marginTop: 4,
+      fontWeight: 700
+    }
+  }, /*#__PURE__*/React.createElement("span", null, 日[0].getMonth() + 1, "/", 日[0].getDate()), /*#__PURE__*/React.createElement("span", null, 日[Math.floor(日数 / 2)].getMonth() + 1, "/", 日[Math.floor(日数 / 2)].getDate()), /*#__PURE__*/React.createElement("span", null, "\u4ECA\u65E5")));
+}
+
+// 曜日 × 時間帯。濃いほど多い（1色の濃淡）。
+function 時間帯の地図({
+  rows
+}) {
+  const [選, set選] = useState(null);
+  const 帯 = [[6, "6"], [8, "8"], [10, "10"], [12, "12"], [14, "14"], [16, "16"], [18, "18"], [20, "20"]];
+  const 帯番 = h => {
+    if (h < 6) return -1;
+    return Math.min(7, Math.floor((h - 6) / 2));
+  };
+  const 表 = Array.from({
+    length: 7
+  }, () => Array(8).fill(0));
+  let 夜 = 0;
+  rows.forEach(r => {
+    const d = new Date(r.created_at);
+    const b = 帯番(d.getHours());
+    if (b < 0) 夜++;else 表[d.getDay()][b]++;
+  });
+  const 最大 = Math.max(1, ...表.flat());
+  const 順 = [1, 2, 3, 4, 5, 6, 0]; // 月曜はじまり
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--card)",
+      borderRadius: 12,
+      padding: "12px",
+      boxShadow: "var(--card-shadow)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: 選 ? "var(--ink)" : "var(--sub)",
+      marginBottom: 8,
+      minHeight: 18
+    }
+  }, 選 ? `${曜[選[0]]}曜 ${帯[選[1]][0]}〜${帯[選[1]][0] + 2}時 … ${表[選[0]][選[1]]}件` : "濃いほど多く使われています。マスを押すと件数が出ます"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "22px repeat(8, 1fr)",
+      gap: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", null), 帯.map(([, l]) => /*#__PURE__*/React.createElement("span", {
+    key: l,
+    style: {
+      fontSize: 10,
+      color: "var(--sub)",
+      textAlign: "center",
+      fontWeight: 700
+    }
+  }, l)), 順.map(w => /*#__PURE__*/React.createElement(React.Fragment, {
+    key: w
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "var(--sub)",
+      fontWeight: 800,
+      alignSelf: "center"
+    }
+  }, 曜[w]), 表[w].map((v, b) => /*#__PURE__*/React.createElement("button", {
+    key: b,
+    onClick: () => set選(選 && 選[0] === w && 選[1] === b ? null : [w, b]),
+    title: `${曜[w]} ${帯[b][0]}時台 ${v}件`,
+    "aria-label": `${曜[w]}曜 ${帯[b][0]}時から ${v}件`,
+    style: {
+      height: 24,
+      border: 選 && 選[0] === w && 選[1] === b ? "2px solid var(--ink)" : "none",
+      borderRadius: 4,
+      padding: 0,
+      cursor: "pointer",
+      background: v ? "var(--fill)" : "var(--chip)",
+      opacity: v ? 0.18 + 0.82 * v / 最大 : 1
+    }
+  }))))), 夜 > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--sub)",
+      marginTop: 7
+    }
+  }, "\u203B 6\u6642\u3088\u308A\u524D\u306E\u5229\u7528 ", 夜, "\u4EF6 \u306F\u8868\u306B\u5165\u308C\u3066\u3044\u307E\u305B\u3093"));
+}
+
+// 横棒。名前と数字は文字色、棒だけ塗り色。
+function 横棒({
+  items,
+  単位,
+  上限
+}) {
+  const 並 = items.slice(0, 上限 || 8);
+  const 最大 = Math.max(1, ...並.map(x => x[1]));
+  const 合計 = items.reduce((a, x) => a + x[1], 0);
+  if (!並.length) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "var(--sub)",
+      padding: "10px 0"
+    }
+  }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093");
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--card)",
+      borderRadius: 12,
+      padding: "12px 13px 4px",
+      boxShadow: "var(--card-shadow)"
+    }
+  }, 並.map(([名, n]) => /*#__PURE__*/React.createElement("div", {
+    key: 名,
+    style: {
+      marginBottom: 10
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5084,86 +5342,274 @@ function DeviceStatsPanel() {
       color: "var(--ink)",
       marginBottom: 4
     }
-  }, /*#__PURE__*/React.createElement("span", null, label), /*#__PURE__*/React.createElement("span", null, n, "\u4EF6\uFF08", total ? Math.round(n / total * 100) : 0, "%\uFF09")), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, 名), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontVariantNumeric: "tabular-nums",
+      flexShrink: 0,
+      marginLeft: 8
+    }
+  }, n, 単位, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--sub)",
+      fontWeight: 700
+    }
+  }, "\uFF08", 合計 ? Math.round(n / 合計 * 100) : 0, "%\uFF09"))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 8,
       background: "var(--chip)",
-      borderRadius: 5,
+      borderRadius: 4,
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       height: "100%",
-      width: total ? `${n / total * 100}%` : "0%",
+      width: `${n / 最大 * 100}%`,
       background: "var(--fill)",
-      borderRadius: 5
+      borderRadius: 4
     }
-  })));
+  })))), items.length > 並.length && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--sub)",
+      marginBottom: 8
+    }
+  }, "\u307B\u304B ", items.length - 並.length, "\u4EF6"));
+}
+const 数える = (arr, f) => {
+  const m = {};
+  arr.forEach(r => {
+    const k = f(r);
+    if (k) m[k] = (m[k] || 0) + 1;
+  });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]);
+};
+
+/* ───────────── 端末：いつ・何で使われているか ───────────── */
+function DeviceStatsPanel() {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ver, setVer] = useState(0);
+  const [日数, set日数] = useState(30);
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const d = await api.listDeviceVisits(1500);
+        if (alive) setRows(d || []);
+      } catch (e) {} finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [ver]);
+  const 今日 = 期間内(rows, 1, 0).filter(r => 日キー(r.created_at) === 日キー(Date.now())).length;
+  const 今週 = 期間内(rows, 7, 0).length,
+    先週 = 期間内(rows, 14, 7).length;
+  const 今月 = 期間内(rows, 30, 0).length;
+  const 対象 = 期間内(rows, 日数, 0);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      gap: 10,
       marginBottom: 12
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--sub)",
-      lineHeight: 1.6
+      lineHeight: 1.7
     }
-  }, "\u76F4\u8FD1", total, "\u4EF6\u306E\u30A2\u30AF\u30BB\u30B9\u306E\u5185\u8A33\u3067\u3059\uFF08\u540C\u3058\u7AEF\u672B\u306F1\u65E51\u56DE\u307E\u3067\u96C6\u8A08\uFF09\u3002", /*#__PURE__*/React.createElement("br", null), "\u500B\u4EBA\u306F\u7279\u5B9A\u3057\u3066\u3044\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement("button", {
+  }, "\u30A2\u30D7\u30EA\u3092\u958B\u3044\u305F\u7AEF\u672B\u306E\u8A18\u9332\u3067\u3059\u3002\u540C\u3058\u7AEF\u672B\u306F1\u65E51\u56DE\u307E\u3067\u6570\u3048\u307E\u3059\u3002\u8AB0\u304C\u4F7F\u3063\u305F\u304B\u306F\u8A18\u9332\u3057\u3066\u3044\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVer(v => v + 1),
     disabled: loading,
     style: {
       flexShrink: 0,
       border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
+      background: "var(--card)",
       color: "var(--text)",
       borderRadius: 9,
       padding: "7px 13px",
       fontSize: 12,
       fontWeight: 800,
-      cursor: loading ? "default" : "pointer"
+      cursor: "pointer"
     }
-  }, loading ? "更新中…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
+  }, loading ? "…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      color: "var(--faint)",
+      color: "var(--sub)",
       padding: "30px 0",
       fontSize: 13
     }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : total === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      color: "var(--faint)",
+      color: "var(--sub)",
       padding: "40px 0",
-      fontSize: 13,
-      lineHeight: 1.8
+      fontSize: 13
     }
   }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 10
+      display: "flex",
+      gap: 8
     }
-  }, "\u6A5F\u7A2E"), platforms.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
-    key: k,
-    label: k,
-    n: n
+  }, /*#__PURE__*/React.createElement(数字札, {
+    名: "\u4ECA\u65E5",
+    値: 今日,
+    単位: "\u53F0"
+  }), /*#__PURE__*/React.createElement(数字札, {
+    名: "\u3053\u306E7\u65E5",
+    値: 今週,
+    単位: "\u53F0",
+    差: 今週 - 先週
+  }), /*#__PURE__*/React.createElement(数字札, {
+    名: "\u3053\u306E30\u65E5",
+    値: 今月,
+    単位: "\u53F0"
+  })), /*#__PURE__*/React.createElement(見出し, {
+    補: "\u306E\u3079\u53F0\u6570"
+  }, "\u6BCE\u65E5\u306E\u5229\u7528"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, [14, 30, 90].map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    onClick: () => set日数(d),
+    "aria-pressed": 日数 === d,
+    style: {
+      border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)",
+      background: 日数 === d ? "var(--soft)" : "var(--card)",
+      color: 日数 === d ? "var(--primary)" : "var(--text)",
+      borderRadius: 9,
+      padding: "6px 12px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, d === 90 ? "3か月" : d + "日"))), /*#__PURE__*/React.createElement(日別棒, {
+    rows: 対象,
+    日数: 日数,
+    単位: "\u53F0"
+  }), /*#__PURE__*/React.createElement(見出し, {
+    補: `直近${日数}日`
+  }, "\u4F7F\u308F\u308C\u308B\u6642\u9593\u5E2F"), /*#__PURE__*/React.createElement(時間帯の地図, {
+    rows: 対象
+  }), /*#__PURE__*/React.createElement(見出し, {
+    補: `直近${日数}日`
+  }, "\u6A5F\u7A2E"), /*#__PURE__*/React.createElement(横棒, {
+    items: 数える(対象, r => r.platform),
+    単位: "\u53F0"
+  }), /*#__PURE__*/React.createElement(見出し, {
+    補: `直近${日数}日`
+  }, "\u30D6\u30E9\u30A6\u30B6"), /*#__PURE__*/React.createElement(横棒, {
+    items: 数える(対象, r => r.browser),
+    単位: "\u53F0"
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginTop: 16
+    }
+  }, "\u203B \u5E97\u8217\u5225\u306E\u96C6\u8A08\u306F\u51FA\u3057\u3066\u3044\u307E\u305B\u3093\u3002\u3053\u308C\u307E\u3067\u306E\u8A18\u9332\u306F\u3001\u3069\u306E\u5E97\u3067\u958B\u3044\u3066\u3082\u300C\u5317\u90E8\u5E97\u300D\u3068\u3057\u3066\u6B8B\u3063\u3066\u3044\u305F\u305F\u3081\u3067\u3059\u3002")));
+}
+
+/* ───────────── 記録：何が見られているか（一覧の上にのせる要約） ───────────── */
+function ViewInsights({
+  pops,
+  views
+}) {
+  const [日数, set日数] = useState(30);
+  const 公開 = pops.filter(p => !p.archived);
+  const 名簿 = {};
+  pops.forEach(p => {
+    名簿[p.id] = p;
+  });
+  const 自部門 = views.filter(v => 名簿[v.pop_id]); // いまの部門のポップだけ
+  const 今週 = 期間内(自部門, 7, 0).length,
+    先週 = 期間内(自部門, 14, 7).length;
+  const 対象 = 期間内(自部門, 日数, 0);
+  const 見られた = new Set(期間内(自部門, 30, 0).map(v => v.pop_id));
+  const 二週前 = Date.now() - 14 * 86400000;
+  const 眠り = 公開.filter(p => !見られた.has(p.id) && new Date(p.created_at).getTime() < 二週前).length;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 18
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(数字札, {
+    名: "\u3053\u306E7\u65E5\u306E\u95B2\u89A7",
+    値: 今週,
+    単位: "\u56DE",
+    差: 今週 - 先週
+  }), /*#__PURE__*/React.createElement(数字札, {
+    名: "30\u65E5\u3067\u898B\u3089\u308C\u305F",
+    値: 見られた.size,
+    単位: "\u679A"
+  }), /*#__PURE__*/React.createElement(数字札, {
+    名: "\u7720\u3063\u3066\u3044\u308B",
+    値: 眠り,
+    単位: "\u679A"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
-      color: "var(--ink)",
-      margin: "18px 0 10px"
+      fontSize: 11,
+      color: "var(--sub)",
+      marginTop: 6,
+      lineHeight: 1.7
     }
-  }, "\u30D6\u30E9\u30A6\u30B6"), browsers.map(([k, n]) => /*#__PURE__*/React.createElement(Bar, {
-    key: k,
-    label: k,
-    n: n
-  }))));
+  }, "\u300C\u7720\u3063\u3066\u3044\u308B\u300D\u306F\u3001\u516C\u958B\u4E2D\u30FB\u6295\u7A3F\u304B\u30892\u9031\u9593\u4EE5\u4E0A\u30FB30\u65E5\u9593\u958B\u304B\u308C\u3066\u3044\u306A\u3044\u3082\u306E\u3002\u4E0B\u306E\u9806\u4F4D\u306E\u300C\u7720\u3063\u3066\u3044\u308B\u300D\u304B\u3089\u6574\u7406\u3067\u304D\u307E\u3059\u3002"), /*#__PURE__*/React.createElement(見出し, {
+    補: "\u306E\u3079\u56DE\u6570"
+  }, "\u6BCE\u65E5\u306E\u95B2\u89A7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, [14, 30, 90].map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    onClick: () => set日数(d),
+    "aria-pressed": 日数 === d,
+    style: {
+      border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)",
+      background: 日数 === d ? "var(--soft)" : "var(--card)",
+      color: 日数 === d ? "var(--primary)" : "var(--text)",
+      borderRadius: 9,
+      padding: "6px 12px",
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, d === 90 ? "3か月" : d + "日"))), /*#__PURE__*/React.createElement(日別棒, {
+    rows: 対象,
+    日数: 日数,
+    単位: "\u56DE"
+  }), /*#__PURE__*/React.createElement(見出し, {
+    補: `直近${日数}日`
+  }, "\u3088\u304F\u898B\u3089\u308C\u308B\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement(横棒, {
+    items: 数える(対象, v => 名簿[v.pop_id] && 名簿[v.pop_id].genre || "未分類"),
+    単位: "\u56DE"
+  }), /*#__PURE__*/React.createElement(見出し, {
+    補: `直近${日数}日・投稿した店`
+  }, "\u3069\u306E\u5E97\u306E\u30DD\u30C3\u30D7\u304C\u898B\u3089\u308C\u3066\u3044\u308B\u304B"), /*#__PURE__*/React.createElement(横棒, {
+    items: 数える(対象, v => 名簿[v.pop_id] && 名簿[v.pop_id].store_name),
+    単位: "\u56DE"
+  }));
 }
 function RankingPanel({
   onCreateFromPop
@@ -5174,6 +5620,7 @@ function RankingPanel({
   const [sel, setSel] = useState(null);
   const [ver, setVer] = useState(0);
   const [recent, setRecent] = useState({}); // pop_id -> 回数
+  const [views, setViews] = useState([]); // 直近90日の閲覧（pop_id, created_at）
   const [days, setDays] = useState(7);
   useEffect(() => {
     let alive = true;
@@ -5184,11 +5631,13 @@ function RankingPanel({
         if (alive) setPops(d);
       } catch (e) {}
       try {
-        const v = await api.listRecentViews(days);
+        const v = await api.listRecentViews(90);
         if (alive) {
+          setViews(v || []);
+          const 境 = Date.now() - days * 86400000;
           const m = {};
           (v || []).forEach(x => {
-            m[x.pop_id] = (m[x.pop_id] || 0) + 1;
+            if (new Date(x.created_at).getTime() >= 境) m[x.pop_id] = (m[x.pop_id] || 0) + 1;
           });
           setRecent(m);
         }
@@ -5202,6 +5651,33 @@ function RankingPanel({
       alive = false;
     };
   }, [ver, days]);
+
+  // 急上昇：この7日と、その前の7日の差
+  const 週 = {},
+    前週 = {};
+  views.forEach(v => {
+    const t = Date.now() - new Date(v.created_at).getTime();
+    if (t < 7 * 86400000) 週[v.pop_id] = (週[v.pop_id] || 0) + 1;else if (t < 14 * 86400000) 前週[v.pop_id] = (前週[v.pop_id] || 0) + 1;
+  });
+  // 眠っている：公開中・投稿から2週間以上・30日見られていない。古い順
+  const 見30 = new Set(views.filter(v => Date.now() - new Date(v.created_at).getTime() < 30 * 86400000).map(v => v.pop_id));
+  const 眠り = pops.filter(p => !p.archived && !見30.has(p.id) && Date.now() - new Date(p.created_at).getTime() > 14 * 86400000).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  const [片付け中, set片付け中] = useState("");
+  const 寝かせる = async p => {
+    if (!confirm(`「${p.product_name}」をアーカイブへ移します。よろしいですか？\n（アーカイブからいつでも戻せます）`)) return;
+    set片付け中(p.id);
+    try {
+      await api.setArchivedMany([p.id], true);
+      setPops(ps => ps.map(x => x.id === p.id ? {
+        ...x,
+        archived: true
+      } : x));
+    } catch (e) {
+      alert("移せませんでした。管理画面に入り直してから試してください");
+    } finally {
+      set片付け中("");
+    }
+  };
   const METRICS = [{
     key: "recent",
     label: "最近",
@@ -5221,6 +5697,16 @@ function RankingPanel({
     key: "like",
     label: "いいね",
     get: p => p.likes || 0,
+    unit: ""
+  }, {
+    key: "rise",
+    label: "急上昇",
+    get: p => (週[p.id] || 0) - (前週[p.id] || 0),
+    unit: "回増"
+  }, {
+    key: "cold",
+    label: "眠っている",
+    get: () => 0,
     unit: ""
   }];
   const m = METRICS.find(x => x.key === metric);
@@ -5269,7 +5755,17 @@ function RankingPanel({
       fontWeight: 800,
       cursor: loading ? "default" : "pointer"
     }
-  }, loading ? "更新中…" : "更新")), metric === "recent" && /*#__PURE__*/React.createElement("div", {
+  }, loading ? "更新中…" : "更新")), !loading && /*#__PURE__*/React.createElement(ViewInsights, {
+    pops: pops,
+    views: views
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)",
+      margin: "4px 0 9px"
+    }
+  }, "\u30DD\u30C3\u30D7\u3054\u3068\u306E\u9806\u4F4D"), metric === "recent" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -5290,7 +5786,8 @@ function RankingPanel({
     }
   }, d === 30 ? "1か月" : d + "日間"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "flex",
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
       gap: 7,
       marginBottom: 12
     }
@@ -5318,7 +5815,7 @@ function RankingPanel({
       opacity: 0.75,
       marginTop: 2
     }
-  }, "\u8A08 ", totals[x.key])))), loading ? /*#__PURE__*/React.createElement("div", null, [0, 1, 2, 3, 4].map(i => /*#__PURE__*/React.createElement("div", {
+  }, x.key === "cold" ? `${眠り.length}枚` : x.key === "rise" ? `${pops.filter(p => x.get(p) > 0).length}枚` : `計 ${totals[x.key]}`)))), loading ? /*#__PURE__*/React.createElement("div", null, [0, 1, 2, 3, 4].map(i => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
@@ -5363,7 +5860,88 @@ function RankingPanel({
       borderRadius: 6,
       marginTop: 7
     }
-  }))))) : ranked.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }))))) : metric === "cold" ? 眠り.filter(p => !p.archived).length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--sub)",
+      padding: "36px 0",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, "\u7720\u3063\u3066\u3044\u308B\u30DD\u30C3\u30D7\u306F\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--sub)",
+      lineHeight: 1.8,
+      marginBottom: 10
+    }
+  }, "\u516C\u958B\u4E2D\u3067\u3001\u6295\u7A3F\u304B\u30892\u9031\u9593\u4EE5\u4E0A\u305F\u3061\u300130\u65E5\u9593\u3060\u308C\u306B\u3082\u958B\u304B\u308C\u3066\u3044\u306A\u3044\u3082\u306E\u3067\u3059\u3002\u53E4\u3044\u9806\u3002", /*#__PURE__*/React.createElement("br", null), "\u58F2\u5834\u3067\u4F7F\u3044\u7D42\u308F\u3063\u305F\u3082\u306E\u306F\u3001\u30A2\u30FC\u30AB\u30A4\u30D6\u3078\u79FB\u3059\u3068\u4E00\u89A7\u304C\u3059\u3063\u304D\u308A\u3057\u307E\u3059\uFF08\u3044\u3064\u3067\u3082\u623B\u305B\u307E\u3059\uFF09\u3002"), 眠り.filter(p => !p.archived).map(p => {
+    const 日 = Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000);
+    return /*#__PURE__*/React.createElement("div", {
+      key: p.id,
+      style: {
+        display: "flex",
+        gap: 11,
+        alignItems: "center",
+        background: "var(--card)",
+        borderRadius: 13,
+        padding: "9px 10px",
+        marginBottom: 8,
+        boxShadow: "var(--card-shadow)"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: p.image_url,
+      alt: "",
+      loading: "lazy",
+      onClick: () => setSel(p),
+      style: {
+        width: 52,
+        height: 52,
+        objectFit: "cover",
+        borderRadius: 9,
+        background: "var(--mat)",
+        flexShrink: 0,
+        cursor: "pointer"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        cursor: "pointer"
+      },
+      onClick: () => setSel(p)
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 800,
+        color: "var(--ink)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, p.product_name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: "var(--sub)",
+        marginTop: 2
+      }
+    }, [p.genre, p.store_name].filter(Boolean).join(" · "), "\u3000\u6295\u7A3F\u304B\u3089", 日, "\u65E5")), /*#__PURE__*/React.createElement("button", {
+      onClick: () => 寝かせる(p),
+      disabled: 片付け中 === p.id,
+      style: {
+        flexShrink: 0,
+        border: "1px solid var(--line)",
+        background: "var(--card)",
+        color: "var(--text)",
+        borderRadius: 9,
+        padding: "8px 10px",
+        fontSize: 12,
+        fontWeight: 800,
+        cursor: "pointer",
+        fontFamily: "inherit"
+      }
+    }, 片付け中 === p.id ? "移しています…" : "アーカイブへ"));
+  })) : ranked.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
