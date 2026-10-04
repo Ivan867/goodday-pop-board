@@ -883,8 +883,6 @@ function AdminTab({
     d: "M5 4.5h9l5 5v10H5z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M14 4.5v5h5"
-  }))], ["cat", "カタログ", null, "#378add", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
-    d: "M4 5.5h7v14H4zM13 5.5h7v14h-7z"
   }))], ["support", "店舗支援の画像", supPhotos.length + supTrash.length || 0, "#7a5cb0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
     x: "3",
     y: "5",
@@ -983,7 +981,7 @@ function AdminTab({
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
-  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "cat" && /*#__PURE__*/React.createElement(CatalogAdmin, null), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -4600,6 +4598,62 @@ function CatalogAdmin() {
 }
 
 // ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════
+/* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
+   取れなければ種類の札を出す。 */
+const 資料の色 = k => ({
+  pdf: "#b3261e",
+  image: "#2f6fb0",
+  sheet: "#2f7a3a",
+  link: "#6b4ea0"
+})[k] || "#59636f";
+const 資料の名 = k => ({
+  pdf: "PDF",
+  image: "画像",
+  sheet: "表",
+  link: "リンク"
+})[k] || "資料";
+function 資料の縮小URL(r) {
+  const u = r.url || "";
+  if (r.kind === "image" || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u)) return u;
+  const m = /docs\.google\.com\/[a-z]+\/d\/([A-Za-z0-9_-]{20,})/.exec(u) || /drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{20,})/.exec(u);
+  if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w600";
+  return null;
+}
+function 資料の絵({
+  r
+}) {
+  const [だめ, setだめ] = useState(false);
+  const src = 資料の縮小URL(r);
+  if (src && !だめ) return /*#__PURE__*/React.createElement("img", {
+    src: src,
+    alt: "",
+    loading: "lazy",
+    referrerPolicy: "no-referrer",
+    onError: () => setだめ(true)
+  });
+  const 印 = {
+    pdf: "📄",
+    image: "🖼",
+    sheet: "📊",
+    link: "🔗"
+  }[r.kind] || r.emoji || "📄";
+  let 置き場 = "";
+  try {
+    置き場 = new URL(r.url).hostname.replace(/^www\./, "");
+  } catch (e) {}
+  return /*#__PURE__*/React.createElement("span", {
+    className: "res-fallback",
+    style: {
+      background: `linear-gradient(140deg, ${資料の色(r.kind)}22, ${資料の色(r.kind)}0a)`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 34
+    }
+  }, 印), /*#__PURE__*/React.createElement("span", {
+    className: "res-fb-host"
+  }, 置き場));
+}
 function ResourceAdmin() {
   const KINDS = [{
     k: "pdf",
@@ -4906,134 +4960,67 @@ function ResourceAdmin() {
   }, loading ? "更新中…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      color: "var(--faint)",
+      color: "var(--sub)",
       padding: "26px 0",
       fontSize: 13
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
-      color: "var(--faint)",
+      color: "var(--sub)",
       padding: "32px 0",
       fontSize: 13
     }
   }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 8
-    }
+    className: "res-grid"
   }, list.map((r, i) => /*#__PURE__*/React.createElement("div", {
     key: r.id,
+    className: "res-card",
     style: {
-      border: "1px solid var(--line)",
-      borderRadius: 11,
-      padding: "10px 12px",
-      background: "var(--card, #fff)",
-      opacity: r.visible ? 1 : 0.55
+      opacity: r.visible ? 1 : 0.6
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 9
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 19,
-      flexShrink: 0
-    }
-  }, r.emoji || "📄"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      minWidth: 0,
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 900,
-      color: "var(--ink)",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, r.title), r.description && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--sub)",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, r.description)), /*#__PURE__*/React.createElement("a", {
+  }, /*#__PURE__*/React.createElement("a", {
     href: r.url,
     target: "_blank",
     rel: "noopener noreferrer",
+    className: "res-thumb",
+    "aria-label": r.title + "を開く"
+  }, /*#__PURE__*/React.createElement(資料の絵, {
+    r: r
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "res-kind",
     style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--primary-soft)",
-      textDecoration: "none",
-      flexShrink: 0
+      background: 資料の色(r.kind)
     }
-  }, "\u958B\u304F")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6,
-      marginTop: 9,
-      flexWrap: "wrap"
-    }
+  }, 資料の名(r.kind)), !r.visible && /*#__PURE__*/React.createElement("span", {
+    className: "res-hidden"
+  }, "\u975E\u8868\u793A")), /*#__PURE__*/React.createElement("div", {
+    className: "res-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "res-title"
+  }, r.title), r.description && /*#__PURE__*/React.createElement("div", {
+    className: "res-desc"
+  }, r.description)), /*#__PURE__*/React.createElement("div", {
+    className: "res-ops"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => toggleVisible(r),
+    "aria-pressed": !!r.visible,
     style: {
-      border: "1px solid var(--line)",
       background: r.visible ? "var(--soft)" : "var(--card)",
-      color: r.visible ? "var(--primary)" : "var(--sub)",
-      borderRadius: 7,
-      padding: "5px 11px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: "pointer"
+      color: r.visible ? "var(--primary)" : "var(--sub)"
     }
   }, r.visible ? "表示中" : "非表示"), /*#__PURE__*/React.createElement("button", {
     onClick: () => move(r, -1),
     disabled: i === 0,
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: i === 0 ? "var(--faint)" : "var(--text)",
-      borderRadius: 7,
-      padding: "5px 10px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: i === 0 ? "default" : "pointer"
-    }
-  }, "\u2191"), /*#__PURE__*/React.createElement("button", {
+    "aria-label": "\u524D\u3078"
+  }, "\u2190"), /*#__PURE__*/React.createElement("button", {
     onClick: () => move(r, 1),
     disabled: i === list.length - 1,
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      color: i === list.length - 1 ? "var(--faint)" : "var(--text)",
-      borderRadius: 7,
-      padding: "5px 10px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: i === list.length - 1 ? "default" : "pointer"
-    }
-  }, "\u2193"), /*#__PURE__*/React.createElement("button", {
+    "aria-label": "\u5F8C\u308D\u3078"
+  }, "\u2192"), /*#__PURE__*/React.createElement("button", {
     onClick: () => del(r),
-    style: {
-      marginLeft: "auto",
-      border: "1px solid #f0c8c4",
-      background: "var(--card, #fff)",
-      color: "#b3261e",
-      borderRadius: 7,
-      padding: "5px 11px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: "pointer"
-    }
+    className: "res-del",
+    "aria-label": "\u524A\u9664"
   }, "\u524A\u9664"))))));
 }
 
