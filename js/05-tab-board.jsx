@@ -93,18 +93,26 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const [読めず, set読めず] = useState(false);       // 取り直しても返事が来なかった
+  // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
+  const load = useCallback(async (静か) => {
+    if (!静か) setLoading(true);
     try {
       const data = await api.listActive();
-      setPops(data);
+      setPops(data); set読めず(false);
     }
-    catch(e) { console.error(e); }
-    finally { setLoading(false); }
+    catch(e) { console.error(e); if (!静か) set読めず(true); }
+    finally { if (!静か) setLoading(false); }
   }, []);
 
 
   useEffect(() => { load(); }, [load]);
+  // アプリが一時停止から戻ってきたら、一覧を取り直す（14-app が知らせる）
+  useEffect(() => {
+    const 戻った = () => load(pops.length > 0);
+    window.addEventListener("appResume", 戻った);
+    return () => window.removeEventListener("appResume", 戻った);
+  }, [load, pops.length]);
 
   useEffect(() => {
     if (actionsRef) actionsRef.current = { refresh: load, openUpload: () => setShowUp(true) };
@@ -266,6 +274,13 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                 </div>
               </div>
             ))}
+          </div>
+        ) : (読めず && pops.length === 0) ? (
+          <div style={{ textAlign:"center", padding:"70px 20px" }}>
+            <div style={{ fontWeight:800, fontSize:16, color:"var(--ink)" }}>一覧を読み込めませんでした</div>
+            <div style={{ fontSize:13, color:"var(--sub)", marginTop:6, lineHeight:1.8 }}>電波の弱い所では、返事が届かないことがあります。</div>
+            <button onClick={() => load()} style={{ marginTop:16, border:"none", background:"var(--fill)", color:"#fff",
+              borderRadius:12, padding:"12px 26px", fontSize:15, fontWeight:900, cursor:"pointer", fontFamily:"inherit" }}>もう一度読み込む</button>
           </div>
         ) : filtered.length===0 ? (
           <div style={{ textAlign:"center", padding:80, color:"var(--faint)" }}>

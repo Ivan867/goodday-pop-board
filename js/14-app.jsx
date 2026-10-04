@@ -95,6 +95,32 @@ function App() {
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);   // さがす（右のドロワー）が開いているか
+  // ホーム画面のアプリは、閉じても終了せず一時停止している。戻ってきたときに、
+  // 切れた通信を待ち続けて止まらないよう、ここで取り直しを指示する。
+  //   30秒以上離れていた → 一覧などを裏で取り直す（appResume）
+  //   10分以上離れていた → ページごと読み直す（入力の途中なら読み直さない）
+  useEffect(() => {
+    let 離れた = 0;
+    const 入力中 = () => {
+      try {
+        return [...document.querySelectorAll("input, textarea")].some(el =>
+          el.offsetParent !== null && (el.type === "file" ? (el.files && el.files.length) : String(el.value || "").trim() !== ""));
+      } catch (e) { return false; }
+    };
+    const 見る = () => {
+      if (document.visibilityState === "hidden") { 離れた = Date.now(); return; }
+      if (!離れた) return;
+      const 秒 = (Date.now() - 離れた) / 1000; 離れた = 0;
+      if (秒 >= 600 && !入力中()) { try { location.reload(); } catch (e) {} return; }
+      if (秒 >= 30) { try { window.dispatchEvent(new CustomEvent("appResume")); } catch (e) {} }
+    };
+    // 保存されていた画面から戻された場合も、取り直す
+    const 復元 = (e) => { if (e && e.persisted) { try { window.dispatchEvent(new CustomEvent("appResume")); } catch (x) {} } };
+    document.addEventListener("visibilitychange", 見る);
+    window.addEventListener("pageshow", 復元);
+    return () => { document.removeEventListener("visibilitychange", 見る); window.removeEventListener("pageshow", 復元); };
+  }, []);
+
   // 使われた機能を数える（何が、だけ。誰が、は記録しない）
   useEffect(() => { try { api.logFeature("画面:" + tab); } catch (e) {} }, [tab]);
   useEffect(() => { if (searchOpen) try { api.logFeature("さがす"); } catch (e) {} }, [searchOpen]);
@@ -490,6 +516,14 @@ function App() {
                 </button>
               ))}
             </div>
+            {/* アドレスバーのないホーム画面のアプリでも、自分で読み直せるように */}
+            <button className="menu-reload" onClick={() => { try { location.reload(); } catch (e) {} }}
+              style={{ marginTop:12, width:"100%", border:"1px dashed var(--line)", background:"transparent", color:"var(--sub)",
+                borderRadius:12, padding:"11px 14px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                gap:8, fontFamily:"inherit", fontSize:14, fontWeight:800, flexShrink:0 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+              読み込み直す
+            </button>
 
           </div>
         </>

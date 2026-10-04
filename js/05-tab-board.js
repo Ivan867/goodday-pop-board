@@ -170,20 +170,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
-  const load = useCallback(async () => {
-    setLoading(true);
+  const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
+  // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
+  const load = useCallback(async 静か => {
+    if (!静か) setLoading(true);
     try {
       const data = await api.listActive();
       setPops(data);
+      set読めず(false);
     } catch (e) {
       console.error(e);
+      if (!静か) set読めず(true);
     } finally {
-      setLoading(false);
+      if (!静か) setLoading(false);
     }
   }, []);
   useEffect(() => {
     load();
   }, [load]);
+  // アプリが一時停止から戻ってきたら、一覧を取り直す（14-app が知らせる）
+  useEffect(() => {
+    const 戻った = () => load(pops.length > 0);
+    window.addEventListener("appResume", 戻った);
+    return () => window.removeEventListener("appResume", 戻った);
+  }, [load, pops.length]);
   useEffect(() => {
     if (actionsRef) actionsRef.current = {
       refresh: load,
@@ -672,7 +682,39 @@ function BoardTab({
       borderRadius: 6,
       marginTop: 7
     }
-  }))))) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }))))) : 読めず && pops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "70px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 16,
+      color: "var(--ink)"
+    }
+  }, "\u4E00\u89A7\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)",
+      marginTop: 6,
+      lineHeight: 1.8
+    }
+  }, "\u96FB\u6CE2\u306E\u5F31\u3044\u6240\u3067\u306F\u3001\u8FD4\u4E8B\u304C\u5C4A\u304B\u306A\u3044\u3053\u3068\u304C\u3042\u308A\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => load(),
+    style: {
+      marginTop: 16,
+      border: "none",
+      background: "var(--fill)",
+      color: "#fff",
+      borderRadius: 12,
+      padding: "12px 26px",
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer",
+      fontFamily: "inherit"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6\u8AAD\u307F\u8FBC\u3080")) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 80,

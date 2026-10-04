@@ -135,6 +135,36 @@ function sbWithDept(path, method, body) {
     body
   };
 }
+
+// 返事を待つのは8秒まで。iPhoneのホーム画面のアプリは、一時停止から戻ると
+// 通信が切れたまま「返事待ち」で止まることがあるため、上限を設けてあきらめさせる。
+const SB_待つ上限 = 8000;
+
+// 1回分の通信。返事の中身（本文）を読み終えるまでを8秒で区切る。
+async function sbFetchOnce(url, init) {
+  const 止め = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const 時計 = 止め ? setTimeout(() => 止め.abort(), SB_待つ上限) : 0;
+  try {
+    const r = await fetch(url, 止め ? {
+      ...init,
+      signal: 止め.signal
+    } : init);
+    const 本文 = await r.text(); // 本文の途中で止まる場合もあるので、ここまで含めて8秒
+    return {
+      r,
+      本文
+    };
+  } catch (e) {
+    if (止め && 止め.signal.aborted) {
+      const t = new Error("timeout");
+      t.timeout = true;
+      throw t;
+    }
+    throw e;
+  } finally {
+    if (時計) clearTimeout(時計);
+  }
+}
 async function sbFetch(path, {
   method = "GET",
   body,
@@ -154,24 +184,45 @@ async function sbFetch(path, {
     } : {}),
     ...headers
   };
-  let r;
+  const init = {
+    method,
+    headers: h(extra),
+    body: body !== undefined ? JSON.stringify(body) : undefined
+  };
+  let 結果;
   try {
-    r = await fetch(`${SB_URL}${path}`, {
-      method,
-      headers: h(extra),
-      body: body !== undefined ? JSON.stringify(body) : undefined
-    });
+    結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
   } catch (e) {
-    // 圏外・電波切れなど、そもそも届かなかった場合
-    sbNotifyFail(method, "network");
-    throw e;
+    // 読み込み（GET）だけは、もう一度だけ取り直す。
+    // 保存（POST など）は二重に登録される恐れがあるので取り直さない。
+    if (method === "GET") {
+      try {
+        結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
+      } catch (e2) {
+        sbNotifyFail(method, e2.timeout ? "timeout" : "network");
+        throw e2;
+      }
+    } else {
+      sbNotifyFail(method, e.timeout ? "timeout" : "network"); // 圏外・電波切れ・待ちすぎ
+      throw e;
+    }
   }
+  const {
+    r,
+    本文
+  } = 結果;
   if (!r.ok) {
-    const t = await r.text();
-    sbNotifyFail(method, t);
-    throw new Error(t);
+    sbNotifyFail(method, 本文);
+    throw new Error(本文);
   }
-  return r;
+  // 呼ぶ側は今まで通り .json() / .text() / .headers を使える
+  // 204 などの「中身なし」の返事に本文を付けると Response が例外を投げるので、空にする
+  const 中身なし = r.status === 204 || r.status === 205 || r.status === 304;
+  return new Response(中身なし ? null : 本文, {
+    status: r.status,
+    statusText: r.statusText,
+    headers: r.headers
+  });
 }
 const sbJson = async (path, opts) => (await sbFetch(path, opts)).json(); // 配列/JSONを返す
 const sbOne = async (path, opts) => (await sbJson(path, opts))[0]; // 先頭1件を返す
