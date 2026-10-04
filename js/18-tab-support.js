@@ -41,17 +41,15 @@ function SupportTab() {
       set番号("");
     }
   };
-  const [どれ, setどれ] = useState(() => {
-    try {
-      return localStorage.getItem("supportMode") || "photo";
-    } catch (e) {
-      return "photo";
-    }
-  });
+
+  // 開いたら、まず資料。塩干発注と画像の共有は下の小さな入口から
+  const [どれ, setどれ] = useState("docs");
   const 選ぶ = k => {
     setどれ(k);
     try {
-      localStorage.setItem("supportMode", k);
+      window.scrollTo(0, 0);
+      const 面 = document.getElementById("app-scroll");
+      if (面) 面.scrollTop = 0;
     } catch (e) {}
   };
 
@@ -133,40 +131,226 @@ function SupportTab() {
     }, "\u3072\u3089\u304F")));
   }
 
-  // ── 番号のあと：画像と塩干発注が並ぶ ──
-  const 切替 = /*#__PURE__*/React.createElement("div", {
+  // ── 番号のあと：資料が主役。ほかの2つは下に小さく ──
+  const 戻る = /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1100,
       margin: "0 auto",
-      padding: "6px 16px 0"
+      padding: "8px 16px 0"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => 選ぶ("docs"),
+    style: {
+      border: "1px solid var(--line)",
+      background: "var(--card)",
+      color: "var(--text)",
+      borderRadius: 10,
+      padding: "9px 14px",
+      fontSize: 13,
+      fontWeight: 800,
+      cursor: "pointer",
+      fontFamily: "inherit",
+      marginBottom: 12
+    }
+  }, "\u2039 \u8CC7\u6599\u3078\u623B\u308B"));
+  // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
+  if (どれ === "order") return /*#__PURE__*/React.createElement("div", null, 戻る, typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null);
+  if (どれ === "photo") return /*#__PURE__*/React.createElement("div", null, 戻る, /*#__PURE__*/React.createElement(SupportPhotos, null));
+  return /*#__PURE__*/React.createElement(SupportDocs, {
+    選ぶ: 選ぶ
+  });
+}
+
+// 店舗支援の資料。管理画面で「表示」にしたものだけを並べる
+function SupportDocs({
+  選ぶ
+}) {
+  const [一覧, set一覧] = useState(null);
+  const [失敗, set失敗] = useState(false);
+  const 読む = useCallback(async () => {
+    set失敗(false);
+    try {
+      set一覧((await api.listResources(true)) || []);
+    } catch (e) {
+      set失敗(true);
+      set一覧([]);
+    }
+  }, []);
+  useEffect(() => {
+    読む();
+  }, [読む]);
+  const 小入口 = (k, 題, 説明, 絵) => /*#__PURE__*/React.createElement("button", {
+    onClick: () => 選ぶ(k),
+    className: "sup-mini"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "sup-mini-ic",
+    "aria-hidden": "true"
+  }, 絵), /*#__PURE__*/React.createElement("span", {
+    style: {
+      minWidth: 0,
+      textAlign: "left"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 13.5,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, 題), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 11.5,
+      color: "var(--sub)",
+      marginTop: 1
+    }
+  }, 説明)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: "auto",
+      color: "var(--sub)",
+      fontSize: 18
+    },
+    "aria-hidden": "true"
+  }, "\u203A"));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 1100,
+      margin: "0 auto",
+      padding: "8px 16px 130px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "flex",
-      gap: 8,
-      marginBottom: 12
+      fontSize: 12.5,
+      color: "var(--sub)",
+      margin: "6px 0 12px"
     }
-  }, [["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => 選ぶ(k),
+  }, "\u8CC7\u6599\u3092\u62BC\u3059\u3068\u958B\u304D\u307E\u3059\u3002"), 一覧 === null ? /*#__PURE__*/React.createElement("div", {
+    className: "res-grid"
+  }, [0, 1, 2, 3].map(i => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "res-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "res-thumb sk"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "res-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sk",
     style: {
-      flex: 1,
-      border: "1px solid " + (どれ === k ? "var(--primary)" : "var(--line)"),
-      background: どれ === k ? "var(--fill)" : "var(--card, #fff)",
-      color: どれ === k ? "#fff" : "var(--text)",
-      borderRadius: 10,
-      padding: "11px 6px",
-      fontSize: 13.5,
-      fontWeight: 800,
-      cursor: "pointer"
+      height: 12,
+      width: "70%",
+      borderRadius: 6,
+      marginBottom: 8
     }
-  }, l))));
-
-  // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
-  if (どれ === "order") {
-    return /*#__PURE__*/React.createElement("div", null, 切替, typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null);
-  }
-  return /*#__PURE__*/React.createElement("div", null, 切替, /*#__PURE__*/React.createElement(SupportPhotos, null));
+  }))))) : 失敗 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "40px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: "var(--ink)"
+    }
+  }, "\u8CC7\u6599\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("button", {
+    onClick: 読む,
+    style: {
+      marginTop: 12,
+      border: "none",
+      background: "var(--fill)",
+      color: "#fff",
+      borderRadius: 10,
+      padding: "10px 20px",
+      fontSize: 14,
+      fontWeight: 900,
+      cursor: "pointer",
+      fontFamily: "inherit"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6\u8AAD\u307F\u8FBC\u3080")) : 一覧.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--sub)",
+      padding: "40px 0",
+      fontSize: 13,
+      lineHeight: 1.8
+    }
+  }, "\u307E\u3060\u8CC7\u6599\u304C\u3042\u308A\u307E\u305B\u3093\u3002", /*#__PURE__*/React.createElement("br", null), "\u7BA1\u7406\u753B\u9762\u306E\u300C\u8CC7\u6599\u300D\u3067\u8FFD\u52A0\u3057\u3001\u300C\u8868\u793A\u300D\u306B\u3059\u308B\u3068\u3001\u3053\u3053\u306B\u4E26\u3073\u307E\u3059\u3002") : /*#__PURE__*/React.createElement("div", {
+    className: "res-grid"
+  }, 一覧.map(r => /*#__PURE__*/React.createElement("a", {
+    key: r.id,
+    href: r.url,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "res-card sup-doc",
+    "aria-label": r.title + "を開く"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "res-thumb"
+  }, typeof 資料の絵 === "function" ? /*#__PURE__*/React.createElement(資料の絵, {
+    r: r
+  }) : null, /*#__PURE__*/React.createElement("span", {
+    className: "res-kind",
+    style: {
+      background: typeof 資料の色 === "function" ? 資料の色(r.kind) : "#59636f"
+    }
+  }, typeof 資料の名 === "function" ? 資料の名(r.kind) : "資料")), /*#__PURE__*/React.createElement("span", {
+    className: "res-body",
+    style: {
+      display: "block",
+      paddingBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "res-title",
+    style: {
+      display: "block"
+    }
+  }, r.title), r.description && /*#__PURE__*/React.createElement("span", {
+    className: "res-desc",
+    style: {
+      display: "block"
+    }
+  }, r.description))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "var(--sub)",
+      margin: "28px 0 8px"
+    }
+  }, "\u305D\u306E\u307B\u304B"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gap: 8
+    }
+  }, 小入口("order", "塩干発注", "店舗ごとの番号で入ります", /*#__PURE__*/React.createElement("svg", {
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h16v13H4z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 9.5h8M8 13h5"
+  }))), 小入口("photo", "画像の共有", "上げてから3日で消えます", /*#__PURE__*/React.createElement("svg", {
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "5",
+    width: "18",
+    height: "14",
+    rx: "2"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 15l5-4.5 4 3.5 3-2.5 6 5"
+  })))));
 }
 function SupportPhotos() {
   const [list, setList] = useState([]);

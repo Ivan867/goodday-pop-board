@@ -28,10 +28,9 @@ function SupportTab() {
     } else { set誤り("番号が違います"); set番号(""); }
   };
 
-  const [どれ, setどれ] = useState(() => {
-    try { return localStorage.getItem("supportMode") || "photo"; } catch (e) { return "photo"; }
-  });
-  const 選ぶ = (k) => { setどれ(k); try { localStorage.setItem("supportMode", k); } catch (e) {} };
+  // 開いたら、まず資料。塩干発注と画像の共有は下の小さな入口から
+  const [どれ, setどれ] = useState("docs");
+  const 選ぶ = (k) => { setどれ(k); try { window.scrollTo(0, 0); const 面 = document.getElementById("app-scroll"); if (面) 面.scrollTop = 0; } catch (e) {} };
 
   // ── 番号を入れるまでは、中に何があるかも出さない ──
   if (!開いた) {
@@ -56,26 +55,89 @@ function SupportTab() {
     );
   }
 
-  // ── 番号のあと：画像と塩干発注が並ぶ ──
-  const 切替 = (
-    <div style={{ maxWidth:1100, margin:"0 auto", padding:"6px 16px 0" }}>
-      <div style={{ display:"flex", gap:8, marginBottom:12 }}>
-        {[["photo", "画像"], ["order", "塩干発注"]].map(([k, l]) => (
-          <button key={k} onClick={() => 選ぶ(k)}
-            style={{ flex:1, border:"1px solid " + (どれ===k ? "var(--primary)" : "var(--line)"),
-              background: どれ===k ? "var(--fill)" : "var(--card, #fff)",
-              color: どれ===k ? "#fff" : "var(--text)", borderRadius:10, padding:"11px 6px",
-              fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{l}</button>
-        ))}
+  // ── 番号のあと：資料が主役。ほかの2つは下に小さく ──
+  const 戻る = (
+    <div style={{ maxWidth:1100, margin:"0 auto", padding:"8px 16px 0" }}>
+      <button onClick={() => 選ぶ("docs")}
+        style={{ border:"1px solid var(--line)", background:"var(--card)", color:"var(--text)", borderRadius:10,
+          padding:"9px 14px", fontSize:13, fontWeight:800, cursor:"pointer", fontFamily:"inherit", marginBottom:12 }}>
+        ‹ 資料へ戻る
+      </button>
+    </div>
+  );
+  // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
+  if (どれ === "order") return (<div>{戻る}{typeof OrderTab === "function" ? <OrderTab /> : null}</div>);
+  if (どれ === "photo") return (<div>{戻る}<SupportPhotos /></div>);
+  return <SupportDocs 選ぶ={選ぶ} />;
+}
+
+// 店舗支援の資料。管理画面で「表示」にしたものだけを並べる
+function SupportDocs({ 選ぶ }) {
+  const [一覧, set一覧] = useState(null);
+  const [失敗, set失敗] = useState(false);
+  const 読む = useCallback(async () => {
+    set失敗(false);
+    try { set一覧(await api.listResources(true) || []); }
+    catch (e) { set失敗(true); set一覧([]); }
+  }, []);
+  useEffect(() => { 読む(); }, [読む]);
+
+  const 小入口 = (k, 題, 説明, 絵) => (
+    <button onClick={() => 選ぶ(k)} className="sup-mini">
+      <span className="sup-mini-ic" aria-hidden="true">{絵}</span>
+      <span style={{ minWidth:0, textAlign:"left" }}>
+        <span style={{ display:"block", fontSize:13.5, fontWeight:900, color:"var(--ink)" }}>{題}</span>
+        <span style={{ display:"block", fontSize:11.5, color:"var(--sub)", marginTop:1 }}>{説明}</span>
+      </span>
+      <span style={{ marginLeft:"auto", color:"var(--sub)", fontSize:18 }} aria-hidden="true">›</span>
+    </button>
+  );
+
+  return (
+    <div style={{ maxWidth:1100, margin:"0 auto", padding:"8px 16px 130px" }}>
+      <div style={{ fontSize:12.5, color:"var(--sub)", margin:"6px 0 12px" }}>資料を押すと開きます。</div>
+
+      {一覧 === null ? (
+        <div className="res-grid">
+          {[0,1,2,3].map(i => <div key={i} className="res-card"><div className="res-thumb sk" /><div className="res-body"><div className="sk" style={{ height:12, width:"70%", borderRadius:6, marginBottom:8 }} /></div></div>)}
+        </div>
+      ) : 失敗 ? (
+        <div style={{ textAlign:"center", padding:"40px 0" }}>
+          <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>資料を読み込めませんでした</div>
+          <button onClick={読む} style={{ marginTop:12, border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"10px 20px", fontSize:14, fontWeight:900, cursor:"pointer", fontFamily:"inherit" }}>もう一度読み込む</button>
+        </div>
+      ) : 一覧.length === 0 ? (
+        <div style={{ textAlign:"center", color:"var(--sub)", padding:"40px 0", fontSize:13, lineHeight:1.8 }}>
+          まだ資料がありません。<br />管理画面の「資料」で追加し、「表示」にすると、ここに並びます。
+        </div>
+      ) : (
+        <div className="res-grid">
+          {一覧.map(r => (
+            <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" className="res-card sup-doc" aria-label={r.title + "を開く"}>
+              <span className="res-thumb">
+                {typeof 資料の絵 === "function" ? <資料の絵 r={r} /> : null}
+                <span className="res-kind" style={{ background: typeof 資料の色 === "function" ? 資料の色(r.kind) : "#59636f" }}>
+                  {typeof 資料の名 === "function" ? 資料の名(r.kind) : "資料"}
+                </span>
+              </span>
+              <span className="res-body" style={{ display:"block", paddingBottom:12 }}>
+                <span className="res-title" style={{ display:"block" }}>{r.title}</span>
+                {r.description && <span className="res-desc" style={{ display:"block" }}>{r.description}</span>}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", margin:"28px 0 8px" }}>そのほか</div>
+      <div style={{ display:"grid", gap:8 }}>
+        {小入口("order", "塩干発注", "店舗ごとの番号で入ります",
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5.5h16v13H4z"/><path d="M8 9.5h8M8 13h5"/></svg>)}
+        {小入口("photo", "画像の共有", "上げてから3日で消えます",
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/></svg>)}
       </div>
     </div>
   );
-
-  // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
-  if (どれ === "order") {
-    return (<div>{切替}{typeof OrderTab === "function" ? <OrderTab /> : null}</div>);
-  }
-  return (<div>{切替}<SupportPhotos /></div>);
 }
 
 function SupportPhotos() {

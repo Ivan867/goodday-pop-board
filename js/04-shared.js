@@ -2081,11 +2081,72 @@ function PopCard({
 
 // ── Board Tab ──
 
+// ── 資料のサムネイル（管理画面と店舗支援で共用） ──
+/* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
+   取れなければ種類の札を出す。 */
+const 資料の色 = k => ({
+  pdf: "#b3261e",
+  image: "#2f6fb0",
+  sheet: "#2f7a3a",
+  link: "#6b4ea0"
+})[k] || "#59636f";
+const 資料の名 = k => ({
+  pdf: "PDF",
+  image: "画像",
+  sheet: "表",
+  link: "リンク"
+})[k] || "資料";
+function 資料の縮小URL(r) {
+  const u = r.url || "";
+  if (r.kind === "image" || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u)) return u;
+  const m = /docs\.google\.com\/[a-z]+\/d\/([A-Za-z0-9_-]{20,})/.exec(u) || /drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{20,})/.exec(u);
+  if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w600";
+  return null;
+}
+function 資料の絵({
+  r
+}) {
+  const [だめ, setだめ] = useState(false);
+  const src = 資料の縮小URL(r);
+  if (src && !だめ) return /*#__PURE__*/React.createElement("img", {
+    src: src,
+    alt: "",
+    loading: "lazy",
+    referrerPolicy: "no-referrer",
+    onError: () => setだめ(true)
+  });
+  const 印 = {
+    pdf: "📄",
+    image: "🖼",
+    sheet: "📊",
+    link: "🔗"
+  }[r.kind] || r.emoji || "📄";
+  let 置き場 = "";
+  try {
+    置き場 = new URL(r.url).hostname.replace(/^www\./, "");
+  } catch (e) {}
+  return /*#__PURE__*/React.createElement("span", {
+    className: "res-fallback",
+    style: {
+      background: `linear-gradient(140deg, ${資料の色(r.kind)}22, ${資料の色(r.kind)}0a)`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 34
+    }
+  }, 印), /*#__PURE__*/React.createElement("span", {
+    className: "res-fb-host"
+  }, 置き場));
+}
 ;
 Object.assign(window, {
   PopCard,
   PopDetail,
   UploadModal,
   pairByShape,
-  popShape
+  popShape,
+  資料の色,
+  資料の名,
+  資料の縮小URL,
+  資料の絵
 });
