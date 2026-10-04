@@ -625,7 +625,6 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .kf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 @media (min-width: 900px) {
   .kf-grid { grid-template-columns: minmax(0, 520px) minmax(0, 1fr); align-items: start; }
-  .kf-preview { position: sticky; top: 70px; }
 }
 .kf-out { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; margin-top: 12px; }
 .kf-btn { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 10px; padding: 12px 8px; font-size: 14px; font-weight: 800; cursor: pointer; min-height: 46px; }
@@ -641,3 +640,7 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .kf-sum-p { margin-left: auto; font-size: 12.5px; color: var(--sub); white-space: nowrap; }
 .kf-strip { width: 100%; height: auto; display: block; border-radius: 8px; margin-top: 10px; border: 1px solid var(--line); }
 .kf-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kf-bgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.kf-bg { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 4px 4px 5px; cursor: pointer; color: var(--sub); font-size: 12.5px; font-weight: 800; }
+.kf-bg canvas { width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 4px; }
+.kf-bg.on { border: 2.5px solid var(--primary); color: var(--primary); padding: 2.5px 2.5px 3.5px; }

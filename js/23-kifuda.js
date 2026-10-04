@@ -23,14 +23,14 @@ const KF_SAMPLE = [{
   price: "359"
 }, {
   top: "山陰沖",
-  origin: "大社漁港産",
+  origin: "大社港産",
   use: "焼物、刺身用",
   name: "いさき",
   unit: "1尾",
   price: "299"
 }, {
   top: "山陰沖",
-  origin: "大社漁港産",
+  origin: "大社港産",
   use: "焼物、煮付け、刺身用",
   name: "わかな",
   unit: "1尾",
@@ -54,20 +54,178 @@ const KF_EMPTY = {
 
 // 押すだけで入る候補
 const KF_TOPS = ["山陰沖", "島根県", "鳥取県", "隠岐"];
-const KF_ORIGINS = ["大社漁港産", "多岐産", "和江産", "浜田港産", "境港産", "恵曇産"];
+const KF_ORIGINS = ["大社港産", "多岐産", "和江産", "浜田港産", "境港産", "恵曇産"];
 const KF_USES = ["刺身用", "焼物", "煮付け", "塩焼き", "唐揚げ", "フライ", "鍋物"];
 const KF_UNITS = ["1尾", "1パック", "100g", "1切"];
-const KF_FONT_NAME = {
+
+// 選べる字（どれも魚へんの漢字・数字が入っていることを確認済み）。選んだときだけ読み込む
+const KF_FONTS = [{
+  id: "mochiy",
+  label: "丸ポップ",
   family: "Mochiy Pop One",
-  weight: "400",
-  url: "https://cdn.jsdelivr.net/fontsource/fonts/mochiy-pop-one@latest/japanese-400-normal.woff2"
-};
-const KF_FONT_PRICE = {
+  w: "400",
+  pkg: "mochiy-pop-one"
+}, {
+  id: "potta",
+  label: "筆ポップ",
+  family: "Potta One",
+  w: "400",
+  pkg: "potta-one"
+}, {
+  id: "yusei",
+  label: "マジック",
+  family: "Yusei Magic",
+  w: "400",
+  pkg: "yusei-magic"
+}, {
+  id: "rock",
+  label: "ロック",
+  family: "RocknRoll One",
+  w: "400",
+  pkg: "rocknroll-one"
+}, {
+  id: "dela",
+  label: "極太",
   family: "Dela Gothic One",
-  weight: "400",
-  url: "https://cdn.jsdelivr.net/fontsource/fonts/dela-gothic-one@latest/japanese-400-normal.woff2"
+  w: "400",
+  pkg: "dela-gothic-one"
+}, {
+  id: "mplus",
+  label: "丸ゴシック",
+  family: "M PLUS Rounded 1c",
+  w: "900",
+  pkg: "m-plus-rounded-1c"
+}, {
+  id: "zenmaru",
+  label: "やわらか丸",
+  family: "Zen Maru Gothic",
+  w: "900",
+  pkg: "zen-maru-gothic"
+}, {
+  id: "noto",
+  label: "ゴシック",
+  family: "Noto Sans JP",
+  w: "900",
+  pkg: "noto-sans-jp"
+}, {
+  id: "reggae",
+  label: "レゲエ",
+  family: "Reggae One",
+  w: "400",
+  pkg: "reggae-one"
+}, {
+  id: "yuji",
+  label: "筆文字",
+  family: "Yuji Syuku",
+  w: "400",
+  pkg: "yuji-syuku"
+}, {
+  id: "antique",
+  label: "昔風",
+  family: "Zen Antique Soft",
+  w: "400",
+  pkg: "zen-antique-soft"
+}, {
+  id: "kaisei",
+  label: "明朝",
+  family: "Kaisei Decol",
+  w: "700",
+  pkg: "kaisei-decol"
+}, {
+  id: "hachi",
+  label: "手書き丸",
+  family: "Hachi Maru Pop",
+  w: "400",
+  pkg: "hachi-maru-pop"
+}];
+const KF_PRICE_FONTS = ["dela", "rock", "mochiy", "potta", "mplus", "noto", "reggae"]; // 値段に向くもの
+const kfFont = id => KF_FONTS.find(f => f.id === id) || KF_FONTS[0];
+const kfFam = id => {
+  const f = kfFont(id);
+  return `${f.w} SIZEpx "${f.family}", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif`;
 };
-const kfFam = f => `${f.weight} SIZEpx "${f.family}", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif`;
+const kfFontState = {}; // id → "ok" | "fail" | Promise
+function kfLoadFont(id) {
+  const f = kfFont(id);
+  if (kfFontState[id] === "ok" || kfFontState[id] === "fail") return Promise.resolve(kfFontState[id]);
+  if (kfFontState[id]) return kfFontState[id];
+  if (!(document.fonts && window.FontFace)) return Promise.resolve("fail");
+  const url = `https://cdn.jsdelivr.net/fontsource/fonts/${f.pkg}@latest/japanese-${f.w}-normal.woff2`;
+  return kfFontState[id] = new FontFace(f.family, `url(${url})`, {
+    weight: f.w
+  }).load().then(lf => {
+    document.fonts.add(lf);
+    return kfFontState[id] = "ok";
+  }).catch(() => kfFontState[id] = "fail");
+}
+
+// 背景の種類
+const KF_BGS = [{
+  id: "sugi",
+  name: "木目",
+  c: ["#f3d9a2", "#e8c483", "#dcb36c"],
+  kind: "slat",
+  line: "rgba(150,100,30,0.30)",
+  hi: "rgba(255,248,225,0.45)",
+  border: "#1b2a78"
+}, {
+  id: "shiraki",
+  name: "白木",
+  c: ["#fbf1dc", "#f4e3c0", "#ecd6aa"],
+  kind: "grain",
+  line: "rgba(170,120,60,0.22)",
+  border: "#1b2a78"
+}, {
+  id: "koge",
+  name: "焦げ茶",
+  c: ["#8a5a32", "#6e4424", "#55331a"],
+  kind: "slat",
+  line: "rgba(30,15,5,0.40)",
+  hi: "rgba(255,220,170,0.14)",
+  border: "#e9c46a",
+  dark: true
+}, {
+  id: "take",
+  name: "すだれ",
+  c: ["#d9e6a8", "#c3d68a", "#a9c06a"],
+  kind: "bamboo",
+  line: "rgba(60,90,20,0.35)",
+  hi: "rgba(250,255,230,0.45)",
+  border: "#2d5a1e"
+}, {
+  id: "washi",
+  name: "和紙",
+  c: ["#fbf8f0", "#f5efe2", "#ede4d0"],
+  kind: "washi",
+  border: "#b3261e"
+}, {
+  id: "ai",
+  name: "藍染",
+  c: ["#2c4a7c", "#1f3764", "#16284c"],
+  kind: "slat",
+  line: "rgba(0,0,20,0.30)",
+  hi: "rgba(160,190,240,0.12)",
+  border: "#e9c46a",
+  dark: true
+}, {
+  id: "sumi",
+  name: "墨",
+  c: ["#3a3a3a", "#262626", "#151515"],
+  kind: "plain",
+  border: "#c9a24a",
+  dark: true
+}];
+const kfBg = id => KF_BGS.find(b => b.id === id) || KF_BGS[0];
+// いつも同じ模様になる乱数（再描画のたびに柄が変わらないように）
+function kfRand(seed) {
+  let x = seed >>> 0;
+  return () => (x = x * 1664525 + 1013904223 >>> 0) / 4294967296;
+}
+const KF_LOOK0 = {
+  bg: "sugi",
+  fName: "mochiy",
+  fPrice: "dela"
+};
 function kfTax(price, mode) {
   const raw = price * 1.08;
   if (mode === "floor") return Math.floor(raw);
@@ -131,33 +289,78 @@ function kfText(ctx, text, o) {
   return w;
 }
 
-// 木目（横の板を重ねた柄）
-function kfWood(ctx, y0, h) {
+// 背景（種類ごとに柄を変える）
+function kfWood(ctx, y0, h, bg) {
+  bg = bg || KF_BGS[0];
   const g = ctx.createLinearGradient(0, y0, 0, y0 + h);
-  g.addColorStop(0, "#f3d9a2");
-  g.addColorStop(0.5, "#e8c483");
-  g.addColorStop(1, "#dcb36c");
+  g.addColorStop(0, bg.c[0]);
+  g.addColorStop(0.5, bg.c[1]);
+  g.addColorStop(1, bg.c[2]);
   ctx.fillStyle = g;
   ctx.fillRect(0, y0, KF_W, h);
-  const step = 15;
-  for (let y = y0 + 6; y < y0 + h; y += step) {
-    ctx.fillStyle = "rgba(150,100,30,0.30)";
-    ctx.fillRect(0, y, KF_W, 2.2);
-    ctx.fillStyle = "rgba(255,248,225,0.45)";
-    ctx.fillRect(0, y + 2.2, KF_W, 1.4);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, y0, KF_W, h);
+  ctx.clip();
+  const rnd = kfRand(Math.round(y0) + 7);
+  if (bg.kind === "slat" || bg.kind === "bamboo") {
+    const step = bg.kind === "bamboo" ? 13 : 15;
+    for (let y = y0 + 6; y < y0 + h; y += step) {
+      ctx.fillStyle = bg.line;
+      ctx.fillRect(0, y, KF_W, 2.2);
+      ctx.fillStyle = bg.hi;
+      ctx.fillRect(0, y + 2.2, KF_W, 1.4);
+      if (bg.kind === "bamboo") {
+        // 竹の節
+        for (let k = 0; k < 2; k++) {
+          ctx.fillStyle = bg.line;
+          ctx.fillRect(rnd() * KF_W, y + 3, 5, step - 4);
+        }
+      }
+    }
+  } else if (bg.kind === "grain") {
+    // ゆるい木目の線
+    ctx.strokeStyle = bg.line;
+    ctx.lineWidth = 1.6;
+    for (let y = y0 - 20; y < y0 + h + 20; y += 11 + rnd() * 9) {
+      const a = 3 + rnd() * 6,
+        f = 0.004 + rnd() * 0.004,
+        ph = rnd() * 6;
+      ctx.beginPath();
+      for (let x = 0; x <= KF_W; x += 20) {
+        const yy = y + Math.sin(x * f + ph) * a;
+        x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy);
+      }
+      ctx.stroke();
+    }
+  } else if (bg.kind === "washi") {
+    // 和紙の繊維
+    for (let k = 0; k < 520; k++) {
+      const x = rnd() * KF_W,
+        y = y0 + rnd() * h,
+        l = 8 + rnd() * 26,
+        t = rnd() * Math.PI;
+      ctx.strokeStyle = rnd() < 0.5 ? "rgba(190,170,130,0.28)" : "rgba(255,255,255,0.7)";
+      ctx.lineWidth = 0.8 + rnd();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x + l * 0.5, y + (rnd() - 0.5) * 10, x + Math.cos(t) * l, y + Math.sin(t) * l);
+      ctx.stroke();
+    }
   }
+  ctx.restore();
   // 左右の明るさむら
-  const s = ctx.createLinearGradient(0, 0, KF_W, 0);
-  s.addColorStop(0, "rgba(120,80,20,0.10)");
-  s.addColorStop(0.35, "rgba(255,255,255,0.06)");
-  s.addColorStop(0.7, "rgba(255,255,255,0)");
-  s.addColorStop(1, "rgba(120,80,20,0.12)");
-  ctx.fillStyle = s;
+  const sh = ctx.createLinearGradient(0, 0, KF_W, 0);
+  sh.addColorStop(0, "rgba(60,40,10,0.10)");
+  sh.addColorStop(0.35, "rgba(255,255,255,0.06)");
+  sh.addColorStop(0.7, "rgba(255,255,255,0)");
+  sh.addColorStop(1, "rgba(60,40,10,0.12)");
+  ctx.fillStyle = sh;
   ctx.fillRect(0, y0, KF_W, h);
 }
 
 // 青海波（価格の下に敷く波の柄）
-function kfWave(ctx, x, y, w, h) {
+function kfWave(ctx, x, y, w, h, base) {
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, w, h);
@@ -180,24 +383,28 @@ function kfWave(ctx, x, y, w, h) {
   ctx.globalAlpha = 1;
   // 左右をぼかして板になじませる
   const fade = ctx.createLinearGradient(x, 0, x + w, 0);
-  fade.addColorStop(0, "rgba(232,196,131,1)");
-  fade.addColorStop(0.12, "rgba(232,196,131,0)");
-  fade.addColorStop(0.88, "rgba(232,196,131,0)");
-  fade.addColorStop(1, "rgba(232,196,131,1)");
+  const b = base || "#e8c483";
+  fade.addColorStop(0, b);
+  fade.addColorStop(0.12, b + "00");
+  fade.addColorStop(0.88, b + "00");
+  fade.addColorStop(1, b);
   ctx.fillStyle = fade;
   ctx.fillRect(x, y, w, h);
   ctx.restore();
 }
 
 // 1段ぶんを描く
-function kfDrawRow(ctx, y0, r, taxMode) {
-  kfWood(ctx, y0, KF_S);
+function kfDrawRow(ctx, y0, r, taxMode, look) {
+  look = look || KF_LOOK0;
+  const bg = kfBg(look.bg);
+  kfWood(ctx, y0, KF_S, bg);
   // 紺の枠
-  ctx.strokeStyle = "#1b2a78";
+  ctx.strokeStyle = bg.border;
   ctx.lineWidth = 7;
   ctx.strokeRect(18, y0 + 16, KF_W - 36, KF_S - 32);
-  const FN = kfFam(KF_FONT_NAME),
-    FP = kfFam(KF_FONT_PRICE);
+  const FN = kfFam(look.fName),
+    FP = kfFam(look.fPrice);
+  const 産地字 = bg.dark ? "#ffffff" : "#140a0e";
   const Y = v => y0 + v;
 
   // 左：産地と用途（少し傾ける）
@@ -211,7 +418,7 @@ function kfDrawRow(ctx, y0, r, taxMode) {
     maxW: 300,
     align: "center",
     font: FN,
-    fill: "#140a0e",
+    fill: 産地字,
     stroke: "#e8245f",
     sw: 0.045,
     glow: "rgba(255,30,100,0.55)"
@@ -223,7 +430,7 @@ function kfDrawRow(ctx, y0, r, taxMode) {
     maxW: 330,
     align: "center",
     font: FN,
-    fill: "#140a0e",
+    fill: 産地字,
     stroke: "#e8245f",
     sw: 0.045,
     glow: "rgba(255,30,100,0.5)"
@@ -257,7 +464,7 @@ function kfDrawRow(ctx, y0, r, taxMode) {
   });
 
   // 青い線
-  ctx.strokeStyle = "#3f74c9";
+  ctx.strokeStyle = bg.dark ? bg.border : "#3f74c9";
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   ctx.moveTo(440, Y(268));
@@ -265,7 +472,7 @@ function kfDrawRow(ctx, y0, r, taxMode) {
   ctx.stroke();
   const p = parseInt(String(r.price).replace(/[^\d]/g, ""), 10);
   const 価格あり = !isNaN(p);
-  if (価格あり || r.unit) kfWave(ctx, 445, Y(318), 520, 84);
+  if (価格あり || r.unit) kfWave(ctx, 445, Y(318), 520, 84, bg.c[1]);
   kfText(ctx, "本体価格", {
     x: 470,
     y: Y(300),
@@ -347,31 +554,52 @@ function kfDrawRow(ctx, y0, r, taxMode) {
     });
   }
 }
-function kfRender(ctx, rows, taxMode) {
+function kfRender(ctx, rows, taxMode, look) {
   ctx.clearRect(0, 0, KF_W, KF_H);
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, KF_W, KF_H); // 段のあいだ＝切りしろ
-  for (let i = 0; i < KF_ROWS; i++) kfDrawRow(ctx, i * (KF_S + KF_GAP), rows[i] || KF_EMPTY, taxMode);
+  for (let i = 0; i < KF_ROWS; i++) kfDrawRow(ctx, i * (KF_S + KF_GAP), rows[i] || KF_EMPTY, taxMode, look);
 }
 
 // ── 保存（この端末だけ） ──
 const KF_LS = "kifudaSheet",
   KF_LS_RECENT = "kifudaRecent";
+// 呼び名を改めたもの（保存済みの内容も読み込み時に置きかえる）
+const KF_RENAME = {
+  "大社漁港産": "大社港産"
+};
+const kfRen = v => KF_RENAME[v] || v;
 function kfLoad() {
   try {
     const v = JSON.parse(localStorage.getItem(KF_LS) || "null");
-    if (v && Array.isArray(v.rows) && v.rows.length === KF_ROWS) return v;
+    if (v && Array.isArray(v.rows) && v.rows.length === KF_ROWS) {
+      v.rows = v.rows.map(r => ({
+        ...KF_EMPTY,
+        ...r,
+        origin: kfRen(r.origin || "")
+      }));
+      v.look = {
+        ...KF_LOOK0,
+        ...(v.look || {})
+      };
+      return v;
+    }
   } catch (e) {}
   return {
     rows: KF_SAMPLE.map(r => ({
       ...r
     })),
-    taxMode: "ceil"
+    taxMode: "ceil",
+    look: {
+      ...KF_LOOK0
+    }
   };
 }
 function kfRecent() {
   try {
-    return JSON.parse(localStorage.getItem(KF_LS_RECENT) || "{}") || {};
+    const v = JSON.parse(localStorage.getItem(KF_LS_RECENT) || "{}") || {};
+    if (Array.isArray(v.origin)) v.origin = [...new Set(v.origin.map(kfRen))];
+    return v;
   } catch (e) {
     return {};
   }
@@ -380,6 +608,12 @@ function KifudaTab() {
   const init = useRef(kfLoad()).current;
   const [rows, setRows] = useState(init.rows);
   const [taxMode, setTaxMode] = useState(init.taxMode || "ceil");
+  const [look, setLook] = useState(init.look || KF_LOOK0);
+  const setL = (k, v) => setLook(o => ({
+    ...o,
+    [k]: v
+  }));
+  const [字待ち, set字待ち] = useState(false);
   const [open, setOpen] = useState(0); // いま編集している段
   const [fontTick, setFontTick] = useState(0);
   const [msg, setMsg] = useState("");
@@ -388,29 +622,27 @@ function KifudaTab() {
   const stripRef = useRef(null);
   const cardRefs = useRef([]);
 
-  // 字の形を読み込む（読めたら描き直す。読めなくても端末の字で描ける）
+  // 字の形を読み込む：選んでいる2つだけ（読めたら描き直す。読めなくても端末の字で描ける）
   useEffect(() => {
-    if (!(document.fonts && window.FontFace)) return;
     let alive = true;
-    [KF_FONT_NAME, KF_FONT_PRICE].forEach(f => {
-      const face = new FontFace(f.family, `url(${f.url})`, {
-        weight: f.weight
-      });
-      face.load().then(lf => {
-        document.fonts.add(lf);
-        if (alive) setFontTick(t => t + 1);
-      }).catch(() => {});
+    const ids = [...new Set([look.fName, look.fPrice])];
+    if (ids.some(id => kfFontState[id] !== "ok" && kfFontState[id] !== "fail")) set字待ち(true);
+    Promise.all(ids.map(kfLoadFont)).then(() => {
+      if (alive) {
+        set字待ち(false);
+        setFontTick(t => t + 1);
+      }
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [look.fName, look.fPrice]);
 
   // 描く＋この端末に覚えておく
   useEffect(() => {
     const cv = cvRef.current;
     if (!cv) return;
-    kfRender(cv.getContext("2d"), rows, taxMode);
+    kfRender(cv.getContext("2d"), rows, taxMode, look);
     const s = stripRef.current;
     if (s) {
       const c = s.getContext("2d");
@@ -420,10 +652,11 @@ function KifudaTab() {
     try {
       localStorage.setItem(KF_LS, JSON.stringify({
         rows,
-        taxMode
+        taxMode,
+        look
       }));
     } catch (e) {}
-  }, [rows, taxMode, fontTick, open]);
+  }, [rows, taxMode, look, fontTick, open]);
   const setRow = (i, k, v) => setRows(rs => rs.map((r, j) => j === i ? {
     ...r,
     [k]: v
@@ -660,7 +893,65 @@ function KifudaTab() {
     type: "button",
     className: "kf-link",
     onClick: clearAll
-  }, "\u5168\u90E8\u7A7A\u306B\u3059\u308B"))))), /*#__PURE__*/React.createElement("div", {
+  }, "\u5168\u90E8\u7A7A\u306B\u3059\u308B")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...card,
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 900,
+      color: "var(--ink)"
+    }
+  }, "\u898B\u305F\u76EE ", 字待ち && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "var(--sub)"
+    }
+  }, "\uFF08\u5B57\u3092\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026\uFF09")), /*#__PURE__*/React.createElement("div", {
+    style: lab
+  }, "\u80CC\u666F"), /*#__PURE__*/React.createElement("div", {
+    className: "kf-bgs"
+  }, KF_BGS.map(b => /*#__PURE__*/React.createElement(KfBgThumb, {
+    key: b.id,
+    bg: b,
+    on: look.bg === b.id,
+    onPick: () => setL("bg", b.id)
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: lab
+  }, "\u54C1\u540D\u30FB\u7523\u5730\u306E\u5B57"), /*#__PURE__*/React.createElement("div", {
+    className: "kf-chips"
+  }, KF_FONTS.map(f => /*#__PURE__*/React.createElement("button", {
+    key: f.id,
+    type: "button",
+    className: "kf-chip" + (look.fName === f.id ? " on" : ""),
+    "aria-pressed": look.fName === f.id,
+    onClick: () => setL("fName", f.id)
+  }, f.label))), /*#__PURE__*/React.createElement("div", {
+    style: lab
+  }, "\u5024\u6BB5\u306E\u5B57"), /*#__PURE__*/React.createElement("div", {
+    className: "kf-chips"
+  }, KF_PRICE_FONTS.map(id => kfFont(id)).map(f => /*#__PURE__*/React.createElement("button", {
+    key: f.id,
+    type: "button",
+    className: "kf-chip" + (look.fPrice === f.id ? " on" : ""),
+    "aria-pressed": look.fPrice === f.id,
+    onClick: () => setL("fPrice", f.id)
+  }, f.label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "flex-end",
+      marginTop: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "kf-link",
+    onClick: () => setLook({
+      ...KF_LOOK0
+    })
+  }, "\u306F\u3058\u3081\u306E\u898B\u305F\u76EE\u306B\u623B\u3059")))), /*#__PURE__*/React.createElement("div", {
     className: "kf-edit"
   }, rows.map((r, i) => {
     const p = parseInt(String(r.price).replace(/[^\d]/g, ""), 10);
@@ -763,7 +1054,7 @@ function KifudaTab() {
     }, "\u7523\u5730\uFF08\u4E0B\u306E\u5B57\uFF09"), /*#__PURE__*/React.createElement("input", {
       style: inp,
       value: r.origin,
-      placeholder: "\u5927\u793E\u6F01\u6E2F\u7523",
+      placeholder: "\u5927\u793E\u6E2F\u7523",
       onChange: e => setRow(i, "origin", e.target.value)
     }), /*#__PURE__*/React.createElement(Chips, {
       list: 候補("origin", KF_ORIGINS),
@@ -805,6 +1096,36 @@ function KifudaTab() {
       onClick: () => clearRow(i)
     }, "\u3053\u306E\u6BB5\u3092\u7A7A\u306B\u3059\u308B"))));
   }))));
+}
+function KfBgThumb({
+  bg,
+  on,
+  onPick
+}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const x = c.getContext("2d");
+    const k = c.width / KF_W;
+    x.setTransform(k, 0, 0, k, 0, 0);
+    kfWood(x, 0, KF_S, bg);
+    x.strokeStyle = bg.border;
+    x.lineWidth = 14;
+    x.strokeRect(18, 16, KF_W - 36, KF_S - 32);
+    kfWave(x, 445, 318, 520, 84, bg.c[1]);
+  }, [bg.id]);
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "kf-bg" + (on ? " on" : ""),
+    "aria-pressed": on,
+    onClick: onPick
+  }, /*#__PURE__*/React.createElement("canvas", {
+    ref: ref,
+    width: 150,
+    height: Math.round(150 * KF_S / KF_W),
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", null, bg.name));
 }
 ;
 Object.assign(window, {
