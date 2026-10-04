@@ -655,6 +655,43 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   // 星の中の「約◯割安」
   if (f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
+
+// 木札は別ファイル（23-kifuda）。開いたときだけ読み込む
+function KifudaLoader() {
+  const [ok, setOk] = useState(typeof window.KifudaTab === "function");
+  const [err, setErr] = useState(false);
+  const 読む = () => {
+    setErr(false);
+    window.loadLazyTab("23-kifuda").then(() => setOk(true)).catch(() => setErr(true));
+  };
+  useEffect(() => {
+    if (!ok) 読む();
+  }, []);
+  if (ok) return React.createElement(window.KifudaTab);
+  if (err) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "30px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)",
+      marginBottom: 10
+    }
+  }, "\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("button", {
+    onClick: 読む,
+    className: "kf-btn"
+  }, "\u3082\u3046\u4E00\u5EA6"));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      color: "var(--faint)",
+      padding: "40px 0",
+      fontSize: 13
+    }
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026");
+}
 function GeneratorTab({
   onCreatePop
 }) {
@@ -1101,7 +1138,7 @@ function GeneratorTab({
       gap: 7,
       marginBottom: 16
     }
-  }, [["gne", "POP画像をつくる"], ["souba", "便利機能"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["gne", "POP画像"], ["fuda", "木札"], ["souba", "便利機能"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setGTab(k),
     style: {
@@ -1115,7 +1152,7 @@ function GeneratorTab({
       background: gTab === k ? "var(--fill)" : "var(--card)",
       color: gTab === k ? "#fff" : "var(--text)"
     }
-  }, l))), gTab === "souba" ? window.SoubaTab ? React.createElement(window.SoubaTab, {
+  }, l))), gTab === "fuda" ? /*#__PURE__*/React.createElement(KifudaLoader, null) : gTab === "souba" ? window.SoubaTab ? React.createElement(window.SoubaTab, {
     onCreatePop
   }) : /*#__PURE__*/React.createElement("div", {
     style: {

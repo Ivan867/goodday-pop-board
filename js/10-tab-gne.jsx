@@ -177,6 +177,17 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   if (f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
 
+// 木札は別ファイル（23-kifuda）。開いたときだけ読み込む
+function KifudaLoader() {
+  const [ok, setOk] = useState(typeof window.KifudaTab === "function");
+  const [err, setErr] = useState(false);
+  const 読む = () => { setErr(false); window.loadLazyTab("23-kifuda").then(() => setOk(true)).catch(() => setErr(true)); };
+  useEffect(() => { if (!ok) 読む(); }, []);
+  if (ok) return React.createElement(window.KifudaTab);
+  if (err) return <div style={{ textAlign:"center", padding:"30px 0" }}><div style={{ fontSize:13, color:"var(--sub)", marginBottom:10 }}>読み込めませんでした</div><button onClick={読む} className="kf-btn">もう一度</button></div>;
+  return <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>;
+}
+
 function GeneratorTab({ onCreatePop }) {
   const [gTab, setGTab] = useState("gne");   // gne=POP画像 / souba=便利機能
   const [presetId, setPresetId] = useState(() => { try { return localStorage.getItem("gnePreset") || "washoku"; } catch(e) { return "washoku"; } });
@@ -386,14 +397,14 @@ function GeneratorTab({ onCreatePop }) {
       <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:12 }}>入力支援</div>
 
       <div style={{ display:"flex", gap:7, marginBottom:16 }}>
-        {[["gne","POP画像をつくる"],["souba","便利機能"]].map(([k, l]) => (
+        {[["gne","POP画像"],["fuda","木札"],["souba","便利機能"]].map(([k, l]) => (
           <button key={k} onClick={() => setGTab(k)}
             style={{ flex:1, border:"1px solid var(--line)", borderRadius:10, padding:"10px 6px", fontSize:13, fontWeight:800, cursor:"pointer",
               background: gTab===k ? "var(--fill)" : "var(--card)", color: gTab===k ? "#fff" : "var(--text)" }}>{l}</button>
         ))}
       </div>
 
-      {gTab === "souba" ? (
+      {gTab === "fuda" ? <KifudaLoader /> : gTab === "souba" ? (
         (window.SoubaTab ? React.createElement(window.SoubaTab, { onCreatePop }) : <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13 }}>読み込み中…</div>)
       ) : (
       <>
