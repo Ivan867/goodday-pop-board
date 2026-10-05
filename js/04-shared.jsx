@@ -769,12 +769,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
           whiteSpace:"normal", overflowWrap:"anywhere", wordBreak:"break-word", color:"var(--ink)" }}>
           {pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}
         </div>
-        {(pop.store_name || pop.genre) && (
-          <div className="pc-sub">
-            {pop.genre && <span className="pc-dot" style={{ background: (function(){ try { var c = deptGenreColors()[pop.genre]; return (c && c.solid) || "var(--primary-soft)"; } catch(e) { return "var(--primary-soft)"; } })() }} />}
-            <span className="pc-sub-t">{[pop.genre, pop.store_name].filter(Boolean).join(" · ")}</span>
-          </div>
-        )}
+        {/* ジャンル・店舗名の行は 2026-10-05 にやめた（一覧をすっきりさせるため。データと絞り込みはそのまま） */}
       </div>
     </div>
   );

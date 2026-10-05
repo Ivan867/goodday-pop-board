@@ -2060,23 +2060,7 @@ function PopCard({
       wordBreak: "break-word",
       color: "var(--ink)"
     }
-  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), (pop.store_name || pop.genre) && /*#__PURE__*/React.createElement("div", {
-    className: "pc-sub"
-  }, pop.genre && /*#__PURE__*/React.createElement("span", {
-    className: "pc-dot",
-    style: {
-      background: function () {
-        try {
-          var c = deptGenreColors()[pop.genre];
-          return c && c.solid || "var(--primary-soft)";
-        } catch (e) {
-          return "var(--primary-soft)";
-        }
-      }()
-    }
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "pc-sub-t"
-  }, [pop.genre, pop.store_name].filter(Boolean).join(" · ")))));
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name)));
 }
 
 // ── Board Tab ──

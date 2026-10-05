@@ -695,7 +695,7 @@ function KifudaLoader() {
 function GeneratorTab({
   onCreatePop
 }) {
-  const [gTab, setGTab] = useState("gne"); // gne=POP画像 / souba=便利機能
+  const [gTab, setGTab] = useState("gne"); // gne=POP画像 / fuda=木札（便利機能は 2026-10-05 にやめた）
   const [presetId, setPresetId] = useState(() => {
     try {
       return localStorage.getItem("gnePreset") || "washoku";
@@ -1138,7 +1138,7 @@ function GeneratorTab({
       gap: 7,
       marginBottom: 16
     }
-  }, [["gne", "POP画像"], ["fuda", "木札"], ["souba", "便利機能"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["gne", "POP画像"], ["fuda", "木札"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setGTab(k),
     style: {
@@ -1152,16 +1152,7 @@ function GeneratorTab({
       background: gTab === k ? "var(--fill)" : "var(--card)",
       color: gTab === k ? "#fff" : "var(--text)"
     }
-  }, l))), gTab === "fuda" ? /*#__PURE__*/React.createElement(KifudaLoader, null) : gTab === "souba" ? window.SoubaTab ? React.createElement(window.SoubaTab, {
-    onCreatePop
-  }) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      color: "var(--faint)",
-      padding: "40px 0",
-      fontSize: 13
-    }
-  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, l))), gTab === "fuda" ? /*#__PURE__*/React.createElement(KifudaLoader, null) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: "var(--sub)",
