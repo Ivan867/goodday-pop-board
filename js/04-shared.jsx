@@ -144,12 +144,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
             </div>
             <input value={product} onChange={e=>setProduct(e.target.value)} placeholder={items.length > 1 ? "例：9月8日の月曜販促" : (青果か ? "例：ご家庭用 新高梨" : "例：本マグロ大トロ")} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, outline:"none" }} />
           </div>
-          <div>
-            <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>カテゴリ</div>
-            <select value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14 }}>
-              {deptCategories().map(c=><option key={c}>{c}</option>)}
-            </select>
-          </div>
+          {/* カテゴリの選択は 2026-10-05 にやめた（使う人がいないため）。保存は最初のカテゴリのまま */}
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>コメント <span style={{ fontWeight:400, color:"var(--faint)" }}>（任意）</span></div>
             <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder={青果か ? "例：甘みがのっています。冷やしてそのまま。" : "例：脂がのっていておすすめ！刺身・塩焼きに。"} rows={3} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none" }} />

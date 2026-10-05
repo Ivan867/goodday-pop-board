@@ -304,25 +304,6 @@ function UploadModal({
       color: "var(--text)",
       marginBottom: 6
     }
-  }, "\u30AB\u30C6\u30B4\u30EA"), /*#__PURE__*/React.createElement("select", {
-    value: category,
-    onChange: e => setCategory(e.target.value),
-    style: {
-      width: "100%",
-      padding: "10px 12px",
-      border: "2px solid var(--line)",
-      borderRadius: 10,
-      fontSize: 14
-    }
-  }, deptCategories().map(c => /*#__PURE__*/React.createElement("option", {
-    key: c
-  }, c)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: "var(--text)",
-      marginBottom: 6
-    }
   }, "\u30B3\u30E1\u30F3\u30C8 ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 400,
