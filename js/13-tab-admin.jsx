@@ -598,7 +598,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               {genreList.map(p => (
                 <div key={p.id} style={{ background:"var(--card, #fff)", borderRadius:12, boxShadow:"0 1px 8px rgba(0,0,0,0.06)", padding:10, display:"flex", gap:11, alignItems:"flex-start" }}>
-                  <img src={p.image_url} alt="" style={{ width:52, height:68, objectFit:"cover", borderRadius:8, background:"var(--chip)", flexShrink:0 }} />
+                  <img loading="lazy" decoding="async" src={p.image_url} alt="" style={{ width:52, height:68, objectFit:"cover", borderRadius:8, background:"var(--chip)", flexShrink:0 }} />
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
                     <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8 }}>{p.store_name}{p.category ? ` ・ ${p.category}` : ""}</div>
@@ -859,7 +859,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                       <div key={pop.id} onClick={() => setTrashOpen(pop)}
                         style={{ position:"relative", border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
                           background:"var(--card, #fff)", borderRadius:10, overflow:"hidden", cursor:"pointer", textAlign:"left" }}>
-                        <img src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", display:"block", background:"var(--card, #fff)", opacity:0.75 }} />
+                        <img loading="lazy" decoding="async" src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", display:"block", background:"var(--card, #fff)", opacity:0.75 }} />
                         <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", padding:"6px 7px 2px", lineHeight:1.4 }}>{pop.product_name}</span>
                         <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", padding:"0 7px 7px" }}>{fmtDate(pop.deleted_at)} に削除</span>
                         <button onClick={(e) => { e.stopPropagation(); setTrashSel(v => ({ ...v, [pop.id]: !v[pop.id] })); }}
@@ -900,7 +900,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   <button key={p.id} onClick={() => toggle(p.id)}
                     style={{ position:"relative", border: on ? "3px solid var(--primary)" : "1px solid var(--line)", borderRadius:12, overflow:"hidden",
                       background:"var(--card, #fff)", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                    <img src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"var(--chip)", opacity: on ? 0.85 : 1 }} />
+                    <img loading="lazy" decoding="async" src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"var(--chip)", opacity: on ? 0.85 : 1 }} />
                     {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--fill)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
                     <div style={{ padding:"6px 8px" }}>
                       <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
@@ -954,7 +954,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   <button key={id} onClick={() => setGrpCover(id)} aria-pressed={on}
                     style={{ flexShrink:0, width:62, border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
                       background:"var(--card, #fff)", borderRadius:9, padding:3, cursor:"pointer" }}>
-                    <img src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"var(--card)", borderRadius:5, display:"block" }} />
+                    <img loading="lazy" decoding="async" src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"var(--card)", borderRadius:5, display:"block" }} />
                   </button>
                 );
               })}
@@ -1025,7 +1025,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(100px, 1fr))", gap:8 }}>
                 {pops.slice(0, 20).map(p => (
                   <div key={p.id} onClick={() => setPinned(p.id)} style={{ cursor:"pointer", opacity: p.id === pinnedPopId ? 0.5 : 1, position:"relative" }}>
-                    <img src={p.image_url} style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, border: p.id === pinnedPopId ? "3px solid var(--primary)" : "none" }} />
+                    <img loading="lazy" decoding="async" src={p.image_url} style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, border: p.id === pinnedPopId ? "3px solid var(--primary)" : "none" }} />
                     {p.id === pinnedPopId && <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>📌</div>}
                   </div>
                 ))}

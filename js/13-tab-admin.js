@@ -1294,6 +1294,8 @@ function AdminTab({
       alignItems: "flex-start"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    loading: "lazy",
+    decoding: "async",
     src: p.image_url,
     alt: "",
     style: {
@@ -1881,6 +1883,8 @@ function AdminTab({
           textAlign: "left"
         }
       }, /*#__PURE__*/React.createElement("img", {
+        loading: "lazy",
+        decoding: "async",
         src: pop.image_url,
         alt: "",
         style: {
@@ -1988,6 +1992,8 @@ function AdminTab({
         boxShadow: "0 1px 6px rgba(0,0,0,0.06)"
       }
     }, /*#__PURE__*/React.createElement("img", {
+      loading: "lazy",
+      decoding: "async",
       src: p.image_url,
       alt: "",
       style: {
@@ -2206,6 +2212,8 @@ function AdminTab({
         cursor: "pointer"
       }
     }, /*#__PURE__*/React.createElement("img", {
+      loading: "lazy",
+      decoding: "async",
       src: p2.image_url,
       alt: "",
       style: {
@@ -2437,6 +2445,8 @@ function AdminTab({
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    loading: "lazy",
+    decoding: "async",
     src: p.image_url,
     style: {
       width: "100%",

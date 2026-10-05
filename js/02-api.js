@@ -139,11 +139,15 @@ function sbWithDept(path, method, body) {
 // 返事を待つのは8秒まで。iPhoneのホーム画面のアプリは、一時停止から戻ると
 // 通信が切れたまま「返事待ち」で止まることがあるため、上限を設けてあきらめさせる。
 const SB_待つ上限 = 8000;
+// 保存（POSTなど）は30秒まで待つ。画像をたくさん読んでいる画面では、保存の通信が
+// 画像の後ろで順番待ちになり、8秒では送る前に打ち切られていた（2026-10-06 管理画面の削除・まとめる）。
+const SB_保存の上限 = 30000;
 
 // 1回分の通信。返事の中身（本文）を読み終えるまでを8秒で区切る。
 async function sbFetchOnce(url, init) {
   const 止め = typeof AbortController !== "undefined" ? new AbortController() : null;
-  const 時計 = 止め ? setTimeout(() => 止め.abort(), SB_待つ上限) : 0;
+  const 上限 = !init.method || init.method === "GET" ? SB_待つ上限 : SB_保存の上限;
+  const 時計 = 止め ? setTimeout(() => 止め.abort(), 上限) : 0;
   try {
     const r = await fetch(url, 止め ? {
       ...init,
