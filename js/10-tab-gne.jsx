@@ -75,17 +75,20 @@ const GNE_PRESETS = [
       taxPrice: { x:1470,y:1090, size:88,  fill:"#e31414", stroke:"#141414", sw:5,  align:"center" },
       offRate:  { x:341, y:1091, size:120, fill:"#ffffff", stroke:"#141414", sw:8,  align:"center" },
     } },
-  // 魚屋のおすすめ 旬の味覚（よこ）：上が題字と料理写真、下の白い所に文字を置く
-  { id:"shun", name:"旬の味覚", land:true, img:"tpl/shun.jpg", thumb:"tpl/shun_thumb.jpg",
+  // 魚屋のおすすめ 旬の味覚（よこ）：配置はCGCフェアの見本にならう。
+  // 左に品名（2行以上は最後の行が赤）とキャッチ、右下に大きな価格、その下に（税込 ○○円）
+  { id:"shun", name:"旬の味覚", land:true, img:"tpl/shun.jpg", thumb:"tpl/shun_thumb.jpg", useCopy:true,
+    taxFmt:"（税込 *{n}*円）", labels:{ taxLabel:"本体価格" },
     layout:{
-      origin:   { x:90,  y:800,  size:66,  fill:"#0f2347", stroke:"#ffffff", sw:6,  align:"left",   maxW:960 },
-      name:     { x:848, y:915,  size:160, fill:"#0f2347", stroke:"#ffffff", sw:10, align:"center", maxW:1560 },
-      count:    { x:220, y:1095, size:80,  fill:"#0f2347", stroke:"#ffffff", sw:5,  align:"center", maxW:320 },
-      price:    { x:1095,y:1078, size:240, fill:"#d6121a", stroke:"#ffffff", sw:11, align:"right",  maxW:640 },
-      plus:     { x:1150,y:1040, size:1,   fill:"#d6121a", stroke:"#d6121a", sw:0,  align:"center" },
-      yen:      { x:1150,y:1118, size:84,  fill:"#0f2347", stroke:"#ffffff", sw:5,  align:"center" },
-      taxLabel: { x:1440,y:1045, size:42,  fill:"#0f2347", stroke:"#ffffff", sw:3,  align:"center" },
-      taxPrice: { x:1440,y:1122, size:76,  fill:"#d6121a", stroke:"#ffffff", sw:5,  align:"center", maxW:380 },
+      name:     { x:70,  y:880,  size:150, fill:"#141414", stroke:"#ffffff", sw:10, align:"left",  maxW:900, maxH:270, lastLineFill:"#d6121a" },
+      copy:     { x:70,  y:1068, size:50,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"left",  maxW:900, maxH:120, em:"#d6121a" },
+      origin:   { x:70,  y:1162, size:40,  fill:"#0f2347", stroke:"#ffffff", sw:4,  align:"left",  maxW:640 },
+      count:    { x:990, y:1150, size:66,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"right", maxW:300 },
+      price:    { x:1520,y:1000, size:300, fill:"#e0101a", stroke:"#ffffff", sw:13, align:"right", maxW:540, skew:-0.17, shadow:"rgba(0,0,0,0.55)" },
+      plus:     { x:1600,y:900,  size:1,   fill:"#141414", stroke:"#141414", sw:0,  align:"center" },
+      taxLabel: { x:1600,y:952,  size:36,  fill:"#141414", stroke:"#ffffff", sw:3,  align:"center" },
+      yen:      { x:1600,y:1035, size:120, fill:"#141414", stroke:"#ffffff", sw:6,  align:"center" },
+      taxPrice: { x:1670,y:1150, size:62,  fill:"#141414", stroke:"#ffffff", sw:5,  align:"right", maxW:640, em:"#e0101a" },
     } },
 ];
 
@@ -111,30 +114,59 @@ function gneDrawField(ctx, text, cfg, font) {
   // 改行（入力の改行、または「/」）で行を分ける
   const lines = text.split(/\r?\n|\//).map(t => t.trim()).filter(t => t !== "");
   if (!lines.length) return;
+  // *ここ* で囲んだ所は強調色（cfg.em があるテンプレだけ）。測るときは * を外す
+  const 素 = (l) => cfg.em ? l.replace(/\*/g, "") : l;
   let size = cfg.size;
   ctx.textAlign = cfg.align;
   ctx.textBaseline = "middle";
   ctx.font = `${wt} ${size}px ${fam}`;
   // いちばん長い行が収まるまで小さくする
   if (cfg.maxW) {
-    const widest = () => Math.max(...lines.map(l => ctx.measureText(l).width));
+    const widest = () => Math.max(...lines.map(l => ctx.measureText(素(l)).width));
     while (widest() > cfg.maxW && size > 12) {
       size -= 4;
       ctx.font = `${wt} ${size}px ${fam}`;
     }
   }
+  // 行が多いときは、高さに収まるまで小さくする（cfg.maxH があるテンプレだけ）
+  if (cfg.maxH) {
+    while (size * 1.08 * lines.length > cfg.maxH && size > 12) { size -= 4; ctx.font = `${wt} ${size}px ${fam}`; }
+  }
   ctx.lineJoin = "round";
   ctx.miterLimit = 2;
-  ctx.strokeStyle = cfg.stroke;
-  ctx.lineWidth = cfg.sw * 2;
-  ctx.fillStyle = cfg.fill;
-  // 複数行は上下の真ん中に来るように置く
+  const sw = cfg.sw;   // ふちの太さは縮めても変えない（これまでのテンプレと同じ）
+  // 複数行は上下の真ん中に来るように置く（cfg.top があれば、そこを1行目の中心にする）
   const lh = size * 1.08;
-  const top = cfg.y - (lh * (lines.length - 1)) / 2;
+  const top = cfg.top != null ? cfg.top : cfg.y - (lh * (lines.length - 1)) / 2;
   lines.forEach((ln, i) => {
     const y = top + lh * i;
-    ctx.strokeText(ln, cfg.x, y);
-    ctx.fillText(ln, cfg.x, y);
+    // 行ごとの色：最後の行だけ色を変える（2行以上のとき）
+    const 行の色 = (cfg.lastLineFill && lines.length > 1 && i === lines.length - 1) ? cfg.lastLineFill : cfg.fill;
+    const 区切り = cfg.em ? ln.split("*") : [ln];
+    const 全幅 = ctx.measureText(素(ln)).width;
+    let x0 = cfg.x;
+    if (cfg.align === "center") x0 = cfg.x - 全幅 / 2; else if (cfg.align === "right") x0 = cfg.x - 全幅;
+    ctx.save();
+    ctx.translate(x0, y);
+    if (cfg.skew) ctx.transform(1, 0, cfg.skew, 1, 0, 0);
+    ctx.textAlign = "left";
+    // 影（cfg.shadow があるテンプレだけ）
+    if (cfg.shadow) {
+      ctx.save();
+      ctx.shadowColor = cfg.shadow; ctx.shadowBlur = size * 0.06; ctx.shadowOffsetX = size * 0.035; ctx.shadowOffsetY = size * 0.045;
+      ctx.strokeStyle = cfg.stroke; ctx.lineWidth = sw * 2; ctx.strokeText(素(ln), 0, 0);
+      ctx.restore();
+    }
+    ctx.strokeStyle = cfg.stroke; ctx.lineWidth = sw * 2;
+    ctx.strokeText(素(ln), 0, 0);
+    let x = 0;
+    区切り.forEach((seg, k) => {
+      if (!seg) return;
+      ctx.fillStyle = (k % 2 === 1) ? cfg.em : 行の色;
+      ctx.fillText(seg, x, 0);
+      x += ctx.measureText(seg).width;
+    });
+    ctx.restore();
   });
 }
 
@@ -146,7 +178,7 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
   const sc = (off && off.scale) || 1;
   const fs = (off && off.fieldScale) || {};
   const fp = (off && off.fieldPos) || {};
-  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax", offRate:"off" };
+  const GROUP = { origin:"origin", name:"name", count:"count", price:"price", plus:"price", yen:"price", taxLabel:"tax", taxPrice:"tax", offRate:"off", copy:"copy" };
   const L = {};
   for (const k in LAY) {
     const o = LAY[k];
@@ -177,14 +209,18 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     const p = parseInt(f.price, 10);
     gneDrawField(ctx, String(p), L.price, font);
     const taxYen = !(dim && dim.taxNoYen);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}${taxYen ? "円" : ""}`, L.taxPrice, font);
+    const 税込 = gneCalcTax(p, taxMode, taxRate);
+    // 税込の書き方をテンプレごとに変えられる（例：「（税込 *539*円）」）
+    gneDrawField(ctx, (dim && dim.taxFmt) ? dim.taxFmt.replace("{n}", 税込) : `${税込}${taxYen ? "円" : ""}`, L.taxPrice, font);
   }
   if (!hideFixed) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
-    gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
+    gneDrawField(ctx, (dim && dim.labels && dim.labels.taxLabel) || GNE_FIXED.taxLabel, L.taxLabel, font);
   } else if (L.yen && L.yen.size > 2) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
   }
+  // キャッチコピー（使うテンプレだけ）
+  if (f.copy && L.copy) gneDrawField(ctx, String(f.copy), L.copy, font);
   // 星の中の「約◯割安」
   if (f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
@@ -219,7 +255,7 @@ function GeneratorTab({ onCreatePop }) {
   const font = GNE_FONTS.find(x => x.id === fontId) || GNE_FONTS[0];
   const [taxMode, setTaxMode] = useState("ceil");
   const [taxRate, setTaxRate] = useState(8);
-  const [f, setF] = useState({ origin:"鹿児島県産", origin2:"養殖・解凍", name:"うなぎかば焼き", count:"1尾", price:"2390", offRate:"2" });
+  const [f, setF] = useState({ origin:"鹿児島県産", origin2:"養殖・解凍", name:"うなぎかば焼き", count:"1尾", price:"2390", offRate:"2", copy:"*温めるだけ*ですぐおいしい、/食卓のもう一品にぴったりです。" });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -239,9 +275,9 @@ function GeneratorTab({ onCreatePop }) {
   const [gx, setGx] = useState(0);       // 文字位置オフセット（横：-120〜+120）
   const [gy, setGy] = useState(0);       // 文字位置オフセット（縦：-320〜+40）
   const [gScale, setGScale] = useState(100);  // 文字サイズ（%）：70〜130
-  const [fScale, setFScale] = useState({ origin:100, name:100, count:100, price:100, tax:100, off:100 });  // フィールド別（%）
+  const [fScale, setFScale] = useState({ origin:100, name:100, count:100, price:100, tax:100, off:100, copy:100 });  // フィールド別（%）
   // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
-  const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0, off_x:0, off_y:0 };
+  const ZERO_POS = { origin_x:0, origin_y:0, name_x:0, name_y:0, count_x:0, count_y:0, price_x:0, price_y:0, tax_x:0, tax_y:0, off_x:0, off_y:0, copy_x:0, copy_y:0 };
   const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name");   // いま位置を動かす対象
 
@@ -259,7 +295,7 @@ function GeneratorTab({ onCreatePop }) {
     if (typeof v.gx === "number") setGx(v.gx);
     if (typeof v.gy === "number") setGy(v.gy);
     if (typeof v.gScale === "number") setGScale(v.gScale);
-    if (v.fScale) setFScale({ origin:100, name:100, count:100, price:100, tax:100, off:100, ...v.fScale });
+    if (v.fScale) setFScale({ origin:100, name:100, count:100, price:100, tax:100, off:100, copy:100, ...v.fScale });
     if (v.fPos) setFPos({ ...ZERO_POS, ...v.fPos });
     if (v.taxMode) setTaxMode(v.taxMode);
     if (typeof v.taxRate === "number") setTaxRate(v.taxRate);
@@ -308,7 +344,7 @@ function GeneratorTab({ onCreatePop }) {
 
   useEffect(() => {
     const cv = previewRef.current; if (!cv) return;
-    gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen });
+    gneRender(cv.getContext("2d"), f, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen, taxFmt: preset.taxFmt, labels: preset.labels });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
   // 向きに合わせて、用意してあるテンプレを読み込む（自分で選んだ画像があればそれを優先）
@@ -342,7 +378,7 @@ function GeneratorTab({ onCreatePop }) {
       const wb = XLSX.read(new Uint8Array(buf), { type:"array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(ws, { defval:"" });
-      const rs = json.map((r) => ({ origin:r["産地"] ?? "", origin2:r["補足"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "", offRate:r["割安"] ?? "" })).filter((r) => r.name);
+      const rs = json.map((r) => ({ origin:r["産地"] ?? "", origin2:r["補足"] ?? "", name:r["商品名"] ?? "", count:r["個数"] ?? "", price:r["本体価格"] ?? "", offRate:r["割安"] ?? "", copy:r["キャッチ"] ?? "" })).filter((r) => r.name);
       setRows(rs);
       setStatus(`${rs.length} 件を読み込みました`);
     } catch (e) { setStatus("Excel読み込みに失敗しました"); }
@@ -372,7 +408,7 @@ function GeneratorTab({ onCreatePop }) {
 
   const renderBlob = (row) => new Promise((res) => {
     const c = document.createElement("canvas"); c.width = CW; c.height = CH;
-    gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen });
+    gneRender(c.getContext("2d"), row, tpl, taxMode, font, taxRate, { x: gx, y: gy, scale: gScale / 100, fieldScale: fScale, fieldPos: fPos }, { w: CW, h: CH, layout: preset.layout, hideFixed: preset.hideFixed, taxNoYen: !taxYen, taxFmt: preset.taxFmt, labels: preset.labels });
     c.toBlob((b) => res(b), "image/png");
   });
 
@@ -470,7 +506,7 @@ function GeneratorTab({ onCreatePop }) {
             return (
               <button key={i} onClick={() => setF({ origin:r.origin || "", origin2:r.origin2 || "",
                   name:r.name || "", count:r.count || "", price:r.price == null ? "" : String(r.price),
-                  offRate:r.offRate == null ? "" : String(r.offRate) })}
+                  offRate:r.offRate == null ? "" : String(r.offRate), copy:r.copy || f.copy || "" })}
                 style={{ display:"flex", alignItems:"center", gap:9, textAlign:"left", width:"100%",
                   border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
                   background: on ? "var(--soft)" : "var(--card)", borderRadius:9, padding:"8px 10px", cursor:"pointer" }}>
@@ -522,7 +558,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ height:1, background:"var(--line)", margin:"14px 0 12px" }} />
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--ink)", marginBottom:8 }}>フィールド別サイズ</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px 14px" }}>
-            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).map(([k, lbl]) => (
+            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).concat(preset.useCopy ? [["copy","キャッチ"]] : []).map(([k, lbl]) => (
               <div key={k} style={{ display:"flex", alignItems:"center", gap:6 }}>
                 <span style={{ fontSize:12, fontWeight:800, color:"var(--text)", width:56, flexShrink:0 }}>{lbl}</span>
                 <button onClick={() => setFScale(v => ({ ...v, [k]: Math.max(60, v[k] - 10) }))}
@@ -537,7 +573,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ fontSize:12.5, fontWeight:900, color:"var(--primary)", marginBottom:3 }}>▼ 1つずつ動かす（選んだ項目だけ）</div>
           <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8, lineHeight:1.5 }}>上の「位置」は全部まとめて動きます。ここは選んだ項目だけが動きます。</div>
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10, padding:"9px", background:"var(--soft)", borderRadius:10 }}>
-            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).map(([k, lbl]) => {
+            {[["origin","産地"],["name","商品名"],["count","個数"],["price","価格"],["tax","税込表示"]].concat(preset.useOff ? [["off","割安"]] : []).concat(preset.useCopy ? [["copy","キャッチ"]] : []).map(([k, lbl]) => {
               const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
               return (
                 <button key={k} onClick={() => setPosTarget(k)}
@@ -638,13 +674,14 @@ function GeneratorTab({ onCreatePop }) {
 
         <div style={{ ...card, display:"flex", flexDirection:"column", gap:10 }}>
           <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>単品入力（ライブプレビュー）</div>
-          {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）","offRate"]] : []).map(([label, key]) => (
+          {[["産地","origin"],["補足（養殖・解凍 など）","origin2"],["商品名","name"],["個数","count"],["本体価格","price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）","offRate"]] : []).concat(preset.useCopy ? [["キャッチコピー","copy"]] : []).map(([label, key]) => (
             <div key={key}>
               <div style={{ fontSize:12, color:"var(--sub)", marginBottom:4 }}>
                 {label}
-                {key === "name" && <span style={{ color:"var(--faint)" }}>（改行すると2行になります）</span>}
+                {key === "name" && <span style={{ color:"var(--faint)" }}>（改行すると2行になります{preset.useCopy ? "。2行以上は最後の行が赤" : ""}）</span>}
+                {key === "copy" && <span style={{ color:"var(--faint)" }}>（改行で2行。*ここ* と囲むと赤）</span>}
               </div>
-              {key === "name" ? (
+              {(key === "name" || key === "copy") ? (
                 <textarea value={f[key] || ""} onChange={set(key)} rows={2}
                   placeholder="長いときは改行してください"
                   style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15, resize:"vertical", fontFamily:"inherit", lineHeight:1.5 }} />

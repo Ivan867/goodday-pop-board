@@ -525,90 +525,113 @@ const GNE_PRESETS = [{
     }
   }
 },
-// 魚屋のおすすめ 旬の味覚（よこ）：上が題字と料理写真、下の白い所に文字を置く
+// 魚屋のおすすめ 旬の味覚（よこ）：配置はCGCフェアの見本にならう。
+// 左に品名（2行以上は最後の行が赤）とキャッチ、右下に大きな価格、その下に（税込 ○○円）
 {
   id: "shun",
   name: "旬の味覚",
   land: true,
   img: "tpl/shun.jpg",
   thumb: "tpl/shun_thumb.jpg",
+  useCopy: true,
+  taxFmt: "（税込 *{n}*円）",
+  labels: {
+    taxLabel: "本体価格"
+  },
   layout: {
-    origin: {
-      x: 90,
-      y: 800,
-      size: 66,
-      fill: "#0f2347",
-      stroke: "#ffffff",
-      sw: 6,
-      align: "left",
-      maxW: 960
-    },
     name: {
-      x: 848,
-      y: 915,
-      size: 160,
-      fill: "#0f2347",
+      x: 70,
+      y: 880,
+      size: 150,
+      fill: "#141414",
       stroke: "#ffffff",
       sw: 10,
-      align: "center",
-      maxW: 1560
+      align: "left",
+      maxW: 900,
+      maxH: 270,
+      lastLineFill: "#d6121a"
     },
-    count: {
-      x: 220,
-      y: 1095,
-      size: 80,
-      fill: "#0f2347",
+    copy: {
+      x: 70,
+      y: 1068,
+      size: 50,
+      fill: "#141414",
       stroke: "#ffffff",
       sw: 5,
-      align: "center",
-      maxW: 320
+      align: "left",
+      maxW: 900,
+      maxH: 120,
+      em: "#d6121a"
     },
-    price: {
-      x: 1095,
-      y: 1078,
-      size: 240,
-      fill: "#d6121a",
+    origin: {
+      x: 70,
+      y: 1162,
+      size: 40,
+      fill: "#0f2347",
       stroke: "#ffffff",
-      sw: 11,
-      align: "right",
+      sw: 4,
+      align: "left",
       maxW: 640
     },
+    count: {
+      x: 990,
+      y: 1150,
+      size: 66,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "right",
+      maxW: 300
+    },
+    price: {
+      x: 1520,
+      y: 1000,
+      size: 300,
+      fill: "#e0101a",
+      stroke: "#ffffff",
+      sw: 13,
+      align: "right",
+      maxW: 540,
+      skew: -0.17,
+      shadow: "rgba(0,0,0,0.55)"
+    },
     plus: {
-      x: 1150,
-      y: 1040,
+      x: 1600,
+      y: 900,
       size: 1,
-      fill: "#d6121a",
-      stroke: "#d6121a",
+      fill: "#141414",
+      stroke: "#141414",
       sw: 0,
       align: "center"
     },
-    yen: {
-      x: 1150,
-      y: 1118,
-      size: 84,
-      fill: "#0f2347",
-      stroke: "#ffffff",
-      sw: 5,
-      align: "center"
-    },
     taxLabel: {
-      x: 1440,
-      y: 1045,
-      size: 42,
-      fill: "#0f2347",
+      x: 1600,
+      y: 952,
+      size: 36,
+      fill: "#141414",
       stroke: "#ffffff",
       sw: 3,
       align: "center"
     },
+    yen: {
+      x: 1600,
+      y: 1035,
+      size: 120,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "center"
+    },
     taxPrice: {
-      x: 1440,
-      y: 1122,
-      size: 76,
-      fill: "#d6121a",
+      x: 1670,
+      y: 1150,
+      size: 62,
+      fill: "#141414",
       stroke: "#ffffff",
       sw: 5,
-      align: "center",
-      maxW: 380
+      align: "right",
+      maxW: 640,
+      em: "#e0101a"
     }
   }
 }];
@@ -640,30 +663,68 @@ function gneDrawField(ctx, text, cfg, font) {
   // 改行（入力の改行、または「/」）で行を分ける
   const lines = text.split(/\r?\n|\//).map(t => t.trim()).filter(t => t !== "");
   if (!lines.length) return;
+  // *ここ* で囲んだ所は強調色（cfg.em があるテンプレだけ）。測るときは * を外す
+  const 素 = l => cfg.em ? l.replace(/\*/g, "") : l;
   let size = cfg.size;
   ctx.textAlign = cfg.align;
   ctx.textBaseline = "middle";
   ctx.font = `${wt} ${size}px ${fam}`;
   // いちばん長い行が収まるまで小さくする
   if (cfg.maxW) {
-    const widest = () => Math.max(...lines.map(l => ctx.measureText(l).width));
+    const widest = () => Math.max(...lines.map(l => ctx.measureText(素(l)).width));
     while (widest() > cfg.maxW && size > 12) {
+      size -= 4;
+      ctx.font = `${wt} ${size}px ${fam}`;
+    }
+  }
+  // 行が多いときは、高さに収まるまで小さくする（cfg.maxH があるテンプレだけ）
+  if (cfg.maxH) {
+    while (size * 1.08 * lines.length > cfg.maxH && size > 12) {
       size -= 4;
       ctx.font = `${wt} ${size}px ${fam}`;
     }
   }
   ctx.lineJoin = "round";
   ctx.miterLimit = 2;
-  ctx.strokeStyle = cfg.stroke;
-  ctx.lineWidth = cfg.sw * 2;
-  ctx.fillStyle = cfg.fill;
-  // 複数行は上下の真ん中に来るように置く
+  const sw = cfg.sw; // ふちの太さは縮めても変えない（これまでのテンプレと同じ）
+  // 複数行は上下の真ん中に来るように置く（cfg.top があれば、そこを1行目の中心にする）
   const lh = size * 1.08;
-  const top = cfg.y - lh * (lines.length - 1) / 2;
+  const top = cfg.top != null ? cfg.top : cfg.y - lh * (lines.length - 1) / 2;
   lines.forEach((ln, i) => {
     const y = top + lh * i;
-    ctx.strokeText(ln, cfg.x, y);
-    ctx.fillText(ln, cfg.x, y);
+    // 行ごとの色：最後の行だけ色を変える（2行以上のとき）
+    const 行の色 = cfg.lastLineFill && lines.length > 1 && i === lines.length - 1 ? cfg.lastLineFill : cfg.fill;
+    const 区切り = cfg.em ? ln.split("*") : [ln];
+    const 全幅 = ctx.measureText(素(ln)).width;
+    let x0 = cfg.x;
+    if (cfg.align === "center") x0 = cfg.x - 全幅 / 2;else if (cfg.align === "right") x0 = cfg.x - 全幅;
+    ctx.save();
+    ctx.translate(x0, y);
+    if (cfg.skew) ctx.transform(1, 0, cfg.skew, 1, 0, 0);
+    ctx.textAlign = "left";
+    // 影（cfg.shadow があるテンプレだけ）
+    if (cfg.shadow) {
+      ctx.save();
+      ctx.shadowColor = cfg.shadow;
+      ctx.shadowBlur = size * 0.06;
+      ctx.shadowOffsetX = size * 0.035;
+      ctx.shadowOffsetY = size * 0.045;
+      ctx.strokeStyle = cfg.stroke;
+      ctx.lineWidth = sw * 2;
+      ctx.strokeText(素(ln), 0, 0);
+      ctx.restore();
+    }
+    ctx.strokeStyle = cfg.stroke;
+    ctx.lineWidth = sw * 2;
+    ctx.strokeText(素(ln), 0, 0);
+    let x = 0;
+    区切り.forEach((seg, k) => {
+      if (!seg) return;
+      ctx.fillStyle = k % 2 === 1 ? cfg.em : 行の色;
+      ctx.fillText(seg, x, 0);
+      x += ctx.measureText(seg).width;
+    });
+    ctx.restore();
   });
 }
 function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
@@ -685,7 +746,8 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     yen: "price",
     taxLabel: "tax",
     taxPrice: "tax",
-    offRate: "off"
+    offRate: "off",
+    copy: "copy"
   };
   const L = {};
   for (const k in LAY) {
@@ -731,14 +793,18 @@ function gneRender(ctx, f, tpl, taxMode, font, taxRate, off, dim) {
     const p = parseInt(f.price, 10);
     gneDrawField(ctx, String(p), L.price, font);
     const taxYen = !(dim && dim.taxNoYen);
-    gneDrawField(ctx, `${gneCalcTax(p, taxMode, taxRate)}${taxYen ? "円" : ""}`, L.taxPrice, font);
+    const 税込 = gneCalcTax(p, taxMode, taxRate);
+    // 税込の書き方をテンプレごとに変えられる（例：「（税込 *539*円）」）
+    gneDrawField(ctx, dim && dim.taxFmt ? dim.taxFmt.replace("{n}", 税込) : `${税込}${taxYen ? "円" : ""}`, L.taxPrice, font);
   }
   if (!hideFixed) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
-    gneDrawField(ctx, GNE_FIXED.taxLabel, L.taxLabel, font);
+    gneDrawField(ctx, dim && dim.labels && dim.labels.taxLabel || GNE_FIXED.taxLabel, L.taxLabel, font);
   } else if (L.yen && L.yen.size > 2) {
     gneDrawField(ctx, GNE_FIXED.yen, L.yen, font);
   }
+  // キャッチコピー（使うテンプレだけ）
+  if (f.copy && L.copy) gneDrawField(ctx, String(f.copy), L.copy, font);
   // 星の中の「約◯割安」
   if (f.offRate && L.offRate) gneDrawField(ctx, String(f.offRate), L.offRate, font);
 }
@@ -830,7 +896,8 @@ function GeneratorTab({
     name: "うなぎかば焼き",
     count: "1尾",
     price: "2390",
-    offRate: "2"
+    offRate: "2",
+    copy: "*温めるだけ*ですぐおいしい、/食卓のもう一品にぴったりです。"
   });
   const [rows, setRows] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -870,7 +937,8 @@ function GeneratorTab({
     count: 100,
     price: 100,
     tax: 100,
-    off: 100
+    off: 100,
+    copy: 100
   }); // フィールド別（%）
   // フィールド別の位置ずらし（px）。平坦なキー（name_x など）で持つとReactが変化を確実に検知できる
   const ZERO_POS = {
@@ -885,7 +953,9 @@ function GeneratorTab({
     tax_x: 0,
     tax_y: 0,
     off_x: 0,
-    off_y: 0
+    off_y: 0,
+    copy_x: 0,
+    copy_y: 0
   };
   const [fPos, setFPos] = useState(ZERO_POS);
   const [posTarget, setPosTarget] = useState("name"); // いま位置を動かす対象
@@ -919,6 +989,7 @@ function GeneratorTab({
       price: 100,
       tax: 100,
       off: 100,
+      copy: 100,
       ...v.fScale
     });
     if (v.fPos) setFPos({
@@ -1025,7 +1096,9 @@ function GeneratorTab({
       h: CH,
       layout: preset.layout,
       hideFixed: preset.hideFixed,
-      taxNoYen: !taxYen
+      taxNoYen: !taxYen,
+      taxFmt: preset.taxFmt,
+      labels: preset.labels
     });
   }, [f, tpl, taxMode, fontId, loadedFonts, taxRate, gx, gy, gScale, fScale, fPos]);
 
@@ -1077,7 +1150,8 @@ function GeneratorTab({
         name: r["商品名"] ?? "",
         count: r["個数"] ?? "",
         price: r["本体価格"] ?? "",
-        offRate: r["割安"] ?? ""
+        offRate: r["割安"] ?? "",
+        copy: r["キャッチ"] ?? ""
       })).filter(r => r.name);
       setRows(rs);
       setStatus(`${rs.length} 件を読み込みました`);
@@ -1152,7 +1226,9 @@ function GeneratorTab({
       h: CH,
       layout: preset.layout,
       hideFixed: preset.hideFixed,
-      taxNoYen: !taxYen
+      taxNoYen: !taxYen,
+      taxFmt: preset.taxFmt,
+      labels: preset.labels
     });
     c.toBlob(b => res(b), "image/png");
   });
@@ -1411,7 +1487,8 @@ function GeneratorTab({
         name: r.name || "",
         count: r.count || "",
         price: r.price == null ? "" : String(r.price),
-        offRate: r.offRate == null ? "" : String(r.offRate)
+        offRate: r.offRate == null ? "" : String(r.offRate),
+        copy: r.copy || f.copy || ""
       }),
       style: {
         display: "flex",
@@ -1586,7 +1663,7 @@ function GeneratorTab({
       gridTemplateColumns: "1fr 1fr",
       gap: "8px 14px"
     }
-  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).map(([k, lbl]) => /*#__PURE__*/React.createElement("div", {
+  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).concat(preset.useCopy ? [["copy", "キャッチ"]] : []).map(([k, lbl]) => /*#__PURE__*/React.createElement("div", {
     key: k,
     style: {
       display: "flex",
@@ -1673,7 +1750,7 @@ function GeneratorTab({
       background: "var(--soft)",
       borderRadius: 10
     }
-  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).map(([k, lbl]) => {
+  }, [["origin", "産地"], ["name", "商品名"], ["count", "個数"], ["price", "価格"], ["tax", "税込表示"]].concat(preset.useOff ? [["off", "割安"]] : []).concat(preset.useCopy ? [["copy", "キャッチ"]] : []).map(([k, lbl]) => {
     const moved = (fPos[k + "_x"] || 0) !== 0 || (fPos[k + "_y"] || 0) !== 0;
     return /*#__PURE__*/React.createElement("button", {
       key: k,
@@ -2049,7 +2126,7 @@ function GeneratorTab({
       fontWeight: 800,
       color: "var(--ink)"
     }
-  }, "\u5358\u54C1\u5165\u529B\uFF08\u30E9\u30A4\u30D6\u30D7\u30EC\u30D3\u30E5\u30FC\uFF09"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
+  }, "\u5358\u54C1\u5165\u529B\uFF08\u30E9\u30A4\u30D6\u30D7\u30EC\u30D3\u30E5\u30FC\uFF09"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).concat(preset.useCopy ? [["キャッチコピー", "copy"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
     key: key
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2061,7 +2138,11 @@ function GeneratorTab({
     style: {
       color: "var(--faint)"
     }
-  }, "\uFF08\u6539\u884C\u3059\u308B\u30682\u884C\u306B\u306A\u308A\u307E\u3059\uFF09")), key === "name" ? /*#__PURE__*/React.createElement("textarea", {
+  }, "\uFF08\u6539\u884C\u3059\u308B\u30682\u884C\u306B\u306A\u308A\u307E\u3059", preset.useCopy ? "。2行以上は最後の行が赤" : "", "\uFF09"), key === "copy" && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--faint)"
+    }
+  }, "\uFF08\u6539\u884C\u30672\u884C\u3002*\u3053\u3053* \u3068\u56F2\u3080\u3068\u8D64\uFF09")), key === "name" || key === "copy" ? /*#__PURE__*/React.createElement("textarea", {
     value: f[key] || "",
     onChange: set(key),
     rows: 2,
