@@ -524,6 +524,93 @@ const GNE_PRESETS = [{
       align: "center"
     }
   }
+},
+// 魚屋のおすすめ 旬の味覚（よこ）：上が題字と料理写真、下の白い所に文字を置く
+{
+  id: "shun",
+  name: "旬の味覚",
+  land: true,
+  img: "tpl/shun.jpg",
+  thumb: "tpl/shun_thumb.jpg",
+  layout: {
+    origin: {
+      x: 90,
+      y: 800,
+      size: 66,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "left",
+      maxW: 960
+    },
+    name: {
+      x: 848,
+      y: 915,
+      size: 160,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 10,
+      align: "center",
+      maxW: 1560
+    },
+    count: {
+      x: 220,
+      y: 1095,
+      size: 80,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "center",
+      maxW: 320
+    },
+    price: {
+      x: 1095,
+      y: 1078,
+      size: 240,
+      fill: "#d6121a",
+      stroke: "#ffffff",
+      sw: 11,
+      align: "right",
+      maxW: 640
+    },
+    plus: {
+      x: 1150,
+      y: 1040,
+      size: 1,
+      fill: "#d6121a",
+      stroke: "#d6121a",
+      sw: 0,
+      align: "center"
+    },
+    yen: {
+      x: 1150,
+      y: 1118,
+      size: 84,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "center"
+    },
+    taxLabel: {
+      x: 1440,
+      y: 1045,
+      size: 42,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 3,
+      align: "center"
+    },
+    taxPrice: {
+      x: 1440,
+      y: 1122,
+      size: 76,
+      fill: "#d6121a",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "center",
+      maxW: 380
+    }
+  }
 }];
 const GNE_FIXED = {
   plus: "+税",

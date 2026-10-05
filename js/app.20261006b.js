@@ -272,6 +272,81 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-10-06",
+  type: "新機能",
+  title: "入力支援に「旬の味覚」テンプレを足しました",
+  body: "「魚屋のおすすめ 旬の味覚」のよこ向きテンプレです。下の白い所に、産地・品名・単位・価格・税込価格が入ります。入力支援の「テンプレを選ぶ」のいちばん右にあります。"
+}, {
+  date: "2026-10-06",
+  type: "修正",
+  title: "管理画面の削除・まとめるが時間切れになる件を直しました",
+  body: "アーカイブの画面を開くと全部のポップの画像（約170MB）を一度に読みに行き、保存の通信がその後ろで待たされて8秒で打ち切られていました。画像は見えている所だけ読むようにし、保存は30秒まで待つようにしました。"
+}, {
+  date: "2026-10-05",
+  type: "改善",
+  title: "投稿画面からカテゴリをなくしました",
+  body: "投稿するときは、店舗・商品名・コメント・画像だけを入れればよくなりました。ジャンルは管理画面であとから振り分けます。"
+}, {
+  date: "2026-10-05",
+  type: "改善",
+  title: "一覧のカードを品名だけにしました／入力支援の便利機能をなくしました",
+  body: "一覧のカードの下に出ていたジャンルと店舗名をやめ、品名だけにしました。ジャンル・お店での絞り込み（さがす）はこれまでどおり使えます。入力支援は「POP画像」と「木札」の2つになりました。"
+}, {
+  date: "2026-10-05",
+  type: "修正",
+  title: "開くときに「うまく開けませんでした」で止まる件を直しました",
+  body: "見た目のファイルを電波の都合で一度取りこぼすと、そのまま止まっていました。いまは自動で3回まで取り直します。それでも駄目なときだけ「読み込み直す」が出ます。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "木札の背景と字を選べるようにしました",
+  body: "背景は木目・白木・焦げ茶・すだれ・和紙・藍染・墨の7種類、字は品名・産地用に13種類、値段用に7種類から選べます。字は選んだときだけ読み込みます。産地の候補「大社漁港産」は「大社港産」に改めました（保存済みの木札も置きかえます）。"
+}, {
+  date: "2026-10-04",
+  type: "新機能",
+  title: "入力支援で「木札」を作れるようになりました",
+  body: "入力支援の「木札」で、A4たてに4段の木札（山陰沖の産地・食べ方・品名・本体価格／税込価格）を作れます。税込は自動で計算します。上の札を押すとその段を直せて、産地や食べ方は押すだけで入ります。写真に保存・画像を保存・印刷ができ、入れた内容はこの端末に残ります。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "店舗支援を作り直しました",
+  body: "番号を入れると、まず資料がサムネイルで並びます（管理画面の資料で「表示」にしたものだけ）。塩干発注と画像の共有は、資料の下の「そのほか」から入れます。番号はこれまでと同じです。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "管理画面の資料をサムネイルで並べました",
+  body: "画像はそのまま、Googleのスプレッドシートやドキュメントは縮小画像で出します（リンク共有されていないものは種類の札になります）。押すと開きます。管理画面のカタログはなくしました（一般のカタログ画面はそのままです）。"
+}, {
+  date: "2026-10-04",
+  type: "修正",
+  title: "ホーム画面のアイコンから開いたときに止まる件を対策しました",
+  body: "通信の返事を待つのを8秒までにし、届かなければもう一度取りに行きます。アプリに戻ってきたときは一覧を取り直し、10分以上離れていたらページごと読み直します。メニューのいちばん下に「読み込み直す」も置きました。"
+}, {
+  date: "2026-10-02",
+  type: "新機能",
+  title: "使われ方の記録を増やしました",
+  body: "管理画面の「端末」に、よく使われる機能・どこから来たか（LINE・ホーム画面・直接など）・ホーム画面のアプリかブラウザか・画面の大きさ・部門を足しました。誰が使ったかは記録していません。あわせて、1日の区切りが朝9時になっていたのを日本時間の0時に直しています。"
+}, {
+  date: "2026-10-02",
+  type: "新機能",
+  title: "管理画面の「端末」と「記録」を詳しくしました",
+  body: "端末：今日・7日・30日の台数、毎日の推移、曜日×時間帯でいつ使われているか。記録：毎日の閲覧、よく見られるジャンル、どの店のポップが見られているか、急上昇、そして30日だれにも開かれていない「眠っている」ポップの一覧（その場でアーカイブへ移せます）。"
+}, {
+  date: "2026-10-02",
+  type: "改善",
+  title: "青果の手引きは、下の案内から開く形にしました",
+  body: "青果に切り替えたとき手引きが画面いっぱいに出ていたのをやめ、一覧の下に「初めての方はこちら」を出すようにしました。開くか × で閉じると、次からは出ません。"
+}, {
+  date: "2026-10-02",
+  type: "修正",
+  title: "起動画面で止まる・何も出ない不具合を直しました",
+  body: "書体や部品を外部から読む途中で電波が詰まると、画面が一切出なくなっていました。読み込みの順番を変え、何が詰まっても起動画面と「読み込み直す」が先に出るようにしています。"
+}, {
+  date: "2026-10-01",
+  type: "改善",
+  title: "手引きを作り直しました",
+  body: "番号つきの7段に整理し、絵を添えました。リンクも文面も、押せばそのまま写せます。青果では、初めて開いたときに手引きが先に出ます（二度目からは一覧から）。メニューでも目立つようにしました。"
+}, {
   date: "2026-10-01",
   type: "改善",
   title: "読みにくい文字をまとめて直しました",
@@ -2394,6 +2469,40 @@ function sbWithDept(path, method, body) {
     body
   };
 }
+
+// 返事を待つのは8秒まで。iPhoneのホーム画面のアプリは、一時停止から戻ると
+// 通信が切れたまま「返事待ち」で止まることがあるため、上限を設けてあきらめさせる。
+const SB_待つ上限 = 8000;
+// 保存（POSTなど）は30秒まで待つ。画像をたくさん読んでいる画面では、保存の通信が
+// 画像の後ろで順番待ちになり、8秒では送る前に打ち切られていた（2026-10-06 管理画面の削除・まとめる）。
+const SB_保存の上限 = 30000;
+
+// 1回分の通信。返事の中身（本文）を読み終えるまでを8秒で区切る。
+async function sbFetchOnce(url, init) {
+  const 止め = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const 上限 = !init.method || init.method === "GET" ? SB_待つ上限 : SB_保存の上限;
+  const 時計 = 止め ? setTimeout(() => 止め.abort(), 上限) : 0;
+  try {
+    const r = await fetch(url, 止め ? {
+      ...init,
+      signal: 止め.signal
+    } : init);
+    const 本文 = await r.text(); // 本文の途中で止まる場合もあるので、ここまで含めて8秒
+    return {
+      r,
+      本文
+    };
+  } catch (e) {
+    if (止め && 止め.signal.aborted) {
+      const t = new Error("timeout");
+      t.timeout = true;
+      throw t;
+    }
+    throw e;
+  } finally {
+    if (時計) clearTimeout(時計);
+  }
+}
 async function sbFetch(path, {
   method = "GET",
   body,
@@ -2413,24 +2522,45 @@ async function sbFetch(path, {
     } : {}),
     ...headers
   };
-  let r;
+  const init = {
+    method,
+    headers: h(extra),
+    body: body !== undefined ? JSON.stringify(body) : undefined
+  };
+  let 結果;
   try {
-    r = await fetch(`${SB_URL}${path}`, {
-      method,
-      headers: h(extra),
-      body: body !== undefined ? JSON.stringify(body) : undefined
-    });
+    結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
   } catch (e) {
-    // 圏外・電波切れなど、そもそも届かなかった場合
-    sbNotifyFail(method, "network");
-    throw e;
+    // 読み込み（GET）だけは、もう一度だけ取り直す。
+    // 保存（POST など）は二重に登録される恐れがあるので取り直さない。
+    if (method === "GET") {
+      try {
+        結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
+      } catch (e2) {
+        sbNotifyFail(method, e2.timeout ? "timeout" : "network");
+        throw e2;
+      }
+    } else {
+      sbNotifyFail(method, e.timeout ? "timeout" : "network"); // 圏外・電波切れ・待ちすぎ
+      throw e;
+    }
   }
+  const {
+    r,
+    本文
+  } = 結果;
   if (!r.ok) {
-    const t = await r.text();
-    sbNotifyFail(method, t);
-    throw new Error(t);
+    sbNotifyFail(method, 本文);
+    throw new Error(本文);
   }
-  return r;
+  // 呼ぶ側は今まで通り .json() / .text() / .headers を使える
+  // 204 などの「中身なし」の返事に本文を付けると Response が例外を投げるので、空にする
+  const 中身なし = r.status === 204 || r.status === 205 || r.status === 304;
+  return new Response(中身なし ? null : 本文, {
+    status: r.status,
+    statusText: r.statusText,
+    headers: r.headers
+  });
 }
 const sbJson = async (path, opts) => (await sbFetch(path, opts)).json(); // 配列/JSONを返す
 const sbOne = async (path, opts) => (await sbJson(path, opts))[0]; // 先頭1件を返す
@@ -2447,23 +2577,86 @@ function parseDeviceUA(ua) {
     browser
   };
 }
+
+// ── 使われ方の手がかり（個人は特定しない） ──
+// ホーム画面のアプリとして開いたか、ブラウザで開いたか
+function 開き方() {
+  try {
+    const 単独 = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    return 単独 ? "アプリ" : "ブラウザ";
+  } catch (e) {
+    return "ブラウザ";
+  }
+}
+// どこから来たか。LINE の中のブラウザ、ホーム画面、ほかのサイトのリンク、直接（入力・ブックマーク）
+function 来た道() {
+  try {
+    if (開き方() === "アプリ") return "ホーム画面";
+    if (/ Line\//i.test(navigator.userAgent || "")) return "LINE";
+    const r = document.referrer;
+    if (r) {
+      const host = new URL(r).hostname;
+      if (host && host !== location.hostname) return ("リンク:" + host).slice(0, 40);
+    }
+    return "直接";
+  } catch (e) {
+    return "直接";
+  }
+}
+// 日本時間の日付（以前は世界標準時で作っていたため、朝9時で日付が切り替わっていた）
+function 今日の札() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+// 記録の失敗で画面に警告を出さないよう、集計の送信は素の fetch で黙って送る
+function 黙って送る(path, body) {
+  try {
+    fetch(`${SB_URL}${path}`, {
+      method: "POST",
+      headers: h({
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(body),
+      keepalive: true
+    }).catch(() => {});
+  } catch (e) {}
+}
+const 機能の最終 = {};
 const api = {
+  // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
+  logFeature(名) {
+    try {
+      const 今 = Date.now();
+      if (機能の最終[名] && 今 - 機能の最終[名] < 60000) return;
+      機能の最終[名] = 今;
+      黙って送る(`/rest/v1/feature_uses`, {
+        feature: String(名).slice(0, 32),
+        dept: sbDept(),
+        launch: 開き方()
+      });
+    } catch (e) {}
+  },
   // ── 端末記録：同じ端末からは1日1回だけ記録（localStorageで判定）。個人は特定しない。
   async logDeviceVisit(storeName) {
     try {
-      const day = new Date().toISOString().slice(0, 10);
+      const day = 今日の札();
       const key = `deviceLogged:${day}`;
       if (localStorage.getItem(key)) return false;
       const {
         platform,
         browser
       } = parseDeviceUA(navigator.userAgent);
+      // 店名は送らない：起動時は店が分からず、これまで先頭の「北部店」が入り続けていた
       await sbFetch(`/rest/v1/device_visits`, {
         method: "POST",
         body: {
           platform,
           browser,
-          store_name: storeName || null
+          store_name: null,
+          launch: 開き方(),
+          source: 来た道(),
+          screen_w: Math.round(window.innerWidth || screen.width || 0),
+          dept: sbDept()
         }
       });
       localStorage.setItem(key, "1");
@@ -2480,7 +2673,11 @@ const api = {
     }
   },
   async listDeviceVisits(limit = 500) {
-    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,created_at&order=created_at.desc&limit=${limit}`);
+    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,launch,source,screen_w,dept,created_at&order=created_at.desc&limit=${limit}`);
+  },
+  async listFeatureUses(days) {
+    const since = new Date(Date.now() - (days || 30) * 86400000).toISOString();
+    return sbJson(`/rest/v1/feature_uses?select=feature,dept,launch,created_at&created_at=gte.${since}&order=created_at.desc&limit=10000`);
   },
   // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
@@ -3658,6 +3855,11 @@ function UploadModal({
   onClose,
   onSuccess
 }) {
+  useEffect(() => {
+    try {
+      api.logFeature("投稿画面");
+    } catch (e) {}
+  }, []);
   const [store, setStore] = useState("木次店");
   const author = ""; // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
   const 青果か = typeof deptKey === "function" && deptKey() === "produce";
@@ -3827,6 +4029,9 @@ function UploadModal({
           detail: done > 1 ? `${done}枚を投稿しました` : "投稿しました"
         }));
       } catch (e) {}
+      try {
+        api.logFeature("投稿した");
+      } catch (e) {}
       onSuccess(last);
     } catch (e) {
       setError("エラー: " + e.message);
@@ -3935,25 +4140,6 @@ function UploadModal({
       outline: "none"
     }
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: "var(--text)",
-      marginBottom: 6
-    }
-  }, "\u30AB\u30C6\u30B4\u30EA"), /*#__PURE__*/React.createElement("select", {
-    value: category,
-    onChange: e => setCategory(e.target.value),
-    style: {
-      width: "100%",
-      padding: "10px 12px",
-      border: "2px solid var(--line)",
-      borderRadius: 10,
-      fontSize: 14
-    }
-  }, deptCategories().map(c => /*#__PURE__*/React.createElement("option", {
-    key: c
-  }, c)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 700,
@@ -5697,34 +5883,79 @@ function PopCard({
       wordBreak: "break-word",
       color: "var(--ink)"
     }
-  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), (pop.store_name || pop.genre) && /*#__PURE__*/React.createElement("div", {
-    className: "pc-sub"
-  }, pop.genre && /*#__PURE__*/React.createElement("span", {
-    className: "pc-dot",
-    style: {
-      background: function () {
-        try {
-          var c = deptGenreColors()[pop.genre];
-          return c && c.solid || "var(--primary-soft)";
-        } catch (e) {
-          return "var(--primary-soft)";
-        }
-      }()
-    }
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "pc-sub-t"
-  }, [pop.genre, pop.store_name].filter(Boolean).join(" · ")))));
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name)));
 }
 
 // ── Board Tab ──
 
+// ── 資料のサムネイル（管理画面と店舗支援で共用） ──
+/* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
+   取れなければ種類の札を出す。 */
+const 資料の色 = k => ({
+  pdf: "#b3261e",
+  image: "#2f6fb0",
+  sheet: "#2f7a3a",
+  link: "#6b4ea0"
+})[k] || "#59636f";
+const 資料の名 = k => ({
+  pdf: "PDF",
+  image: "画像",
+  sheet: "表",
+  link: "リンク"
+})[k] || "資料";
+function 資料の縮小URL(r) {
+  const u = r.url || "";
+  if (r.kind === "image" || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u)) return u;
+  const m = /docs\.google\.com\/[a-z]+\/d\/([A-Za-z0-9_-]{20,})/.exec(u) || /drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{20,})/.exec(u);
+  if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w600";
+  return null;
+}
+function 資料の絵({
+  r
+}) {
+  const [だめ, setだめ] = useState(false);
+  const src = 資料の縮小URL(r);
+  if (src && !だめ) return /*#__PURE__*/React.createElement("img", {
+    src: src,
+    alt: "",
+    loading: "lazy",
+    referrerPolicy: "no-referrer",
+    onError: () => setだめ(true)
+  });
+  const 印 = {
+    pdf: "📄",
+    image: "🖼",
+    sheet: "📊",
+    link: "🔗"
+  }[r.kind] || r.emoji || "📄";
+  let 置き場 = "";
+  try {
+    置き場 = new URL(r.url).hostname.replace(/^www\./, "");
+  } catch (e) {}
+  return /*#__PURE__*/React.createElement("span", {
+    className: "res-fallback",
+    style: {
+      background: `linear-gradient(140deg, ${資料の色(r.kind)}22, ${資料の色(r.kind)}0a)`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 34
+    }
+  }, 印), /*#__PURE__*/React.createElement("span", {
+    className: "res-fb-host"
+  }, 置き場));
+}
 ;
 Object.assign(window, {
   PopCard,
   PopDetail,
   UploadModal,
   pairByShape,
-  popShape
+  popShape,
+  資料の色,
+  資料の名,
+  資料の縮小URL,
+  資料の絵
 });
 /* ───────── 05-tab-board ───────── */
 /* Nexus共有 — 05-tab-board （自動分割・window共有） */
@@ -5899,20 +6130,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
-  const load = useCallback(async () => {
-    setLoading(true);
+  const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
+  // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
+  const load = useCallback(async 静か => {
+    if (!静か) setLoading(true);
     try {
       const data = await api.listActive();
       setPops(data);
+      set読めず(false);
     } catch (e) {
       console.error(e);
+      if (!静か) set読めず(true);
     } finally {
-      setLoading(false);
+      if (!静か) setLoading(false);
     }
   }, []);
   useEffect(() => {
     load();
   }, [load]);
+  // アプリが一時停止から戻ってきたら、一覧を取り直す（14-app が知らせる）
+  useEffect(() => {
+    const 戻った = () => load(pops.length > 0);
+    window.addEventListener("appResume", 戻った);
+    return () => window.removeEventListener("appResume", 戻った);
+  }, [load, pops.length]);
   useEffect(() => {
     if (actionsRef) actionsRef.current = {
       refresh: load,
@@ -6401,7 +6642,39 @@ function BoardTab({
       borderRadius: 6,
       marginTop: 7
     }
-  }))))) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }))))) : 読めず && pops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "70px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 16,
+      color: "var(--ink)"
+    }
+  }, "\u4E00\u89A7\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)",
+      marginTop: 6,
+      lineHeight: 1.8
+    }
+  }, "\u96FB\u6CE2\u306E\u5F31\u3044\u6240\u3067\u306F\u3001\u8FD4\u4E8B\u304C\u5C4A\u304B\u306A\u3044\u3053\u3068\u304C\u3042\u308A\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => load(),
+    style: {
+      marginTop: 16,
+      border: "none",
+      background: "var(--fill)",
+      color: "#fff",
+      borderRadius: 12,
+      padding: "12px 26px",
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer",
+      fontFamily: "inherit"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6\u8AAD\u307F\u8FBC\u3080")) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 80,
@@ -20519,6 +20792,66 @@ function App() {
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false); // さがす（右のドロワー）が開いているか
+  // ホーム画面のアプリは、閉じても終了せず一時停止している。戻ってきたときに、
+  // 切れた通信を待ち続けて止まらないよう、ここで取り直しを指示する。
+  //   30秒以上離れていた → 一覧などを裏で取り直す（appResume）
+  //   10分以上離れていた → ページごと読み直す（入力の途中なら読み直さない）
+  useEffect(() => {
+    let 離れた = 0;
+    const 入力中 = () => {
+      try {
+        return [...document.querySelectorAll("input, textarea")].some(el => el.offsetParent !== null && (el.type === "file" ? el.files && el.files.length : String(el.value || "").trim() !== ""));
+      } catch (e) {
+        return false;
+      }
+    };
+    const 見る = () => {
+      if (document.visibilityState === "hidden") {
+        離れた = Date.now();
+        return;
+      }
+      if (!離れた) return;
+      const 秒 = (Date.now() - 離れた) / 1000;
+      離れた = 0;
+      if (秒 >= 600 && !入力中()) {
+        try {
+          location.reload();
+        } catch (e) {}
+        return;
+      }
+      if (秒 >= 30) {
+        try {
+          window.dispatchEvent(new CustomEvent("appResume"));
+        } catch (e) {}
+      }
+    };
+    // 保存されていた画面から戻された場合も、取り直す
+    const 復元 = e => {
+      if (e && e.persisted) {
+        try {
+          window.dispatchEvent(new CustomEvent("appResume"));
+        } catch (x) {}
+      }
+    };
+    document.addEventListener("visibilitychange", 見る);
+    window.addEventListener("pageshow", 復元);
+    return () => {
+      document.removeEventListener("visibilitychange", 見る);
+      window.removeEventListener("pageshow", 復元);
+    };
+  }, []);
+
+  // 使われた機能を数える（何が、だけ。誰が、は記録しない）
+  useEffect(() => {
+    try {
+      api.logFeature("画面:" + tab);
+    } catch (e) {}
+  }, [tab]);
+  useEffect(() => {
+    if (searchOpen) try {
+      api.logFeature("さがす");
+    } catch (e) {}
+  }, [searchOpen]);
   useEffect(() => {
     const on = () => setSearchOpen(true),
       off = () => setSearchOpen(false);
@@ -20763,6 +21096,22 @@ function App() {
     } catch (e) {}
   };
 
+  // 青果では、一覧の下に「初めての方はこちら」の案内を小さく出す（画面を乗っ取らない）。
+  // 手引きを開くか × で閉じたら、次からは出さない。
+  const [手引き案内, set手引き案内] = useState(() => {
+    try {
+      return typeof deptKey === "function" && deptKey() === "produce" && !localStorage.getItem("guideSeen");
+    } catch (e) {
+      return false;
+    }
+  });
+  const 案内を閉じる = () => {
+    try {
+      localStorage.setItem("guideSeen", "1");
+    } catch (e) {}
+    set手引き案内(false);
+  };
+
   // パソコンの広い画面では、メニューを左に開いたままにする
   const [広い, set広い] = useState(() => {
     try {
@@ -20783,11 +21132,19 @@ function App() {
     const sp = document.getElementById("splash");
     if (!sp) return;
     const t0 = window.__splashT0 || 0;
-    const wait = Math.max(0, 900 - (Date.now() - t0));
-    const h = setTimeout(() => {
-      sp.classList.add("hide");
-      setTimeout(() => sp.remove(), 500);
-    }, wait);
+    // 見た目のCSSが届くまでは外さない。届く前に外すと、崩れた画面が見えてしまう。
+    // 届かないときは index.html 側の見張りが「読み込み直す」を出す。
+    let h = 0;
+    const 試す = () => {
+      if (!document.getElementById("splash")) return;
+      if (window.__cssOK && Date.now() - t0 >= 900) {
+        sp.classList.add("hide");
+        setTimeout(() => sp.remove(), 500);
+        return;
+      }
+      h = setTimeout(試す, 150);
+    };
+    試す();
     return () => clearTimeout(h);
   }, []);
   const handleCreateFromPop = pop => {
@@ -21116,7 +21473,46 @@ function App() {
       whiteSpace: toastBad ? "normal" : "nowrap",
       lineHeight: 1.5
     }
-  }, toast))), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
+  }, toast))), 手引き案内 && tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("div", {
+    className: "guide-hint",
+    role: "dialog",
+    "aria-label": "\u521D\u3081\u3066\u306E\u65B9\u3078\u306E\u6848\u5185"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "gh-main",
+    onClick: () => {
+      案内を閉じる();
+      setTab("guide");
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "gh-icon",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 5.5h16v13H4z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 9.5h8M8 13h5"
+  }))), /*#__PURE__*/React.createElement("span", {
+    className: "gh-text"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "gh-t"
+  }, "\u521D\u3081\u3066\u306E\u65B9\u306F\u3053\u3061\u3089"), /*#__PURE__*/React.createElement("span", {
+    className: "gh-s"
+  }, "\u4F7F\u3044\u65B9\u306E\u624B\u5F15\u304D\u3092\u898B\u308B")), /*#__PURE__*/React.createElement("span", {
+    className: "gh-go",
+    "aria-hidden": "true"
+  }, "\u203A")), /*#__PURE__*/React.createElement("button", {
+    className: "gh-x",
+    onClick: 案内を閉じる,
+    "aria-label": "\u6848\u5185\u3092\u9589\u3058\u308B"
+  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
@@ -21277,9 +21673,10 @@ function App() {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
     const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 && o.key === "admin" ? {
+    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
-      label: "管理"
+      label: o.key === "admin" ? "管理" : o.label,
+      __押し: o.key === "guide"
     } : o);
   })().map(o => /*#__PURE__*/React.createElement("button", {
     key: o.key,
@@ -21289,7 +21686,7 @@ function App() {
     },
     "aria-label": o.label,
     "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item menu-row-" + o.key,
+    className: "menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : ""),
     style: {
       width: "100%",
       border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
@@ -21355,7 +21752,45 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
+  }))))), /*#__PURE__*/React.createElement("button", {
+    className: "menu-reload",
+    onClick: () => {
+      try {
+        location.reload();
+      } catch (e) {}
+    },
+    style: {
+      marginTop: 12,
+      width: "100%",
+      border: "1px dashed var(--line)",
+      background: "transparent",
+      color: "var(--sub)",
+      borderRadius: 12,
+      padding: "11px 14px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      fontFamily: "inherit",
+      fontSize: 14,
+      fontWeight: 800,
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "17",
+    height: "17",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 12a8 8 0 11-2.3-5.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 4v5h-5"
+  })), "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
   }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
