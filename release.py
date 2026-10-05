@@ -66,5 +66,16 @@ for m in re.finditer(r'<(link|script)\b[^>]*>', 頭):
 if 止める:
     sys.exit("★ 起動画面より前に、描画を止める読み込みがあります：\n  " + "\n  ".join(止める))
 
+# ⑦ index.html の中に直接書いた起動用の命令に、書き間違いがないか確かめる。
+#    ここが壊れると、取り直しも案内も動かず起動画面のまま止まる（2026-10-05 出す前に発見）。
+import tempfile
+for i, m in enumerate(re.finditer(r'<script>(.*?)</script>', html, re.S)):
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as t:
+        t.write(m.group(1))
+    r = subprocess.run(["node", "--check", t.name], capture_output=True, text=True)
+    os.remove(t.name)
+    if r.returncode != 0:
+        sys.exit("★ index.html の %d 番目の命令が壊れています:\n%s" % (i + 1, r.stderr[:800]))
+
 print("まとめました %s : %d本 → %d KB ／ %s ／ 起動画面まで %d バイト ／ 古いもの %d 件を削除" %
       (out, len(ORDER), os.path.getsize(out)//1024, css出, 先頭, len(古い)))
