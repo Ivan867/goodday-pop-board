@@ -655,3 +655,15 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
   font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; white-space: nowrap; }
 .brand-row .dock-brand + .dept-mini { margin-bottom: 10px; }
 .dept-mini:hover { filter: brightness(0.97); }
+
+/* 管理画面：名前の見直し */
+.rn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; }
+.rn-card { display: flex; gap: 11px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 9px; }
+.rn-card.done { border-color: #3f9e63; background: color-mix(in srgb, #3f9e63 6%, var(--card)); }
+.rn-img { width: 76px; height: 106px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--chip); }
+.rn-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.rn-old { font-size: 12.5px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rn-tag { font-size: 11px; font-weight: 800; color: #fff; background: #b8641a; border-radius: 6px; padding: 2px 7px; }
+.rn-tag.gray { background: var(--chip); color: var(--sub); }
+.rn-tag.ok { background: #3f9e63; }
+@media (max-width: 420px) { .rn-grid { grid-template-columns: 1fr; } }

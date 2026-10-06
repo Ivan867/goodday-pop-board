@@ -755,6 +755,10 @@ function AdminTab({
     d: "M4 5.5h16v13H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M4 7l8 6 8-6"
+  }))], ["rename", "名前の見直し", pops.filter(p => 仮の名前(p.product_name)).length || 0, "#d07a1f", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 20h4l10.5-10.5a2.1 2.1 0 00-3-3L5 17v3z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M13.5 6.5l3 3"
   }))], ["genre", "ジャンル", genreCount("未分類") || 0, "#6b4ea0", /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
     d: "M20.6 13.4L12 4.8H4v8l8.6 8.6a2 2 0 002.8 0l5.2-5.2a2 2 0 000-2.8z"
   }), /*#__PURE__*/React.createElement("circle", {
@@ -805,7 +809,7 @@ function AdminTab({
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M20 4v5h-5"
-  }))]].filter(([k]) => scope !== "produce" || ["genre", "archive", "trash", "pinned"].includes(k)).map(([k, label, n, col, icon]) => /*#__PURE__*/React.createElement("button", {
+  }))]].filter(([k]) => scope !== "produce" || ["rename", "genre", "archive", "trash", "pinned"].includes(k)).map(([k, label, n, col, icon]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setSection(k),
     style: {
@@ -887,7 +891,13 @@ function AdminTab({
     onNoticeChange: onNoticeChange
   }), section === "ranking" && /*#__PURE__*/React.createElement(RankingPanel, {
     onCreateFromPop: onCreateFromPop
-  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
+  }), section === "device" && /*#__PURE__*/React.createElement(DeviceStatsPanel, null), section === "res" && /*#__PURE__*/React.createElement(ResourceAdmin, null), section === "rename" && /*#__PURE__*/React.createElement(RenameReview, {
+    pops: pops,
+    onRenamed: (id, nm) => setPops(ps => ps.map(x => x.id === id ? {
+      ...x,
+      product_name: nm
+    } : x))
+  }), section === "rot" && /*#__PURE__*/React.createElement(DimsBackfill, null), section === "rot" && /*#__PURE__*/React.createElement(RotateAdmin, null), section === "req" && (reqLoading ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
@@ -4511,6 +4521,249 @@ function CatalogAdmin() {
       cursor: "pointer"
     }
   }, "\u524A\u9664"))))));
+}
+
+// ═══════════ 名前の見直し：ファイル名のまま上がったポップを集めて、まとめて直す ═══════════
+/* 「仮の名前」と見なすもの（実際の投稿から）。当てはまらなければ null。
+   - iPhoneの写真の番号     例: D5205761 BC51 418E BC56 3F52FE07D85A
+   - AIで作った画像の名前   例: ChatGPT 画像 2026年9月29日 20 26 06 / Gemini_Generated_Image_…
+   - PDFのページ            例: page 01
+   - カメラ・画面写真の名前 例: IMG_1234 / DSC01234 / スクリーンショット / Screenshot
+   - 長い数字・拡張子       例: 1791166022178 / ○○.png
+   「BBQ」「FISHWORKS PROJECT」のような英字だけの名前は対象にしない。 */
+function 仮の名前(nm) {
+  const t = String(nm || "").trim();
+  if (!t) return "名前なし";
+  if (/^[0-9A-F]{8}[\s_-][0-9A-F]{4}[\s_-][0-9A-F]{4}/i.test(t)) return "写真の番号";
+  if (/chatgpt|gemini|dall[\s·-]?e|midjourney|generated|firefly/i.test(t)) return "AI画像の名前";
+  if (/^page[\s_-]*\d+$/i.test(t) || /^ページ\s*\d+$/.test(t)) return "PDFのページ";
+  if (/^(img|dsc|dscn|pxl|photo|image)[\s_-]?\d+/i.test(t) || /スクリーンショット|screenshot|無題|untitled/i.test(t)) return "写真の名前";
+  if (/\d{8,}/.test(t)) return "長い数字";
+  if (/\.(png|jpe?g|webp|heic|gif|pdf)$/i.test(t)) return "ファイル名";
+  if (/\(\d+\)\s*$/.test(t)) return "コピーの印 (1)";
+  if (/[\u0900-\u0DFF\u0E00-\u0FFF]/.test(t)) return "読めない文字";
+  return null;
+}
+function RenameReview({
+  pops,
+  onRenamed
+}) {
+  const [番号, set番号] = useState("");
+  const [通った, set通った] = useState(!!PW_CACHE.delete);
+  const [番号Err, set番号Err] = useState("");
+  const [新, set新] = useState({}); // id → 入力中の名前
+  const [保存中, set保存中] = useState({});
+  const [済み, set済み] = useState({}); // この画面で直したもの（一覧から消さずに「直しました」と出す）
+  const [アーカイブも, setアーカイブも] = useState(true);
+  const 対象 = pops.filter(p => (済み[p.id] || 仮の名前(p.product_name)) && (アーカイブも || !p.archived)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const 残り = 対象.filter(p => !済み[p.id]).length;
+  const 確かめる = async () => {
+    set番号Err("");
+    try {
+      const r = await api.verifyPasswordEx("delete", 番号.trim());
+      if (r.ok) {
+        set通った(true);
+        set番号("");
+      } else set番号Err(r.locked ? `${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `番号が違います（あと${r.left}回）` : "番号が違います");
+    } catch (e) {
+      set番号Err("確かめられませんでした");
+    }
+  };
+  const 保存 = async p => {
+    const nm = String(新[p.id] || "").trim();
+    if (!nm) return;
+    set保存中(v => ({
+      ...v,
+      [p.id]: true
+    }));
+    try {
+      await api.renamePop(p.id, nm);
+      onRenamed && onRenamed(p.id, nm);
+      set済み(v => ({
+        ...v,
+        [p.id]: true
+      }));
+      set新(v => ({
+        ...v,
+        [p.id]: ""
+      }));
+    } catch (e) {
+      alert("直せませんでした：" + (e && e.message ? e.message : ""));
+    } finally {
+      set保存中(v => ({
+        ...v,
+        [p.id]: false
+      }));
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)",
+      lineHeight: 1.7,
+      marginBottom: 12
+    }
+  }, "\u5199\u771F\u306E\u756A\u53F7\u3084\u300CChatGPT \u753B\u50CF\u2026\u300D\u306E\u3088\u3046\u306B\u3001\u30D5\u30A1\u30A4\u30EB\u540D\u306E\u307E\u307E\u4E0A\u304C\u3063\u305F\u30DD\u30C3\u30D7\u3092\u96C6\u3081\u3066\u3044\u307E\u3059\u3002 \u4E2D\u8EAB\u306E\u5206\u304B\u308B\u540D\u524D\uFF08\u4F8B\uFF1A\u771F\u3055\u3070 \u523A\u8EAB\u7528\uFF09\u306B\u3059\u308B\u3068\u3001\u3055\u304C\u3059\u3067\u898B\u3064\u304B\u308B\u3088\u3046\u306B\u306A\u308A\u307E\u3059\u3002 \u3044\u307E ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "var(--ink)"
+    }
+  }, 残り, "\u4EF6"), "\u3002"), !通った ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "var(--card)",
+      border: "1px solid var(--line)",
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "var(--ink)",
+      marginBottom: 8
+    }
+  }, "\u540D\u524D\u3092\u76F4\u3059\u306B\u306F\u3001\u524A\u9664\u3068\u540C\u3058\u756A\u53F7\u30921\u56DE\u3060\u3051\u5165\u308C\u3066\u304F\u3060\u3055\u3044"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    inputMode: "numeric",
+    value: 番号,
+    onChange: e => set番号(e.target.value),
+    onKeyDown: e => {
+      if (e.key === "Enter") 確かめる();
+    },
+    style: {
+      flex: 1,
+      minWidth: 0,
+      border: "1px solid var(--line)",
+      borderRadius: 10,
+      padding: "10px 12px",
+      fontSize: 16,
+      background: "var(--bg)",
+      color: "var(--text)"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: 確かめる,
+    disabled: !番号.trim(),
+    style: {
+      border: "none",
+      background: "var(--fill)",
+      color: "#fff",
+      borderRadius: 10,
+      padding: "0 18px",
+      fontSize: 14,
+      fontWeight: 800,
+      cursor: "pointer"
+    }
+  }, "\u78BA\u304B\u3081\u308B")), 番号Err && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: "#b3261e",
+      marginTop: 6,
+      fontWeight: 700
+    }
+  }, 番号Err)) : null, /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      fontSize: 12.5,
+      color: "var(--sub)",
+      marginBottom: 10,
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    checked: アーカイブも,
+    onChange: e => setアーカイブも(e.target.checked)
+  }), " \u30A2\u30FC\u30AB\u30A4\u30D6\u3057\u305F\u3082\u306E\u3082\u51FA\u3059"), 対象.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "40px 0",
+      color: "var(--sub)",
+      fontSize: 14,
+      fontWeight: 700
+    }
+  }, "\u76F4\u3059\u5FC5\u8981\u306E\u3042\u308B\u540D\u524D\u306F\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
+    className: "rn-grid"
+  }, 対象.map(p => {
+    const 理由 = 仮の名前(p.product_name);
+    const 直した = !!済み[p.id];
+    return /*#__PURE__*/React.createElement("div", {
+      key: p.id,
+      className: "rn-card" + (直した ? " done" : "")
+    }, /*#__PURE__*/React.createElement("img", {
+      src: p.image_url,
+      alt: "",
+      loading: "lazy",
+      decoding: "async",
+      className: "rn-img"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "rn-body"
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 5,
+        flexWrap: "wrap",
+        marginBottom: 4
+      }
+    }, 直した ? /*#__PURE__*/React.createElement("span", {
+      className: "rn-tag ok"
+    }, "\u76F4\u3057\u307E\u3057\u305F") : /*#__PURE__*/React.createElement("span", {
+      className: "rn-tag"
+    }, 理由), p.archived && /*#__PURE__*/React.createElement("span", {
+      className: "rn-tag gray"
+    }, "\u30A2\u30FC\u30AB\u30A4\u30D6"), p.group_name && /*#__PURE__*/React.createElement("span", {
+      className: "rn-tag gray"
+    }, "\u307E\u3068\u307E\u308A\uFF1A", p.group_name)), /*#__PURE__*/React.createElement("div", {
+      className: "rn-old",
+      title: p.product_name
+    }, p.product_name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        marginTop: 6
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      value: 新[p.id] || "",
+      placeholder: "\u65B0\u3057\u3044\u540D\u524D\uFF08\u4F8B\uFF1A\u771F\u3055\u3070 \u523A\u8EAB\u7528\uFF09",
+      disabled: !通った || 保存中[p.id],
+      onChange: e => set新(v => ({
+        ...v,
+        [p.id]: e.target.value
+      })),
+      onKeyDown: e => {
+        if (e.key === "Enter" && !e.isComposing) 保存(p);
+      },
+      style: {
+        flex: 1,
+        minWidth: 0,
+        border: "1px solid var(--line)",
+        borderRadius: 9,
+        padding: "9px 10px",
+        fontSize: 15,
+        background: "var(--bg)",
+        color: "var(--text)"
+      }
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: () => 保存(p),
+      disabled: !通った || 保存中[p.id] || !String(新[p.id] || "").trim(),
+      style: {
+        border: "none",
+        background: "var(--fill)",
+        color: "#fff",
+        borderRadius: 9,
+        padding: "0 14px",
+        fontSize: 13.5,
+        fontWeight: 800,
+        cursor: "pointer",
+        opacity: !通った || !String(新[p.id] || "").trim() ? 0.45 : 1
+      }
+    }, 保存中[p.id] ? "…" : "直す"))));
+  })));
 }
 
 // ═══════════ ResourceAdmin：資料（PDF/画像/シート/リンク）の管理 ═══════════

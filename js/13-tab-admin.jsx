@@ -409,6 +409,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(104px, 1fr))", gap:10 }}>
           {[
             ["req","依頼",openReqs||0,"#c2691a",<><path d="M4 5.5h16v13H4z"/><path d="M4 7l8 6 8-6"/></>],
+            ["rename","名前の見直し",pops.filter(p => 仮の名前(p.product_name)).length||0,"#d07a1f",<><path d="M4 20h4l10.5-10.5a2.1 2.1 0 00-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></>],
             ["genre","ジャンル",genreCount("未分類")||0,"#6b4ea0",<><path d="M20.6 13.4L12 4.8H4v8l8.6 8.6a2 2 0 002.8 0l5.2-5.2a2 2 0 000-2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></>],
             ["archive","アーカイブ",arCount,"#2f6fb0",<><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V9M10 13h4"/></>],
             ["trash","ゴミ箱",delPops.length||0,"#b3261e",<><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 13h9l1-13"/></>],
@@ -420,7 +421,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["device","端末",null,"#8a9099",<><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M11 18h2"/></>],
             ["res","資料",null,"#1d9e75",<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
-          ].filter(([k]) => scope !== "produce" || ["genre","archive","trash","pinned"].includes(k))
+          ].filter(([k]) => scope !== "produce" || ["rename","genre","archive","trash","pinned"].includes(k))
            .map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
               style={{ position:"relative", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14,
@@ -454,6 +455,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       {section === "device" && <DeviceStatsPanel />}
 
       {section === "res" && <ResourceAdmin />}
+      {section === "rename" && <RenameReview pops={pops} onRenamed={(id, nm) => setPops(ps => ps.map(x => x.id === id ? { ...x, product_name: nm } : x))} />}
 
 
       {section === "rot" && <DimsBackfill />}
@@ -1709,6 +1711,124 @@ function CatalogAdmin() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════ 名前の見直し：ファイル名のまま上がったポップを集めて、まとめて直す ═══════════
+/* 「仮の名前」と見なすもの（実際の投稿から）。当てはまらなければ null。
+   - iPhoneの写真の番号     例: D5205761 BC51 418E BC56 3F52FE07D85A
+   - AIで作った画像の名前   例: ChatGPT 画像 2026年9月29日 20 26 06 / Gemini_Generated_Image_…
+   - PDFのページ            例: page 01
+   - カメラ・画面写真の名前 例: IMG_1234 / DSC01234 / スクリーンショット / Screenshot
+   - 長い数字・拡張子       例: 1791166022178 / ○○.png
+   「BBQ」「FISHWORKS PROJECT」のような英字だけの名前は対象にしない。 */
+function 仮の名前(nm) {
+  const t = String(nm || "").trim();
+  if (!t) return "名前なし";
+  if (/^[0-9A-F]{8}[\s_-][0-9A-F]{4}[\s_-][0-9A-F]{4}/i.test(t)) return "写真の番号";
+  if (/chatgpt|gemini|dall[\s·-]?e|midjourney|generated|firefly/i.test(t)) return "AI画像の名前";
+  if (/^page[\s_-]*\d+$/i.test(t) || /^ページ\s*\d+$/.test(t)) return "PDFのページ";
+  if (/^(img|dsc|dscn|pxl|photo|image)[\s_-]?\d+/i.test(t) || /スクリーンショット|screenshot|無題|untitled/i.test(t)) return "写真の名前";
+  if (/\d{8,}/.test(t)) return "長い数字";
+  if (/\.(png|jpe?g|webp|heic|gif|pdf)$/i.test(t)) return "ファイル名";
+  if (/\(\d+\)\s*$/.test(t)) return "コピーの印 (1)";
+  if (/[\u0900-\u0DFF\u0E00-\u0FFF]/.test(t)) return "読めない文字";
+  return null;
+}
+
+function RenameReview({ pops, onRenamed }) {
+  const [番号, set番号] = useState("");
+  const [通った, set通った] = useState(!!PW_CACHE.delete);
+  const [番号Err, set番号Err] = useState("");
+  const [新, set新] = useState({});          // id → 入力中の名前
+  const [保存中, set保存中] = useState({});
+  const [済み, set済み] = useState({});      // この画面で直したもの（一覧から消さずに「直しました」と出す）
+  const [アーカイブも, setアーカイブも] = useState(true);
+
+  const 対象 = pops.filter(p => (済み[p.id] || 仮の名前(p.product_name)) && (アーカイブも || !p.archived))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const 残り = 対象.filter(p => !済み[p.id]).length;
+
+  const 確かめる = async () => {
+    set番号Err("");
+    try {
+      const r = await api.verifyPasswordEx("delete", 番号.trim());
+      if (r.ok) { set通った(true); set番号(""); }
+      else set番号Err(r.locked ? `${api.lockText(r.seconds)}ほど待ってください` : (r.left > 0 ? `番号が違います（あと${r.left}回）` : "番号が違います"));
+    } catch (e) { set番号Err("確かめられませんでした"); }
+  };
+  const 保存 = async (p) => {
+    const nm = String(新[p.id] || "").trim();
+    if (!nm) return;
+    set保存中(v => ({ ...v, [p.id]: true }));
+    try {
+      await api.renamePop(p.id, nm);
+      onRenamed && onRenamed(p.id, nm);
+      set済み(v => ({ ...v, [p.id]: true }));
+      set新(v => ({ ...v, [p.id]: "" }));
+    } catch (e) { alert("直せませんでした：" + (e && e.message ? e.message : "")); }
+    finally { set保存中(v => ({ ...v, [p.id]: false })); }
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize:13, color:"var(--sub)", lineHeight:1.7, marginBottom:12 }}>
+        写真の番号や「ChatGPT 画像…」のように、ファイル名のまま上がったポップを集めています。
+        中身の分かる名前（例：真さば 刺身用）にすると、さがすで見つかるようになります。
+        いま <b style={{ color:"var(--ink)" }}>{残り}件</b>。
+      </div>
+
+      {!通った ? (
+        <div style={{ background:"var(--card)", border:"1px solid var(--line)", borderRadius:12, padding:14, marginBottom:14 }}>
+          <div style={{ fontSize:13, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>名前を直すには、削除と同じ番号を1回だけ入れてください</div>
+          <div style={{ display:"flex", gap:8 }}>
+            <input type="password" inputMode="numeric" value={番号} onChange={e => set番号(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") 確かめる(); }}
+              style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:16, background:"var(--bg)", color:"var(--text)" }} />
+            <button onClick={確かめる} disabled={!番号.trim()}
+              style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"0 18px", fontSize:14, fontWeight:800, cursor:"pointer" }}>確かめる</button>
+          </div>
+          {番号Err && <div style={{ fontSize:12.5, color:"#b3261e", marginTop:6, fontWeight:700 }}>{番号Err}</div>}
+        </div>
+      ) : null}
+
+      <label style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12.5, color:"var(--sub)", marginBottom:10, cursor:"pointer" }}>
+        <input type="checkbox" checked={アーカイブも} onChange={e => setアーカイブも(e.target.checked)} /> アーカイブしたものも出す
+      </label>
+
+      {対象.length === 0 ? (
+        <div style={{ textAlign:"center", padding:"40px 0", color:"var(--sub)", fontSize:14, fontWeight:700 }}>直す必要のある名前はありません</div>
+      ) : (
+        <div className="rn-grid">
+          {対象.map(p => {
+            const 理由 = 仮の名前(p.product_name);
+            const 直した = !!済み[p.id];
+            return (
+              <div key={p.id} className={"rn-card" + (直した ? " done" : "")}>
+                <img src={p.image_url} alt="" loading="lazy" decoding="async" className="rn-img" />
+                <div className="rn-body">
+                  <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:4 }}>
+                    {直した ? <span className="rn-tag ok">直しました</span> : <span className="rn-tag">{理由}</span>}
+                    {p.archived && <span className="rn-tag gray">アーカイブ</span>}
+                    {p.group_name && <span className="rn-tag gray">まとまり：{p.group_name}</span>}
+                  </div>
+                  <div className="rn-old" title={p.product_name}>{p.product_name}</div>
+                  <div style={{ display:"flex", gap:6, marginTop:6 }}>
+                    <input value={新[p.id] || ""} placeholder="新しい名前（例：真さば 刺身用）" disabled={!通った || 保存中[p.id]}
+                      onChange={e => set新(v => ({ ...v, [p.id]: e.target.value }))}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.isComposing) 保存(p); }}
+                      style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:9, padding:"9px 10px", fontSize:15, background:"var(--bg)", color:"var(--text)" }} />
+                    <button onClick={() => 保存(p)} disabled={!通った || 保存中[p.id] || !String(新[p.id] || "").trim()}
+                      style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:9, padding:"0 14px", fontSize:13.5, fontWeight:800, cursor:"pointer",
+                        opacity: (!通った || !String(新[p.id] || "").trim()) ? 0.45 : 1 }}>{保存中[p.id] ? "…" : "直す"}</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
