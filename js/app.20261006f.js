@@ -272,6 +272,81 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-10-06",
+  type: "改善",
+  title: "一覧の上のボタンを3つにしました",
+  body: "上は「投稿・並べ方（2まい／1まい）・メニュー」だけになりました。文字の大きさは大きい方に固定し、暗い画面の切り替えはやめました。鮮魚／青果の切り替えは、メニューの NEXUS PROJECT のマークの右に移しました（パソコンも同じ）。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "「さがす」のお店はジャンルを選んでから出るようにしました",
+  body: "最初はジャンル（と魚）だけが並び、どれかを押すと下に「お店で絞り込む」が出ます。パソコンのメニュー右上の NEXUS PROJECT のマークを押すと一覧（ホーム）に戻れます。スマホのメニューのマークも同じです。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "管理画面の入口をすっきりさせました",
+  body: "管理画面の入口は、9個の点と流れる背景だけになりました（文字はなし）。番号が違うと点が揺れて最初からになります。入口のあいだは画面が動きません。記録の期間は14日、ポップごとの順位は3日が最初に出ます。店舗支援の「画像の共有」はやめました。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "「旬の味覚」テンプレの配置をCGCフェアの見本に合わせました",
+  body: "左に品名（2行にすると下の行が赤）とキャッチコピー、右下に大きな価格と「本体価格」「円」、その下に（税込 ○○円）が入ります。キャッチコピーは *ここ* と囲んだ所が赤になります。"
+}, {
+  date: "2026-10-06",
+  type: "新機能",
+  title: "入力支援に「旬の味覚」テンプレを足しました",
+  body: "「魚屋のおすすめ 旬の味覚」のよこ向きテンプレです。下の白い所に、産地・品名・単位・価格・税込価格が入ります。入力支援の「テンプレを選ぶ」のいちばん右にあります。"
+}, {
+  date: "2026-10-06",
+  type: "修正",
+  title: "管理画面の削除・まとめるが時間切れになる件を直しました",
+  body: "アーカイブの画面を開くと全部のポップの画像（約170MB）を一度に読みに行き、保存の通信がその後ろで待たされて8秒で打ち切られていました。画像は見えている所だけ読むようにし、保存は30秒まで待つようにしました。"
+}, {
+  date: "2026-10-05",
+  type: "改善",
+  title: "投稿画面からカテゴリをなくしました",
+  body: "投稿するときは、店舗・商品名・コメント・画像だけを入れればよくなりました。ジャンルは管理画面であとから振り分けます。"
+}, {
+  date: "2026-10-05",
+  type: "改善",
+  title: "一覧のカードを品名だけにしました／入力支援の便利機能をなくしました",
+  body: "一覧のカードの下に出ていたジャンルと店舗名をやめ、品名だけにしました。ジャンル・お店での絞り込み（さがす）はこれまでどおり使えます。入力支援は「POP画像」と「木札」の2つになりました。"
+}, {
+  date: "2026-10-05",
+  type: "修正",
+  title: "開くときに「うまく開けませんでした」で止まる件を直しました",
+  body: "見た目のファイルを電波の都合で一度取りこぼすと、そのまま止まっていました。いまは自動で3回まで取り直します。それでも駄目なときだけ「読み込み直す」が出ます。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "木札の背景と字を選べるようにしました",
+  body: "背景は木目・白木・焦げ茶・すだれ・和紙・藍染・墨の7種類、字は品名・産地用に13種類、値段用に7種類から選べます。字は選んだときだけ読み込みます。産地の候補「大社漁港産」は「大社港産」に改めました（保存済みの木札も置きかえます）。"
+}, {
+  date: "2026-10-04",
+  type: "新機能",
+  title: "入力支援で「木札」を作れるようになりました",
+  body: "入力支援の「木札」で、A4たてに4段の木札（山陰沖の産地・食べ方・品名・本体価格／税込価格）を作れます。税込は自動で計算します。上の札を押すとその段を直せて、産地や食べ方は押すだけで入ります。写真に保存・画像を保存・印刷ができ、入れた内容はこの端末に残ります。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "店舗支援を作り直しました",
+  body: "番号を入れると、まず資料がサムネイルで並びます（管理画面の資料で「表示」にしたものだけ）。塩干発注と画像の共有は、資料の下の「そのほか」から入れます。番号はこれまでと同じです。"
+}, {
+  date: "2026-10-04",
+  type: "改善",
+  title: "管理画面の資料をサムネイルで並べました",
+  body: "画像はそのまま、Googleのスプレッドシートやドキュメントは縮小画像で出します（リンク共有されていないものは種類の札になります）。押すと開きます。管理画面のカタログはなくしました（一般のカタログ画面はそのままです）。"
+}, {
+  date: "2026-10-04",
+  type: "修正",
+  title: "ホーム画面のアイコンから開いたときに止まる件を対策しました",
+  body: "通信の返事を待つのを8秒までにし、届かなければもう一度取りに行きます。アプリに戻ってきたときは一覧を取り直し、10分以上離れていたらページごと読み直します。メニューのいちばん下に「読み込み直す」も置きました。"
+}, {
+  date: "2026-10-02",
+  type: "新機能",
+  title: "使われ方の記録を増やしました",
+  body: "管理画面の「端末」に、よく使われる機能・どこから来たか（LINE・ホーム画面・直接など）・ホーム画面のアプリかブラウザか・画面の大きさ・部門を足しました。誰が使ったかは記録していません。あわせて、1日の区切りが朝9時になっていたのを日本時間の0時に直しています。"
+}, {
   date: "2026-10-02",
   type: "新機能",
   title: "管理画面の「端末」と「記録」を詳しくしました",
@@ -2414,6 +2489,40 @@ function sbWithDept(path, method, body) {
     body
   };
 }
+
+// 返事を待つのは8秒まで。iPhoneのホーム画面のアプリは、一時停止から戻ると
+// 通信が切れたまま「返事待ち」で止まることがあるため、上限を設けてあきらめさせる。
+const SB_待つ上限 = 8000;
+// 保存（POSTなど）は30秒まで待つ。画像をたくさん読んでいる画面では、保存の通信が
+// 画像の後ろで順番待ちになり、8秒では送る前に打ち切られていた（2026-10-06 管理画面の削除・まとめる）。
+const SB_保存の上限 = 30000;
+
+// 1回分の通信。返事の中身（本文）を読み終えるまでを8秒で区切る。
+async function sbFetchOnce(url, init) {
+  const 止め = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const 上限 = !init.method || init.method === "GET" ? SB_待つ上限 : SB_保存の上限;
+  const 時計 = 止め ? setTimeout(() => 止め.abort(), 上限) : 0;
+  try {
+    const r = await fetch(url, 止め ? {
+      ...init,
+      signal: 止め.signal
+    } : init);
+    const 本文 = await r.text(); // 本文の途中で止まる場合もあるので、ここまで含めて8秒
+    return {
+      r,
+      本文
+    };
+  } catch (e) {
+    if (止め && 止め.signal.aborted) {
+      const t = new Error("timeout");
+      t.timeout = true;
+      throw t;
+    }
+    throw e;
+  } finally {
+    if (時計) clearTimeout(時計);
+  }
+}
 async function sbFetch(path, {
   method = "GET",
   body,
@@ -2433,24 +2542,45 @@ async function sbFetch(path, {
     } : {}),
     ...headers
   };
-  let r;
+  const init = {
+    method,
+    headers: h(extra),
+    body: body !== undefined ? JSON.stringify(body) : undefined
+  };
+  let 結果;
   try {
-    r = await fetch(`${SB_URL}${path}`, {
-      method,
-      headers: h(extra),
-      body: body !== undefined ? JSON.stringify(body) : undefined
-    });
+    結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
   } catch (e) {
-    // 圏外・電波切れなど、そもそも届かなかった場合
-    sbNotifyFail(method, "network");
-    throw e;
+    // 読み込み（GET）だけは、もう一度だけ取り直す。
+    // 保存（POST など）は二重に登録される恐れがあるので取り直さない。
+    if (method === "GET") {
+      try {
+        結果 = await sbFetchOnce(`${SB_URL}${path}`, init);
+      } catch (e2) {
+        sbNotifyFail(method, e2.timeout ? "timeout" : "network");
+        throw e2;
+      }
+    } else {
+      sbNotifyFail(method, e.timeout ? "timeout" : "network"); // 圏外・電波切れ・待ちすぎ
+      throw e;
+    }
   }
+  const {
+    r,
+    本文
+  } = 結果;
   if (!r.ok) {
-    const t = await r.text();
-    sbNotifyFail(method, t);
-    throw new Error(t);
+    sbNotifyFail(method, 本文);
+    throw new Error(本文);
   }
-  return r;
+  // 呼ぶ側は今まで通り .json() / .text() / .headers を使える
+  // 204 などの「中身なし」の返事に本文を付けると Response が例外を投げるので、空にする
+  const 中身なし = r.status === 204 || r.status === 205 || r.status === 304;
+  return new Response(中身なし ? null : 本文, {
+    status: r.status,
+    statusText: r.statusText,
+    headers: r.headers
+  });
 }
 const sbJson = async (path, opts) => (await sbFetch(path, opts)).json(); // 配列/JSONを返す
 const sbOne = async (path, opts) => (await sbJson(path, opts))[0]; // 先頭1件を返す
@@ -2467,23 +2597,86 @@ function parseDeviceUA(ua) {
     browser
   };
 }
+
+// ── 使われ方の手がかり（個人は特定しない） ──
+// ホーム画面のアプリとして開いたか、ブラウザで開いたか
+function 開き方() {
+  try {
+    const 単独 = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    return 単独 ? "アプリ" : "ブラウザ";
+  } catch (e) {
+    return "ブラウザ";
+  }
+}
+// どこから来たか。LINE の中のブラウザ、ホーム画面、ほかのサイトのリンク、直接（入力・ブックマーク）
+function 来た道() {
+  try {
+    if (開き方() === "アプリ") return "ホーム画面";
+    if (/ Line\//i.test(navigator.userAgent || "")) return "LINE";
+    const r = document.referrer;
+    if (r) {
+      const host = new URL(r).hostname;
+      if (host && host !== location.hostname) return ("リンク:" + host).slice(0, 40);
+    }
+    return "直接";
+  } catch (e) {
+    return "直接";
+  }
+}
+// 日本時間の日付（以前は世界標準時で作っていたため、朝9時で日付が切り替わっていた）
+function 今日の札() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+// 記録の失敗で画面に警告を出さないよう、集計の送信は素の fetch で黙って送る
+function 黙って送る(path, body) {
+  try {
+    fetch(`${SB_URL}${path}`, {
+      method: "POST",
+      headers: h({
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(body),
+      keepalive: true
+    }).catch(() => {});
+  } catch (e) {}
+}
+const 機能の最終 = {};
 const api = {
+  // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
+  logFeature(名) {
+    try {
+      const 今 = Date.now();
+      if (機能の最終[名] && 今 - 機能の最終[名] < 60000) return;
+      機能の最終[名] = 今;
+      黙って送る(`/rest/v1/feature_uses`, {
+        feature: String(名).slice(0, 32),
+        dept: sbDept(),
+        launch: 開き方()
+      });
+    } catch (e) {}
+  },
   // ── 端末記録：同じ端末からは1日1回だけ記録（localStorageで判定）。個人は特定しない。
   async logDeviceVisit(storeName) {
     try {
-      const day = new Date().toISOString().slice(0, 10);
+      const day = 今日の札();
       const key = `deviceLogged:${day}`;
       if (localStorage.getItem(key)) return false;
       const {
         platform,
         browser
       } = parseDeviceUA(navigator.userAgent);
+      // 店名は送らない：起動時は店が分からず、これまで先頭の「北部店」が入り続けていた
       await sbFetch(`/rest/v1/device_visits`, {
         method: "POST",
         body: {
           platform,
           browser,
-          store_name: storeName || null
+          store_name: null,
+          launch: 開き方(),
+          source: 来た道(),
+          screen_w: Math.round(window.innerWidth || screen.width || 0),
+          dept: sbDept()
         }
       });
       localStorage.setItem(key, "1");
@@ -2500,7 +2693,11 @@ const api = {
     }
   },
   async listDeviceVisits(limit = 500) {
-    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,created_at&order=created_at.desc&limit=${limit}`);
+    return sbJson(`/rest/v1/device_visits?select=platform,browser,store_name,launch,source,screen_w,dept,created_at&order=created_at.desc&limit=${limit}`);
+  },
+  async listFeatureUses(days) {
+    const since = new Date(Date.now() - (days || 30) * 86400000).toISOString();
+    return sbJson(`/rest/v1/feature_uses?select=feature,dept,launch,created_at&created_at=gte.${since}&order=created_at.desc&limit=10000`);
   },
   // ── pops：一覧・投稿・状態 ──
   async list(store, cat) {
@@ -3678,6 +3875,11 @@ function UploadModal({
   onClose,
   onSuccess
 }) {
+  useEffect(() => {
+    try {
+      api.logFeature("投稿画面");
+    } catch (e) {}
+  }, []);
   const [store, setStore] = useState("木次店");
   const author = ""; // 投稿者名の入力はやめた。既にあるポップの名前はそのまま残る
   const 青果か = typeof deptKey === "function" && deptKey() === "produce";
@@ -3847,6 +4049,9 @@ function UploadModal({
           detail: done > 1 ? `${done}枚を投稿しました` : "投稿しました"
         }));
       } catch (e) {}
+      try {
+        api.logFeature("投稿した");
+      } catch (e) {}
       onSuccess(last);
     } catch (e) {
       setError("エラー: " + e.message);
@@ -3955,25 +4160,6 @@ function UploadModal({
       outline: "none"
     }
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: "var(--text)",
-      marginBottom: 6
-    }
-  }, "\u30AB\u30C6\u30B4\u30EA"), /*#__PURE__*/React.createElement("select", {
-    value: category,
-    onChange: e => setCategory(e.target.value),
-    style: {
-      width: "100%",
-      padding: "10px 12px",
-      border: "2px solid var(--line)",
-      borderRadius: 10,
-      fontSize: 14
-    }
-  }, deptCategories().map(c => /*#__PURE__*/React.createElement("option", {
-    key: c
-  }, c)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 700,
@@ -5717,34 +5903,79 @@ function PopCard({
       wordBreak: "break-word",
       color: "var(--ink)"
     }
-  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name), (pop.store_name || pop.genre) && /*#__PURE__*/React.createElement("div", {
-    className: "pc-sub"
-  }, pop.genre && /*#__PURE__*/React.createElement("span", {
-    className: "pc-dot",
-    style: {
-      background: function () {
-        try {
-          var c = deptGenreColors()[pop.genre];
-          return c && c.solid || "var(--primary-soft)";
-        } catch (e) {
-          return "var(--primary-soft)";
-        }
-      }()
-    }
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "pc-sub-t"
-  }, [pop.genre, pop.store_name].filter(Boolean).join(" · ")))));
+  }, pop.__group ? pop.group_name || pop.product_name : pop.product_name)));
 }
 
 // ── Board Tab ──
 
+// ── 資料のサムネイル（管理画面と店舗支援で共用） ──
+/* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
+   取れなければ種類の札を出す。 */
+const 資料の色 = k => ({
+  pdf: "#b3261e",
+  image: "#2f6fb0",
+  sheet: "#2f7a3a",
+  link: "#6b4ea0"
+})[k] || "#59636f";
+const 資料の名 = k => ({
+  pdf: "PDF",
+  image: "画像",
+  sheet: "表",
+  link: "リンク"
+})[k] || "資料";
+function 資料の縮小URL(r) {
+  const u = r.url || "";
+  if (r.kind === "image" || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u)) return u;
+  const m = /docs\.google\.com\/[a-z]+\/d\/([A-Za-z0-9_-]{20,})/.exec(u) || /drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{20,})/.exec(u);
+  if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w600";
+  return null;
+}
+function 資料の絵({
+  r
+}) {
+  const [だめ, setだめ] = useState(false);
+  const src = 資料の縮小URL(r);
+  if (src && !だめ) return /*#__PURE__*/React.createElement("img", {
+    src: src,
+    alt: "",
+    loading: "lazy",
+    referrerPolicy: "no-referrer",
+    onError: () => setだめ(true)
+  });
+  const 印 = {
+    pdf: "📄",
+    image: "🖼",
+    sheet: "📊",
+    link: "🔗"
+  }[r.kind] || r.emoji || "📄";
+  let 置き場 = "";
+  try {
+    置き場 = new URL(r.url).hostname.replace(/^www\./, "");
+  } catch (e) {}
+  return /*#__PURE__*/React.createElement("span", {
+    className: "res-fallback",
+    style: {
+      background: `linear-gradient(140deg, ${資料の色(r.kind)}22, ${資料の色(r.kind)}0a)`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 34
+    }
+  }, 印), /*#__PURE__*/React.createElement("span", {
+    className: "res-fb-host"
+  }, 置き場));
+}
 ;
 Object.assign(window, {
   PopCard,
   PopDetail,
   UploadModal,
   pairByShape,
-  popShape
+  popShape,
+  資料の色,
+  資料の名,
+  資料の縮小URL,
+  資料の絵
 });
 /* ───────── 05-tab-board ───────── */
 /* Nexus共有 — 05-tab-board （自動分割・window共有） */
@@ -5841,55 +6072,21 @@ function BoardTab({
     }, 1500);
     return () => clearTimeout(t);
   }, []);
-  // 画面の明るさ
-  const [dark, setDark] = useState(() => {
+  // 画面の明るさ：暗い画面の切り替えは 2026-10-06 にやめた。いつも明るい画面
+  useEffect(() => {
     try {
-      return localStorage.getItem("theme") === "dark";
-    } catch (e) {
-      return false;
-    }
-  });
-  const setDarkSave = v => {
-    setDark(v);
-    try {
-      localStorage.setItem("theme", v ? "dark" : "light");
-    } catch (e) {}
-    try {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.removeItem("theme");
       const m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute("content", v ? "#161d25" : "#F5F2EC");
+      if (m) m.setAttribute("content", "#F5F2EC");
     } catch (e) {}
-  };
+  }, []); // まとまり画面のスワイプ判定
+  // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
     try {
-      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      document.documentElement.style.setProperty("--pc-name-size", "19px");
     } catch (e) {}
-  }, [dark]); // まとまり画面のスワイプ判定
-  // 文字サイズ（標準／拡大）
-  const TEXT_SIZES = {
-    sm: "12px",
-    md: "14.5px",
-    lg: "19px"
-  };
-  const [textSize, setTextSize] = useState(() => {
-    try {
-      const v = localStorage.getItem("textSize");
-      if (v === "md" || v === "lg") return v;
-      return localStorage.getItem("bigText") === "1" ? "lg" : "md"; // 前の設定を引き継ぐ
-    } catch (e) {
-      return "md";
-    }
-  });
-  const setTextSizeSave = v => {
-    setTextSize(v);
-    try {
-      localStorage.setItem("textSize", v);
-    } catch (e) {}
-  };
-  useEffect(() => {
-    try {
-      document.documentElement.style.setProperty("--pc-name-size", TEXT_SIZES[textSize] || TEXT_SIZES.md);
-    } catch (e) {}
-  }, [textSize]);
+  }, []);
   const [view, setView] = useState(() => {
     try {
       const v = localStorage.getItem("popView");
@@ -5919,20 +6116,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
-  const load = useCallback(async () => {
-    setLoading(true);
+  const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
+  // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
+  const load = useCallback(async 静か => {
+    if (!静か) setLoading(true);
     try {
       const data = await api.listActive();
       setPops(data);
+      set読めず(false);
     } catch (e) {
       console.error(e);
+      if (!静か) set読めず(true);
     } finally {
-      setLoading(false);
+      if (!静か) setLoading(false);
     }
   }, []);
   useEffect(() => {
     load();
   }, [load]);
+  // アプリが一時停止から戻ってきたら、一覧を取り直す（14-app が知らせる）
+  useEffect(() => {
+    const 戻った = () => load(pops.length > 0);
+    window.addEventListener("appResume", 戻った);
+    return () => window.removeEventListener("appResume", 戻った);
+  }, [load, pops.length]);
   useEffect(() => {
     if (actionsRef) actionsRef.current = {
       refresh: load,
@@ -6113,32 +6320,6 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 2,
-      background: "var(--chip)",
-      borderRadius: 10,
-      padding: 3,
-      flexShrink: 0
-    }
-  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
-    key: v,
-    onClick: () => setTextSizeSave(v),
-    "aria-pressed": textSize === v,
-    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
-    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
-    style: {
-      border: "none",
-      background: textSize === v ? "var(--card, #fff)" : "transparent",
-      color: textSize === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      fontWeight: 800,
-      cursor: "pointer",
-      lineHeight: 1,
-      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
-    }
-  }, l))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
       gap: 3,
       background: "var(--chip)",
       borderRadius: 10,
@@ -6205,85 +6386,7 @@ function BoardTab({
       justifyContent: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
-  }, icon))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDeptKey(deptNext()),
-    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[deptNext()].label + "に変わります",
-    title: "部門をかえる（いま：" + deptConf().label + "）",
-    className: "bt-btn bt-dept",
-    style: {
-      border: "1px solid var(--primary-soft)",
-      background: "var(--soft)",
-      color: "var(--soft-text)",
-      borderRadius: 10,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 3,
-      flexShrink: 0,
-      fontFamily: "inherit",
-      fontSize: 12.5,
-      fontWeight: 900,
-      whiteSpace: "nowrap"
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "13",
-    height: "13",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.4",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 8h13l-3-3M20 16H7l3 3"
-  })), deptConf().label), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDarkSave(!dark),
-    "aria-pressed": dark,
-    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "var(--primary-soft)",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, dark ? /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "12",
-    cy: "12",
-    r: "4.2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-  })) : /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
-  }))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }, icon))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
@@ -6421,7 +6524,39 @@ function BoardTab({
       borderRadius: 6,
       marginTop: 7
     }
-  }))))) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }))))) : 読めず && pops.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "70px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 16,
+      color: "var(--ink)"
+    }
+  }, "\u4E00\u89A7\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--sub)",
+      marginTop: 6,
+      lineHeight: 1.8
+    }
+  }, "\u96FB\u6CE2\u306E\u5F31\u3044\u6240\u3067\u306F\u3001\u8FD4\u4E8B\u304C\u5C4A\u304B\u306A\u3044\u3053\u3068\u304C\u3042\u308A\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => load(),
+    style: {
+      marginTop: 16,
+      border: "none",
+      background: "var(--fill)",
+      color: "#fff",
+      borderRadius: 12,
+      padding: "12px 26px",
+      fontSize: 15,
+      fontWeight: 900,
+      cursor: "pointer",
+      fontFamily: "inherit"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6\u8AAD\u307F\u8FBC\u3080")) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: 80,
@@ -6678,7 +6813,10 @@ function BoardTab({
       l: g
     })),
     cur: fGenre,
-    set: setFGenre
+    set: v => {
+      setFGenre(v);
+      if (!v && !fSp) setFStore("");
+    }
   }, {
     key: "fish",
     title: deptConf().ものの呼び名 + "で絞り込む",
@@ -6692,14 +6830,19 @@ function BoardTab({
       sp
     })),
     cur: fSp ? fSp.id : "",
-    set: (v, it) => setFSp(it && it.sp ? it.sp : null)
-  }, {
+    set: (v, it) => {
+      setFSp(it && it.sp ? it.sp : null);
+      if (!v && !fGenre) setFStore("");
+    }
+  },
+  // お店は、ジャンルか魚を選んだあとで下に出す（最初は出さない）
+  {
     key: "store",
     title: "お店で絞り込む",
-    items: STORES.map(x => ({
+    items: fGenre || fSp || fStore ? STORES.map(x => ({
       v: x,
       l: x
-    })),
+    })) : [],
     cur: fStore,
     set: setFStore
   }].filter(sec => sec.items.length).map(sec => /*#__PURE__*/React.createElement("div", {
@@ -20528,6 +20671,30 @@ function LazyTab(props) {
   }
   return React.createElement(Comp, props.compProps || {});
 }
+
+// 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+function 部門切替() {
+  const 次 = deptNext();
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "dept-mini",
+    onClick: () => setDeptKey(次),
+    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[次].label + "に変わります",
+    title: "部門をかえる（いま：" + deptConf().label + "）"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "13",
+    height: "13",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 8h13l-3-3M20 16H7l3 3"
+  })), /*#__PURE__*/React.createElement("span", null, deptConf().label));
+}
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
@@ -20539,6 +20706,66 @@ function App() {
   const [toolSeed, setToolSeed] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false); // さがす（右のドロワー）が開いているか
+  // ホーム画面のアプリは、閉じても終了せず一時停止している。戻ってきたときに、
+  // 切れた通信を待ち続けて止まらないよう、ここで取り直しを指示する。
+  //   30秒以上離れていた → 一覧などを裏で取り直す（appResume）
+  //   10分以上離れていた → ページごと読み直す（入力の途中なら読み直さない）
+  useEffect(() => {
+    let 離れた = 0;
+    const 入力中 = () => {
+      try {
+        return [...document.querySelectorAll("input, textarea")].some(el => el.offsetParent !== null && (el.type === "file" ? el.files && el.files.length : String(el.value || "").trim() !== ""));
+      } catch (e) {
+        return false;
+      }
+    };
+    const 見る = () => {
+      if (document.visibilityState === "hidden") {
+        離れた = Date.now();
+        return;
+      }
+      if (!離れた) return;
+      const 秒 = (Date.now() - 離れた) / 1000;
+      離れた = 0;
+      if (秒 >= 600 && !入力中()) {
+        try {
+          location.reload();
+        } catch (e) {}
+        return;
+      }
+      if (秒 >= 30) {
+        try {
+          window.dispatchEvent(new CustomEvent("appResume"));
+        } catch (e) {}
+      }
+    };
+    // 保存されていた画面から戻された場合も、取り直す
+    const 復元 = e => {
+      if (e && e.persisted) {
+        try {
+          window.dispatchEvent(new CustomEvent("appResume"));
+        } catch (x) {}
+      }
+    };
+    document.addEventListener("visibilitychange", 見る);
+    window.addEventListener("pageshow", 復元);
+    return () => {
+      document.removeEventListener("visibilitychange", 見る);
+      window.removeEventListener("pageshow", 復元);
+    };
+  }, []);
+
+  // 使われた機能を数える（何が、だけ。誰が、は記録しない）
+  useEffect(() => {
+    try {
+      api.logFeature("画面:" + tab);
+    } catch (e) {}
+  }, [tab]);
+  useEffect(() => {
+    if (searchOpen) try {
+      api.logFeature("さがす");
+    } catch (e) {}
+  }, [searchOpen]);
   useEffect(() => {
     const on = () => setSearchOpen(true),
       off = () => setSearchOpen(false);
@@ -21280,11 +21507,25 @@ function App() {
       flexDirection: "column"
     }
   }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "dock-brand"
+    className: "brand-row"
+  }, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      try {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      } catch (_) {}
+    }
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
       try {
@@ -21333,18 +21574,39 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("div", {
+    className: "brand-row",
+    style: {
+      margin: "2px 0 12px"
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
+    style: {
+      display: "block",
+      width: "62%",
+      maxWidth: 166
+    },
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      setMoreOpen(false);
+      try {
+        window.scrollTo({
+          top: 0
+        });
+      } catch (_) {}
+    }
+  }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT",
     style: {
       display: "block",
-      width: "62%",
-      maxWidth: 166,
+      width: "100%",
       height: "auto",
-      margin: "2px auto 12px",
       opacity: 0.95
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("div", {
     className: "menu-list",
     style: {
       flex: "1 1 auto",
@@ -21439,7 +21701,45 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  }))))))), 広い && /*#__PURE__*/React.createElement("aside", {
+  }))))), /*#__PURE__*/React.createElement("button", {
+    className: "menu-reload",
+    onClick: () => {
+      try {
+        location.reload();
+      } catch (e) {}
+    },
+    style: {
+      marginTop: 12,
+      width: "100%",
+      border: "1px dashed var(--line)",
+      background: "transparent",
+      color: "var(--sub)",
+      borderRadius: 12,
+      padding: "11px 14px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      fontFamily: "inherit",
+      fontSize: 14,
+      fontWeight: 800,
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "17",
+    height: "17",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 12a8 8 0 11-2.3-5.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 4v5h-5"
+  })), "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
   }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,

@@ -95,19 +95,19 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 
 /* 一覧の上の並び：スマホは小さめ、PC・タブレットでは大きく */
 /* 投稿・操作列・さがす の並び（スマホは2段、PCは1段で 投稿 … さがす） */
-.board-head { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 520px; margin-bottom: 10px; align-items: stretch; }
+.board-head { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 8px; max-width: 520px; margin-bottom: 10px; align-items: stretch; }
 /* 上の並び：すべて同じ大きさの箱で、行をぴったり埋める */
 .board-head .bh-menu, .board-head .bh-post, .board-head .bh-search { min-height: 46px !important; height: 46px; }
 .board-tools { gap: 8px !important; }
-.board-tools { display: grid !important; grid-template-columns: repeat(4, 1fr); }
+.board-tools { display: grid !important; grid-template-columns: 1fr; }
 .board-tools > * { min-width: 0; height: 46px; box-sizing: border-box; padding-left: 3px !important; padding-right: 3px !important; }
 .bt-btn { width: auto !important; height: 46px !important; }
 .bt-seg { flex: 1 1 0; height: 100% !important; min-width: 0 !important; }
 .board-head .bh-post { grid-column: 1; grid-row: 1; }
-.board-head .bh-menu { grid-column: 2; grid-row: 1; }
+.board-head .bh-menu { grid-column: 3; grid-row: 1; }
 /* カタログ・入力支援はパソコンでだけ出す */
 .board-head .bh-catalog { display: none !important; }
-.board-head .board-tools { grid-column: 1 / -1; grid-row: 2; }
+.board-head .board-tools { grid-column: 2; grid-row: 1; margin-bottom: 0 !important; }
 .board-tools { max-width: none; }
 .bt-btn { width: min(42px, 10.5vw); height: 42px; }
 .bt-dept { width: auto !important; min-width: min(64px, 17vw); padding: 0 7px !important; }
@@ -124,7 +124,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
     display: flex !important; flex: 1 1 0; min-width: 0;
     padding-left: 12px; padding-right: 12px;
     min-height: 56px !important; height: 56px; }
-  .board-head .board-tools { flex: 2.2 1 0; max-width: none; margin-bottom: 0 !important; }
+  .board-head .board-tools { flex: 1 1 0; max-width: none; margin-bottom: 0 !important; }
   .board-head .bh-post    { order: 1; }
   .board-head .board-tools { order: 2; }
   .board-head .bh-catalog { order: 3; }
@@ -645,3 +645,13 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .kf-bg { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 4px 4px 5px; cursor: pointer; color: var(--sub); font-size: 12.5px; font-weight: 800; }
 .kf-bg canvas { width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 4px; }
 .kf-bg.on { border: 2.5px solid var(--primary); color: var(--primary); padding: 2.5px 2.5px 3.5px; }
+
+/* メニューのマークと、その右の部門切り替え（2026-10-06） */
+.brand-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.brand-row .dock-brand { flex: 0 1 140px; padding: 6px 0 16px; }
+.brand-row .dock-brand img { width: 100%; max-width: 140px; }
+.dept-mini { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; border: 1px solid var(--primary-soft);
+  background: var(--soft); color: var(--soft-text); border-radius: 999px; padding: 5px 10px; min-height: 30px;
+  font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; white-space: nowrap; }
+.brand-row .dept-mini { margin-bottom: 10px; }
+.dept-mini:hover { filter: brightness(0.97); }

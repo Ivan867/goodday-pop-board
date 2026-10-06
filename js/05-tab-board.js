@@ -92,55 +92,21 @@ function BoardTab({
     }, 1500);
     return () => clearTimeout(t);
   }, []);
-  // 画面の明るさ
-  const [dark, setDark] = useState(() => {
+  // 画面の明るさ：暗い画面の切り替えは 2026-10-06 にやめた。いつも明るい画面
+  useEffect(() => {
     try {
-      return localStorage.getItem("theme") === "dark";
-    } catch (e) {
-      return false;
-    }
-  });
-  const setDarkSave = v => {
-    setDark(v);
-    try {
-      localStorage.setItem("theme", v ? "dark" : "light");
-    } catch (e) {}
-    try {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.removeItem("theme");
       const m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute("content", v ? "#161d25" : "#F5F2EC");
+      if (m) m.setAttribute("content", "#F5F2EC");
     } catch (e) {}
-  };
+  }, []); // まとまり画面のスワイプ判定
+  // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
     try {
-      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      document.documentElement.style.setProperty("--pc-name-size", "19px");
     } catch (e) {}
-  }, [dark]); // まとまり画面のスワイプ判定
-  // 文字サイズ（標準／拡大）
-  const TEXT_SIZES = {
-    sm: "12px",
-    md: "14.5px",
-    lg: "19px"
-  };
-  const [textSize, setTextSize] = useState(() => {
-    try {
-      const v = localStorage.getItem("textSize");
-      if (v === "md" || v === "lg") return v;
-      return localStorage.getItem("bigText") === "1" ? "lg" : "md"; // 前の設定を引き継ぐ
-    } catch (e) {
-      return "md";
-    }
-  });
-  const setTextSizeSave = v => {
-    setTextSize(v);
-    try {
-      localStorage.setItem("textSize", v);
-    } catch (e) {}
-  };
-  useEffect(() => {
-    try {
-      document.documentElement.style.setProperty("--pc-name-size", TEXT_SIZES[textSize] || TEXT_SIZES.md);
-    } catch (e) {}
-  }, [textSize]);
+  }, []);
   const [view, setView] = useState(() => {
     try {
       const v = localStorage.getItem("popView");
@@ -374,32 +340,6 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 2,
-      background: "var(--chip)",
-      borderRadius: 10,
-      padding: 3,
-      flexShrink: 0
-    }
-  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
-    key: v,
-    onClick: () => setTextSizeSave(v),
-    "aria-pressed": textSize === v,
-    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
-    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
-    style: {
-      border: "none",
-      background: textSize === v ? "var(--card, #fff)" : "transparent",
-      color: textSize === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      fontWeight: 800,
-      cursor: "pointer",
-      lineHeight: 1,
-      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
-    }
-  }, l))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
       gap: 3,
       background: "var(--chip)",
       borderRadius: 10,
@@ -466,85 +406,7 @@ function BoardTab({
       justifyContent: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
-  }, icon))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDeptKey(deptNext()),
-    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[deptNext()].label + "に変わります",
-    title: "部門をかえる（いま：" + deptConf().label + "）",
-    className: "bt-btn bt-dept",
-    style: {
-      border: "1px solid var(--primary-soft)",
-      background: "var(--soft)",
-      color: "var(--soft-text)",
-      borderRadius: 10,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 3,
-      flexShrink: 0,
-      fontFamily: "inherit",
-      fontSize: 12.5,
-      fontWeight: 900,
-      whiteSpace: "nowrap"
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "13",
-    height: "13",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.4",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 8h13l-3-3M20 16H7l3 3"
-  })), deptConf().label), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDarkSave(!dark),
-    "aria-pressed": dark,
-    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "var(--primary-soft)",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, dark ? /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "12",
-    cy: "12",
-    r: "4.2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-  })) : /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
-  }))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }, icon))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },

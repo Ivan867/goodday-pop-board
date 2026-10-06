@@ -85,6 +85,19 @@ function LazyTab(props) {
   return React.createElement(Comp, props.compProps || {});
 }
 
+// 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+function 部門切替() {
+  const 次 = deptNext();
+  return (
+    <button type="button" className="dept-mini" onClick={() => setDeptKey(次)}
+      aria-label={"いまは" + deptConf().label + "。押すと" + DEPTS[次].label + "に変わります"}
+      title={"部門をかえる（いま：" + deptConf().label + "）"}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>
+      <span>{deptConf().label}</span>
+    </button>
+  );
+}
+
 function App() {
   const [tab, setTab] = useState("board");
 
@@ -463,10 +476,13 @@ function App() {
             animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(18px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
             {広い ? (
               <>
-                <a className="dock-brand" href="./" aria-label="ホーム（一覧）にもどる"
-                  onClick={(e) => { e.preventDefault(); setTab("board"); try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(_) {} }}>
-                  <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
-                </a>
+                <div className="brand-row">
+                  <a className="dock-brand" href="./" aria-label="ホーム（一覧）にもどる"
+                    onClick={(e) => { e.preventDefault(); setTab("board"); try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(_) {} }}>
+                    <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
+                  </a>
+                  <部門切替 />
+                </div>
                 <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
                   検索
@@ -481,10 +497,13 @@ function App() {
             </div>
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
-            {!広い && <a href="./" aria-label="ホーム（一覧）にもどる" style={{ display:"block", width:"62%", maxWidth:166, margin:"2px auto 12px" }}
-              onClick={(e) => { e.preventDefault(); setTab("board"); setMoreOpen(false); try { window.scrollTo({ top:0 }); } catch(_) {} }}>
-              <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT"
-                style={{ display:"block", width:"100%", height:"auto", opacity:0.95 }} /></a>}
+            {!広い && <div className="brand-row" style={{ margin:"2px 0 12px" }}>
+              <a href="./" aria-label="ホーム（一覧）にもどる" style={{ display:"block", width:"62%", maxWidth:166 }}
+                onClick={(e) => { e.preventDefault(); setTab("board"); setMoreOpen(false); try { window.scrollTo({ top:0 }); } catch(_) {} }}>
+                <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT"
+                  style={{ display:"block", width:"100%", height:"auto", opacity:0.95 }} /></a>
+              <部門切替 />
+            </div>}
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column",
               justifyContent:"flex-start", gap:8, minHeight:0, overflowY:"auto", WebkitOverflowScrolling:"touch" }}>

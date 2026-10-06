@@ -278,6 +278,30 @@ function LazyTab(props) {
   }
   return React.createElement(Comp, props.compProps || {});
 }
+
+// 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+function 部門切替() {
+  const 次 = deptNext();
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "dept-mini",
+    onClick: () => setDeptKey(次),
+    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[次].label + "に変わります",
+    title: "部門をかえる（いま：" + deptConf().label + "）"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "13",
+    height: "13",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 8h13l-3-3M20 16H7l3 3"
+  })), /*#__PURE__*/React.createElement("span", null, deptConf().label));
+}
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
@@ -1089,7 +1113,9 @@ function App() {
       display: "flex",
       flexDirection: "column"
     }
-  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
+  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "brand-row"
+  }, /*#__PURE__*/React.createElement("a", {
     className: "dock-brand",
     href: "./",
     "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
@@ -1106,7 +1132,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
       try {
@@ -1155,14 +1181,18 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("a", {
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("div", {
+    className: "brand-row",
+    style: {
+      margin: "2px 0 12px"
+    }
+  }, /*#__PURE__*/React.createElement("a", {
     href: "./",
     "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
     style: {
       display: "block",
       width: "62%",
-      maxWidth: 166,
-      margin: "2px auto 12px"
+      maxWidth: 166
     },
     onClick: e => {
       e.preventDefault();
@@ -1183,7 +1213,7 @@ function App() {
       height: "auto",
       opacity: 0.95
     }
-  })), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("div", {
     className: "menu-list",
     style: {
       flex: "1 1 auto",
