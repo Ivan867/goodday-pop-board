@@ -971,7 +971,10 @@ function BoardTab({
       l: g
     })),
     cur: fGenre,
-    set: setFGenre
+    set: v => {
+      setFGenre(v);
+      if (!v && !fSp) setFStore("");
+    }
   }, {
     key: "fish",
     title: deptConf().ものの呼び名 + "で絞り込む",
@@ -985,14 +988,19 @@ function BoardTab({
       sp
     })),
     cur: fSp ? fSp.id : "",
-    set: (v, it) => setFSp(it && it.sp ? it.sp : null)
-  }, {
+    set: (v, it) => {
+      setFSp(it && it.sp ? it.sp : null);
+      if (!v && !fGenre) setFStore("");
+    }
+  },
+  // お店は、ジャンルか魚を選んだあとで下に出す（最初は出さない）
+  {
     key: "store",
     title: "お店で絞り込む",
-    items: STORES.map(x => ({
+    items: fGenre || fSp || fStore ? STORES.map(x => ({
       v: x,
       l: x
-    })),
+    })) : [],
     cur: fStore,
     set: setFStore
   }].filter(sec => sec.items.length).map(sec => /*#__PURE__*/React.createElement("div", {

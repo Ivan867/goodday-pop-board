@@ -390,12 +390,14 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
               {[
                 { key:"genre", title:"ジャンルで絞り込む",
-                  items: deptGenres().map(g => ({ v:g, l:g })), cur: fGenre, set: setFGenre },
+                  items: deptGenres().map(g => ({ v:g, l:g })), cur: fGenre,
+                  set: (v) => { setFGenre(v); if (!v && !fSp) setFStore(""); } },
                 { key:"fish", title: deptConf().ものの呼び名 + "で絞り込む",
                   items: spCounts.map(({ sp, n }) => ({ v:sp.id, l:sp.canonical_name, n, sp })),
-                  cur: fSp ? fSp.id : "", set: (v, it) => setFSp(it && it.sp ? it.sp : null) },
+                  cur: fSp ? fSp.id : "", set: (v, it) => { setFSp(it && it.sp ? it.sp : null); if (!v && !fGenre) setFStore(""); } },
+                // お店は、ジャンルか魚を選んだあとで下に出す（最初は出さない）
                 { key:"store", title:"お店で絞り込む",
-                  items: STORES.map(x => ({ v:x, l:x })), cur: fStore, set: setFStore },
+                  items: (fGenre || fSp || fStore) ? STORES.map(x => ({ v:x, l:x })) : [], cur: fStore, set: setFStore },
               ].filter(sec => sec.items.length).map(sec => (
                 <div key={sec.key} style={{ marginBottom:20 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, paddingBottom:9, marginBottom:11,

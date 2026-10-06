@@ -1089,8 +1089,20 @@ function App() {
       display: "flex",
       flexDirection: "column"
     }
-  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "dock-brand"
+  }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      try {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      } catch (_) {}
+    }
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
@@ -1143,18 +1155,35 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
-    src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS PROJECT",
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("a", {
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
     style: {
       display: "block",
       width: "62%",
       maxWidth: 166,
+      margin: "2px auto 12px"
+    },
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      setMoreOpen(false);
+      try {
+        window.scrollTo({
+          top: 0
+        });
+      } catch (_) {}
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
+    alt: "GoodDay NEXUS PROJECT",
+    style: {
+      display: "block",
+      width: "100%",
       height: "auto",
-      margin: "2px auto 12px",
       opacity: 0.95
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
     className: "menu-list",
     style: {
       flex: "1 1 auto",
