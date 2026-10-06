@@ -155,7 +155,7 @@ function SupportTab() {
   }, "\u2039 \u8CC7\u6599\u3078\u623B\u308B"));
   // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
   if (どれ === "order") return /*#__PURE__*/React.createElement("div", null, 戻る, typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null);
-  if (どれ === "photo") return /*#__PURE__*/React.createElement("div", null, 戻る, /*#__PURE__*/React.createElement(SupportPhotos, null));
+  // 画像の共有は 2026-10-06 にやめた
   return /*#__PURE__*/React.createElement(SupportDocs, {
     選ぶ: 選ぶ
   });
@@ -333,23 +333,6 @@ function SupportDocs({
     d: "M4 5.5h16v13H4z"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M8 9.5h8M8 13h5"
-  }))), 小入口("photo", "画像の共有", "上げてから3日で消えます", /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "5",
-    width: "18",
-    height: "14",
-    rx: "2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M3 15l5-4.5 4 3.5 3-2.5 6 5"
   })))));
 }
 function SupportPhotos() {

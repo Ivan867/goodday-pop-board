@@ -163,6 +163,20 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   }, []);
   useEffect(() => { if (unlocked) { load(); loadReqs(); loadTrash(); loadOpLogs(); loadSupport(); } }, [unlocked, load, loadReqs, loadTrash, loadOpLogs, loadSupport]);
 
+  // 認証画面のあいだは、下のページが動かないように止める（点を押すと画面ごと動いていた）
+  useEffect(() => {
+    if (unlocked) return;
+    const h = document.documentElement, b = document.body;
+    const 前 = { y: window.scrollY, hO: h.style.overflow, bO: b.style.overflow, bP: b.style.position, bT: b.style.top, bW: b.style.width, oB: h.style.overscrollBehavior };
+    h.style.overflow = "hidden"; h.style.overscrollBehavior = "none";
+    b.style.overflow = "hidden"; b.style.position = "fixed"; b.style.top = (-前.y) + "px"; b.style.width = "100%";
+    return () => {
+      h.style.overflow = 前.hO; h.style.overscrollBehavior = 前.oB;
+      b.style.overflow = 前.bO; b.style.position = 前.bP; b.style.top = 前.bT; b.style.width = 前.bW;
+      window.scrollTo(0, 前.y);
+    };
+  }, [unlocked]);
+
   useEffect(() => {
     if (unlocked) return;
     const t = "> 接続中 ... OK\n> 端末を確認 ... OK\n> 認証待ち";
@@ -190,12 +204,12 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       if (r.ok) { setGErr(""); setGOK(true); setTimeout(() => setUnlocked(true), 620); }
       else {
         setGErr(r.locked
-          ? `БЛОКИРОВКА · ${api.lockText(r.seconds)}ほど待ってください`
-          : (r.left > 0 ? `ОТКАЗ · パスワードが違います（あと${r.left}回）` : "ОТКАЗ · パスワードが違います"));
+          ? `${api.lockText(r.seconds)}ほど待ってください`
+          : (r.left > 0 ? "パスワードが違います" : "パスワードが違います"));
         setGpw("");
       }
     } catch (e) {
-      setGErr("НЕТ СВЯЗИ · 電波を確認してください");
+      setGErr("電波を確認してください");
     } finally {
       setGChecking(false);
     }
@@ -231,87 +245,37 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div aria-hidden="true" style={{ position:"absolute", inset:0, pointerEvents:"none",
           background:"radial-gradient(52% 38% at 50% 44%, rgba(240,164,74,0.15), transparent 72%), radial-gradient(100% 62% at 50% 100%, rgba(0,0,0,0.6), transparent 62%)" }} />
 
-        {/* 一覧へ戻る（小さく、隅に） */}
+        {/* 一覧へ戻る：文字は出さず、左上の小さな「‹」だけ */}
         <button onClick={goBack} aria-label="一覧にもどる"
-          style={{ position:"absolute", zIndex:4, left:14, top:"calc(env(safe-area-inset-top, 0px) + 12px)",
-            border:"none", background:"transparent", color:DIM, fontSize:12, letterSpacing:"0.12em",
-            cursor:"pointer", fontFamily:"inherit", padding:"8px 6px", letterSpacing:"0.12em" }}>‹ НАЗАД</button>
+          style={{ position:"absolute", zIndex:4, left:10, top:"calc(env(safe-area-inset-top, 0px) + 8px)",
+            border:"none", background:"transparent", color:DIM, fontSize:26, lineHeight:1,
+            cursor:"pointer", fontFamily:"inherit", padding:"8px 12px", opacity:0.7 }}>‹</button>
 
-        <div style={{ position:"relative", zIndex:3, display:"flex", flexDirection:"column", alignItems:"center",
+        <div className={gErr ? "g-shake" : ""} style={{ position:"relative", zIndex:3, display:"flex", flexDirection:"column", alignItems:"center",
           padding:"0 20px" }}>
 
-          <div style={{ fontSize:26, color:AMB, letterSpacing:"0.16em", lineHeight:1.1,
-            textShadow:"0 0 26px rgba(240,164,74,0.5)" }}>АВТОРИЗАЦИЯ</div>
-
-          <div style={{ display:"flex", gap:10, marginTop:26, marginBottom:26, height:9 }}>
-            {[0,1,2,3].map(i => (
-              <span key={i} style={{ width:8, height:8, borderRadius:"50%", transition:"all .18s",
-                background: i < gpw.length ? AM : "transparent",
-                border: i < gpw.length ? "none" : "1px solid rgba(240,164,74,0.30)",
-                boxShadow: i < gpw.length ? "0 0 11px "+AM : "none" }} />
+          {/* 文字は出さない。違ったときは点の並びが揺れて、最初からになる */}
+          <div role="status" aria-live="polite" style={{ position:"absolute", width:1, height:1, overflow:"hidden", clip:"rect(0 0 0 0)" }}>
+            {gChecking ? "確認中" : (gErr || "")}
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20, justifyItems:"center" }}>
+            {DOTS.map(n => (
+              <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking || gOK}
+                style={{ position:"relative", width:58, height:58, borderRadius:"50%", cursor:"pointer", padding:0,
+                  touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+                  border:"1px solid " + (gFlash === n ? AMB : "rgba(240,164,74,0.32)"),
+                  background: gFlash === n ? AM : "rgba(240,164,74,0.045)",
+                  boxShadow: gFlash === n ? "0 0 20px "+AM+", 0 0 46px rgba(240,164,74,0.5)" : "none",
+                  transition:"background .14s, box-shadow .14s, border-color .14s" }}>
+                {gFlash === n && <span aria-hidden="true" className="g-ripple" />}
+              </button>
             ))}
           </div>
-
-          {!gKeyMode ? (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20, justifyItems:"center" }}>
-              {DOTS.map(n => (
-                <button key={n} onClick={() => tapDot(n)} aria-label={n + "を入力"} disabled={gChecking || gOK}
-                  style={{ position:"relative", width:58, height:58, borderRadius:"50%", cursor:"pointer", padding:0,
-                    border:"1px solid " + (gFlash === n ? AMB : "rgba(240,164,74,0.32)"),
-                    background: gFlash === n ? AM : "rgba(240,164,74,0.045)",
-                    boxShadow: gFlash === n ? "0 0 20px "+AM+", 0 0 46px rgba(240,164,74,0.5)" : "none",
-                    transition:"background .14s, box-shadow .14s, border-color .14s" }}>
-                  {gFlash === n && <span aria-hidden="true" className="g-ripple" />}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <input type="password" value={gpw} autoFocus inputMode="numeric"
-              onChange={e => { setGpw(e.target.value); setGErr(""); }}
-              onKeyDown={e => { if (e.key === "Enter") tryUnlock(); }}
-              placeholder="ПАРОЛЬ" disabled={gChecking}
-              style={{ width:236, boxSizing:"border-box", border:"none",
-                borderBottom:"1px solid rgba(240,164,74,0.4)", background:"transparent", color:AMB,
-                padding:"12px 0", fontSize:18, textAlign:"center", outline:"none",
-                fontFamily:"inherit", letterSpacing:"0.4em" }} />
-          )}
-
-          <div role="status" aria-live="polite" className={gErr ? "g-shake" : ""}
-            style={{ minHeight:18, marginTop:26, textAlign:"center", fontSize:11.5, letterSpacing:"0.06em",
-              color: gErr ? "#e8806f" : DIM }}>
-            {gChecking ? "ПРОВЕРКА ..." : (gErr || "")}
-          </div>
-
-          {(gKeyMode || gChecking) && (
-            <button onClick={tryUnlock} disabled={gChecking || !gpw}
-              style={{ marginTop:10, borderRadius:2, padding:"11px 34px", fontSize:13, letterSpacing:"0.2em",
-                fontFamily:"inherit", border:"1px solid rgba(240,164,74,0.5)",
-                background: gpw && !gChecking ? "rgba(240,164,74,0.12)" : "transparent",
-                color: gpw ? AMB : DIM, cursor: gChecking || !gpw ? "default" : "pointer" }}>
-              {gChecking ? "ПРОВЕРКА ..." : "ОТКРЫТЬ"}
-            </button>
-          )}
-        </div>
-
-        <div style={{ position:"absolute", zIndex:3, left:0, right:0,
-          bottom:"calc(env(safe-area-inset-bottom, 0px) + 22px)",
-          display:"flex", justifyContent:"center", gap:24 }}>
-          {/* 表示はロシア語。読み上げ用の説明は日本語で持たせる */}
-          {[["СБРОС", "やり直す", () => { setGpw(""); setGErr(""); }],
-            gKeyMode ? ["ТОЧКИ", "点で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
-                     : ["ЦИФРЫ", "数字で入れる", () => { setGKeyMode(v => !v); setGpw(""); setGErr(""); }]
-           ].map(([t, yomi, fn]) => (
-            <button key={t} onClick={fn} aria-label={yomi} title={yomi}
-              style={{ border:"none", background:"transparent", color:DIM, fontSize:11,
-                letterSpacing:"0.2em", cursor:"pointer", fontFamily:"inherit", padding:"6px 4px" }}>{t}</button>
-          ))}
         </div>
 
         {gOK && (
           <div aria-hidden="true" style={{ position:"absolute", inset:0, zIndex:6, display:"flex",
             alignItems:"center", justifyContent:"center", background:"rgba(5,13,15,0.92)", animation:"fadeUp .18s ease" }}>
-            <div style={{ color:AMB, fontSize:16, letterSpacing:"0.2em",
-              textShadow:"0 0 28px rgba(240,164,74,0.9)" }}>ДОСТУП ОТКРЫТ</div>
           </div>
         )}
       </div>
@@ -455,7 +419,6 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
             ["ranking","記録",null,"#2aa3a3",<><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></>],
             ["device","端末",null,"#8a9099",<><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M11 18h2"/></>],
             ["res","資料",null,"#1d9e75",<><path d="M5 4.5h9l5 5v10H5z"/><path d="M14 4.5v5h5"/></>],
-            ["support","店舗支援の画像",(supPhotos.length+supTrash.length)||0,"#7a5cb0",<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/><circle cx="8.5" cy="9.5" r="1.3"/></>],
             ["rot","向き",null,"#b08968",<><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></>],
           ].filter(([k]) => scope !== "produce" || ["genre","archive","trash","pinned"].includes(k))
            .map(([k,label,n,col,icon]) => (
@@ -2056,7 +2019,7 @@ function DeviceStatsPanel() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
-  const [日数, set日数] = useState(30);
+  const [日数, set日数] = useState(14);
   const [機能, set機能] = useState([]);
 
   useEffect(() => {
@@ -2167,7 +2130,7 @@ function DeviceStatsPanel() {
 
 /* ───────────── 記録：何が見られているか（一覧の上にのせる要約） ───────────── */
 function ViewInsights({ pops, views }) {
-  const [日数, set日数] = useState(30);
+  const [日数, set日数] = useState(14);
   const 公開 = pops.filter(p => !p.archived);
   const 名簿 = {}; pops.forEach(p => { 名簿[p.id] = p; });
   const 自部門 = views.filter(v => 名簿[v.pop_id]);           // いまの部門のポップだけ
@@ -2217,7 +2180,7 @@ function RankingPanel({ onCreateFromPop }) {
   const [ver, setVer] = useState(0);
   const [recent, setRecent] = useState({});     // pop_id -> 回数
   const [views, setViews] = useState([]);       // 直近90日の閲覧（pop_id, created_at）
-  const [days, setDays] = useState(7);
+  const [days, setDays] = useState(3);
 
   useEffect(() => {
     let alive = true;

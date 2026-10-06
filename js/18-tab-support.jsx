@@ -67,7 +67,7 @@ function SupportTab() {
   );
   // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
   if (どれ === "order") return (<div>{戻る}{typeof OrderTab === "function" ? <OrderTab /> : null}</div>);
-  if (どれ === "photo") return (<div>{戻る}<SupportPhotos /></div>);
+  // 画像の共有は 2026-10-06 にやめた
   return <SupportDocs 選ぶ={選ぶ} />;
 }
 
@@ -133,8 +133,6 @@ function SupportDocs({ 選ぶ }) {
       <div style={{ display:"grid", gap:8 }}>
         {小入口("order", "塩干発注", "店舗ごとの番号で入ります",
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5.5h16v13H4z"/><path d="M8 9.5h8M8 13h5"/></svg>)}
-        {小入口("photo", "画像の共有", "上げてから3日で消えます",
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/></svg>)}
       </div>
     </div>
   );
