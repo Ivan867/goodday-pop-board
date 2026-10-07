@@ -83,7 +83,7 @@ window.__記す = 記す;
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'" />
 <style>#splash{position:fixed;inset:0;z-index:9999;background:#0B1420;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .5s ease;overflow:hidden}#splash::before{content:"";position:absolute;inset:-30%;background:radial-gradient(38% 30% at 30% 38%,rgba(74,196,110,.22),transparent 70%),radial-gradient(38% 30% at 70% 46%,rgba(40,130,230,.24),transparent 70%);filter:blur(8px);animation:spGlow 5s ease-in-out infinite alternate}#splash.hide{opacity:0;pointer-events:none}#splash .sp-mark{position:relative;text-align:center;animation:spUp .8s cubic-bezier(.16,1,.3,1) both}#splash .sp-good{font-size:13px;font-weight:800;letter-spacing:.34em;text-indent:.34em;color:#7FD0A0;opacity:.92}#splash .sp-nexus{font-size:min(46px,13vw);font-weight:900;letter-spacing:.14em;text-indent:.14em;color:#fff;line-height:1.1;margin-top:4px}#splash .sp-rule{width:min(210px,52vw);height:2px;margin:15px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,#58C878 22%,#2E9BE8 78%,transparent);animation:spRule 1.1s cubic-bezier(.16,1,.3,1) both}#splash .sp-name{position:relative;margin-top:15px;font-size:13px;font-weight:800;letter-spacing:.3em;text-indent:.3em;color:#9FB4C6;animation:spUp .8s .12s cubic-bezier(.16,1,.3,1) both}#splash .sp-note{position:relative;margin-top:30px;font-size:11px;font-weight:700;letter-spacing:.12em;color:#5E7488;animation:spFade 1.4s .3s ease both}@keyframes spUp{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}@keyframes spRule{from{transform:scaleX(0);opacity:0}to{transform:none;opacity:1}}@keyframes spFade{from{opacity:0}to{opacity:1}}@keyframes spGlow{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(2%,2%,0) scale(1.08)}}</style>
-<link rel="stylesheet" href="css/app.20261006h.css" media="print" onload="this.media='all';window.__cssOK=1" onerror="window.__cssBad=this" />
+<link rel="stylesheet" href="css/app.20261007a.css" media="print" onload="this.media='all';window.__cssOK=1" onerror="window.__cssBad=this" />
 </head>
 <body>
 <div id="splash">
@@ -154,6 +154,21 @@ window.__記す = 記す;
     if (!document.getElementById("splash")) return;          // もう開けている
     if ((r && r.childNodes.length === 0) || !window.__cssOK) 案内("slow");
   }, 5000);
+  /* 10秒たっても画面が出ないときは、どこで止まったかを残して、1回だけ自動で読み込み直す。
+     ファイルが「失敗」ではなく「返事待ち」のまま止まると、エラーが起きないので取り直しも働かない。 */
+  setTimeout(function(){
+    var r = document.getElementById("root");
+    if (!document.getElementById("splash")) return;
+    if (r && r.childNodes.length > 0 && window.__cssOK) return;
+    var 札 = "R" + (window.React ? 1 : 0) + "D" + (window.ReactDOM ? 1 : 0) + "A" + (window.__appRan ? 1 : 0) +
+             "C" + (window.__cssOK ? 1 : 0) + "V" + (r && r.childNodes.length > 0 ? 1 : 0);
+    try { localStorage.setItem("bootStall", 札 + " " + new Date().toISOString().slice(5, 16)); } catch (e) {}
+    記す("起動が10秒で止まった: " + 札);
+    var 済み = false; try { 済み = sessionStorage.getItem("bootRetry") === "1"; } catch (e) {}
+    if (済み) return;                                   // 2回目は自動ではやらない（ボタンで）
+    try { sessionStorage.setItem("bootRetry", "1"); } catch (e) {}
+    location.replace(location.pathname + "?r=" + Date.now());
+  }, 10000);
   /* 見た目の指定（css）を取りこぼしたら、黙って3回まで取り直す。
      電波が一瞬切れただけで「うまく開けません」で止まっていた（2026-10-05 実機）。 */
   window.__cssTry = 0;
@@ -239,19 +254,19 @@ window.__記す = 記す;
 </script>
 <div id="root"></div>
 <!-- React は起動画面と見張りの後ろで読む。外部が止まっても、画面と「読み込み直す」は先に出る。 -->
-<!-- React本体：まず今までどおりCDNから。取れなければ、このサイトに置いた控えに切り替える。
-     （会社の通信制限やCDN障害で止まらないための二段構え） -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script>if (!window.React) document.write('<script src="vendor/react-18.2.0.min.js"><\/script>');</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script>if (!window.ReactDOM) document.write('<script src="vendor/react-dom-18.2.0.min.js"><\/script>');</script>
+<!-- React本体：まずこのサイトに置いた控えから（ページと同じ相手なので、つながりが1本で済む）。
+     取れなければ外のCDNへ。2026-10-07：外のCDNが返事をしないまま止まり、起動画面で固まった件の対策 -->
+<script src="vendor/react-18.2.0.min.js"></script>
+<script>if (!window.React) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"><\/script>');</script>
+<script src="vendor/react-dom-18.2.0.min.js"></script>
+<script>if (!window.ReactDOM) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"><\/script>');</script>
 <!-- APP-BUNDLE -->
-<script src="js/app.20261006h.js"></script>
+<script src="js/app.20261007a.js"></script>
 <!-- /APP-BUNDLE -->
 
 <!-- 遅延読み込み：重いタブ（バーコード/入力ジェネレーター/魚図鑑/管理画面）は開いた時に読み込む -->
 <script>
-window.APP_VER = "20261006h";
+window.APP_VER = "20261007a";
 window.__lazyLoaded = {};
 window.loadLazyTab = function(name){
   return new Promise(function(resolve, reject){

@@ -136,6 +136,13 @@ function App() {
 
   // 使われた機能を数える（何が、だけ。誰が、は記録しない）
   useEffect(() => { try { api.logFeature("画面:" + tab); } catch (e) {} }, [tab]);
+  // 前に起動が止まっていたら、どこで止まったかを1回だけ送る（直すときの手がかり）
+  useEffect(() => {
+    try {
+      const 止 = localStorage.getItem("bootStall");
+      if (止) { api.logFeature("起動停滞 " + 止); localStorage.removeItem("bootStall"); }
+    } catch (e) {}
+  }, []);
   useEffect(() => { if (searchOpen) try { api.logFeature("さがす"); } catch (e) {} }, [searchOpen]);
   useEffect(() => {
     const on = () => setSearchOpen(true), off = () => setSearchOpen(false);
