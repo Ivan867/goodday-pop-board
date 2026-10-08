@@ -1248,101 +1248,39 @@ function App() {
   })), /*#__PURE__*/React.createElement("div", {
     className: "dock-ctl"
   }, /*#__PURE__*/React.createElement(部門スイッチ, null))), /*#__PURE__*/React.createElement("div", {
-    className: "menu-list",
-    style: {
-      flex: "1 1 auto",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      gap: 8,
-      minHeight: 0,
-      overflowY: "auto",
-      WebkitOverflowScrolling: "touch"
-    }
+    className: "menu-list menu-grid"
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
     const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
+    // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
+    const 外す = 広い ? ["search", "bundle", "catalog"] : [];
+    return TAB_REGISTRY.filter(o => !外す.includes(o.key)).filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
       label: o.key === "admin" ? "管理" : o.label,
       __押し: o.key === "guide"
     } : o);
-  })().map(o => /*#__PURE__*/React.createElement("button", {
-    key: o.key,
-    onClick: () => {
-      setTab(o.key);
-      setMoreOpen(false);
-    },
-    "aria-label": o.label,
-    "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : ""),
-    style: {
-      width: "100%",
-      border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      background: tab === o.key ? "var(--soft)" : "var(--menu-row, #fff)",
-      borderRadius: 12,
-      padding: "10px 14px",
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 13,
-      flex: "0 0 auto",
-      minHeight: 58
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "relative",
-      width: 38,
-      height: 38,
-      flexShrink: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)"
-    }
-  }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "absolute",
-      top: -5,
-      right: -9,
-      background: "var(--fill)",
-      color: "#fff",
-      fontSize: 12.5,
-      fontWeight: 900,
-      padding: "2px 5px",
-      borderRadius: 7,
-      letterSpacing: 0.4
-    }
-  }, o.badge)), /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: 1,
-      minWidth: 0,
-      fontSize: 17,
-      fontWeight: 800,
-      color: tab === o.key ? "var(--primary)" : "var(--ink)",
-      lineHeight: 1.3,
-      textAlign: "left",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, o.label), /*#__PURE__*/React.createElement("svg", {
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "var(--faint)",
-    strokeWidth: "2.3",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M9 6l6 6-6 6"
-  }))))), /*#__PURE__*/React.createElement("button", {
+  })().map((o, i, 全部) => {
+    // タイルが1つだけ最後の行に余るときは、その1つを横いっぱいにする
+    const タイル = 全部.filter(x => x.key !== "search");
+    const 余り = タイル.length % 3 === 1 && o.key === タイル[タイル.length - 1].key;
+    return /*#__PURE__*/React.createElement("button", {
+      key: o.key,
+      onClick: () => {
+        setTab(o.key);
+        setMoreOpen(false);
+      },
+      "aria-label": o.label,
+      "aria-current": tab === o.key ? "page" : undefined,
+      className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-ic"
+    }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-badge"
+    }, o.badge)), /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-t"
+    }, o.label));
+  })), /*#__PURE__*/React.createElement("button", {
     className: "menu-reload",
     onClick: () => {
       try {

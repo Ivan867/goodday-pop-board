@@ -706,3 +706,36 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .dept-seg-b.on { color: #fff; cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.25); }
 .dept-seg-b.dept-fish.on { background: #3a6b9e; }
 .dept-seg-b.dept-produce.on { background: #35743d; }
+
+/* メニューの項目：3列のタイル（2026-10-08） */
+.menu-drawer .menu-list.menu-grid { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 8px !important;
+  flex: 0 0 auto !important; min-height: 0; overflow: visible; }
+.menu-drawer .menu-list .menu-item.menu-tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+  min-height: 84px !important; padding: 12px 4px 10px !important; border-radius: 14px; cursor: pointer; width: 100%;
+  border: 1px solid rgba(255,255,255,0.07) !important; background: rgba(255,255,255,0.04) !important;
+  font: inherit; transition: background .15s, border-color .15s, transform .1s; }
+.menu-drawer .menu-list .menu-item.menu-tile:hover { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.14) !important; }
+.menu-drawer .menu-list .menu-item.menu-tile:active { transform: scale(.97); }
+.menu-drawer .menu-list .menu-item.menu-tile.on { background: rgba(111,163,216,0.16) !important; border-color: rgba(156,200,242,0.55) !important; }
+.menu-tile-ic { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #7FB2E4; }
+.menu-tile-ic svg { width: 26px; height: 26px; }
+.menu-tile.on .menu-tile-ic { color: #9CC8F2; }
+.menu-drawer .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 12.5px !important; font-weight: 700 !important; color: #D6E1EC;
+  line-height: 1.25; text-align: center; letter-spacing: .02em; word-break: keep-all; overflow-wrap: anywhere; }
+.menu-tile.on .menu-tile-t { color: #fff !important; }
+.menu-tile-badge { position: absolute; top: -6px; right: -12px; background: var(--fill); color: #fff; font-size: 10.5px; font-weight: 900;
+  padding: 1px 5px; border-radius: 6px; }
+/* 検索だけは横長の帯にして、いちばん上に */
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start;
+  min-height: 48px !important; padding: 10px 14px !important; gap: 10px; border-radius: 12px; }
+.menu-tile-wide .menu-tile-ic { width: 22px; height: 22px; }
+.menu-tile-wide .menu-tile-ic svg { width: 20px; height: 20px; }
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide .menu-tile-t { font-size: 14px !important; color: #A9BACB; }
+/* 青果の「はじめに」（手引き）を目立たせる */
+.menu-drawer .menu-list .menu-item.menu-tile.menu-push { border-color: rgba(127,201,140,0.6) !important; background: rgba(53,116,61,0.22) !important; }
+@media (min-width: 1280px) {
+  .menu-dock .menu-list.menu-grid { gap: 7px !important; }
+  .menu-dock .menu-list .menu-item.menu-tile { min-height: 80px !important; padding: 11px 3px 9px !important; }
+  .menu-dock .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 12px !important; }
+}
