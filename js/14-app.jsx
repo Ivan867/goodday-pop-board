@@ -86,14 +86,23 @@ function LazyTab(props) {
 }
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
-// パソコン用：2つの部門を並べ、いまの方を塗る。押すと読み込み直して切り替わる
+// パソコン用：スイッチの形。つまみが滑ってから切り替わる（切り替えは読み込み直しになるので、先に動きを見せる）
 function 部門スイッチ() {
   const 今 = deptKey();
+  const [行き先, set行き先] = useState(今);
+  const ks = Object.keys(DEPTS);
+  const 右 = ks.indexOf(行き先) === 1;
+  const 押す = (k) => {
+    if (k === 行き先) return;
+    set行き先(k);
+    setTimeout(() => setDeptKey(k), 300);
+  };
   return (
-    <div className="dept-seg" role="group" aria-label="部門">
-      {Object.keys(DEPTS).map(k => (
-        <button key={k} type="button" className={"dept-seg-b dept-" + k + (k === 今 ? " on" : "")}
-          aria-pressed={k === 今} onClick={() => { if (k !== 今) setDeptKey(k); }}>
+    <div className={"dept-sw" + (右 ? " right" : "") + " to-" + 行き先} role="radiogroup" aria-label="部門">
+      <span className="dept-sw-knob" aria-hidden="true" />
+      {ks.map(k => (
+        <button key={k} type="button" role="radio" aria-checked={k === 行き先}
+          className={"dept-sw-b" + (k === 行き先 ? " on" : "")} onClick={() => 押す(k)}>
           {DEPTS[k].label}
         </button>
       ))}
@@ -504,11 +513,13 @@ function App() {
                     onClick={(e) => { e.preventDefault(); setTab("board"); try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(_) {} }}>
                     <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
                   </a>
-                  <部門スイッチ />
-                  <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
-                    <span>ポップをさがす</span>
-                  </button>
+                  <div className="dock-ctl">
+                    <部門スイッチ />
+                    <button className="dock-find" aria-label="ポップをさがす" title="さがす"
+                      onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
+                    </button>
+                  </div>
                 </div>
               </>
             ) : null}

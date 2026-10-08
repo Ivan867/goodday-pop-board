@@ -280,21 +280,31 @@ function LazyTab(props) {
 }
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
-// パソコン用：2つの部門を並べ、いまの方を塗る。押すと読み込み直して切り替わる
+// パソコン用：スイッチの形。つまみが滑ってから切り替わる（切り替えは読み込み直しになるので、先に動きを見せる）
 function 部門スイッチ() {
   const 今 = deptKey();
+  const [行き先, set行き先] = useState(今);
+  const ks = Object.keys(DEPTS);
+  const 右 = ks.indexOf(行き先) === 1;
+  const 押す = k => {
+    if (k === 行き先) return;
+    set行き先(k);
+    setTimeout(() => setDeptKey(k), 300);
+  };
   return /*#__PURE__*/React.createElement("div", {
-    className: "dept-seg",
-    role: "group",
+    className: "dept-sw" + (右 ? " right" : "") + " to-" + 行き先,
+    role: "radiogroup",
     "aria-label": "\u90E8\u9580"
-  }, Object.keys(DEPTS).map(k => /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dept-sw-knob",
+    "aria-hidden": "true"
+  }), ks.map(k => /*#__PURE__*/React.createElement("button", {
     key: k,
     type: "button",
-    className: "dept-seg-b dept-" + k + (k === 今 ? " on" : ""),
-    "aria-pressed": k === 今,
-    onClick: () => {
-      if (k !== 今) setDeptKey(k);
-    }
+    role: "radio",
+    "aria-checked": k === 行き先,
+    className: "dept-sw-b" + (k === 行き先 ? " on" : ""),
+    onClick: () => 押す(k)
   }, DEPTS[k].label)));
 }
 function 部門切替() {
@@ -1159,28 +1169,32 @@ function App() {
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
-    className: "dock-search",
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
+    className: "dock-find",
+    "aria-label": "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059",
+    title: "\u3055\u304C\u3059",
     onClick: () => {
       try {
         window.dispatchEvent(new CustomEvent("openSearch"));
       } catch (e) {}
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.2",
+    strokeWidth: "2.1",
     strokeLinecap: "round"
   }, /*#__PURE__*/React.createElement("circle", {
-    cx: "11",
-    cy: "11",
-    r: "7"
+    cx: "10.5",
+    cy: "10.5",
+    r: "6.5"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 20l-3.7-3.7"
-  })), /*#__PURE__*/React.createElement("span", null, "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059")))) : null, /*#__PURE__*/React.createElement("div", {
+    d: "M20 20l-4.6-4.6"
+  })))))) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
