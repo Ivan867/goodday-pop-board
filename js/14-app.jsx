@@ -531,12 +531,14 @@ function App() {
             </div>
 
             {/* しるし（葉と魚がひと続きになった形）。部門切替のすぐ上に置く */}
-            {!広い && <div className="brand-row" style={{ margin:"2px 0 12px" }}>
-              <a href="./" aria-label="ホーム（一覧）にもどる" style={{ display:"block", width:"62%", maxWidth:166 }}
+            {/* スマホのメニューの頭：パソコンと同じく、しるしとスイッチを1つのまとまりに。
+                さがすはこの下の一覧にあるので、虫眼鏡は置かない */}
+            {!広い && <div className="dock-top" style={{ marginTop:0, marginBottom:12 }}>
+              <a className="dock-brand" href="./" aria-label="ホーム（一覧）にもどる"
                 onClick={(e) => { e.preventDefault(); setTab("board"); setMoreOpen(false); try { window.scrollTo({ top:0 }); } catch(_) {} }}>
-                <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT"
-                  style={{ display:"block", width:"100%", height:"auto", opacity:0.95 }} /></a>
-              <部門切替 />
+                <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
+              </a>
+              <div className="dock-ctl"><部門スイッチ /></div>
             </div>}
 
             <div className="menu-list" style={{ flex:"1 1 auto", display:"flex", flexDirection:"column",

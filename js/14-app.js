@@ -1223,18 +1223,15 @@ function App() {
       fontWeight: 900
     }
   }, "\u2715")), !広い && /*#__PURE__*/React.createElement("div", {
-    className: "brand-row",
+    className: "dock-top",
     style: {
-      margin: "2px 0 12px"
+      marginTop: 0,
+      marginBottom: 12
     }
   }, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
     href: "./",
     "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
-    style: {
-      display: "block",
-      width: "62%",
-      maxWidth: 166
-    },
     onClick: e => {
       e.preventDefault();
       setTab("board");
@@ -1247,14 +1244,10 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS PROJECT",
-    style: {
-      display: "block",
-      width: "100%",
-      height: "auto",
-      opacity: 0.95
-    }
-  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("div", {
+    alt: "GoodDay NEXUS PROJECT"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null))), /*#__PURE__*/React.createElement("div", {
     className: "menu-list",
     style: {
       flex: "1 1 auto",
