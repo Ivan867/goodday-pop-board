@@ -86,6 +86,21 @@ function LazyTab(props) {
 }
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+// パソコン用：2つの部門を並べ、いまの方を塗る。押すと読み込み直して切り替わる
+function 部門スイッチ() {
+  const 今 = deptKey();
+  return (
+    <div className="dept-seg" role="group" aria-label="部門">
+      {Object.keys(DEPTS).map(k => (
+        <button key={k} type="button" className={"dept-seg-b dept-" + k + (k === 今 ? " on" : "")}
+          aria-pressed={k === 今} onClick={() => { if (k !== 今) setDeptKey(k); }}>
+          {DEPTS[k].label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function 部門切替() {
   const 次 = deptNext();
   return (
@@ -483,17 +498,18 @@ function App() {
             animation:"drawerIn .24s cubic-bezier(.16,1,.3,1)", paddingLeft:14, paddingRight:14, paddingBottom:"calc(18px + env(safe-area-inset-bottom))", display:"flex", flexDirection:"column" }}>
             {広い ? (
               <>
-                <div className="brand-row">
+                {/* パソコンの右の柱の頭：しるし・部門・さがす を1つのまとまりに */}
+                <div className="dock-top">
                   <a className="dock-brand" href="./" aria-label="ホーム（一覧）にもどる"
                     onClick={(e) => { e.preventDefault(); setTab("board"); try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(_) {} }}>
                     <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
                   </a>
-                  <部門切替 />
+                  <部門スイッチ />
+                  <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
+                    <span>ポップをさがす</span>
+                  </button>
                 </div>
-                <button className="dock-search" onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/></svg>
-                  検索
-                </button>
               </>
             ) : null}
             <div style={{ display:"flex", alignItems:"center", marginBottom:14 }}>

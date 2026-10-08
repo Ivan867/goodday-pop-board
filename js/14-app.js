@@ -280,6 +280,23 @@ function LazyTab(props) {
 }
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+// パソコン用：2つの部門を並べ、いまの方を塗る。押すと読み込み直して切り替わる
+function 部門スイッチ() {
+  const 今 = deptKey();
+  return /*#__PURE__*/React.createElement("div", {
+    className: "dept-seg",
+    role: "group",
+    "aria-label": "\u90E8\u9580"
+  }, Object.keys(DEPTS).map(k => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    type: "button",
+    className: "dept-seg-b dept-" + k + (k === 今 ? " on" : ""),
+    "aria-pressed": k === 今,
+    onClick: () => {
+      if (k !== 今) setDeptKey(k);
+    }
+  }, DEPTS[k].label)));
+}
 function 部門切替() {
   const 次 = deptNext();
   return /*#__PURE__*/React.createElement("button", {
@@ -1124,7 +1141,7 @@ function App() {
       flexDirection: "column"
     }
   }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "brand-row"
+    className: "dock-top"
   }, /*#__PURE__*/React.createElement("a", {
     className: "dock-brand",
     href: "./",
@@ -1142,7 +1159,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
     className: "dock-search",
     onClick: () => {
       try {
@@ -1163,7 +1180,7 @@ function App() {
     r: "7"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M20 20l-3.7-3.7"
-  })), "\u691C\u7D22")) : null, /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("span", null, "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059")))) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",

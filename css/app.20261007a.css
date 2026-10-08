@@ -668,3 +668,19 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .rn-tag.gray { background: var(--chip); color: var(--sub); }
 .rn-tag.ok { background: #3f9e63; }
 @media (max-width: 420px) { .rn-grid { grid-template-columns: 1fr; } }
+
+/* パソコンの右の柱の頭：しるし・部門・さがす を1つのまとまりに（2026-10-08） */
+.dock-top { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 14px 12px 12px; margin: 4px 0 16px; display: flex; flex-direction: column; gap: 10px; }
+.dock-top .dock-brand { padding: 2px 0 2px; }
+.dock-top .dock-brand img { width: 62%; max-width: 132px; }
+.dock-top .dock-search { margin-bottom: 0; padding: 10px 12px; border-radius: 10px; color: #A9BACB; }
+.dock-top .dock-search span { flex: 1; text-align: left; }
+.dept-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px;
+  background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); border-radius: 11px; }
+.dept-seg-b { border: none; background: transparent; color: #93A6BA; border-radius: 8px; padding: 8px 0;
+  font: inherit; font-size: 13.5px; font-weight: 800; letter-spacing: .08em; cursor: pointer; transition: background .15s, color .15s; }
+.dept-seg-b:hover:not(.on) { background: rgba(255,255,255,0.06); color: #D6E1EC; }
+.dept-seg-b.on { color: #fff; cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+.dept-seg-b.dept-fish.on { background: #3a6b9e; }
+.dept-seg-b.dept-produce.on { background: #35743d; }
