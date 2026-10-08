@@ -60,7 +60,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   }, []);               // まとまり画面のスワイプ判定
   // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
-    try { document.documentElement.style.setProperty("--pc-name-size", "19px"); } catch(e) {}
+    try { document.documentElement.style.setProperty("--pc-name-size", "17px"); } catch(e) {}
   }, []);
 
   const [view, setView] = useState(() => { try { const v = localStorage.getItem("popView"); return (v === "md" || v === "lg") ? v : "md"; } catch(e) { return "md"; } });
@@ -69,12 +69,21 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
+  // 下の案内（季節のポップは…）は、同じ文なら端末ごとに1回だけ出す（2026-10-08）
   const [showNotice, setShowNotice] = useState(true);
   const [featShow, setFeatShow] = useState(() => {
     try { const seen = localStorage.getItem("featSeen"); return !feat || (seen !== (feat.ver || feat.message)); } catch(e) { return true; }
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const [tip済み, setTip済み] = useState(() => { try { return localStorage.getItem("tipSeen") === tipText; } catch(e) { return false; } });
+  useEffect(() => {
+    let 済 = false; try { 済 = localStorage.getItem("tipSeen") === tipText; } catch(e) {}
+    if (済) { setTip済み(true); return; }
+    setTip済み(false);
+    const t = setTimeout(() => { try { localStorage.setItem("tipSeen", tipText); } catch(e) {} }, 3000);   // 一度見えたら、次からは出さない
+    return () => clearTimeout(t);
+  }, [tipText]);
 
   const [読めず, set読めず] = useState(false);       // 取り直しても返事が来なかった
   // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
@@ -203,7 +212,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
               style={{ border:"none", background:"rgba(255,255,255,0.2)", color:"#fff", width:26, height:26, borderRadius:"50%", fontSize:14, fontWeight:800, cursor:"pointer", flexShrink:0, lineHeight:1 }}>✕</button>
           </div>
         )}
-        {tipOn && showNotice && !radialOpen && (
+        {tipOn && showNotice && !tip済み && !radialOpen && (
           <div onClick={() => setShowNotice(false)}
             style={{ position:"fixed", left:0, right:0, bottom:"calc(90px + env(safe-area-inset-bottom))", zIndex:150, padding:"0 12px", cursor:"pointer", animation:"fadeUp .35s ease" }}>
             <div style={{ maxWidth:1600, margin:"0 auto", display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px", boxShadow:"0 4px 16px rgba(194,78,0,0.18)" }}>

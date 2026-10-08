@@ -104,7 +104,7 @@ function BoardTab({
   // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
     try {
-      document.documentElement.style.setProperty("--pc-name-size", "19px");
+      document.documentElement.style.setProperty("--pc-name-size", "17px");
     } catch (e) {}
   }, []);
   const [view, setView] = useState(() => {
@@ -125,6 +125,7 @@ function BoardTab({
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
+  // 下の案内（季節のポップは…）は、同じ文なら端末ごとに1回だけ出す（2026-10-08）
   const [showNotice, setShowNotice] = useState(true);
   const [featShow, setFeatShow] = useState(() => {
     try {
@@ -136,6 +137,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const [tip済み, setTip済み] = useState(() => {
+    try {
+      return localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {
+      return false;
+    }
+  });
+  useEffect(() => {
+    let 済 = false;
+    try {
+      済 = localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {}
+    if (済) {
+      setTip済み(true);
+      return;
+    }
+    setTip済み(false);
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem("tipSeen", tipText);
+      } catch (e) {}
+    }, 3000); // 一度見えたら、次からは出さない
+    return () => clearTimeout(t);
+  }, [tipText]);
   const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
   // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
   const load = useCallback(async 静か => {
@@ -476,7 +501,7 @@ function BoardTab({
       flexShrink: 0,
       lineHeight: 1
     }
-  }, "\u2715")), tipOn && showNotice && !radialOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), tipOn && showNotice && !tip済み && !radialOpen && /*#__PURE__*/React.createElement("div", {
     onClick: () => setShowNotice(false),
     style: {
       position: "fixed",

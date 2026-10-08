@@ -802,26 +802,11 @@ function App() {
       padding: "10px 16px 0"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff4e5",
-      border: "1px solid #ffc98a",
-      color: "#8a4b00",
-      borderRadius: 12,
-      padding: "12px 14px",
-      fontSize: 13.5,
-      fontWeight: 700,
-      lineHeight: 1.6,
-      display: "flex",
-      gap: 9,
-      alignItems: "flex-start",
-      boxShadow: "0 1px 6px rgba(0,0,0,0.06)"
-    }
+    className: "notice-line"
   }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
-      lineHeight: 1.3
-    }
-  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
+    className: "notice-dot",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap"
     }
@@ -1070,7 +1055,7 @@ function App() {
     className: "gh-x",
     onClick: 案内を閉じる,
     "aria-label": "\u6848\u5185\u3092\u9589\u3058\u308B"
-  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
+  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && (!広い || showToTop) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
@@ -1252,9 +1237,9 @@ function App() {
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    const ORDER = 青果 ? ["archive", "guide", "admin"] : ["bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
     // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
-    const 外す = 広い ? ["search", "bundle", "catalog"] : [];
+    const 外す = 広い ? ["search", "bundle"] : [];
     return TAB_REGISTRY.filter(o => !外す.includes(o.key)).filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
       label: o.key === "admin" ? "管理" : o.label,

@@ -739,3 +739,21 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
   .menu-dock .menu-list .menu-item.menu-tile { min-height: 80px !important; padding: 11px 3px 9px !important; }
   .menu-dock .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 11.5px !important; }
 }
+
+/* ── 一覧を整える（2026-10-08） ── */
+/* 1. 2まいの並べ方は、どのカードも同じ枠（A4たて）。横長のポップは枠の中に収める */
+.pop-grid.v-md .ucard .pc-img-el, .pop-grid.v-md .ucard.pc-pair-land .pc-img-el { aspect-ratio: 1 / 1.414 !important; object-fit: contain; }
+/* 品名は2行まで。1行でも2行ぶんの高さを取るので、カードの高さがそろう */
+.pop-grid.v-md .pc-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  min-height: 2.8em; line-break: strict; word-break: normal !important; overflow-wrap: break-word !important; }
+@media (min-width: 900px) { .pop-grid.v-md .pc-name { font-size: 15px !important; } }
+/* 3. お知らせの細い1行 */
+.notice-line { display: flex; align-items: center; gap: 9px; background: var(--card, #fff); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(20,40,70,0.05); }
+.notice-dot { flex: 0 0 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--fill); }
+/* 4. パソコン：カタログは右の柱へ。上の行は「投稿」と「並べ方」だけ */
+@media (min-width: 1280px) {
+  .board-head .bh-catalog { display: none !important; }
+  .menu-dock .menu-row-catalog { display: flex !important; }
+}

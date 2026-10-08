@@ -95,19 +95,19 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
 
 /* 一覧の上の並び：スマホは小さめ、PC・タブレットでは大きく */
 /* 投稿・操作列・さがす の並び（スマホは2段、PCは1段で 投稿 … さがす） */
-.board-head { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 520px; margin-bottom: 10px; align-items: stretch; }
+.board-head { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 8px; max-width: 520px; margin-bottom: 10px; align-items: stretch; }
 /* 上の並び：すべて同じ大きさの箱で、行をぴったり埋める */
 .board-head .bh-menu, .board-head .bh-post, .board-head .bh-search { min-height: 46px !important; height: 46px; }
 .board-tools { gap: 8px !important; }
-.board-tools { display: grid !important; grid-template-columns: repeat(4, 1fr); }
+.board-tools { display: grid !important; grid-template-columns: 1fr; }
 .board-tools > * { min-width: 0; height: 46px; box-sizing: border-box; padding-left: 3px !important; padding-right: 3px !important; }
 .bt-btn { width: auto !important; height: 46px !important; }
 .bt-seg { flex: 1 1 0; height: 100% !important; min-width: 0 !important; }
 .board-head .bh-post { grid-column: 1; grid-row: 1; }
-.board-head .bh-menu { grid-column: 2; grid-row: 1; }
+.board-head .bh-menu { grid-column: 3; grid-row: 1; }
 /* カタログ・入力支援はパソコンでだけ出す */
 .board-head .bh-catalog { display: none !important; }
-.board-head .board-tools { grid-column: 1 / -1; grid-row: 2; }
+.board-head .board-tools { grid-column: 2; grid-row: 1; margin-bottom: 0 !important; }
 .board-tools { max-width: none; }
 .bt-btn { width: min(42px, 10.5vw); height: 42px; }
 .bt-dept { width: auto !important; min-width: min(64px, 17vw); padding: 0 7px !important; }
@@ -124,7 +124,7 @@ button, a[role="button"], label[style*="cursor"] { min-height: 32px; }
     display: flex !important; flex: 1 1 0; min-width: 0;
     padding-left: 12px; padding-right: 12px;
     min-height: 56px !important; height: 56px; }
-  .board-head .board-tools { flex: 2.2 1 0; max-width: none; margin-bottom: 0 !important; }
+  .board-head .board-tools { flex: 1 1 0; max-width: none; margin-bottom: 0 !important; }
   .board-head .bh-post    { order: 1; }
   .board-head .board-tools { order: 2; }
   .board-head .bh-catalog { order: 3; }
@@ -422,7 +422,8 @@ padding: 7px 10px !important;
 .dock-head i { display:block; font-style: normal; font-size: 10px; font-weight: 600;
 color: #6F8298; letter-spacing: 0.22em; margin-top: 3px; }
 /* 右の柱：しるしと名前 */
-.dock-brand { text-align:center; padding: 6px 0 16px; }
+.dock-brand { display:block; text-align:center; padding: 6px 0 16px; cursor:pointer; border-radius:10px; }
+.dock-brand:hover { opacity:.85; }
 .dock-brand img { display:block; width: 60%; max-width: 140px; height:auto; margin: 0 auto; }
 /* 右の柱：さがす（押すと今までの絞り込みが開く） */
 .dock-search {
@@ -644,3 +645,115 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .kf-bg { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 4px 4px 5px; cursor: pointer; color: var(--sub); font-size: 12.5px; font-weight: 800; }
 .kf-bg canvas { width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 4px; }
 .kf-bg.on { border: 2.5px solid var(--primary); color: var(--primary); padding: 2.5px 2.5px 3.5px; }
+
+/* メニューのマークと、その右の部門切り替え（2026-10-06） */
+.brand-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.brand-row .dock-brand { flex: 0 1 140px; padding: 6px 0 16px; }
+.brand-row .dock-brand img { width: 100%; max-width: 140px; }
+.dept-mini { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; border: 1px solid var(--primary-soft);
+  background: var(--soft); color: var(--soft-text); border-radius: 999px; padding: 5px 10px; min-height: 30px;
+  font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; white-space: nowrap; }
+.brand-row .dock-brand + .dept-mini { margin-bottom: 10px; }
+.dept-mini:hover { filter: brightness(0.97); }
+
+/* 管理画面：名前の見直し */
+.rn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr)); gap: 10px; }
+.rn-grid > * { min-width: 0; box-sizing: border-box; }
+.rn-card { display: flex; gap: 11px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 9px; }
+.rn-card.done { border-color: #3f9e63; background: color-mix(in srgb, #3f9e63 6%, var(--card)); }
+.rn-img { width: 76px; height: 106px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--chip); }
+.rn-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.rn-old { font-size: 12.5px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rn-tag { font-size: 11px; font-weight: 800; color: #fff; background: #b8641a; border-radius: 6px; padding: 2px 7px; }
+.rn-tag.gray { background: var(--chip); color: var(--sub); }
+.rn-tag.ok { background: #3f9e63; }
+@media (max-width: 420px) { .rn-grid { grid-template-columns: 1fr; } }
+
+/* パソコンの右の柱の頭：しるし・部門・さがす を1つのまとまりに（2026-10-08） */
+.dock-top { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 14px 12px 12px; margin: 4px 0 4px; display: flex; flex-direction: column; gap: 10px; }
+.dock-top .dock-brand { padding: 2px 0 2px; }
+.dock-top .dock-brand img { width: 62%; max-width: 132px; }
+.dock-top .dock-search { margin-bottom: 0; padding: 10px 12px; border-radius: 10px; color: #A9BACB; }
+.dock-top .dock-search span { flex: 1; text-align: left; }
+/* 部門スイッチ：溝の中をつまみが滑る（2026-10-08） */
+.dock-ctl { display: flex; align-items: center; gap: 8px; }
+.dept-sw { position: relative; flex: 1; display: grid; grid-template-columns: 1fr 1fr; height: 38px; padding: 3px;
+  border-radius: 999px; background: linear-gradient(180deg, #0a121b, #121c27);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(255,255,255,0.05), 0 0 0 1px rgba(255,255,255,0.07); }
+.dept-sw-knob { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px;
+  transition: transform .3s cubic-bezier(.3,1.25,.5,1), background .3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -2px 4px rgba(0,0,0,0.18); }
+.dept-sw.right .dept-sw-knob { transform: translateX(100%); }
+.dept-sw.to-fish .dept-sw-knob { background: linear-gradient(180deg, #5486bb, #2f5d8d); }
+.dept-sw.to-produce .dept-sw-knob { background: linear-gradient(180deg, #4f9358, #2c6534); }
+.dept-sw-b { position: relative; z-index: 1; border: none; background: transparent; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 800; letter-spacing: .14em; color: #6F8298; transition: color .25s; }
+.dept-sw-b:hover:not(.on) { color: #B9C7D6; }
+.dept-sw-b.on { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.35); cursor: default; }
+.dept-sw-b:focus-visible { outline: 2px solid #95B9DC; outline-offset: 2px; border-radius: 999px; }
+/* さがす：虫眼鏡だけの丸いボタン */
+.dock-find { flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05); color: #93A6BA; cursor: pointer;
+  transition: background .15s, color .15s; }
+.dock-find:hover { background: rgba(255,255,255,0.10); color: #D6E1EC; }
+.dock-find:focus-visible { outline: 2px solid #95B9DC; outline-offset: 2px; }
+.dept-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px;
+  background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); border-radius: 11px; }
+.dept-seg-b { border: none; background: transparent; color: #93A6BA; border-radius: 8px; padding: 8px 0;
+  font: inherit; font-size: 13.5px; font-weight: 800; letter-spacing: .08em; cursor: pointer; transition: background .15s, color .15s; }
+.dept-seg-b:hover:not(.on) { background: rgba(255,255,255,0.06); color: #D6E1EC; }
+.dept-seg-b.on { color: #fff; cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+.dept-seg-b.dept-fish.on { background: #3a6b9e; }
+.dept-seg-b.dept-produce.on { background: #35743d; }
+
+/* メニューの項目：3列のタイル（2026-10-08） */
+.menu-drawer .menu-list.menu-grid { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 8px !important;
+  flex: 0 0 auto !important; min-height: 0; overflow: visible; }
+.menu-drawer .menu-list .menu-item.menu-tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+  min-height: 84px !important; padding: 12px 4px 10px !important; border-radius: 14px; cursor: pointer; width: 100%;
+  border: 1px solid rgba(255,255,255,0.07) !important; background: rgba(255,255,255,0.04) !important;
+  font: inherit; transition: background .15s, border-color .15s, transform .1s; }
+.menu-drawer .menu-list .menu-item.menu-tile:hover { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.14) !important; }
+.menu-drawer .menu-list .menu-item.menu-tile:active { transform: scale(.97); }
+.menu-drawer .menu-list .menu-item.menu-tile.on { background: rgba(111,163,216,0.16) !important; border-color: rgba(156,200,242,0.55) !important; }
+.menu-tile-ic { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #7FB2E4; }
+.menu-tile-ic svg { width: 26px; height: 26px; }
+.menu-tile.on .menu-tile-ic { color: #9CC8F2; }
+.menu-drawer .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 11.5px !important; font-weight: 700 !important; color: #D6E1EC;
+  line-height: 1.25; text-align: center; letter-spacing: 0; white-space: nowrap; }
+.menu-tile.on .menu-tile-t { color: #fff !important; }
+.menu-tile-badge { position: absolute; top: -6px; right: -12px; background: var(--fill); color: #fff; font-size: 10.5px; font-weight: 900;
+  padding: 1px 5px; border-radius: 6px; }
+/* 検索だけは横長の帯にして、いちばん上に */
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start;
+  min-height: 48px !important; padding: 10px 14px !important; gap: 10px; border-radius: 12px; }
+.menu-tile-wide .menu-tile-ic { width: 22px; height: 22px; }
+.menu-tile-wide .menu-tile-ic svg { width: 20px; height: 20px; }
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide .menu-tile-t { font-size: 14px !important; color: #A9BACB; }
+/* 青果の「はじめに」（手引き）を目立たせる */
+.menu-drawer .menu-list .menu-item.menu-tile.menu-push { border-color: rgba(127,201,140,0.6) !important; background: rgba(53,116,61,0.22) !important; }
+@media (min-width: 1280px) {
+  .menu-dock .menu-list.menu-grid { gap: 7px !important; }
+  .menu-dock .menu-list .menu-item.menu-tile { min-height: 80px !important; padding: 11px 3px 9px !important; }
+  .menu-dock .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 11.5px !important; }
+}
+
+/* ── 一覧を整える（2026-10-08） ── */
+/* 1. 2まいの並べ方は、どのカードも同じ枠（A4たて）。横長のポップは枠の中に収める */
+.pop-grid.v-md .ucard .pc-img-el, .pop-grid.v-md .ucard.pc-pair-land .pc-img-el { aspect-ratio: 1 / 1.414 !important; object-fit: contain; }
+/* 品名は2行まで。1行でも2行ぶんの高さを取るので、カードの高さがそろう */
+.pop-grid.v-md .pc-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  min-height: 2.8em; line-break: strict; word-break: normal !important; overflow-wrap: break-word !important; }
+@media (min-width: 900px) { .pop-grid.v-md .pc-name { font-size: 15px !important; } }
+/* 3. お知らせの細い1行 */
+.notice-line { display: flex; align-items: center; gap: 9px; background: var(--card, #fff); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(20,40,70,0.05); }
+.notice-dot { flex: 0 0 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--fill); }
+/* 4. パソコン：カタログは右の柱へ。上の行は「投稿」と「並べ方」だけ */
+@media (min-width: 1280px) {
+  .board-head .bh-catalog { display: none !important; }
+  .menu-dock .menu-row-catalog { display: flex !important; }
+}

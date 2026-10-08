@@ -393,8 +393,9 @@ function App() {
 
       {notice.enabled && notice.message && (
         <div style={{ maxWidth:1600, margin:"0 auto", padding:"10px 16px 0" }}>
-          <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-            <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
+          {/* 今月の方針などのお知らせ。警告に見えないよう、細い1行にする（2026-10-08） */}
+          <div className="notice-line">
+            <span className="notice-dot" aria-hidden="true" />
             <span style={{ whiteSpace:"pre-wrap" }}>{notice.message}</span>
           </div>
         </div>
@@ -477,7 +478,7 @@ function App() {
           <button className="gh-x" onClick={案内を閉じる} aria-label="案内を閉じる">✕</button>
         </div>
       )}
-      {tab === "board" && !searchOpen && (広い || !moreOpen) && (
+      {tab === "board" && !searchOpen && (広い || !moreOpen) && (!広い || showToTop) && (
         <button onClick={() => {
             if (showToTop) { scrollerTop(true); return; }
             setMoreOpen(false); setRadialOpen(false);
@@ -547,10 +548,10 @@ function App() {
                 // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
                 const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
                 const ORDER = 青果
-                  ? ["search","archive","guide","admin"]
-                  : ["search","bundle","archive","guide","catalog","gne","order","lab","request","admin"];
+                  ? ["archive","guide","admin"]
+                  : ["bundle","archive","guide","catalog","gne","order","lab","request","admin"];
                 // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
-                const 外す = 広い ? ["search","bundle","catalog"] : [];
+                const 外す = 広い ? ["search","bundle"] : [];
                 return TAB_REGISTRY
                   .filter(o => !外す.includes(o.key))
                   .filter(o => !o.hideInMenu && ORDER.includes(o.key)
