@@ -2052,6 +2052,146 @@ function PopCard({
 
 // ── Board Tab ──
 
+// ── 管理の確認：管理画面の外で、品目・まとめなどを書き換える前に呼ぶ（2026-10-10）
+// すでに管理画面に入っていれば（通行証があれば）そのまま true。なければ合言葉を聞いて照合する。
+function 管理の確認() {
+  if (PW_CACHE.admin && String(PW_CACHE.admin).length === 48) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const 箱 = document.createElement("div");
+    document.body.appendChild(箱);
+    const 根 = ReactDOM.createRoot(箱);
+    const 終わる = ok => {
+      try {
+        根.unmount();
+      } catch (e) {}
+      箱.remove();
+      resolve(ok);
+    };
+    function 確認画面() {
+      const [pw, setPw] = useState("");
+      const [err, setErr] = useState("");
+      const [busy, setBusy] = useState(false);
+      const 送る = async () => {
+        if (!pw.trim() || busy) return;
+        setBusy(true);
+        setErr("");
+        try {
+          const r = await api.verifyPasswordEx("admin", pw.trim());
+          if (r.ok) {
+            終わる(true);
+            return;
+          }
+          setErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `合言葉が違います（あと${r.left}回）` : "合言葉が違います");
+          setPw("");
+        } catch (e) {
+          setErr("確かめられませんでした（電波を確認してください）");
+        }
+        setBusy(false);
+      };
+      return /*#__PURE__*/React.createElement("div", {
+        onClick: () => 終わる(false),
+        style: {
+          position: "fixed",
+          inset: 0,
+          zIndex: 400,
+          background: "rgba(10,20,35,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 20
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        onClick: e => e.stopPropagation(),
+        role: "dialog",
+        "aria-label": "\u7BA1\u7406\u306E\u5408\u8A00\u8449",
+        style: {
+          width: "min(340px, 100%)",
+          background: "var(--card, #fff)",
+          borderRadius: 16,
+          padding: 20,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.25)"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 16,
+          fontWeight: 900,
+          color: "var(--ink)",
+          marginBottom: 6
+        }
+      }, "\u7BA1\u7406\u306E\u5408\u8A00\u8449"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "var(--sub)",
+          lineHeight: 1.6,
+          marginBottom: 12
+        }
+      }, "\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u4EBA\u3060\u3051\u304C\u3067\u304D\u307E\u3059\u3002\u7BA1\u7406\u753B\u9762\u3068\u540C\u3058\u5408\u8A00\u8449\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("input", {
+        type: "password",
+        inputMode: "numeric",
+        autoFocus: true,
+        value: pw,
+        onChange: e => setPw(e.target.value),
+        onKeyDown: e => {
+          if (e.key === "Enter") 送る();
+        },
+        style: {
+          width: "100%",
+          boxSizing: "border-box",
+          border: "1px solid var(--line)",
+          borderRadius: 10,
+          padding: "11px 12px",
+          fontSize: 18,
+          letterSpacing: ".2em",
+          background: "var(--bg)",
+          color: "var(--text)"
+        }
+      }), err && /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "#b3261e",
+          fontWeight: 700,
+          marginTop: 7
+        }
+      }, err), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 8,
+          marginTop: 14
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => 終わる(false),
+        style: {
+          flex: 1,
+          border: "1px solid var(--line)",
+          background: "transparent",
+          color: "var(--sub)",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer"
+        }
+      }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
+        onClick: 送る,
+        disabled: busy || !pw.trim(),
+        style: {
+          flex: 1,
+          border: "none",
+          background: "var(--fill)",
+          color: "#fff",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer",
+          opacity: busy || !pw.trim() ? 0.5 : 1
+        }
+      }, busy ? "確認中…" : "確かめる"))));
+    }
+    根.render(/*#__PURE__*/React.createElement(確認画面, null));
+  });
+}
+
 // ── 資料のサムネイル（管理画面と店舗支援で共用） ──
 /* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
    取れなければ種類の札を出す。 */
@@ -2116,6 +2256,7 @@ Object.assign(window, {
   UploadModal,
   pairByShape,
   popShape,
+  管理の確認,
   資料の色,
   資料の名,
   資料の縮小URL,

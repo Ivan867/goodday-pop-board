@@ -174,6 +174,12 @@ function 黙って送る(path, body) {
 }
 const 機能の最終 = {};
 
+// 品目・まとめ・カタログ・資料の書き換え：管理の通行証つきの命令 admin_write で（表に直接は書けない）
+async function 管理で書く(表, 操作, id, 中身) {
+  return sbJson(`/rest/v1/rpc/admin_write`, { method:"POST",
+    body:{ p_table: 表, p_op: 操作, p_id: id || null, p_row: 中身 || null, p_password: PW_CACHE.admin || "" } });
+}
+
 const api = {
   // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
   logFeature(名) {
@@ -521,15 +527,10 @@ const api = {
 
   // ── order_items：週間の発注記録（塩干など）──
   async listOrderItems() { return sbJson(`/rest/v1/order_items?select=*&order=sort_order.asc,created_at.asc`); },
-  async addOrderItem(o) { return sbOne(`/rest/v1/order_items`, { method:"POST", body:o, prefer:"return=representation" }); },
-  async updateOrderItem(id, patch) {
-    return sbOne(`/rest/v1/order_items?id=eq.${id}`, { method:"PATCH", body:{ ...patch, updated_at:new Date().toISOString() }, prefer:"return=representation" });
-  },
-  async deleteOrderItem(id) {
-    const r = await sbFetch(`/rest/v1/order_items?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text());
-    return true;
-  },
+  // 書き換えは管理の命令（admin_write）で。管理の通行証がないと通らない（2026-10-10）
+  async addOrderItem(o) { return 管理で書く("order_items", "insert", null, o); },
+  async updateOrderItem(id, patch) { return 管理で書く("order_items", "update", id, { ...patch, updated_at:new Date().toISOString() }); },
+  async deleteOrderItem(id) { await 管理で書く("order_items", "delete", id, null); return true; },
 
   // ── pop_bundles：行事ごとのPOPの束 ──
   async listBundles() { return sbJson(`/rest/v1/pop_bundles?visible=eq.true&select=*&order=sort_order.asc,created_at.asc`); },
@@ -541,26 +542,15 @@ const api = {
   async getBundlePrompts(bundleId) {
     return sbJson(`/rest/v1/pop_bundle_prompts?bundle_id=eq.${bundleId}&select=*&order=sort_order.asc`);
   },
-  async addBundle(b) { return sbOne(`/rest/v1/pop_bundles`, { method:"POST", body:b, prefer:"return=representation" }); },
-  async updateBundle(id, patch) {
-    return sbOne(`/rest/v1/pop_bundles?id=eq.${id}`, { method:"PATCH", body:{ ...patch, updated_at:new Date().toISOString() }, prefer:"return=representation" });
-  },
-  async deleteBundle(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundles?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text()); return true;
-  },
+  async addBundle(b) { return 管理で書く("pop_bundles", "insert", null, b); },
+  async updateBundle(id, patch) { return 管理で書く("pop_bundles", "update", id, { ...patch, updated_at:new Date().toISOString() }); },
+  async deleteBundle(id) { await 管理で書く("pop_bundles", "delete", id, null); return true; },
   async addToBundle(bundleId, popId, sortOrder) {
-    return sbOne(`/rest/v1/pop_bundle_items`, { method:"POST", body:{ bundle_id:bundleId, pop_id:popId, sort_order:sortOrder||0 }, prefer:"return=representation" });
+    return 管理で書く("pop_bundle_items", "insert", null, { bundle_id:bundleId, pop_id:popId, sort_order:sortOrder||0 });
   },
-  async removeFromBundle(itemId) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_items?id=eq.${itemId}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text()); return true;
-  },
-  async addBundlePrompt(o) { return sbOne(`/rest/v1/pop_bundle_prompts`, { method:"POST", body:o, prefer:"return=representation" }); },
-  async deleteBundlePrompt(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_prompts?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text()); return true;
-  },
+  async removeFromBundle(itemId) { await 管理で書く("pop_bundle_items", "delete", itemId, null); return true; },
+  async addBundlePrompt(o) { return 管理で書く("pop_bundle_prompts", "insert", null, o); },
+  async deleteBundlePrompt(id) { await 管理で書く("pop_bundle_prompts", "delete", id, null); return true; },
 
   // ── 週の予定を実績として記録に移す ──
   async saveWeekLogs(logs) {
@@ -625,30 +615,18 @@ const api = {
     const q = onlyVisible ? "&visible=eq.true" : "";
     return sbJson(`/rest/v1/catalogs?select=*${q}&order=store.asc,sort_order.asc,created_at.desc`);
   },
-  async addCatalog(c) { return sbOne(`/rest/v1/catalogs`, { method:"POST", body:c, prefer:"return=representation" }); },
-  async updateCatalog(id, patch) { return sbOne(`/rest/v1/catalogs?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=representation" }); },
-  async deleteCatalog(id) {
-    const r = await sbFetch(`/rest/v1/catalogs?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text());
-    return true;
-  },
+  async addCatalog(c) { return 管理で書く("catalogs", "insert", null, c); },
+  async updateCatalog(id, patch) { return 管理で書く("catalogs", "update", id, patch); },
+  async deleteCatalog(id) { await 管理で書く("catalogs", "delete", id, null); return true; },
 
   // ── resources：資料（PDF/画像/シート/リンク）──
   async listResources(onlyVisible) {
     const q = onlyVisible ? "&visible=eq.true" : "";
     return sbJson(`/rest/v1/resources?select=*${q}&order=sort_order.asc,created_at.desc`);
   },
-  async addResource(r) {
-    return sbOne(`/rest/v1/resources`, { method:"POST", body:r, prefer:"return=representation" });
-  },
-  async updateResource(id, patch) {
-    return sbOne(`/rest/v1/resources?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=representation" });
-  },
-  async deleteResource(id) {
-    const r = await sbFetch(`/rest/v1/resources?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text());
-    return true;
-  },
+  async addResource(r) { return 管理で書く("resources", "insert", null, r); },
+  async updateResource(id, patch) { return 管理で書く("resources", "update", id, patch); },
+  async deleteResource(id) { await 管理で書く("resources", "delete", id, null); return true; },
 
   // ── production_notes：生産メモ ──
   async getMemo() {

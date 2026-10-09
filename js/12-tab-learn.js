@@ -3527,13 +3527,8 @@ function OrderTab() {
       return null;
     }
   });
-  const [unlocked, setUnlocked] = useState(() => {
-    try {
-      return !!sessionStorage.getItem("orderStore");
-    } catch (e) {
-      return false;
-    }
-  });
+  // 2026-10-10：毎週の発注数・指示書・記録はやめ、塩干発注は試作システムの中へ。店の番号の入口も不要になった
+  const [unlocked, setUnlocked] = useState(true);
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
@@ -3594,7 +3589,7 @@ function OrderTab() {
   };
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
-  const [tab, setTab] = useState("today"); // cal=カレンダー / items=品目
+  const [tab, setTab] = useState("items"); // items=品目 / docs=資料
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -3950,6 +3945,7 @@ function OrderTab() {
   const [impBusy, setImpBusy] = useState(false);
   const [impMsg, setImpMsg] = useState("");
   const importExcel = async file => {
+    if (!(await 管理の確認())) return; // 品目の書き換えは管理の人だけ
     if (!file) return;
     setImpBusy(true);
     setImpMsg("読み込んでいます…");
@@ -4127,6 +4123,7 @@ function OrderTab() {
       setMsg("品名を入れてください");
       return;
     }
+    if (!(await 管理の確認())) return;
     setBusy(true);
     setMsg("");
     try {
@@ -4154,6 +4151,7 @@ function OrderTab() {
   const [confirmOff, setConfirmOff] = useState(null); // 確認中の品目
   const [showOff, setShowOff] = useState(false); // 使わないものを表示するか
   const toggleActive = async (it, next) => {
+    if (!(await 管理の確認())) return;
     try {
       await api.updateOrderItem(it.id, {
         active: next
@@ -4164,6 +4162,7 @@ function OrderTab() {
   };
   const removeItem = async it => {
     if (!window.confirm(`「${it.name}」を完全に消しますか？\nこの操作は戻せません。`)) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteOrderItem(it.id);
       setVer(v => v + 1);
@@ -4332,35 +4331,13 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "\u5869\u5E72\u767A\u6CE8"), store && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      background: "rgba(255,255,255,0.22)",
-      borderRadius: 999,
-      padding: "2px 10px"
-    }
-  }, store.name), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setUnlocked(false);
-      setStore(null);
-      setPw("");
-      try {
-        sessionStorage.removeItem("orderStore");
-      } catch (e) {}
-    },
+  }, "\u5869\u5E72\u767A\u6CE8"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      border: "1px solid rgba(255,255,255,0.4)",
-      background: "transparent",
-      color: "#fff",
-      borderRadius: 7,
-      padding: "4px 10px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: "pointer"
+      fontSize: 11.5,
+      opacity: 0.85
     }
-  }, "\u5E97\u3092\u5909\u3048\u308B"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u54C1\u76EE\u306E\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u5408\u8A00\u8449\u3067"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -4372,7 +4349,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["docs", "資料"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["items", `品目（${active.length}）`], ["docs", "資料"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -6682,7 +6659,10 @@ function BundleTab({
   const bundleNow = bundles.filter(b => Array.isArray(b.months) && b.months.includes(NOW_M) && b.months.length < 12);
   const bundleAll = bundles.filter(b => !bundleNow.some(x => x.id === b.id));
   const cur = bundles.find(b => b.id === openId);
+
+  // まとめの書き換えは管理の人だけ（2026-10-10）
   const addPop = async p => {
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addToBundle(openId, p.id, items.length);
@@ -6692,6 +6672,7 @@ function BundleTab({
     }
   };
   const delItem = async it => {
+    if (!(await 管理の確認())) return;
     try {
       await api.removeFromBundle(it.id);
       await reloadInner();
@@ -6699,6 +6680,7 @@ function BundleTab({
   };
   const savePrompt = async () => {
     if (!pForm.prompt.trim()) return;
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addBundlePrompt({
@@ -6719,6 +6701,7 @@ function BundleTab({
   };
   const delPrompt = async pr => {
     if (!window.confirm("このプロンプトを消しますか？")) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteBundlePrompt(pr.id);
       await reloadInner();

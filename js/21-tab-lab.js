@@ -38,7 +38,7 @@ function LabTab() {
       localStorage.setItem("labMode", k);
     } catch (e) {}
   };
-  const 品 = [["scan", "読み込み", "伝票PDFの向き・傾き・濃さを整える"], ["check", "伝票検算", "蛍光ペンで塗った金額を読んで合算する"], ["barcode", "バーコード", "発注用のバーコードを作って印刷する"]];
+  const 品 = [["scan", "読み込み", "伝票PDFの向き・傾き・濃さを整える"], ["check", "伝票検算", "蛍光ペンで塗った金額を読んで合算する"], ["barcode", "バーコード", "発注用のバーコードを作って印刷する"], ["shio", "塩干発注", "品目の一覧と資料（書き換えは管理の合言葉）"]];
   if (!開いた) {
     return /*#__PURE__*/React.createElement("div", {
       style: {
@@ -154,7 +154,7 @@ function LabTab() {
       lineHeight: 1.5,
       opacity: どれ === k ? 0.85 : 0.75
     }
-  }, 説明))))), React.createElement(LazyTab, {
+  }, 説明))))), どれ === "shio" ? typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null : React.createElement(LazyTab, {
     tabKey: どれ
   }));
 }

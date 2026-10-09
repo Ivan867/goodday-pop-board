@@ -778,6 +778,51 @@ function PopCard({ pop, index, onClick, hasComment }) {
 // ── Board Tab ──
 
 
+// ── 管理の確認：管理画面の外で、品目・まとめなどを書き換える前に呼ぶ（2026-10-10）
+// すでに管理画面に入っていれば（通行証があれば）そのまま true。なければ合言葉を聞いて照合する。
+function 管理の確認() {
+  if (PW_CACHE.admin && String(PW_CACHE.admin).length === 48) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const 箱 = document.createElement("div"); document.body.appendChild(箱);
+    const 根 = ReactDOM.createRoot(箱);
+    const 終わる = (ok) => { try { 根.unmount(); } catch (e) {} 箱.remove(); resolve(ok); };
+    function 確認画面() {
+      const [pw, setPw] = useState("");
+      const [err, setErr] = useState("");
+      const [busy, setBusy] = useState(false);
+      const 送る = async () => {
+        if (!pw.trim() || busy) return;
+        setBusy(true); setErr("");
+        try {
+          const r = await api.verifyPasswordEx("admin", pw.trim());
+          if (r.ok) { 終わる(true); return; }
+          setErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : (r.left > 0 ? `合言葉が違います（あと${r.left}回）` : "合言葉が違います"));
+          setPw("");
+        } catch (e) { setErr("確かめられませんでした（電波を確認してください）"); }
+        setBusy(false);
+      };
+      return (
+        <div onClick={() => 終わる(false)} style={{ position:"fixed", inset:0, zIndex:400, background:"rgba(10,20,35,0.45)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={e => e.stopPropagation()} role="dialog" aria-label="管理の合言葉"
+            style={{ width:"min(340px, 100%)", background:"var(--card, #fff)", borderRadius:16, padding:20, boxShadow:"0 10px 40px rgba(0,0,0,0.25)" }}>
+            <div style={{ fontSize:16, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>管理の合言葉</div>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>書き換えは管理の人だけができます。管理画面と同じ合言葉を入れてください。</div>
+            <input type="password" inputMode="numeric" autoFocus value={pw} onChange={e => setPw(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") 送る(); }}
+              style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:18, letterSpacing:".2em", background:"var(--bg)", color:"var(--text)" }} />
+            {err && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:700, marginTop:7 }}>{err}</div>}
+            <div style={{ display:"flex", gap:8, marginTop:14 }}>
+              <button onClick={() => 終わる(false)} style={{ flex:1, border:"1px solid var(--line)", background:"transparent", color:"var(--sub)", borderRadius:10, padding:"11px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
+              <button onClick={送る} disabled={busy || !pw.trim()} style={{ flex:1, border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"11px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: (busy || !pw.trim()) ? 0.5 : 1 }}>{busy ? "確認中…" : "確かめる"}</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    根.render(<確認画面 />);
+  });
+}
+
 // ── 資料のサムネイル（管理画面と店舗支援で共用） ──
 /* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
    取れなければ種類の札を出す。 */
@@ -804,4 +849,4 @@ function 資料の絵({ r }) {
   );
 }
 
-;Object.assign(window, { PopCard, PopDetail, UploadModal, pairByShape, popShape , 資料の色, 資料の名, 資料の縮小URL, 資料の絵 });
+;Object.assign(window, { PopCard, PopDetail, UploadModal, pairByShape, popShape, 管理の確認, 資料の色, 資料の名, 資料の縮小URL, 資料の絵 });

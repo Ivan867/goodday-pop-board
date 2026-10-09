@@ -7,6 +7,8 @@ var {
   useCallback,
   useRef
 } = React;
+window.__appRan = 1; // 本体のファイルが動き始めた印（起動が止まったとき、どこまで来たかを見るため）
+
 const STORES = ["北部店", "木次店", "大田店", "斐川店", "医大通り店", "平田店", "バイヤー"];
 
 // ═══════════ TAB_REGISTRY：☰メニューの全タブ定義（追加はここ1箇所） ═══════════
@@ -94,7 +96,7 @@ const DEPTS = {
     label: "鮮魚",
     短い: "魚",
     categories: ["鮮魚", "刺身・寿司", "惣菜", "塩干", "その他"],
-    genres: ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "その他"],
+    genres: ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "説明・比較", "案内・注意", "業務用", "素材・テンプレ", "その他"],
     ものの呼び名: "魚"
   },
   produce: {
@@ -145,7 +147,7 @@ function deptGenres() {
 }
 
 // 検索の縦タブ用ジャンル（管理画面で勝部だけが選別する）。色は売場でひと目で見分ける用。
-const GENRES = ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "その他"];
+const GENRES = ["丸魚", "切身", "切身提案", "生食・海藻・貝", "惣菜", "寿司・刺身", "行事", "塩干", "均一", "説明・比較", "案内・注意", "業務用", "素材・テンプレ", "その他"];
 const GENRE_COLORS = {
   "その他": {
     solid: "#B08968",
@@ -196,6 +198,27 @@ const GENRE_COLORS = {
     solid: "#C7892B",
     soft: "#F8EFDD",
     text: "#8A5A12"
+  },
+  // ポップの役割で分ける4つ（2026-10-06。「その他」に混ざっていたもの）
+  "説明・比較": {
+    solid: "#5B6FD6",
+    soft: "#ECEEFC",
+    text: "#2E3A8C"
+  },
+  "案内・注意": {
+    solid: "#94730E",
+    soft: "#FAF4DC",
+    text: "#6E5A0F"
+  },
+  "業務用": {
+    solid: "#5F7A8A",
+    soft: "#E9EFF2",
+    text: "#34505E"
+  },
+  "素材・テンプレ": {
+    solid: "#A0629B",
+    soft: "#F5E9F4",
+    text: "#6A3466"
   },
   "除外": {
     solid: "#8A9099",
@@ -272,6 +295,76 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-10-10",
+  type: "改善",
+  title: "塩干発注を試作システムに移し、品目・まとめ・カタログ・資料の書き換えを管理の人だけにしました",
+  body: "塩干発注は試作システムの中に移り、品目と資料だけになりました（毎週の発注数・指示書・記録はやめました。今までの記録は消していません）。品目・まとめ（行事カレンダー）・カタログ・資料を書き換えるときは、管理の合言葉が要ります。管理画面に入っていれば聞かれません。"
+}, {
+  date: "2026-10-10",
+  type: "修正",
+  title: "管理の合言葉の守りを強くしました",
+  body: "合言葉が通ると、12時間だけ使える通行証が発行され、管理の操作はそれで行うようになりました。合言葉を何度も試すことはできません。使い方は今までと同じです。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "一覧を整えました",
+  body: "カードの枠と高さをそろえ、品名は2行までにしました。上のお知らせは細い1行に、下の「アーカイブに収納されます」は最初の1回だけにしました。さがすはスマホは右下、パソコンは右の柱の虫眼鏡に一本化し、パソコンのカタログは右の柱に移しました。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "メニューの項目をタイルにしました",
+  body: "アーカイブ・手引き・入力支援などを、3列のタイルにしました。スクロールしなくても全部がひと目で押せます。スマホは「検索」がいちばん上の帯になります。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "スマホのメニューにも同じスイッチを置きました",
+  body: "スマホのメニューの上も、NEXUS PROJECT のマークと鮮魚／青果のスイッチを1つのまとまりにしました。検索はメニューの一覧から開けます。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "鮮魚／青果をスイッチの形にしました",
+  body: "溝の中をつまみが滑って切り替わる形にしました（鮮魚は青、青果は緑）。さがすは右の虫眼鏡だけになりました。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "パソコンの右の柱の頭を整えました",
+  body: "NEXUS PROJECT のマーク・鮮魚／青果の切り替え・さがすを、ひとつのまとまりにしました。鮮魚と青果は並べて出し、いまの方に色が付きます。押した方に切り替わります。"
+}, {
+  date: "2026-10-07",
+  type: "修正",
+  title: "起動画面で止まりにくくしました",
+  body: "画面を描く部品（React）を、外のサイトではなくこのサイトから読むようにしました。それでも10秒たって画面が出ないときは、1回だけ自動で読み込み直します。どこで止まったかの記録も残るようにしました。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "ジャンルに「説明・比較」「案内・注意」「業務用」「素材・テンプレ」を足しました",
+  body: "「その他」に混ざっていた、早見表や解説、注意書きや移動案内、発注表や手順書、フォントやテンプレを分けられるようになりました。管理画面の「ジャンル」で振り分けると、「さがす」でそのまま絞り込めます。"
+}, {
+  date: "2026-10-06",
+  type: "新機能",
+  title: "管理画面に「名前の見直し」を足しました",
+  body: "写真の番号（D5205761 BC51…）、「ChatGPT 画像…」、「page 01」、末尾の (1) など、ファイル名のまま上がったポップを自動で集めます。画像を見ながら、その場で名前を直せます（削除と同じ番号を1回入れます）。直すと「さがす」で見つかるようになります。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "一覧の上のボタンを3つにしました",
+  body: "上は「投稿・並べ方（2まい／1まい）・メニュー」だけになりました。文字の大きさは大きい方に固定し、暗い画面の切り替えはやめました。鮮魚／青果の切り替えは、メニューの NEXUS PROJECT のマークの右に移しました（パソコンも同じ）。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "「さがす」のお店はジャンルを選んでから出るようにしました",
+  body: "最初はジャンル（と魚）だけが並び、どれかを押すと下に「お店で絞り込む」が出ます。パソコンのメニュー右上の NEXUS PROJECT のマークを押すと一覧（ホーム）に戻れます。スマホのメニューのマークも同じです。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "管理画面の入口をすっきりさせました",
+  body: "管理画面の入口は、9個の点と流れる背景だけになりました（文字はなし）。番号が違うと点が揺れて最初からになります。入口のあいだは画面が動きません。記録の期間は14日、ポップごとの順位は3日が最初に出ます。店舗支援の「画像の共有」はやめました。"
+}, {
+  date: "2026-10-06",
+  type: "改善",
+  title: "「旬の味覚」テンプレの配置をCGCフェアの見本に合わせました",
+  body: "左に品名（2行にすると下の行が赤）とキャッチコピー、右下に大きな価格と「本体価格」「円」、その下に（税込 ○○円）が入ります。キャッチコピーは *ここ* と囲んだ所が赤になります。"
+}, {
   date: "2026-10-06",
   type: "新機能",
   title: "入力支援に「旬の味覚」テンプレを足しました",
@@ -2622,6 +2715,20 @@ function 黙って送る(path, body) {
   } catch (e) {}
 }
 const 機能の最終 = {};
+
+// 品目・まとめ・カタログ・資料の書き換え：管理の通行証つきの命令 admin_write で（表に直接は書けない）
+async function 管理で書く(表, 操作, id, 中身) {
+  return sbJson(`/rest/v1/rpc/admin_write`, {
+    method: "POST",
+    body: {
+      p_table: 表,
+      p_op: 操作,
+      p_id: id || null,
+      p_row: 中身 || null,
+      p_password: PW_CACHE.admin || ""
+    }
+  });
+}
 const api = {
   // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
   logFeature(名) {
@@ -3150,35 +3257,21 @@ const api = {
     return r.ok;
   },
   // 回数制限つきの照合：{ ok, locked, seconds, left } を返す
+  // 通れば、合言葉そのものではなく「通行証」（12時間で切れる）を覚えておき、以後の命令はそれで送る。
+  // 合言葉の照合はここ（回数制限つき）だけ。命令に合言葉を直接渡して何度も試すことはできない（2026-10-09）
   async verifyPasswordEx(purpose, password) {
-    try {
-      const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
-        method: "POST",
-        body: {
-          p_kind: purpose,
-          p_password: password
-        }
-      });
-      if (v && v.ok) PW_CACHE[purpose] = password;
-      return v || {
-        ok: false,
-        locked: false
-      };
-    } catch (e) {
-      // 何かあっても従来のやり方で通す
-      const v = await sbJson(`/rest/v1/rpc/verify_password`, {
-        method: "POST",
-        body: {
-          p_purpose: purpose,
-          p_password: password
-        }
-      });
-      if (v === true) PW_CACHE[purpose] = password;
-      return {
-        ok: v === true,
-        locked: false
-      };
-    }
+    const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
+      method: "POST",
+      body: {
+        p_kind: purpose,
+        p_password: password
+      }
+    });
+    if (v && v.ok) PW_CACHE[purpose] = v.token || password; // 通行証が来ない古いデータベースでも動くように
+    return v || {
+      ok: false,
+      locked: false
+    };
   },
   // 待ち時間を読みやすい文字にする
   lockText(sec) {
@@ -3281,13 +3374,15 @@ const api = {
   },
   // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
   async setRotation(id, deg) {
-    const r = await sbFetch(`/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
+    // 表に直接書くのはやめ、管理の命令で（2026-10-09）
+    await sbFetch(`/rest/v1/rpc/admin_set_rotation`, {
+      method: "POST",
       body: {
-        rotation: (deg % 360 + 360) % 360
+        p_id: id,
+        p_deg: Math.round(deg),
+        p_password: PW_CACHE.admin || ""
       }
     });
-    if (!r.ok) throw new Error(await r.text());
     return true;
   },
   // ── market_trends：業界の動き（文字情報） ──
@@ -3316,28 +3411,18 @@ const api = {
   async listOrderItems() {
     return sbJson(`/rest/v1/order_items?select=*&order=sort_order.asc,created_at.asc`);
   },
+  // 書き換えは管理の命令（admin_write）で。管理の通行証がないと通らない（2026-10-10）
   async addOrderItem(o) {
-    return sbOne(`/rest/v1/order_items`, {
-      method: "POST",
-      body: o,
-      prefer: "return=representation"
-    });
+    return 管理で書く("order_items", "insert", null, o);
   },
   async updateOrderItem(id, patch) {
-    return sbOne(`/rest/v1/order_items?id=eq.${id}`, {
-      method: "PATCH",
-      body: {
-        ...patch,
-        updated_at: new Date().toISOString()
-      },
-      prefer: "return=representation"
+    return 管理で書く("order_items", "update", id, {
+      ...patch,
+      updated_at: new Date().toISOString()
     });
   },
   async deleteOrderItem(id) {
-    const r = await sbFetch(`/rest/v1/order_items?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("order_items", "delete", id, null);
     return true;
   },
   // ── pop_bundles：行事ごとのPOPの束 ──
@@ -3355,59 +3440,34 @@ const api = {
     return sbJson(`/rest/v1/pop_bundle_prompts?bundle_id=eq.${bundleId}&select=*&order=sort_order.asc`);
   },
   async addBundle(b) {
-    return sbOne(`/rest/v1/pop_bundles`, {
-      method: "POST",
-      body: b,
-      prefer: "return=representation"
-    });
+    return 管理で書く("pop_bundles", "insert", null, b);
   },
   async updateBundle(id, patch) {
-    return sbOne(`/rest/v1/pop_bundles?id=eq.${id}`, {
-      method: "PATCH",
-      body: {
-        ...patch,
-        updated_at: new Date().toISOString()
-      },
-      prefer: "return=representation"
+    return 管理で書く("pop_bundles", "update", id, {
+      ...patch,
+      updated_at: new Date().toISOString()
     });
   },
   async deleteBundle(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundles?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundles", "delete", id, null);
     return true;
   },
   async addToBundle(bundleId, popId, sortOrder) {
-    return sbOne(`/rest/v1/pop_bundle_items`, {
-      method: "POST",
-      body: {
-        bundle_id: bundleId,
-        pop_id: popId,
-        sort_order: sortOrder || 0
-      },
-      prefer: "return=representation"
+    return 管理で書く("pop_bundle_items", "insert", null, {
+      bundle_id: bundleId,
+      pop_id: popId,
+      sort_order: sortOrder || 0
     });
   },
   async removeFromBundle(itemId) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_items?id=eq.${itemId}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundle_items", "delete", itemId, null);
     return true;
   },
   async addBundlePrompt(o) {
-    return sbOne(`/rest/v1/pop_bundle_prompts`, {
-      method: "POST",
-      body: o,
-      prefer: "return=representation"
-    });
+    return 管理で書く("pop_bundle_prompts", "insert", null, o);
   },
   async deleteBundlePrompt(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_prompts?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundle_prompts", "delete", id, null);
     return true;
   },
   // ── 週の予定を実績として記録に移す ──
@@ -3524,24 +3584,13 @@ const api = {
     return sbJson(`/rest/v1/catalogs?select=*${q}&order=store.asc,sort_order.asc,created_at.desc`);
   },
   async addCatalog(c) {
-    return sbOne(`/rest/v1/catalogs`, {
-      method: "POST",
-      body: c,
-      prefer: "return=representation"
-    });
+    return 管理で書く("catalogs", "insert", null, c);
   },
   async updateCatalog(id, patch) {
-    return sbOne(`/rest/v1/catalogs?id=eq.${id}`, {
-      method: "PATCH",
-      body: patch,
-      prefer: "return=representation"
-    });
+    return 管理で書く("catalogs", "update", id, patch);
   },
   async deleteCatalog(id) {
-    const r = await sbFetch(`/rest/v1/catalogs?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("catalogs", "delete", id, null);
     return true;
   },
   // ── resources：資料（PDF/画像/シート/リンク）──
@@ -3550,24 +3599,13 @@ const api = {
     return sbJson(`/rest/v1/resources?select=*${q}&order=sort_order.asc,created_at.desc`);
   },
   async addResource(r) {
-    return sbOne(`/rest/v1/resources`, {
-      method: "POST",
-      body: r,
-      prefer: "return=representation"
-    });
+    return 管理で書く("resources", "insert", null, r);
   },
   async updateResource(id, patch) {
-    return sbOne(`/rest/v1/resources?id=eq.${id}`, {
-      method: "PATCH",
-      body: patch,
-      prefer: "return=representation"
-    });
+    return 管理で書く("resources", "update", id, patch);
   },
   async deleteResource(id) {
-    const r = await sbFetch(`/rest/v1/resources?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("resources", "delete", id, null);
     return true;
   },
   // ── production_notes：生産メモ ──
@@ -4453,7 +4491,14 @@ function PopDetail({
     setArcBusy(true);
     setPwError("");
     try {
-      PW_CACHE.admin = pwInput.trim();
+      // 合言葉は回数制限つきで照合し、通ったら通行証で命令する（青果のページでは青果の副管理者も通す）
+      let r = await api.verifyPasswordEx("admin", pwInput.trim());
+      if (!r.ok && !r.locked && typeof deptKey === "function" && deptKey() === "produce") r = await api.verifyPasswordEx("admin_produce", pwInput.trim());
+      if (!r.ok) {
+        setPwError(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : "パスワードが違います");
+        setArcBusy(false);
+        return;
+      }
       await api.setArchivedMany([pop.id], true);
       try {
         window.dispatchEvent(new CustomEvent("appToast", {
@@ -4465,8 +4510,7 @@ function PopDetail({
       if (onDelete) onDelete(pop.id); // 一覧から取り除く
       onClose && onClose();
     } catch (e) {
-      PW_CACHE.admin = "";
-      setPwError("パスワードが違うか、移動に失敗しました");
+      setPwError("移動に失敗しました");
     } finally {
       setArcBusy(false);
     }
@@ -5888,6 +5932,146 @@ function PopCard({
 
 // ── Board Tab ──
 
+// ── 管理の確認：管理画面の外で、品目・まとめなどを書き換える前に呼ぶ（2026-10-10）
+// すでに管理画面に入っていれば（通行証があれば）そのまま true。なければ合言葉を聞いて照合する。
+function 管理の確認() {
+  if (PW_CACHE.admin && String(PW_CACHE.admin).length === 48) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const 箱 = document.createElement("div");
+    document.body.appendChild(箱);
+    const 根 = ReactDOM.createRoot(箱);
+    const 終わる = ok => {
+      try {
+        根.unmount();
+      } catch (e) {}
+      箱.remove();
+      resolve(ok);
+    };
+    function 確認画面() {
+      const [pw, setPw] = useState("");
+      const [err, setErr] = useState("");
+      const [busy, setBusy] = useState(false);
+      const 送る = async () => {
+        if (!pw.trim() || busy) return;
+        setBusy(true);
+        setErr("");
+        try {
+          const r = await api.verifyPasswordEx("admin", pw.trim());
+          if (r.ok) {
+            終わる(true);
+            return;
+          }
+          setErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `合言葉が違います（あと${r.left}回）` : "合言葉が違います");
+          setPw("");
+        } catch (e) {
+          setErr("確かめられませんでした（電波を確認してください）");
+        }
+        setBusy(false);
+      };
+      return /*#__PURE__*/React.createElement("div", {
+        onClick: () => 終わる(false),
+        style: {
+          position: "fixed",
+          inset: 0,
+          zIndex: 400,
+          background: "rgba(10,20,35,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 20
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        onClick: e => e.stopPropagation(),
+        role: "dialog",
+        "aria-label": "\u7BA1\u7406\u306E\u5408\u8A00\u8449",
+        style: {
+          width: "min(340px, 100%)",
+          background: "var(--card, #fff)",
+          borderRadius: 16,
+          padding: 20,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.25)"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 16,
+          fontWeight: 900,
+          color: "var(--ink)",
+          marginBottom: 6
+        }
+      }, "\u7BA1\u7406\u306E\u5408\u8A00\u8449"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "var(--sub)",
+          lineHeight: 1.6,
+          marginBottom: 12
+        }
+      }, "\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u4EBA\u3060\u3051\u304C\u3067\u304D\u307E\u3059\u3002\u7BA1\u7406\u753B\u9762\u3068\u540C\u3058\u5408\u8A00\u8449\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("input", {
+        type: "password",
+        inputMode: "numeric",
+        autoFocus: true,
+        value: pw,
+        onChange: e => setPw(e.target.value),
+        onKeyDown: e => {
+          if (e.key === "Enter") 送る();
+        },
+        style: {
+          width: "100%",
+          boxSizing: "border-box",
+          border: "1px solid var(--line)",
+          borderRadius: 10,
+          padding: "11px 12px",
+          fontSize: 18,
+          letterSpacing: ".2em",
+          background: "var(--bg)",
+          color: "var(--text)"
+        }
+      }), err && /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "#b3261e",
+          fontWeight: 700,
+          marginTop: 7
+        }
+      }, err), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 8,
+          marginTop: 14
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => 終わる(false),
+        style: {
+          flex: 1,
+          border: "1px solid var(--line)",
+          background: "transparent",
+          color: "var(--sub)",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer"
+        }
+      }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
+        onClick: 送る,
+        disabled: busy || !pw.trim(),
+        style: {
+          flex: 1,
+          border: "none",
+          background: "var(--fill)",
+          color: "#fff",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer",
+          opacity: busy || !pw.trim() ? 0.5 : 1
+        }
+      }, busy ? "確認中…" : "確かめる"))));
+    }
+    根.render(/*#__PURE__*/React.createElement(確認画面, null));
+  });
+}
+
 // ── 資料のサムネイル（管理画面と店舗支援で共用） ──
 /* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
    取れなければ種類の札を出す。 */
@@ -5952,6 +6136,7 @@ Object.assign(window, {
   UploadModal,
   pairByShape,
   popShape,
+  管理の確認,
   資料の色,
   資料の名,
   資料の縮小URL,
@@ -6052,55 +6237,21 @@ function BoardTab({
     }, 1500);
     return () => clearTimeout(t);
   }, []);
-  // 画面の明るさ
-  const [dark, setDark] = useState(() => {
+  // 画面の明るさ：暗い画面の切り替えは 2026-10-06 にやめた。いつも明るい画面
+  useEffect(() => {
     try {
-      return localStorage.getItem("theme") === "dark";
-    } catch (e) {
-      return false;
-    }
-  });
-  const setDarkSave = v => {
-    setDark(v);
-    try {
-      localStorage.setItem("theme", v ? "dark" : "light");
-    } catch (e) {}
-    try {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.removeItem("theme");
       const m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute("content", v ? "#161d25" : "#F5F2EC");
+      if (m) m.setAttribute("content", "#F5F2EC");
     } catch (e) {}
-  };
+  }, []); // まとまり画面のスワイプ判定
+  // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
     try {
-      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      document.documentElement.style.setProperty("--pc-name-size", "17px");
     } catch (e) {}
-  }, [dark]); // まとまり画面のスワイプ判定
-  // 文字サイズ（標準／拡大）
-  const TEXT_SIZES = {
-    sm: "12px",
-    md: "14.5px",
-    lg: "19px"
-  };
-  const [textSize, setTextSize] = useState(() => {
-    try {
-      const v = localStorage.getItem("textSize");
-      if (v === "md" || v === "lg") return v;
-      return localStorage.getItem("bigText") === "1" ? "lg" : "md"; // 前の設定を引き継ぐ
-    } catch (e) {
-      return "md";
-    }
-  });
-  const setTextSizeSave = v => {
-    setTextSize(v);
-    try {
-      localStorage.setItem("textSize", v);
-    } catch (e) {}
-  };
-  useEffect(() => {
-    try {
-      document.documentElement.style.setProperty("--pc-name-size", TEXT_SIZES[textSize] || TEXT_SIZES.md);
-    } catch (e) {}
-  }, [textSize]);
+  }, []);
   const [view, setView] = useState(() => {
     try {
       const v = localStorage.getItem("popView");
@@ -6119,6 +6270,7 @@ function BoardTab({
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
+  // 下の案内（季節のポップは…）は、同じ文なら端末ごとに1回だけ出す（2026-10-08）
   const [showNotice, setShowNotice] = useState(true);
   const [featShow, setFeatShow] = useState(() => {
     try {
@@ -6130,6 +6282,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const [tip済み, setTip済み] = useState(() => {
+    try {
+      return localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {
+      return false;
+    }
+  });
+  useEffect(() => {
+    let 済 = false;
+    try {
+      済 = localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {}
+    if (済) {
+      setTip済み(true);
+      return;
+    }
+    setTip済み(false);
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem("tipSeen", tipText);
+      } catch (e) {}
+    }, 3000); // 一度見えたら、次からは出さない
+    return () => clearTimeout(t);
+  }, [tipText]);
   const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
   // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
   const load = useCallback(async 静か => {
@@ -6334,32 +6510,6 @@ function BoardTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 2,
-      background: "var(--chip)",
-      borderRadius: 10,
-      padding: 3,
-      flexShrink: 0
-    }
-  }, [["md", "A"], ["lg", "A"]].map(([v, l], idx) => /*#__PURE__*/React.createElement("button", {
-    key: v,
-    onClick: () => setTextSizeSave(v),
-    "aria-pressed": textSize === v,
-    "aria-label": idx === 0 ? "文字を中くらいにする" : "文字を大きくする",
-    className: "bt-seg bt-a" + (idx === 0 ? " bt-a-s" : " bt-a-l"),
-    style: {
-      border: "none",
-      background: textSize === v ? "var(--card, #fff)" : "transparent",
-      color: textSize === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      fontWeight: 800,
-      cursor: "pointer",
-      lineHeight: 1,
-      boxShadow: textSize === v ? "0 1px 2px rgba(0,0,0,0.12)" : "none"
-    }
-  }, l))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
       gap: 3,
       background: "var(--chip)",
       borderRadius: 10,
@@ -6426,85 +6576,7 @@ function BoardTab({
       justifyContent: "center",
       boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
     }
-  }, icon))), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDeptKey(deptNext()),
-    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[deptNext()].label + "に変わります",
-    title: "部門をかえる（いま：" + deptConf().label + "）",
-    className: "bt-btn bt-dept",
-    style: {
-      border: "1px solid var(--primary-soft)",
-      background: "var(--soft)",
-      color: "var(--soft-text)",
-      borderRadius: 10,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 3,
-      flexShrink: 0,
-      fontFamily: "inherit",
-      fontSize: 12.5,
-      fontWeight: 900,
-      whiteSpace: "nowrap"
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "13",
-    height: "13",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.4",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 8h13l-3-3M20 16H7l3 3"
-  })), deptConf().label), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setDarkSave(!dark),
-    "aria-pressed": dark,
-    "aria-label": dark ? "明るい画面にする" : "暗い画面にする",
-    style: {
-      border: "1px solid var(--line)",
-      background: "var(--card, #fff)",
-      borderRadius: 10,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "var(--primary-soft)",
-      flexShrink: 0
-    },
-    className: "bt-btn"
-  }, dark ? /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "12",
-    cy: "12",
-    r: "4.2"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-  })) : /*#__PURE__*/React.createElement("svg", {
-    width: "19",
-    height: "19",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
-  }))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }, icon))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
@@ -6574,7 +6646,7 @@ function BoardTab({
       flexShrink: 0,
       lineHeight: 1
     }
-  }, "\u2715")), tipOn && showNotice && !radialOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), tipOn && showNotice && !tip済み && !radialOpen && /*#__PURE__*/React.createElement("div", {
     onClick: () => setShowNotice(false),
     style: {
       position: "fixed",
@@ -6931,7 +7003,10 @@ function BoardTab({
       l: g
     })),
     cur: fGenre,
-    set: setFGenre
+    set: v => {
+      setFGenre(v);
+      if (!v && !fSp) setFStore("");
+    }
   }, {
     key: "fish",
     title: deptConf().ものの呼び名 + "で絞り込む",
@@ -6945,14 +7020,19 @@ function BoardTab({
       sp
     })),
     cur: fSp ? fSp.id : "",
-    set: (v, it) => setFSp(it && it.sp ? it.sp : null)
-  }, {
+    set: (v, it) => {
+      setFSp(it && it.sp ? it.sp : null);
+      if (!v && !fGenre) setFStore("");
+    }
+  },
+  // お店は、ジャンルか魚を選んだあとで下に出す（最初は出さない）
+  {
     key: "store",
     title: "お店で絞り込む",
-    items: STORES.map(x => ({
+    items: fGenre || fSp || fStore ? STORES.map(x => ({
       v: x,
       l: x
-    })),
+    })) : [],
     cur: fStore,
     set: setFStore
   }].filter(sec => sec.items.length).map(sec => /*#__PURE__*/React.createElement("div", {
@@ -16373,13 +16453,8 @@ function OrderTab() {
       return null;
     }
   });
-  const [unlocked, setUnlocked] = useState(() => {
-    try {
-      return !!sessionStorage.getItem("orderStore");
-    } catch (e) {
-      return false;
-    }
-  });
+  // 2026-10-10：毎週の発注数・指示書・記録はやめ、塩干発注は試作システムの中へ。店の番号の入口も不要になった
+  const [unlocked, setUnlocked] = useState(true);
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
@@ -16440,7 +16515,7 @@ function OrderTab() {
   };
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
-  const [tab, setTab] = useState("today"); // cal=カレンダー / items=品目
+  const [tab, setTab] = useState("items"); // items=品目 / docs=資料
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -16796,6 +16871,7 @@ function OrderTab() {
   const [impBusy, setImpBusy] = useState(false);
   const [impMsg, setImpMsg] = useState("");
   const importExcel = async file => {
+    if (!(await 管理の確認())) return; // 品目の書き換えは管理の人だけ
     if (!file) return;
     setImpBusy(true);
     setImpMsg("読み込んでいます…");
@@ -16973,6 +17049,7 @@ function OrderTab() {
       setMsg("品名を入れてください");
       return;
     }
+    if (!(await 管理の確認())) return;
     setBusy(true);
     setMsg("");
     try {
@@ -17000,6 +17077,7 @@ function OrderTab() {
   const [confirmOff, setConfirmOff] = useState(null); // 確認中の品目
   const [showOff, setShowOff] = useState(false); // 使わないものを表示するか
   const toggleActive = async (it, next) => {
+    if (!(await 管理の確認())) return;
     try {
       await api.updateOrderItem(it.id, {
         active: next
@@ -17010,6 +17088,7 @@ function OrderTab() {
   };
   const removeItem = async it => {
     if (!window.confirm(`「${it.name}」を完全に消しますか？\nこの操作は戻せません。`)) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteOrderItem(it.id);
       setVer(v => v + 1);
@@ -17178,35 +17257,13 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "\u5869\u5E72\u767A\u6CE8"), store && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      background: "rgba(255,255,255,0.22)",
-      borderRadius: 999,
-      padding: "2px 10px"
-    }
-  }, store.name), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setUnlocked(false);
-      setStore(null);
-      setPw("");
-      try {
-        sessionStorage.removeItem("orderStore");
-      } catch (e) {}
-    },
+  }, "\u5869\u5E72\u767A\u6CE8"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      border: "1px solid rgba(255,255,255,0.4)",
-      background: "transparent",
-      color: "#fff",
-      borderRadius: 7,
-      padding: "4px 10px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: "pointer"
+      fontSize: 11.5,
+      opacity: 0.85
     }
-  }, "\u5E97\u3092\u5909\u3048\u308B"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u54C1\u76EE\u306E\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u5408\u8A00\u8449\u3067"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -17218,7 +17275,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["docs", "資料"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["items", `品目（${active.length}）`], ["docs", "資料"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -19528,7 +19585,10 @@ function BundleTab({
   const bundleNow = bundles.filter(b => Array.isArray(b.months) && b.months.includes(NOW_M) && b.months.length < 12);
   const bundleAll = bundles.filter(b => !bundleNow.some(x => x.id === b.id));
   const cur = bundles.find(b => b.id === openId);
+
+  // まとめの書き換えは管理の人だけ（2026-10-10）
   const addPop = async p => {
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addToBundle(openId, p.id, items.length);
@@ -19538,6 +19598,7 @@ function BundleTab({
     }
   };
   const delItem = async it => {
+    if (!(await 管理の確認())) return;
     try {
       await api.removeFromBundle(it.id);
       await reloadInner();
@@ -19545,6 +19606,7 @@ function BundleTab({
   };
   const savePrompt = async () => {
     if (!pForm.prompt.trim()) return;
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addBundlePrompt({
@@ -19565,6 +19627,7 @@ function BundleTab({
   };
   const delPrompt = async pr => {
     if (!window.confirm("このプロンプトを消しますか？")) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteBundlePrompt(pr.id);
       await reloadInner();
@@ -20781,6 +20844,57 @@ function LazyTab(props) {
   }
   return React.createElement(Comp, props.compProps || {});
 }
+
+// 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
+// パソコン用：スイッチの形。つまみが滑ってから切り替わる（切り替えは読み込み直しになるので、先に動きを見せる）
+function 部門スイッチ() {
+  const 今 = deptKey();
+  const [行き先, set行き先] = useState(今);
+  const ks = Object.keys(DEPTS);
+  const 右 = ks.indexOf(行き先) === 1;
+  const 押す = k => {
+    if (k === 行き先) return;
+    set行き先(k);
+    setTimeout(() => setDeptKey(k), 300);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "dept-sw" + (右 ? " right" : "") + " to-" + 行き先,
+    role: "radiogroup",
+    "aria-label": "\u90E8\u9580"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dept-sw-knob",
+    "aria-hidden": "true"
+  }), ks.map(k => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    type: "button",
+    role: "radio",
+    "aria-checked": k === 行き先,
+    className: "dept-sw-b" + (k === 行き先 ? " on" : ""),
+    onClick: () => 押す(k)
+  }, DEPTS[k].label)));
+}
+function 部門切替() {
+  const 次 = deptNext();
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "dept-mini",
+    onClick: () => setDeptKey(次),
+    "aria-label": "いまは" + deptConf().label + "。押すと" + DEPTS[次].label + "に変わります",
+    title: "部門をかえる（いま：" + deptConf().label + "）"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "13",
+    height: "13",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 8h13l-3-3M20 16H7l3 3"
+  })), /*#__PURE__*/React.createElement("span", null, deptConf().label));
+}
 function App() {
   const [tab, setTab] = useState("board");
   const [currentStore, setCurrentStore] = useState(STORES[0]);
@@ -20847,6 +20961,16 @@ function App() {
       api.logFeature("画面:" + tab);
     } catch (e) {}
   }, [tab]);
+  // 前に起動が止まっていたら、どこで止まったかを1回だけ送る（直すときの手がかり）
+  useEffect(() => {
+    try {
+      const 止 = localStorage.getItem("bootStall");
+      if (止) {
+        api.logFeature("起動停滞 " + 止);
+        localStorage.removeItem("bootStall");
+      }
+    } catch (e) {}
+  }, []);
   useEffect(() => {
     if (searchOpen) try {
       api.logFeature("さがす");
@@ -21244,26 +21368,11 @@ function App() {
       padding: "10px 16px 0"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff4e5",
-      border: "1px solid #ffc98a",
-      color: "#8a4b00",
-      borderRadius: 12,
-      padding: "12px 14px",
-      fontSize: 13.5,
-      fontWeight: 700,
-      lineHeight: 1.6,
-      display: "flex",
-      gap: 9,
-      alignItems: "flex-start",
-      boxShadow: "0 1px 6px rgba(0,0,0,0.06)"
-    }
+    className: "notice-line"
   }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
-      lineHeight: 1.3
-    }
-  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
+    className: "notice-dot",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap"
     }
@@ -21512,7 +21621,7 @@ function App() {
     className: "gh-x",
     onClick: 案内を閉じる,
     "aria-label": "\u6848\u5185\u3092\u9589\u3058\u308B"
-  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
+  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && (!広い || showToTop) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
@@ -21593,32 +21702,50 @@ function App() {
       flexDirection: "column"
     }
   }, 広い ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "dock-brand"
+    className: "dock-top"
+  }, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      try {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      } catch (_) {}
+    }
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement("button", {
-    className: "dock-search",
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
+    className: "dock-find",
+    "aria-label": "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059",
+    title: "\u3055\u304C\u3059",
     onClick: () => {
       try {
         window.dispatchEvent(new CustomEvent("openSearch"));
       } catch (e) {}
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
+    width: "18",
+    height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.2",
+    strokeWidth: "2.1",
     strokeLinecap: "round"
   }, /*#__PURE__*/React.createElement("circle", {
-    cx: "11",
-    cy: "11",
-    r: "7"
+    cx: "10.5",
+    cy: "10.5",
+    r: "6.5"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 20l-3.7-3.7"
-  })), "\u691C\u7D22")) : null, /*#__PURE__*/React.createElement("div", {
+    d: "M20 20l-4.6-4.6"
+  })))))) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -21646,113 +21773,65 @@ function App() {
       fontSize: 15,
       fontWeight: 900
     }
-  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("img", {
+  }, "\u2715")), !広い && /*#__PURE__*/React.createElement("div", {
+    className: "dock-top",
+    style: {
+      marginTop: 0,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
+    href: "./",
+    "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
+    onClick: e => {
+      e.preventDefault();
+      setTab("board");
+      setMoreOpen(false);
+      try {
+        window.scrollTo({
+          top: 0
+        });
+      } catch (_) {}
+    }
+  }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS PROJECT",
-    style: {
-      display: "block",
-      width: "62%",
-      maxWidth: 166,
-      height: "auto",
-      margin: "2px auto 12px",
-      opacity: 0.95
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "menu-list",
-    style: {
-      flex: "1 1 auto",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      gap: 8,
-      minHeight: 0,
-      overflowY: "auto",
-      WebkitOverflowScrolling: "touch"
-    }
+    alt: "GoodDay NEXUS PROJECT"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null))), /*#__PURE__*/React.createElement("div", {
+    className: "menu-list menu-grid"
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
+    const ORDER = 青果 ? ["archive", "guide", "admin"] : ["bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
+    // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
+    const 外す = 広い ? ["search", "bundle"] : [];
+    return TAB_REGISTRY.filter(o => !外す.includes(o.key)).filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
       label: o.key === "admin" ? "管理" : o.label,
       __押し: o.key === "guide"
     } : o);
-  })().map(o => /*#__PURE__*/React.createElement("button", {
-    key: o.key,
-    onClick: () => {
-      setTab(o.key);
-      setMoreOpen(false);
-    },
-    "aria-label": o.label,
-    "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : ""),
-    style: {
-      width: "100%",
-      border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      background: tab === o.key ? "var(--soft)" : "var(--menu-row, #fff)",
-      borderRadius: 12,
-      padding: "10px 14px",
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 13,
-      flex: "0 0 auto",
-      minHeight: 58
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "relative",
-      width: 38,
-      height: 38,
-      flexShrink: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)"
-    }
-  }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "absolute",
-      top: -5,
-      right: -9,
-      background: "var(--fill)",
-      color: "#fff",
-      fontSize: 12.5,
-      fontWeight: 900,
-      padding: "2px 5px",
-      borderRadius: 7,
-      letterSpacing: 0.4
-    }
-  }, o.badge)), /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: 1,
-      minWidth: 0,
-      fontSize: 17,
-      fontWeight: 800,
-      color: tab === o.key ? "var(--primary)" : "var(--ink)",
-      lineHeight: 1.3,
-      textAlign: "left",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, o.label), /*#__PURE__*/React.createElement("svg", {
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "var(--faint)",
-    strokeWidth: "2.3",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M9 6l6 6-6 6"
-  }))))), /*#__PURE__*/React.createElement("button", {
+  })().map((o, i, 全部) => {
+    // タイルが1つだけ最後の行に余るときは、その1つを横いっぱいにする
+    const タイル = 全部.filter(x => x.key !== "search");
+    const 余り = タイル.length % 3 === 1 && o.key === タイル[タイル.length - 1].key;
+    return /*#__PURE__*/React.createElement("button", {
+      key: o.key,
+      onClick: () => {
+        setTab(o.key);
+        setMoreOpen(false);
+      },
+      "aria-label": o.label,
+      "aria-current": tab === o.key ? "page" : undefined,
+      className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-ic"
+    }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-badge"
+    }, o.badge)), /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-t"
+    }, o.label));
+  })), /*#__PURE__*/React.createElement("button", {
     className: "menu-reload",
     onClick: () => {
       try {

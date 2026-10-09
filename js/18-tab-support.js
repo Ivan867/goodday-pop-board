@@ -154,7 +154,7 @@ function SupportTab() {
     }
   }, "\u2039 \u8CC7\u6599\u3078\u623B\u308B"));
   // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
-  if (どれ === "order") return /*#__PURE__*/React.createElement("div", null, 戻る, typeof OrderTab === "function" ? /*#__PURE__*/React.createElement(OrderTab, null) : null);
+  // 塩干発注は 2026-10-10 に試作システムへ移した
   // 画像の共有は 2026-10-06 にやめた
   return /*#__PURE__*/React.createElement(SupportDocs, {
     選ぶ: 選ぶ
@@ -308,32 +308,7 @@ function SupportDocs({
     style: {
       display: "block"
     }
-  }, r.description))))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      color: "var(--sub)",
-      margin: "28px 0 8px"
-    }
-  }, "\u305D\u306E\u307B\u304B"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gap: 8
-    }
-  }, 小入口("order", "塩干発注", "店舗ごとの番号で入ります", /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M4 5.5h16v13H4z"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M8 9.5h8M8 13h5"
-  })))));
+  }, r.description))))));
 }
 function SupportPhotos() {
   const [list, setList] = useState([]);
