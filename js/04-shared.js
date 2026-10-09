@@ -611,7 +611,14 @@ function PopDetail({
     setArcBusy(true);
     setPwError("");
     try {
-      PW_CACHE.admin = pwInput.trim();
+      // 合言葉は回数制限つきで照合し、通ったら通行証で命令する（青果のページでは青果の副管理者も通す）
+      let r = await api.verifyPasswordEx("admin", pwInput.trim());
+      if (!r.ok && !r.locked && typeof deptKey === "function" && deptKey() === "produce") r = await api.verifyPasswordEx("admin_produce", pwInput.trim());
+      if (!r.ok) {
+        setPwError(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : "パスワードが違います");
+        setArcBusy(false);
+        return;
+      }
       await api.setArchivedMany([pop.id], true);
       try {
         window.dispatchEvent(new CustomEvent("appToast", {
@@ -623,8 +630,7 @@ function PopDetail({
       if (onDelete) onDelete(pop.id); // 一覧から取り除く
       onClose && onClose();
     } catch (e) {
-      PW_CACHE.admin = "";
-      setPwError("パスワードが違うか、移動に失敗しました");
+      setPwError("移動に失敗しました");
     } finally {
       setArcBusy(false);
     }

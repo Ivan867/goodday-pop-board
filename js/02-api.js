@@ -816,35 +816,21 @@ const api = {
     return r.ok;
   },
   // 回数制限つきの照合：{ ok, locked, seconds, left } を返す
+  // 通れば、合言葉そのものではなく「通行証」（12時間で切れる）を覚えておき、以後の命令はそれで送る。
+  // 合言葉の照合はここ（回数制限つき）だけ。命令に合言葉を直接渡して何度も試すことはできない（2026-10-09）
   async verifyPasswordEx(purpose, password) {
-    try {
-      const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
-        method: "POST",
-        body: {
-          p_kind: purpose,
-          p_password: password
-        }
-      });
-      if (v && v.ok) PW_CACHE[purpose] = password;
-      return v || {
-        ok: false,
-        locked: false
-      };
-    } catch (e) {
-      // 何かあっても従来のやり方で通す
-      const v = await sbJson(`/rest/v1/rpc/verify_password`, {
-        method: "POST",
-        body: {
-          p_purpose: purpose,
-          p_password: password
-        }
-      });
-      if (v === true) PW_CACHE[purpose] = password;
-      return {
-        ok: v === true,
-        locked: false
-      };
-    }
+    const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
+      method: "POST",
+      body: {
+        p_kind: purpose,
+        p_password: password
+      }
+    });
+    if (v && v.ok) PW_CACHE[purpose] = v.token || password; // 通行証が来ない古いデータベースでも動くように
+    return v || {
+      ok: false,
+      locked: false
+    };
   },
   // 待ち時間を読みやすい文字にする
   lockText(sec) {
@@ -947,13 +933,15 @@ const api = {
   },
   // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
   async setRotation(id, deg) {
-    const r = await sbFetch(`/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
+    // 表に直接書くのはやめ、管理の命令で（2026-10-09）
+    await sbFetch(`/rest/v1/rpc/admin_set_rotation`, {
+      method: "POST",
       body: {
-        rotation: (deg % 360 + 360) % 360
+        p_id: id,
+        p_deg: Math.round(deg),
+        p_password: PW_CACHE.admin || ""
       }
     });
-    if (!r.ok) throw new Error(await r.text());
     return true;
   },
   // ── market_trends：業界の動き（文字情報） ──
