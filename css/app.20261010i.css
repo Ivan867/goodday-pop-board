@@ -917,3 +917,7 @@ button:active, .ucard:active { transform: scale(.98); }
 
 /* 品名の下に空けていた2行目の余白をやめる。2行になる名前だけ2行の高さになる（2026-10-10） */
 .pop-grid .pc-name { min-height: 0 !important; }
+
+/* 品名はいつも1行。入りきらない分は「…」で切る（全文は押した先と、パソコンでは指をのせると出る）（2026-10-10） */
+.pop-grid .pc-name { display: block !important; white-space: nowrap !important; overflow: hidden !important;
+  text-overflow: ellipsis !important; -webkit-line-clamp: unset !important; word-break: normal !important; overflow-wrap: normal !important; }

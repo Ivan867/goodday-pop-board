@@ -21,7 +21,7 @@ const TAB_REGISTRY = [{
 }, {
   key: "bundle",
   icon: "📅",
-  label: "行事カレンダー",
+  label: "企画カレンダー",
   section: "毎日つかう"
 }, {
   key: "tool",
@@ -295,6 +295,76 @@ const FLOOR_STORES = ["北部店", "木次店", "大田店", "斐川店", "医�
 // パスワードはSupabase側（verify_password関数）で照合。生の値はこのファイルに持たない。
 // 開発・お知らせタブの掲載内容。新しい更新は配列の先頭に足す。type: 新機能 / 修正 / お知らせ
 const ANNOUNCEMENTS = [{
+  date: "2026-10-10",
+  type: "改善",
+  title: "品名をいつも1行にしました",
+  body: "長い品名は「…」で切って1行にしています。全文はポップを押すと見られます（パソコンでは指をのせても出ます）。カードの高さがすべてそろいます。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "一覧の列を4列（大）と6列（小）に、右の柱の虫眼鏡をなくしました",
+  body: "切り替えは、大きいマス（4列）と小さいマス（6列）のマークです。さがすときは右下の「さがす」を使います。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "一覧の列は3列と6列の2つに、品名の下の余白をなくしました",
+  body: "パソコン・タブレットの切り替えは、3列と6列のマークだけになりました。品名が1行のポップは、下に空いていた1行ぶんの余白がなくなります（2行になる名前だけ2行の高さです）。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "パソコンでも右下に「さがす」を出すようにもどしました",
+  body: "スマホと同じく、一覧の右下に「さがす」がいつも出ます。下へ送ると「上へ」に変わります。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "見た目を細かく整えました（一覧の列数・横長ポップ・右の柱をたたむ）",
+  body: "①一覧の上で「4列・5列・6列」を選べます（パソコン・タブレット。選んだ数は覚えておきます。入りきらない幅では自動で減ります）。②横長のポップは2列ぶんの幅で出るようになり、上下の余白がなくなりました。縦長と同じ高さなので段もそろいます。③パソコンの右のメニューは、ふちのつまみ（‹ ›）でアイコンだけの細い柱にたためます。④書体を Inter と Noto Sans JP にし、太字を控えめにしました。⑤アイコンの線の太さをそろえ、店舗支援のマークを鍵からお店の形に変えました。⑥左の企画カレンダーの「10–11月」が折り返さないようにし、日付・名前・枚数の位置をそろえました。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "パソコンの右のメニューを2列にしました",
+  body: "3列で詰まっていたタイルを2列にして、押しやすくしました。鮮魚のメニューから「手引き」を外しました（青果には今までどおりあります）。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "「行事カレンダー」を「企画カレンダー」に名前を変えました",
+  body: "メニュー・パソコンの左の柱・開いたページの見出しが、すべて「企画カレンダー」になりました。中身と使い方は変わりません。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "左の行事カレンダーが、登録した行事とつながりました",
+  body: "パソコンの左に出る行事は、今まで決まった行事表から出していたので、行事カレンダーに登録した中身と合っていませんでした。これからは登録した行事がそのまま出ます（月を送ると、その月に入っている行事が並びます）。日付が分かる行事は日付つき、分からないものは「8〜10月」のように期間で出ます。押すと、その行事のまとめが直接ひらきます。祝日は下に一行だけ、一年中使う定番は「いつも使う」にまとめました。"
+}, {
+  date: "2026-10-10",
+  type: "改善",
+  title: "塩干発注を試作システムに移し、品目・まとめ・カタログ・資料の書き換えを管理の人だけにしました",
+  body: "塩干発注は試作システムの中に移り、品目と資料だけになりました（毎週の発注数・指示書・記録はやめました。今までの記録は消していません）。品目・まとめ（行事カレンダー）・カタログ・資料を書き換えるときは、管理の合言葉が要ります。管理画面に入っていれば聞かれません。"
+}, {
+  date: "2026-10-10",
+  type: "修正",
+  title: "管理の合言葉の守りを強くしました",
+  body: "合言葉が通ると、12時間だけ使える通行証が発行され、管理の操作はそれで行うようになりました。合言葉を何度も試すことはできません。使い方は今までと同じです。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "一覧を整えました",
+  body: "カードの枠と高さをそろえ、品名は2行までにしました。上のお知らせは細い1行に、下の「アーカイブに収納されます」は最初の1回だけにしました。さがすはスマホは右下、パソコンは右の柱の虫眼鏡に一本化し、パソコンのカタログは右の柱に移しました。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "メニューの項目をタイルにしました",
+  body: "アーカイブ・手引き・入力支援などを、3列のタイルにしました。スクロールしなくても全部がひと目で押せます。スマホは「検索」がいちばん上の帯になります。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "スマホのメニューにも同じスイッチを置きました",
+  body: "スマホのメニューの上も、NEXUS PROJECT のマークと鮮魚／青果のスイッチを1つのまとまりにしました。検索はメニューの一覧から開けます。"
+}, {
+  date: "2026-10-08",
+  type: "改善",
+  title: "鮮魚／青果をスイッチの形にしました",
+  body: "溝の中をつまみが滑って切り替わる形にしました（鮮魚は青、青果は緑）。さがすは右の虫眼鏡だけになりました。"
+}, {
   date: "2026-10-08",
   type: "改善",
   title: "パソコンの右の柱の頭を整えました",
@@ -2685,6 +2755,20 @@ function 黙って送る(path, body) {
   } catch (e) {}
 }
 const 機能の最終 = {};
+
+// 品目・まとめ・カタログ・資料の書き換え：管理の通行証つきの命令 admin_write で（表に直接は書けない）
+async function 管理で書く(表, 操作, id, 中身) {
+  return sbJson(`/rest/v1/rpc/admin_write`, {
+    method: "POST",
+    body: {
+      p_table: 表,
+      p_op: 操作,
+      p_id: id || null,
+      p_row: 中身 || null,
+      p_password: PW_CACHE.admin || ""
+    }
+  });
+}
 const api = {
   // ── 機能が使われた記録：何が使われたかだけ。誰が、は記録しない。同じ機能は1分に1回まで
   logFeature(名) {
@@ -3213,35 +3297,21 @@ const api = {
     return r.ok;
   },
   // 回数制限つきの照合：{ ok, locked, seconds, left } を返す
+  // 通れば、合言葉そのものではなく「通行証」（12時間で切れる）を覚えておき、以後の命令はそれで送る。
+  // 合言葉の照合はここ（回数制限つき）だけ。命令に合言葉を直接渡して何度も試すことはできない（2026-10-09）
   async verifyPasswordEx(purpose, password) {
-    try {
-      const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
-        method: "POST",
-        body: {
-          p_kind: purpose,
-          p_password: password
-        }
-      });
-      if (v && v.ok) PW_CACHE[purpose] = password;
-      return v || {
-        ok: false,
-        locked: false
-      };
-    } catch (e) {
-      // 何かあっても従来のやり方で通す
-      const v = await sbJson(`/rest/v1/rpc/verify_password`, {
-        method: "POST",
-        body: {
-          p_purpose: purpose,
-          p_password: password
-        }
-      });
-      if (v === true) PW_CACHE[purpose] = password;
-      return {
-        ok: v === true,
-        locked: false
-      };
-    }
+    const v = await sbJson(`/rest/v1/rpc/check_secret_limited`, {
+      method: "POST",
+      body: {
+        p_kind: purpose,
+        p_password: password
+      }
+    });
+    if (v && v.ok) PW_CACHE[purpose] = v.token || password; // 通行証が来ない古いデータベースでも動くように
+    return v || {
+      ok: false,
+      locked: false
+    };
   },
   // 待ち時間を読みやすい文字にする
   lockText(sec) {
@@ -3344,13 +3414,15 @@ const api = {
   },
   // ── 画像の向き（表示時に回して見せる。created_atは変えないので並び順は不変）──
   async setRotation(id, deg) {
-    const r = await sbFetch(`/rest/v1/pops?id=eq.${id}`, {
-      method: "PATCH",
+    // 表に直接書くのはやめ、管理の命令で（2026-10-09）
+    await sbFetch(`/rest/v1/rpc/admin_set_rotation`, {
+      method: "POST",
       body: {
-        rotation: (deg % 360 + 360) % 360
+        p_id: id,
+        p_deg: Math.round(deg),
+        p_password: PW_CACHE.admin || ""
       }
     });
-    if (!r.ok) throw new Error(await r.text());
     return true;
   },
   // ── market_trends：業界の動き（文字情報） ──
@@ -3379,28 +3451,18 @@ const api = {
   async listOrderItems() {
     return sbJson(`/rest/v1/order_items?select=*&order=sort_order.asc,created_at.asc`);
   },
+  // 書き換えは管理の命令（admin_write）で。管理の通行証がないと通らない（2026-10-10）
   async addOrderItem(o) {
-    return sbOne(`/rest/v1/order_items`, {
-      method: "POST",
-      body: o,
-      prefer: "return=representation"
-    });
+    return 管理で書く("order_items", "insert", null, o);
   },
   async updateOrderItem(id, patch) {
-    return sbOne(`/rest/v1/order_items?id=eq.${id}`, {
-      method: "PATCH",
-      body: {
-        ...patch,
-        updated_at: new Date().toISOString()
-      },
-      prefer: "return=representation"
+    return 管理で書く("order_items", "update", id, {
+      ...patch,
+      updated_at: new Date().toISOString()
     });
   },
   async deleteOrderItem(id) {
-    const r = await sbFetch(`/rest/v1/order_items?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("order_items", "delete", id, null);
     return true;
   },
   // ── pop_bundles：行事ごとのPOPの束 ──
@@ -3418,59 +3480,34 @@ const api = {
     return sbJson(`/rest/v1/pop_bundle_prompts?bundle_id=eq.${bundleId}&select=*&order=sort_order.asc`);
   },
   async addBundle(b) {
-    return sbOne(`/rest/v1/pop_bundles`, {
-      method: "POST",
-      body: b,
-      prefer: "return=representation"
-    });
+    return 管理で書く("pop_bundles", "insert", null, b);
   },
   async updateBundle(id, patch) {
-    return sbOne(`/rest/v1/pop_bundles?id=eq.${id}`, {
-      method: "PATCH",
-      body: {
-        ...patch,
-        updated_at: new Date().toISOString()
-      },
-      prefer: "return=representation"
+    return 管理で書く("pop_bundles", "update", id, {
+      ...patch,
+      updated_at: new Date().toISOString()
     });
   },
   async deleteBundle(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundles?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundles", "delete", id, null);
     return true;
   },
   async addToBundle(bundleId, popId, sortOrder) {
-    return sbOne(`/rest/v1/pop_bundle_items`, {
-      method: "POST",
-      body: {
-        bundle_id: bundleId,
-        pop_id: popId,
-        sort_order: sortOrder || 0
-      },
-      prefer: "return=representation"
+    return 管理で書く("pop_bundle_items", "insert", null, {
+      bundle_id: bundleId,
+      pop_id: popId,
+      sort_order: sortOrder || 0
     });
   },
   async removeFromBundle(itemId) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_items?id=eq.${itemId}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundle_items", "delete", itemId, null);
     return true;
   },
   async addBundlePrompt(o) {
-    return sbOne(`/rest/v1/pop_bundle_prompts`, {
-      method: "POST",
-      body: o,
-      prefer: "return=representation"
-    });
+    return 管理で書く("pop_bundle_prompts", "insert", null, o);
   },
   async deleteBundlePrompt(id) {
-    const r = await sbFetch(`/rest/v1/pop_bundle_prompts?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("pop_bundle_prompts", "delete", id, null);
     return true;
   },
   // ── 週の予定を実績として記録に移す ──
@@ -3587,24 +3624,13 @@ const api = {
     return sbJson(`/rest/v1/catalogs?select=*${q}&order=store.asc,sort_order.asc,created_at.desc`);
   },
   async addCatalog(c) {
-    return sbOne(`/rest/v1/catalogs`, {
-      method: "POST",
-      body: c,
-      prefer: "return=representation"
-    });
+    return 管理で書く("catalogs", "insert", null, c);
   },
   async updateCatalog(id, patch) {
-    return sbOne(`/rest/v1/catalogs?id=eq.${id}`, {
-      method: "PATCH",
-      body: patch,
-      prefer: "return=representation"
-    });
+    return 管理で書く("catalogs", "update", id, patch);
   },
   async deleteCatalog(id) {
-    const r = await sbFetch(`/rest/v1/catalogs?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("catalogs", "delete", id, null);
     return true;
   },
   // ── resources：資料（PDF/画像/シート/リンク）──
@@ -3613,24 +3639,13 @@ const api = {
     return sbJson(`/rest/v1/resources?select=*${q}&order=sort_order.asc,created_at.desc`);
   },
   async addResource(r) {
-    return sbOne(`/rest/v1/resources`, {
-      method: "POST",
-      body: r,
-      prefer: "return=representation"
-    });
+    return 管理で書く("resources", "insert", null, r);
   },
   async updateResource(id, patch) {
-    return sbOne(`/rest/v1/resources?id=eq.${id}`, {
-      method: "PATCH",
-      body: patch,
-      prefer: "return=representation"
-    });
+    return 管理で書く("resources", "update", id, patch);
   },
   async deleteResource(id) {
-    const r = await sbFetch(`/rest/v1/resources?id=eq.${id}`, {
-      method: "DELETE"
-    });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("resources", "delete", id, null);
     return true;
   },
   // ── production_notes：生産メモ ──
@@ -3687,7 +3702,7 @@ var {
 
 // ═══════════ UTILS：共有ユーティリティ（日付・行事・文字列） ═══════════
 
-// 日本の祝日（2026〜2028）。行事カレンダーの表示用。
+// 日本の祝日（2026〜2028）。企画カレンダーの表示用。
 const JP_HOLIDAYS = {
   2026: {
     "1-1": "元日",
@@ -3753,7 +3768,7 @@ function holidayName(year, month, day) {
   return t ? t[`${month}-${day}`] || null : null;
 }
 
-// 行事（ハレの日）データ：TodayInfoCard と 行事カレンダー の共通ソース
+// 行事（ハレの日）データ：TodayInfoCard と 企画カレンダー の共通ソース
 function seasonalEventsFor(year) {
   const mk = (y, m, d, name, food) => ({
     date: new Date(y, m - 1, d),
@@ -4516,7 +4531,14 @@ function PopDetail({
     setArcBusy(true);
     setPwError("");
     try {
-      PW_CACHE.admin = pwInput.trim();
+      // 合言葉は回数制限つきで照合し、通ったら通行証で命令する（青果のページでは青果の副管理者も通す）
+      let r = await api.verifyPasswordEx("admin", pwInput.trim());
+      if (!r.ok && !r.locked && typeof deptKey === "function" && deptKey() === "produce") r = await api.verifyPasswordEx("admin_produce", pwInput.trim());
+      if (!r.ok) {
+        setPwError(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : "パスワードが違います");
+        setArcBusy(false);
+        return;
+      }
       await api.setArchivedMany([pop.id], true);
       try {
         window.dispatchEvent(new CustomEvent("appToast", {
@@ -4528,8 +4550,7 @@ function PopDetail({
       if (onDelete) onDelete(pop.id); // 一覧から取り除く
       onClose && onClose();
     } catch (e) {
-      PW_CACHE.admin = "";
-      setPwError("パスワードが違うか、移動に失敗しました");
+      setPwError("移動に失敗しました");
     } finally {
       setArcBusy(false);
     }
@@ -5710,6 +5731,58 @@ function PopDetail({
 }
 
 // ── Pop Card (shared) ──
+// ── 一覧の列数（2026-10-10） ──
+// 好み（4・5・6列）と、その幅に実際に入る数の小さいほうで並べる。スマホは2列のまま。
+// 横長のポップは2列ぶんを使う。A判なら、横2列ぶんの高さ＝縦1列ぶんの高さになるので、段がそろい、上下の余白も出ない。
+const POP_最小幅 = 120;
+// 選べるのは4列（大）と6列（小）だけ（2026-10-10）。前に選んでいた3・5は近いほうへ寄せる
+function 列の好み() {
+  try {
+    const n = +localStorage.getItem("popCols");
+    return n === 3 || n === 4 ? 4 : 6;
+  } catch (e) {
+    return 6;
+  }
+}
+function usePopCols(好み) {
+  const [el, setEl] = useState(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    if (!el) return;
+    const 測る = () => setW(el.clientWidth || 0);
+    測る();
+    let ro = null;
+    try {
+      ro = new ResizeObserver(測る);
+      ro.observe(el);
+    } catch (e) {
+      window.addEventListener("resize", 測る);
+    }
+    return () => {
+      try {
+        ro && ro.disconnect();
+      } catch (e) {}
+      window.removeEventListener("resize", 測る);
+    };
+  }, [el]);
+  const gap = w && w < 600 ? 10 : 12;
+  const 入る = w ? Math.max(2, Math.floor((w + gap) / (POP_最小幅 + gap))) : 2;
+  const 列 = Math.max(2, Math.min(好み || 列の好み(), 入る));
+  const 名 = 列 <= 2 ? null : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
+  const style = {
+    "--cols": 列,
+    "--pg-gap": gap + "px"
+  };
+  if (名) style["--pg-name"] = 名;
+  return {
+    ref: setEl,
+    列,
+    入る,
+    style,
+    cls: " pg-fixed" + (列 > 2 ? " pg-wide" : "")
+  };
+}
+
 // 一覧の並べ替え：同じ形（縦長どうし・横長どうし）を同じ段にそろえる。
 // 近く（K件以内）に同じ形があれば1段ぶん前に寄せる。見つからなければ次のものと並べる。
 function popShape(p) {
@@ -5841,26 +5914,19 @@ function PopCard({
   return /*#__PURE__*/React.createElement("div", {
     className: "ucard" + (land ? " pc-land" : "") + (land && pop.__pairLand ? " pc-pair-land" : ""),
     style: {
-      borderRadius: 14,
+      borderRadius: "var(--r-card, 12px)",
       overflow: "hidden",
       background: "var(--card, #fff)",
       cursor: "pointer",
       boxShadow: "var(--card-shadow)",
-      transition: "transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease",
+      transition: "transform var(--dur, .18s) var(--ease, ease), box-shadow var(--dur, .18s) ease",
       animation: `fadeUp 0.42s cubic-bezier(.16,1,.3,1) ${Math.min(index, 11) * 0.045}s both`,
       ...(dims && !rotated ? {
         "--nat-ar": land && pop.__pairLand && pop.__rowAr ? String(pop.__rowAr) : `${dims.w} / ${dims.h}`
       } : {})
     },
     onClick: () => onClick(pop),
-    onMouseEnter: e => {
-      e.currentTarget.style.transform = "translateY(-3px)";
-      e.currentTarget.style.boxShadow = "0 10px 28px rgba(0,0,0,0.14)";
-    },
-    onMouseLeave: e => {
-      e.currentTarget.style.transform = "none";
-      e.currentTarget.style.boxShadow = "";
-    }
+    title: pop.__group ? pop.group_name || pop.product_name : pop.product_name
   }, /*#__PURE__*/React.createElement("div", {
     className: "imgskel pc-img",
     style: {
@@ -5938,7 +6004,7 @@ function PopCard({
   }, /*#__PURE__*/React.createElement("div", {
     className: "pc-name",
     style: {
-      fontWeight: 800,
+      fontWeight: 700,
       fontSize: "var(--pc-name-size, 13px)",
       lineHeight: 1.4,
       whiteSpace: "normal",
@@ -5950,6 +6016,146 @@ function PopCard({
 }
 
 // ── Board Tab ──
+
+// ── 管理の確認：管理画面の外で、品目・まとめなどを書き換える前に呼ぶ（2026-10-10）
+// すでに管理画面に入っていれば（通行証があれば）そのまま true。なければ合言葉を聞いて照合する。
+function 管理の確認() {
+  if (PW_CACHE.admin && String(PW_CACHE.admin).length === 48) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const 箱 = document.createElement("div");
+    document.body.appendChild(箱);
+    const 根 = ReactDOM.createRoot(箱);
+    const 終わる = ok => {
+      try {
+        根.unmount();
+      } catch (e) {}
+      箱.remove();
+      resolve(ok);
+    };
+    function 確認画面() {
+      const [pw, setPw] = useState("");
+      const [err, setErr] = useState("");
+      const [busy, setBusy] = useState(false);
+      const 送る = async () => {
+        if (!pw.trim() || busy) return;
+        setBusy(true);
+        setErr("");
+        try {
+          const r = await api.verifyPasswordEx("admin", pw.trim());
+          if (r.ok) {
+            終わる(true);
+            return;
+          }
+          setErr(r.locked ? `間違いが続いたので、${api.lockText(r.seconds)}ほど待ってください` : r.left > 0 ? `合言葉が違います（あと${r.left}回）` : "合言葉が違います");
+          setPw("");
+        } catch (e) {
+          setErr("確かめられませんでした（電波を確認してください）");
+        }
+        setBusy(false);
+      };
+      return /*#__PURE__*/React.createElement("div", {
+        onClick: () => 終わる(false),
+        style: {
+          position: "fixed",
+          inset: 0,
+          zIndex: 400,
+          background: "rgba(10,20,35,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 20
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        onClick: e => e.stopPropagation(),
+        role: "dialog",
+        "aria-label": "\u7BA1\u7406\u306E\u5408\u8A00\u8449",
+        style: {
+          width: "min(340px, 100%)",
+          background: "var(--card, #fff)",
+          borderRadius: 16,
+          padding: 20,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.25)"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 16,
+          fontWeight: 900,
+          color: "var(--ink)",
+          marginBottom: 6
+        }
+      }, "\u7BA1\u7406\u306E\u5408\u8A00\u8449"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "var(--sub)",
+          lineHeight: 1.6,
+          marginBottom: 12
+        }
+      }, "\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u4EBA\u3060\u3051\u304C\u3067\u304D\u307E\u3059\u3002\u7BA1\u7406\u753B\u9762\u3068\u540C\u3058\u5408\u8A00\u8449\u3092\u5165\u308C\u3066\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("input", {
+        type: "password",
+        inputMode: "numeric",
+        autoFocus: true,
+        value: pw,
+        onChange: e => setPw(e.target.value),
+        onKeyDown: e => {
+          if (e.key === "Enter") 送る();
+        },
+        style: {
+          width: "100%",
+          boxSizing: "border-box",
+          border: "1px solid var(--line)",
+          borderRadius: 10,
+          padding: "11px 12px",
+          fontSize: 18,
+          letterSpacing: ".2em",
+          background: "var(--bg)",
+          color: "var(--text)"
+        }
+      }), err && /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12.5,
+          color: "#b3261e",
+          fontWeight: 700,
+          marginTop: 7
+        }
+      }, err), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 8,
+          marginTop: 14
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => 終わる(false),
+        style: {
+          flex: 1,
+          border: "1px solid var(--line)",
+          background: "transparent",
+          color: "var(--sub)",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer"
+        }
+      }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
+        onClick: 送る,
+        disabled: busy || !pw.trim(),
+        style: {
+          flex: 1,
+          border: "none",
+          background: "var(--fill)",
+          color: "#fff",
+          borderRadius: 10,
+          padding: "11px",
+          fontSize: 14,
+          fontWeight: 800,
+          cursor: "pointer",
+          opacity: busy || !pw.trim() ? 0.5 : 1
+        }
+      }, busy ? "確認中…" : "確かめる"))));
+    }
+    根.render(/*#__PURE__*/React.createElement(確認画面, null));
+  });
+}
 
 // ── 資料のサムネイル（管理画面と店舗支援で共用） ──
 /* 資料のサムネイル。画像はそのまま、Googleのファイルは Google の縮小画像、
@@ -6010,11 +6216,14 @@ function 資料の絵({
 }
 ;
 Object.assign(window, {
+  usePopCols,
+  列の好み,
   PopCard,
   PopDetail,
   UploadModal,
   pairByShape,
   popShape,
+  管理の確認,
   資料の色,
   資料の名,
   資料の縮小URL,
@@ -6101,7 +6310,7 @@ function BoardTab({
     setFSp(null);
   };
   const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0) + (fSp ? 1 : 0);
-  // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
+  // 企画カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
       const go = () => {
@@ -6127,7 +6336,7 @@ function BoardTab({
   // 文字サイズ：切り替えは 2026-10-06 にやめ、大きい方で固定
   useEffect(() => {
     try {
-      document.documentElement.style.setProperty("--pc-name-size", "19px");
+      document.documentElement.style.setProperty("--pc-name-size", "17px");
     } catch (e) {}
   }, []);
   const [view, setView] = useState(() => {
@@ -6144,10 +6353,25 @@ function BoardTab({
       localStorage.setItem("popView", v);
     } catch (e) {}
   };
+  // 列の数（4・5・6）。入りきらない幅では自動で減る（2026-10-10）
+  const [列好み, set列好み] = useState(列の好み);
+  const 列にする = n => {
+    set列好み(n);
+    setViewSave("md");
+    try {
+      localStorage.setItem("popCols", String(n));
+    } catch (e) {}
+  };
+  const 盤 = usePopCols(列好み);
+  useEffect(() => {
+    if (盤.入る >= 4 && view === "lg") setViewSave("md");
+  }, [盤.入る]);
+  const 束盤 = usePopCols(列好み);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
   const [hubSpin, setHubSpin] = useState(false);
+  // 下の案内（季節のポップは…）は、同じ文なら端末ごとに1回だけ出す（2026-10-08）
   const [showNotice, setShowNotice] = useState(true);
   const [featShow, setFeatShow] = useState(() => {
     try {
@@ -6159,6 +6383,30 @@ function BoardTab({
   });
   const tipOn = tipEnabled !== false;
   const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const [tip済み, setTip済み] = useState(() => {
+    try {
+      return localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {
+      return false;
+    }
+  });
+  useEffect(() => {
+    let 済 = false;
+    try {
+      済 = localStorage.getItem("tipSeen") === tipText;
+    } catch (e) {}
+    if (済) {
+      setTip済み(true);
+      return;
+    }
+    setTip済み(false);
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem("tipSeen", tipText);
+      } catch (e) {}
+    }, 3000); // 一度見えたら、次からは出さない
+    return () => clearTimeout(t);
+  }, [tipText]);
   const [読めず, set読めず] = useState(false); // 取り直しても返事が来なかった
   // 静か=true のときは、今の一覧を出したまま裏で取り直す（戻ってきたときなど）
   const load = useCallback(async 静か => {
@@ -6369,34 +6617,137 @@ function BoardTab({
       padding: 3,
       flexShrink: 0
     }
-  }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
+  }, (盤.入る >= 4
+  // パソコン・タブレット：4列（大きいマス）と6列（小さいマス）だけ。字は出さずマークで（2026-10-10）
+  ? [["md4", "4列（大きく）", /*#__PURE__*/React.createElement("svg", {
+    key: "c4",
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }))], ["md6", "6列（小さく）", /*#__PURE__*/React.createElement("svg", {
+    key: "c6",
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+    stroke: "none"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }))]] : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
     width: "18",
     height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8"
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "8",
-    height: "8"
+    x: "3.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "3",
-    width: "8",
-    height: "8"
+    x: "13.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "13",
-    width: "8",
-    height: "8"
+    x: "3.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "13",
-    width: "8",
-    height: "8"
+    x: "13.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
     key: "4",
     width: "18",
@@ -6404,32 +6755,38 @@ function BoardTab({
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8"
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "18",
-    height: "18",
+    x: "4",
+    y: "3.5",
+    width: "16",
+    height: "17",
     rx: "1.5"
-  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => setViewSave(k),
-    title: label,
-    "aria-label": label,
-    className: "bt-seg",
-    style: {
-      border: "none",
-      background: view === k ? "var(--card, #fff)" : "transparent",
-      color: view === k ? "var(--primary-soft)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
-    }
-  }, icon))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }))]]).map(([k, label, icon]) => {
+    const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : view === "md" && 列好み === +k.slice(2);
+    return /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k),
+      title: label,
+      "aria-label": label,
+      "aria-pressed": 選,
+      className: "bt-seg" + (選 ? " on" : ""),
+      style: {
+        border: "none",
+        background: 選 ? "var(--card, #fff)" : "transparent",
+        color: 選 ? "var(--primary-soft)" : "var(--sub)",
+        borderRadius: 8,
+        padding: 0,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: 選 ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+      }
+    }, icon);
+  })))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
@@ -6499,7 +6856,7 @@ function BoardTab({
       flexShrink: 0,
       lineHeight: 1
     }
-  }, "\u2715")), tipOn && showNotice && !radialOpen && /*#__PURE__*/React.createElement("div", {
+  }, "\u2715")), tipOn && showNotice && !tip済み && !radialOpen && /*#__PURE__*/React.createElement("div", {
     onClick: () => setShowNotice(false),
     style: {
       position: "fixed",
@@ -6533,20 +6890,22 @@ function BoardTab({
       flex: 1
     }
   }, tipText))), loading ? /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-" + view
-  }, [210, 150, 180, 230, 160, 200, 140, 190].map((h, i) => /*#__PURE__*/React.createElement("div", {
+    ref: 盤.ref,
+    className: "pop-grid v-" + view + (view === "md" ? 盤.cls : ""),
+    style: view === "md" ? 盤.style : undefined
+  }, [0, 1, 2, 3, 4, 5, 6, 7].map((h, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       background: "var(--card, #fff)",
-      border: "1px solid var(--line)",
-      borderRadius: 14,
-      overflow: "hidden"
+      borderRadius: "var(--r-card, 12px)",
+      overflow: "hidden",
+      boxShadow: "var(--card-shadow)"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "sk",
+    className: "sk pc-img-el",
     style: {
       width: "100%",
-      height: h
+      aspectRatio: "1 / 1.414"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6616,7 +6975,9 @@ function BoardTab({
       fontSize: 13
     }
   }, "\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u30DC\u30BF\u30F3\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046\uFF01")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-" + view
+    ref: 盤.ref,
+    className: "pop-grid v-" + view + (view === "md" ? 盤.cls : ""),
+    style: view === "md" ? 盤.style : undefined
   }, (() => {
     // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）
     const seen = {};
@@ -6649,10 +7010,8 @@ function BoardTab({
         list.push(head);
       } else list.push(pop);
     });
-    // 2まい表示：縦長どうし・横長どうしを同じ段に
-    const cols = typeof window !== "undefined" && window.innerWidth >= 620 ? 3 : 2;
-    const shown = view === "md" ? pairByShape(list, cols) : list;
-    return shown.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+    // 並べ方（2026-10-10）：横長は2列ぶんを使う（CSS）。順番は投稿の新しい順のまま
+    return list.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,
@@ -6756,8 +7115,10 @@ function BoardTab({
         padding: "12px 14px 120px"
       }
     }, /*#__PURE__*/React.createElement("div", {
-      className: "pop-grid v-" + view
-    }, (view === "md" ? pairByShape(inGroup, window.innerWidth >= 620 ? 3 : 2) : inGroup).map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+      ref: 束盤.ref,
+      className: "pop-grid v-" + view + (view === "md" ? 束盤.cls : ""),
+      style: view === "md" ? 束盤.style : undefined
+    }, inGroup.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,
@@ -7108,6 +7469,7 @@ function SearchTab({
   radialOpen,
   setRadialOpen
 }) {
+  const 結果盤 = usePopCols();
   const [allPops, setAllPops] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -7541,7 +7903,9 @@ function SearchTab({
       color: "var(--ink)"
     }
   }, results.length, "\u4EF6")), /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-md"
+    ref: 結果盤.ref,
+    className: "pop-grid v-md" + 結果盤.cls,
+    style: 結果盤.style
   }, results.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
     pop: pop,
@@ -12785,10 +13149,77 @@ var {
   useRef
 } = React;
 
-/* ───────── パソコンの左の柱に出す、行事カレンダーの一覧 ─────────
-   今月の行事（日付つき）／今後の予定／行事のまとまり、の三段。
-   日付は JP_HOLIDAYS と seasonalEventsFor から、
-   まとまりと枚数は pop_bundles から取る。 */
+/* ───────── パソコンの左の柱に出す、企画カレンダーの一覧 ─────────
+   中身は「企画カレンダー」（pop_bundles）そのもの。2026-10-10 につなぎ直し。
+   以前はアプリに書き込んだ決まった行事表を出していて、作った行事と食い違っていた。
+   ・今月の行事＝その月が入っている行事（12か月ぜんぶの「定番」は除く）
+   ・日付は、行事の名前から分かるものだけ付ける（祝日・季節の行事・メモの「◯月◯日」）
+   ・今後の予定＝来月以降に始まる行事
+   ・いつも使う＝12か月ぜんぶの行事
+   押すと、その行事のまとめが直接ひらく。 */
+// 名前から日付が分かる、表にない行事（年で変わるものは年ごとに）
+const 追加の日 = y => {
+  const 第n木 = (yy, m, n) => {
+    const f = new Date(yy, m - 1, 1);
+    const off = (4 - f.getDay() + 7) % 7;
+    return new Date(yy, m - 1, 1 + off + (n - 1) * 7);
+  };
+  const 十五夜 = {
+    2026: [9, 25],
+    2027: [9, 15],
+    2028: [10, 3]
+  }[y];
+  const a = [{
+    d: new Date(y, 10, 15),
+    n: "七五三"
+  }, {
+    d: 第n木(y, 11, 3),
+    n: "ボジョレー"
+  }];
+  if (十五夜) a.push({
+    d: new Date(y, 十五夜[0] - 1, 十五夜[1]),
+    n: "十五夜"
+  });
+  return a;
+};
+// 行事（束）の、その月の日付。分からなければ null
+function 束の日(b, y, m) {
+  const 候補 = [...seasonalEventsFor(y).map(e => ({
+    d: e.date,
+    n: e.name
+  })), ...Object.entries(JP_HOLIDAYS[y] || {}).map(([k, n]) => {
+    const [mm, dd] = k.split("-").map(Number);
+    return {
+      d: new Date(y, mm - 1, dd),
+      n
+    };
+  }), ...追加の日(y)];
+  const 部分 = String(b.name || "").split(/[・／\/、]/).map(t => t.replace(/^お/, "").trim()).filter(t => t.length >= 2);
+  const 当たり = [];
+  const mt = String(b.note || "").match(/(\d{1,2})月(\d{1,2})日/);
+  if (mt) 当たり.push(new Date(y, +mt[1] - 1, +mt[2]));
+  候補.forEach(c => {
+    const n = c.n.replace(/^お/, "");
+    if (部分.some(t => n.includes(t) || t.includes(n))) 当たり.push(c.d);
+  });
+  const d = 当たり.filter(x => x.getMonth() === m).sort((p, q) => p - q)[0];
+  if (!d) return null;
+  const r = new Date(d);
+  r.setHours(0, 0, 0, 0);
+  return r;
+}
+// 企画カレンダーの、その束を直接ひらく
+function 束をひらく(id) {
+  try {
+    window.__bundleOpen = id || "";
+    window.dispatchEvent(new CustomEvent("goTab", {
+      detail: "bundle"
+    }));
+    if (id) window.dispatchEvent(new CustomEvent("bundleOpen", {
+      detail: id
+    }));
+  } catch (e) {}
+}
 function CalendarDock() {
   const 今日 = new Date();
   今日.setHours(0, 0, 0, 0);
@@ -12798,6 +13229,7 @@ function CalendarDock() {
   });
   const [束, set束] = useState([]);
   const [枚数, set枚数] = useState({});
+  const [読めた, set読めた] = useState(!!window.__bundleCache);
   const 曜 = ["日", "月", "火", "水", "木", "金", "土"];
   const 色 = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
   useEffect(() => {
@@ -12810,44 +13242,62 @@ function CalendarDock() {
         m[r.bundle_id] = (m[r.bundle_id] || 0) + 1;
       });
       set枚数(m);
+      set読めた(true);
     };
     if (window.__bundleCache) 入れる(window.__bundleCache);
     (async () => {
       try {
         入れる(await prefetchBundles(false));
-      } catch (e) {}
+      } catch (e) {
+        if (生きてる) set読めた(true);
+      }
     })();
     return () => {
       生きてる = false;
     };
   }, []);
+  const 出す = 束.filter(b => b.visible !== false && Array.isArray(b.months) && b.months.length > 0);
+  const 季節 = 出す.filter(b => b.months.length < 12);
+  const いつも = 出す.filter(b => b.months.length >= 12);
+  // 企画カレンダーの帯と同じ色にそろえる（並びも同じ）
+  const 色の = b => 色[季節.findIndex(x => x.id === b.id) % 色.length] || "#3f9e63";
+  const 月番 = 年月.m + 1;
+  const 並べ = (list, y, m) => list.map(b => ({
+    b,
+    d: 束の日(b, y, m)
+  })).sort((p, q) => p.d && q.d ? p.d - q.d : p.d ? -1 : q.d ? 1 : (p.b.sort_order || 0) - (q.b.sort_order || 0));
+  const 今月の = 並べ(季節.filter(b => b.months.includes(月番)), 年月.y, 年月.m);
+  const 期間 = b => {
+    const ms = b.months.slice().sort((p, q) => p - q);
+    // 12月→1月のようにまたぐ並びは、つながる順に直す
+    let i = ms.findIndex((v, k) => k > 0 && v - ms[k - 1] > 1);
+    const 順 = i > 0 && ms[0] === 1 && ms[ms.length - 1] === 12 ? ms.slice(i).concat(ms.slice(0, i)) : ms;
+    return 順.length === 1 ? 順[0] + "月" : 順[0] + "〜" + 順[順.length - 1] + "月";
+  };
 
-  // その年の、日付のついた行事（祝日＋季節の行事）をまとめる
-  const 年の行事 = y => {
-    const a = seasonalEventsFor(y).map(e => ({
-      date: e.date,
-      name: e.name,
-      food: e.food,
-      祝: false
-    }));
-    Object.entries(JP_HOLIDAYS[y] || {}).forEach(([k, name]) => {
-      const [mm, dd] = k.split("-").map(Number);
-      a.push({
-        date: new Date(y, mm - 1, dd),
-        name,
-        food: null,
-        祝: true
+  // 来月から3か月のうちに始まる行事
+  const これから = [];
+  for (let k = 1; k <= 3 && これから.length < 5; k++) {
+    const d0 = new Date(年月.y, 年月.m + k, 1);
+    const mm = d0.getMonth() + 1,
+      前 = new Date(年月.y, 年月.m + k - 1, 1).getMonth() + 1;
+    並べ(季節.filter(b => b.months.includes(mm) && !b.months.includes(前) && !これから.some(x => x.b.id === b.id)), d0.getFullYear(), d0.getMonth()).forEach(x => {
+      if (これから.length < 5) これから.push({
+        ...x,
+        mm
       });
     });
-    a.forEach(e => e.date.setHours(0, 0, 0, 0));
-    return a.sort((x, y2) => x.date - y2.date);
-  };
-  const 全部 = [...年の行事(年月.y), ...(年月.m >= 10 ? 年の行事(年月.y + 1) : [])];
-  const 今月の = 全部.filter(e => e.date.getFullYear() === 年月.y && e.date.getMonth() === 年月.m);
-  const これから = 全部.filter(e => {
-    const 先 = new Date(年月.y, 年月.m + 1, 1);
-    return e.date >= 先;
-  }).slice(0, 4);
+  }
+
+  // 祝日はその月の分を一行だけ（作った行事とは別の目安として）
+  const 祝 = Object.entries(JP_HOLIDAYS[年月.y] || {}).map(([k, n]) => {
+    const [mm, dd] = k.split("-").map(Number);
+    return {
+      mm,
+      dd,
+      n
+    };
+  }).filter(h => h.mm === 月番).sort((p, q) => p.dd - q.dd);
   const 前月 = () => set年月(v => v.m === 0 ? {
     y: v.y - 1,
     m: 11
@@ -12862,32 +13312,14 @@ function CalendarDock() {
     y: v.y,
     m: v.m + 1
   });
-  const 開く = t => {
-    try {
-      window.dispatchEvent(new CustomEvent("goTab", {
-        detail: t
-      }));
-    } catch (e) {}
-  };
   const 見出し = (文字, 右) => /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "baseline",
-      margin: "20px 0 10px"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      letterSpacing: "0.04em"
-    }
-  }, 文字), 右);
+    className: "cd-h"
+  }, /*#__PURE__*/React.createElement("span", null, 文字), 右);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     className: "dock-head",
-    onClick: () => 開く("bundle"),
-    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
-  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
+    onClick: () => 束をひらく(""),
+    "aria-label": "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
+  }, /*#__PURE__*/React.createElement("b", null, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "PLANNING CALENDAR")), /*#__PURE__*/React.createElement("div", {
     className: "cd-month"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: 前月,
@@ -12903,7 +13335,7 @@ function CalendarDock() {
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M15 5l-7 7 7 7"
-  }))), /*#__PURE__*/React.createElement("span", null, 年月.y, "\u5E74 ", 年月.m + 1, "\u6708"), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("span", null, 年月.y, "\u5E74 ", 月番, "\u6708"), /*#__PURE__*/React.createElement("button", {
     onClick: 次月,
     "aria-label": "\u6B21\u306E\u6708"
   }, /*#__PURE__*/React.createElement("svg", {
@@ -12917,59 +13349,90 @@ function CalendarDock() {
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  })))), 今月の.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  })))), !読めた ? /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
       padding: "18px 2px",
       textAlign: "center"
     }
-  }, 年月.m + 1, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : 今月の.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--faint)",
+      padding: "18px 2px",
+      textAlign: "center"
+    }
+  }, 月番, "\u6708\u306E\u884C\u4E8B\u306F\u307E\u3060\u767B\u9332\u3055\u308C\u3066\u3044\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     className: "cd-line"
-  }, 今月の.map((e, i) => {
-    const 今日か = e.date.getTime() === 今日.getTime();
-    return /*#__PURE__*/React.createElement("div", {
-      className: "cd-row",
-      key: i
-    }, /*#__PURE__*/React.createElement("span", {
+  }, 今月の.map(({
+    b,
+    d
+  }) => {
+    const 今日か = d && d.getTime() === 今日.getTime();
+    const n = 枚数[b.id] || 0;
+    return /*#__PURE__*/React.createElement("button", {
+      className: "cd-row cd-tap",
+      key: b.id,
+      onClick: () => 束をひらく(b.id),
+      title: b.note || b.name,
+      "aria-label": b.name + "のまとめを開く"
+    }, d ? /*#__PURE__*/React.createElement("span", {
       className: "cd-day" + (今日か ? " cd-now" : "")
-    }, /*#__PURE__*/React.createElement("b", null, e.date.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[e.date.getDay()])), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("b", null, d.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[d.getDay()])) : /*#__PURE__*/React.createElement("span", {
+      className: "cd-day cd-span"
+    }, /*#__PURE__*/React.createElement("b", null, 期間(b).replace("〜", "–"))), /*#__PURE__*/React.createElement("span", {
       className: "cd-dot",
       style: {
-        background: e.祝 ? "#d1554f" : "#3b7dd8"
+        background: 色の(b)
       }
     }), /*#__PURE__*/React.createElement("span", {
       className: "cd-name"
-    }, e.name, e.food && /*#__PURE__*/React.createElement("em", null, "\u30FB", e.food)));
-  })), これから.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("今後の予定", /*#__PURE__*/React.createElement("button", {
-    onClick: () => 開く("bundle"),
+    }, b.name), /*#__PURE__*/React.createElement("span", {
+      className: "cd-num"
+    }, n > 0 ? n + "枚" : "—"));
+  })), 祝.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "cd-hol"
+  }, "\u795D\u65E5\u3000", 祝.map(h => `${h.dd}日 ${h.n}`).join("・")), これから.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("今後の予定", /*#__PURE__*/React.createElement("button", {
+    onClick: () => 束をひらく(""),
     className: "cd-more"
-  }, "\u3059\u3079\u3066\u898B\u308B \u203A")), これから.map((e, i) => /*#__PURE__*/React.createElement("div", {
-    className: "cd-next",
-    key: i
+  }, "\u3059\u3079\u3066\u898B\u308B \u203A")), これから.map(({
+    b,
+    d,
+    mm
+  }) => /*#__PURE__*/React.createElement("button", {
+    className: "cd-next cd-tap",
+    key: b.id,
+    onClick: () => 束をひらく(b.id),
+    title: b.note || b.name
   }, /*#__PURE__*/React.createElement("span", {
     className: "cd-next-d"
-  }, e.date.getMonth() + 1, "/", e.date.getDate()), /*#__PURE__*/React.createElement("span", {
+  }, d ? `${d.getMonth() + 1}/${d.getDate()}` : `${mm}月〜`), /*#__PURE__*/React.createElement("span", {
     className: "cd-dot",
     style: {
-      background: e.祝 ? "#d1554f" : "#c39a3c"
-    }
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "cd-name"
-  }, e.name)))), 束.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("カテゴリ", null), 束.filter(b => !b.hidden).slice(0, 8).map((b, i) => /*#__PURE__*/React.createElement("button", {
-    key: b.id,
-    className: "cd-cat",
-    onClick: () => 開く("bundle")
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "cd-chip",
-    style: {
-      background: 色[i % 色.length]
+      background: 色の(b)
     }
   }), /*#__PURE__*/React.createElement("span", {
     className: "cd-name"
   }, b.name), /*#__PURE__*/React.createElement("span", {
     className: "cd-num"
-  }, 枚数[b.id] || 0)))));
+  }, (枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—")))), いつも.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("いつも使う", null), いつも.map(b => /*#__PURE__*/React.createElement("button", {
+    key: b.id,
+    className: "cd-next cd-tap",
+    onClick: () => 束をひらく(b.id),
+    title: b.note || b.name
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "cd-next-d"
+  }, "\u901A\u5E74"), /*#__PURE__*/React.createElement("span", {
+    className: "cd-dot",
+    style: {
+      background: "#7F92A6"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "cd-name"
+  }, b.name), /*#__PURE__*/React.createElement("span", {
+    className: "cd-num"
+  }, (枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—")))));
 }
 function CalendarTab({
   細い
@@ -13041,7 +13504,7 @@ function CalendarTab({
       fontSize: 18,
       fontWeight: 900
     }
-  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
@@ -16306,13 +16769,8 @@ function OrderTab() {
       return null;
     }
   });
-  const [unlocked, setUnlocked] = useState(() => {
-    try {
-      return !!sessionStorage.getItem("orderStore");
-    } catch (e) {
-      return false;
-    }
-  });
+  // 2026-10-10：毎週の発注数・指示書・記録はやめ、塩干発注は試作システムの中へ。店の番号の入口も不要になった
+  const [unlocked, setUnlocked] = useState(true);
   const [pw, setPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const tryUnlock = () => {
@@ -16373,7 +16831,7 @@ function OrderTab() {
   };
   const [loading, setLoading] = useState(true);
   const [ver, setVer] = useState(0);
-  const [tab, setTab] = useState("today"); // cal=カレンダー / items=品目
+  const [tab, setTab] = useState("items"); // items=品目 / docs=資料
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -16729,6 +17187,7 @@ function OrderTab() {
   const [impBusy, setImpBusy] = useState(false);
   const [impMsg, setImpMsg] = useState("");
   const importExcel = async file => {
+    if (!(await 管理の確認())) return; // 品目の書き換えは管理の人だけ
     if (!file) return;
     setImpBusy(true);
     setImpMsg("読み込んでいます…");
@@ -16906,6 +17365,7 @@ function OrderTab() {
       setMsg("品名を入れてください");
       return;
     }
+    if (!(await 管理の確認())) return;
     setBusy(true);
     setMsg("");
     try {
@@ -16933,6 +17393,7 @@ function OrderTab() {
   const [confirmOff, setConfirmOff] = useState(null); // 確認中の品目
   const [showOff, setShowOff] = useState(false); // 使わないものを表示するか
   const toggleActive = async (it, next) => {
+    if (!(await 管理の確認())) return;
     try {
       await api.updateOrderItem(it.id, {
         active: next
@@ -16943,6 +17404,7 @@ function OrderTab() {
   };
   const removeItem = async it => {
     if (!window.confirm(`「${it.name}」を完全に消しますか？\nこの操作は戻せません。`)) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteOrderItem(it.id);
       setVer(v => v + 1);
@@ -17111,35 +17573,13 @@ function OrderTab() {
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "\u5869\u5E72\u767A\u6CE8"), store && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12,
-      fontWeight: 800,
-      background: "rgba(255,255,255,0.22)",
-      borderRadius: 999,
-      padding: "2px 10px"
-    }
-  }, store.name), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setUnlocked(false);
-      setStore(null);
-      setPw("");
-      try {
-        sessionStorage.removeItem("orderStore");
-      } catch (e) {}
-    },
+  }, "\u5869\u5E72\u767A\u6CE8"), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      border: "1px solid rgba(255,255,255,0.4)",
-      background: "transparent",
-      color: "#fff",
-      borderRadius: 7,
-      padding: "4px 10px",
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: "pointer"
+      fontSize: 11.5,
+      opacity: 0.85
     }
-  }, "\u5E97\u3092\u5909\u3048\u308B"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u54C1\u76EE\u306E\u66F8\u304D\u63DB\u3048\u306F\u7BA1\u7406\u306E\u5408\u8A00\u8449\u3067"))), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -17151,7 +17591,7 @@ function OrderTab() {
       gap: 7,
       marginBottom: 14
     }
-  }, [["today", "本日の発注"], ["sheet", "管理"], ["print", "印刷"], ["docs", "資料"], ["cal", "カレンダー"], ["items", `品目（${active.length}）`]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+  }, [["items", `品目（${active.length}）`], ["docs", "資料"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
     onClick: () => setTab(k),
     style: {
@@ -19323,7 +19763,7 @@ function OrderTab() {
 }
 
 // ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
-// 行事カレンダーの先読み（一覧画面から裏で呼ぶ）
+// 企画カレンダーの先読み（一覧画面から裏で呼ぶ）
 function prefetchBundles(force) {
   if (!force && window.__bundleCache && Date.now() - window.__bundleCache.at < 5 * 60 * 1000) {
     return Promise.resolve(window.__bundleCache);
@@ -19369,6 +19809,13 @@ function BundleTab({
   const [copied, setCopied] = useState("");
   const NOW_M = new Date().getMonth() + 1;
   const chartBox = useRef(null);
+  // 左の柱から「この行事」を押されたら、その束をひらく
+  const [指定, set指定] = useState(window.__bundleOpen || "");
+  useEffect(() => {
+    const h = e => set指定(e && e.detail || "");
+    window.addEventListener("bundleOpen", h);
+    return () => window.removeEventListener("bundleOpen", h);
+  }, []);
   useEffect(() => {
     let alive = true;
     const apply = c => {
@@ -19457,11 +19904,22 @@ function BundleTab({
       setPrompts(prs || []);
     } catch (e) {}
   };
+  useEffect(() => {
+    if (!指定) return;
+    const b = bundles.find(x => x.id === 指定);
+    if (!b) return;
+    window.__bundleOpen = "";
+    set指定("");
+    openBundle(b);
+  }, [指定, bundles]);
   const popById = id => pops.find(p => p.id === id);
   const bundleNow = bundles.filter(b => Array.isArray(b.months) && b.months.includes(NOW_M) && b.months.length < 12);
   const bundleAll = bundles.filter(b => !bundleNow.some(x => x.id === b.id));
   const cur = bundles.find(b => b.id === openId);
+
+  // まとめの書き換えは管理の人だけ（2026-10-10）
   const addPop = async p => {
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addToBundle(openId, p.id, items.length);
@@ -19471,6 +19929,7 @@ function BundleTab({
     }
   };
   const delItem = async it => {
+    if (!(await 管理の確認())) return;
     try {
       await api.removeFromBundle(it.id);
       await reloadInner();
@@ -19478,6 +19937,7 @@ function BundleTab({
   };
   const savePrompt = async () => {
     if (!pForm.prompt.trim()) return;
+    if (!(await 管理の確認())) return;
     setBusy(true);
     try {
       await api.addBundlePrompt({
@@ -19498,6 +19958,7 @@ function BundleTab({
   };
   const delPrompt = async pr => {
     if (!window.confirm("このプロンプトを消しますか？")) return;
+    if (!(await 管理の確認())) return;
     try {
       await api.deleteBundlePrompt(pr.id);
       await reloadInner();
@@ -20073,7 +20534,7 @@ function BundleTab({
   };
   return /*#__PURE__*/React.createElement("div", null, 細い ? /*#__PURE__*/React.createElement("div", {
     className: "dock-head"
-  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("b", null, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "PLANNING CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--fill)",
       padding: "9px 16px",
@@ -20085,7 +20546,7 @@ function BundleTab({
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 細い ? "none" : 1600,
       margin: "0 auto",
@@ -20516,7 +20977,7 @@ const MENU_ICON = (() => {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8",
+    strokeWidth: "1.75",
     strokeLinecap: "round",
     strokeLinejoin: "round",
     "aria-hidden": "true"
@@ -20548,15 +21009,16 @@ const MENU_ICON = (() => {
     }), /*#__PURE__*/React.createElement("path", {
       d: "M4 7l8 6 8-6"
     }))),
-    order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
-      x: "4",
-      y: "10.5",
-      width: "16",
-      height: "10.5",
-      rx: "2"
+    order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 10v9.5a1 1 0 001 1h14a1 1 0 001-1V10"
     }), /*#__PURE__*/React.createElement("path", {
-      d: "M8 10.5V7a4 4 0 018 0v3.5"
+      d: "M3 9.5L4.6 4h14.8L21 9.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M3 9.5h18"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M9.5 20.5v-5.5h5v5.5"
     }))),
+    // 店舗支援（2026-10-10 鍵→店）
     barcode: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"
     }))),
@@ -20716,21 +21178,31 @@ function LazyTab(props) {
 }
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
-// パソコン用：2つの部門を並べ、いまの方を塗る。押すと読み込み直して切り替わる
+// パソコン用：スイッチの形。つまみが滑ってから切り替わる（切り替えは読み込み直しになるので、先に動きを見せる）
 function 部門スイッチ() {
   const 今 = deptKey();
+  const [行き先, set行き先] = useState(今);
+  const ks = Object.keys(DEPTS);
+  const 右 = ks.indexOf(行き先) === 1;
+  const 押す = k => {
+    if (k === 行き先) return;
+    set行き先(k);
+    setTimeout(() => setDeptKey(k), 300);
+  };
   return /*#__PURE__*/React.createElement("div", {
-    className: "dept-seg",
-    role: "group",
+    className: "dept-sw" + (右 ? " right" : "") + " to-" + 行き先,
+    role: "radiogroup",
     "aria-label": "\u90E8\u9580"
-  }, Object.keys(DEPTS).map(k => /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dept-sw-knob",
+    "aria-hidden": "true"
+  }), ks.map(k => /*#__PURE__*/React.createElement("button", {
     key: k,
     type: "button",
-    className: "dept-seg-b dept-" + k + (k === 今 ? " on" : ""),
-    "aria-pressed": k === 今,
-    onClick: () => {
-      if (k !== 今) setDeptKey(k);
-    }
+    role: "radio",
+    "aria-checked": k === 行き先,
+    className: "dept-sw-b" + (k === 行き先 ? " on" : ""),
+    onClick: () => 押す(k)
   }, DEPTS[k].label)));
 }
 function 部門切替() {
@@ -21112,6 +21584,25 @@ function App() {
   useEffect(() => {
     if (広い) setMoreOpen(true);
   }, [広い]);
+  const [畳む, set畳む] = useState(() => {
+    try {
+      return localStorage.getItem("dockMin") === "1";
+    } catch (e) {
+      return false;
+    }
+  });
+  const 畳みを切替 = () => set畳む(v => {
+    const n = !v;
+    try {
+      localStorage.setItem("dockMin", n ? "1" : "0");
+    } catch (e) {}
+    return n;
+  });
+  useEffect(() => {
+    try {
+      if (広い && 畳む) document.documentElement.setAttribute("data-dock-min", "1");else document.documentElement.removeAttribute("data-dock-min");
+    } catch (e) {}
+  }, [広い, 畳む]);
   useEffect(() => {
     const sp = document.getElementById("splash");
     if (!sp) return;
@@ -21228,26 +21719,11 @@ function App() {
       padding: "10px 16px 0"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff4e5",
-      border: "1px solid #ffc98a",
-      color: "#8a4b00",
-      borderRadius: 12,
-      padding: "12px 14px",
-      fontSize: 13.5,
-      fontWeight: 700,
-      lineHeight: 1.6,
-      display: "flex",
-      gap: 9,
-      alignItems: "flex-start",
-      boxShadow: "0 1px 6px rgba(0,0,0,0.06)"
-    }
+    className: "notice-line"
   }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
-      lineHeight: 1.3
-    }
-  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
+    className: "notice-dot",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap"
     }
@@ -21593,30 +22069,17 @@ function App() {
       } catch (_) {}
     }
   }, /*#__PURE__*/React.createElement("img", {
+    className: "dock-logo",
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
-  })), /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
-    className: "dock-search",
-    onClick: () => {
-      try {
-        window.dispatchEvent(new CustomEvent("openSearch"));
-      } catch (e) {}
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "16",
-    height: "16",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.2",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "11",
-    cy: "11",
-    r: "7"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 20l-3.7-3.7"
-  })), /*#__PURE__*/React.createElement("span", null, "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059")))) : null, /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("img", {
+    className: "dock-mark",
+    src: "brand-mark.png",
+    alt: "",
+    "aria-hidden": "true"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, 畳む ? /*#__PURE__*/React.createElement(部門切替, null) : /*#__PURE__*/React.createElement(部門スイッチ, null)))) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -21645,18 +22108,15 @@ function App() {
       fontWeight: 900
     }
   }, "\u2715")), !広い && /*#__PURE__*/React.createElement("div", {
-    className: "brand-row",
+    className: "dock-top",
     style: {
-      margin: "2px 0 12px"
+      marginTop: 0,
+      marginBottom: 12
     }
   }, /*#__PURE__*/React.createElement("a", {
+    className: "dock-brand",
     href: "./",
     "aria-label": "\u30DB\u30FC\u30E0\uFF08\u4E00\u89A7\uFF09\u306B\u3082\u3069\u308B",
-    style: {
-      display: "block",
-      width: "62%",
-      maxWidth: 166
-    },
     onClick: e => {
       e.preventDefault();
       setTab("board");
@@ -21669,115 +22129,53 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("img", {
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
-    alt: "GoodDay NEXUS PROJECT",
-    style: {
-      display: "block",
-      width: "100%",
-      height: "auto",
-      opacity: 0.95
-    }
-  })), /*#__PURE__*/React.createElement(部門切替, null)), /*#__PURE__*/React.createElement("div", {
-    className: "menu-list",
-    style: {
-      flex: "1 1 auto",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      gap: 8,
-      minHeight: 0,
-      overflowY: "auto",
-      WebkitOverflowScrolling: "touch"
-    }
+    alt: "GoodDay NEXUS PROJECT"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dock-ctl"
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null))), /*#__PURE__*/React.createElement("div", {
+    className: "menu-list menu-grid"
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["search", "archive", "guide", "admin"] : ["search", "bundle", "archive", "guide", "catalog", "gne", "order", "lab", "request", "admin"];
-    return TAB_REGISTRY.filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
+    const ORDER = 青果 ? ["archive", "guide", "admin"] : ["bundle", "archive", "catalog", "gne", "order", "lab", "request", "admin"]; // 手引きは青果だけ（2026-10-10）
+    // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
+    const 外す = 広い ? ["search", "bundle"] : [];
+    return TAB_REGISTRY.filter(o => !外す.includes(o.key)).filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
       ...o,
       label: o.key === "admin" ? "管理" : o.label,
       __押し: o.key === "guide"
     } : o);
-  })().map(o => /*#__PURE__*/React.createElement("button", {
-    key: o.key,
-    onClick: () => {
-      setTab(o.key);
-      setMoreOpen(false);
-    },
-    "aria-label": o.label,
-    "aria-current": tab === o.key ? "page" : undefined,
-    className: "menu-item menu-row-" + o.key + (o.__押し ? " menu-push" : ""),
-    style: {
-      width: "100%",
-      border: tab === o.key ? "1.5px solid var(--primary)" : "1px solid var(--line)",
-      background: tab === o.key ? "var(--soft)" : "var(--menu-row, #fff)",
-      borderRadius: 12,
-      padding: "10px 14px",
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 13,
-      flex: "0 0 auto",
-      minHeight: 58
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "relative",
-      width: 38,
-      height: 38,
-      flexShrink: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: tab === o.key ? "var(--primary)" : "var(--primary-soft)"
-    }
-  }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "absolute",
-      top: -5,
-      right: -9,
-      background: "var(--fill)",
-      color: "#fff",
-      fontSize: 12.5,
-      fontWeight: 900,
-      padding: "2px 5px",
-      borderRadius: 7,
-      letterSpacing: 0.4
-    }
-  }, o.badge)), /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: 1,
-      minWidth: 0,
-      fontSize: 17,
-      fontWeight: 800,
-      color: tab === o.key ? "var(--primary)" : "var(--ink)",
-      lineHeight: 1.3,
-      textAlign: "left",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis"
-    }
-  }, o.label), /*#__PURE__*/React.createElement("svg", {
-    width: "15",
-    height: "15",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "var(--faint)",
-    strokeWidth: "2.3",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    style: {
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M9 6l6 6-6 6"
-  }))))), /*#__PURE__*/React.createElement("button", {
+  })().map((o, i, 全部) => {
+    // タイルが1つだけ最後の行に余るときは、その1つを横いっぱいにする
+    const タイル = 全部.filter(x => x.key !== "search");
+    const 列 = 広い ? 2 : 3;
+    const 余り = タイル.length % 列 === 1 && o.key === タイル[タイル.length - 1].key;
+    return /*#__PURE__*/React.createElement("button", {
+      key: o.key,
+      onClick: () => {
+        setTab(o.key);
+        setMoreOpen(false);
+      },
+      "aria-label": o.label,
+      title: o.label,
+      "aria-current": tab === o.key ? "page" : undefined,
+      className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-ic"
+    }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-badge"
+    }, o.badge)), /*#__PURE__*/React.createElement("span", {
+      className: "menu-tile-t"
+    }, o.label));
+  })), /*#__PURE__*/React.createElement("button", {
     className: "menu-reload",
     onClick: () => {
       try {
         location.reload();
       } catch (e) {}
     },
+    title: "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
+    "aria-label": "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
     style: {
       marginTop: 12,
       width: "100%",
@@ -21793,7 +22191,7 @@ function App() {
       gap: 8,
       fontFamily: "inherit",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
@@ -21802,14 +22200,36 @@ function App() {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.2",
+    strokeWidth: "1.9",
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M20 4v5h-5"
-  })), "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("aside", {
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "mr-t"
+  }, "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("button", {
+    className: "dock-fold",
+    onClick: 畳みを切替,
+    "aria-label": 畳む ? "メニューをひろげる" : "メニューをたたむ",
+    title: 畳む ? "メニューをひろげる" : "メニューをたたむ",
+    "aria-expanded": !畳む
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, 畳む ? /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  }) : /*#__PURE__*/React.createElement("path", {
+    d: "M9 5l7 7-7 7"
+  })))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
   }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,
