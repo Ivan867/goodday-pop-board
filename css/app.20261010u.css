@@ -323,11 +323,17 @@ body { position: relative; overscroll-behavior-y: none; }
 
 .cat-grid.c-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
 /* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
-@media (min-width: 900px) {
-  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
+/* 2026-10-10：画面の幅ではなく「入力支援の面の幅」で決める。
+   パソコンで左右の柱がある時は真ん中が狭く、右の設定がはみ出していたため */
+.gne-root { container-type: inline-size; }
+.gne-grid > * { min-width: 0; }
+@container (min-width: 820px) {
+  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 360px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
   .gne-preview { position: sticky; top: 12px; }
   .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
 }
+/* 1列のときも、プレビューが縦に大きくなりすぎないように */
+.gne-preview canvas { max-height: 78vh; width: auto !important; max-width: 100% !important; margin: 0 auto; display: block; }
 /* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
 .board-head .hig-pill, .board-head .bt-btn {
   border-color: transparent !important;
@@ -914,3 +920,32 @@ button:active, .ucard:active { transform: scale(.98); }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important;
     transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* 品名の下に空けていた2行目の余白をやめる。2行になる名前だけ2行の高さになる（2026-10-10） */
+.pop-grid .pc-name { min-height: 0 !important; }
+
+/* 品名はいつも1行。入りきらない分は「…」で切る（全文は押した先と、パソコンでは指をのせると出る）（2026-10-10） */
+.pop-grid .pc-name { display: block !important; white-space: nowrap !important; overflow: hidden !important;
+  text-overflow: ellipsis !important; -webkit-line-clamp: unset !important; word-break: normal !important; overflow-wrap: normal !important; }
+
+/* スマホの3列・4列：小さいカードに合わせて、内側の余白と角を詰める（2026-10-10） */
+.pop-grid.pg-narrow .ucard { border-radius: 10px !important; }
+.pop-grid.pg-narrow .pc-body { padding: 5px 6px 6px !important; }
+.pop-grid.pg-narrow .pc-name { line-height: 1.35 !important; }
+
+@container (min-width: 1080px) {
+  .gne-grid { grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; }
+}
+.gne-settings > * { min-width: 0; }
+
+/* ═════ 見やすさ（2026-10-10） ═════ */
+/* 濃紺の上の薄い字は、明るさの比 4.5 以上に（測って 4.07〜4.46 だったもの） */
+.dept-sw-b { color: #8EA0B5; }
+.dock-head i { color: #8EA0B5 !important; }
+.cd-day i { color: #46525F !important; }
+/* iPhone・iPad：入力欄の字が16pxより小さいと、触ったときに画面が勝手に拡大される。16px以上にして防ぐ */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea { font-size: max(16px, 1em) !important; }
+}
+/* カードをキーボードで選んだときの枠 */
+.pop-grid .ucard:focus-visible { outline: 3px solid var(--focus-ring) !important; outline-offset: 2px; }

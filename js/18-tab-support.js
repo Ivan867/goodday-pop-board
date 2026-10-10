@@ -7,7 +7,7 @@ var {
 } = React;
 
 // 番号で入る。消す機能は付けない（上げる・見る・落とすだけ）
-const SUPPORT_PIN = "8";
+// 番号はファイルに書かない。サーバー側（check_secret_limited）で照合する（2026-10-10）
 const SUPPORT_CAT = "店舗支援";
 const SUPPORT_TRASH = "店舗支援ゴミ箱"; // 消したものの行き先
 const SUPPORT_DAYS = 3; // 上げてから何日で消えるか
@@ -29,16 +29,26 @@ function SupportTab() {
   });
   const [番号, set番号] = useState("");
   const [誤り, set誤り] = useState("");
-  const ひらく = () => {
-    if (番号.trim() === SUPPORT_PIN) {
-      set開いた(true);
-      set誤り("");
-      try {
-        sessionStorage.setItem("supportOpen", "1");
-      } catch (e) {}
-    } else {
-      set誤り("番号が違います");
-      set番号("");
+  const [照合中, set照合中] = useState(false);
+  const ひらく = async () => {
+    if (!番号.trim() || 照合中) return;
+    set照合中(true);
+    set誤り("");
+    try {
+      const r = await api.verifyPasswordEx("support", 番号.trim());
+      if (r.ok) {
+        set開いた(true);
+        try {
+          sessionStorage.setItem("supportOpen", "1");
+        } catch (e) {}
+      } else {
+        set誤り(r.locked ? `まちがいが続いたので、${api.lockText(r.seconds)}ほど待ってください` : "番号が違います");
+        set番号("");
+      }
+    } catch (e) {
+      set誤り("電波を確かめて、もう一度押してください");
+    } finally {
+      set照合中(false);
     }
   };
 
@@ -117,6 +127,7 @@ function SupportTab() {
       }
     }, 誤り), /*#__PURE__*/React.createElement("button", {
       onClick: ひらく,
+      disabled: 照合中,
       style: {
         width: "100%",
         border: "none",
@@ -126,9 +137,10 @@ function SupportTab() {
         padding: "13px",
         fontSize: 15,
         fontWeight: 800,
-        cursor: "pointer"
+        cursor: "pointer",
+        opacity: 照合中 ? 0.6 : 1
       }
-    }, "\u3072\u3089\u304F")));
+    }, 照合中 ? "確かめています…" : "ひらく")));
   }
 
   // ── 番号のあと：資料が主役。ほかの2つは下に小さく ──

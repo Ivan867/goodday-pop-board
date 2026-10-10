@@ -1,7 +1,7 @@
 /* Nexus共有 — 21-tab-lab （試作システム：まだ本番では使わない道具をまとめる） */
 var { useState } = React;
 
-const LAB_PIN = "3106";
+// 番号はファイルに書かない。サーバー側（check_secret_limited）で照合する（2026-10-10）
 
 function LabTab() {
   const [開いた, set開いた] = useState(() => {
@@ -9,11 +9,21 @@ function LabTab() {
   });
   const [番号, set番号] = useState("");
   const [誤り, set誤り] = useState("");
-  const ひらく = () => {
-    if (番号.trim() === LAB_PIN) {
-      set開いた(true); set誤り("");
-      try { sessionStorage.setItem("labOpen", "1"); } catch (e) {}
-    } else { set誤り("番号が違います"); set番号(""); }
+  const [照合中, set照合中] = useState(false);
+  const ひらく = async () => {
+    if (!番号.trim() || 照合中) return;
+    set照合中(true); set誤り("");
+    try {
+      const r = await api.verifyPasswordEx("lab", 番号.trim());
+      if (r.ok) {
+        set開いた(true);
+        try { sessionStorage.setItem("labOpen", "1"); } catch(e) {}
+      } else {
+        set誤り(r.locked ? `まちがいが続いたので、${api.lockText(r.seconds)}ほど待ってください` : "番号が違います");
+        set番号("");
+      }
+    } catch (e) { set誤り("電波を確かめて、もう一度押してください"); }
+    finally { set照合中(false); }
   };
   const [どれ, setどれ] = useState(() => {
     try { return localStorage.getItem("labMode") || "scan"; } catch (e) { return "scan"; }
@@ -42,8 +52,9 @@ function LabTab() {
               fontSize:16, textAlign:"center", outline:"none", marginBottom: 誤り ? 8 : 16 }} />
           {誤り && <div style={{ fontSize:13, color:"#b3261e", fontWeight:700, marginBottom:12 }}>{誤り}</div>}
           <button onClick={ひらく}
+            disabled={照合中}
             style={{ width:"100%", border:"none", background:"var(--fill)", color:"#fff", borderRadius:10,
-              padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer" }}>ひらく</button>
+              padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer", opacity: 照合中 ? 0.6 : 1 }}>{照合中 ? "確かめています…" : "ひらく"}</button>
         </div>
       </div>
     );
