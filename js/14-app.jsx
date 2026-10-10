@@ -590,7 +590,7 @@ function App() {
         </>
       )}
 
-      {/* 広い画面：左の柱に行事カレンダーをずっと出しておく */}
+      {/* 広い画面：左の柱に企画カレンダーをずっと出しておく */}
       {広い && (
         <aside className="cal-dock fs-top">
           <CalendarDock />

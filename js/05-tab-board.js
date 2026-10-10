@@ -78,7 +78,7 @@ function BoardTab({
     setFSp(null);
   };
   const filterCount = (fGenre ? 1 : 0) + (qText.trim() ? 1 : 0) + (fStore ? 1 : 0) + (fCat ? 1 : 0) + (fSp ? 1 : 0);
-  // 行事カレンダーを先に読んでおく（開いたときにすぐ出るように）
+  // 企画カレンダーを先に読んでおく（開いたときにすぐ出るように）
   useEffect(() => {
     const t = setTimeout(() => {
       const go = () => {

@@ -6,8 +6,8 @@ var {
   useRef
 } = React;
 
-/* ───────── パソコンの左の柱に出す、行事カレンダーの一覧 ─────────
-   中身は「行事カレンダー」（pop_bundles）そのもの。2026-10-10 につなぎ直し。
+/* ───────── パソコンの左の柱に出す、企画カレンダーの一覧 ─────────
+   中身は「企画カレンダー」（pop_bundles）そのもの。2026-10-10 につなぎ直し。
    以前はアプリに書き込んだ決まった行事表を出していて、作った行事と食い違っていた。
    ・今月の行事＝その月が入っている行事（12か月ぜんぶの「定番」は除く）
    ・日付は、行事の名前から分かるものだけ付ける（祝日・季節の行事・メモの「◯月◯日」）
@@ -65,7 +65,7 @@ function 束の日(b, y, m) {
   r.setHours(0, 0, 0, 0);
   return r;
 }
-// 行事カレンダーの、その束を直接ひらく
+// 企画カレンダーの、その束を直接ひらく
 function 束をひらく(id) {
   try {
     window.__bundleOpen = id || "";
@@ -116,7 +116,7 @@ function CalendarDock() {
   const 出す = 束.filter(b => b.visible !== false && Array.isArray(b.months) && b.months.length > 0);
   const 季節 = 出す.filter(b => b.months.length < 12);
   const いつも = 出す.filter(b => b.months.length >= 12);
-  // 行事カレンダーの帯と同じ色にそろえる（並びも同じ）
+  // 企画カレンダーの帯と同じ色にそろえる（並びも同じ）
   const 色の = b => 色[季節.findIndex(x => x.id === b.id) % 色.length] || "#3f9e63";
   const 月番 = 年月.m + 1;
   const 並べ = (list, y, m) => list.map(b => ({
@@ -186,8 +186,8 @@ function CalendarDock() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     className: "dock-head",
     onClick: () => 束をひらく(""),
-    "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
-  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
+    "aria-label": "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
+  }, /*#__PURE__*/React.createElement("b", null, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "PLANNING CALENDAR")), /*#__PURE__*/React.createElement("div", {
     className: "cd-month"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: 前月,
@@ -370,7 +370,7 @@ function CalendarTab({
       fontSize: 18,
       fontWeight: 900
     }
-  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: "rgba(29,58,87,0.72)",
       fontSize: 12,
@@ -6629,7 +6629,7 @@ function OrderTab() {
 }
 
 // ═══════════ BundleTab：行事ごとのPOPのまとめ ═══════════
-// 行事カレンダーの先読み（一覧画面から裏で呼ぶ）
+// 企画カレンダーの先読み（一覧画面から裏で呼ぶ）
 function prefetchBundles(force) {
   if (!force && window.__bundleCache && Date.now() - window.__bundleCache.at < 5 * 60 * 1000) {
     return Promise.resolve(window.__bundleCache);
@@ -7400,7 +7400,7 @@ function BundleTab({
   };
   return /*#__PURE__*/React.createElement("div", null, 細い ? /*#__PURE__*/React.createElement("div", {
     className: "dock-head"
-  }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")) : /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("b", null, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "PLANNING CALENDAR")) : /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--fill)",
       padding: "9px 16px",
@@ -7412,7 +7412,7 @@ function BundleTab({
       fontWeight: 800,
       letterSpacing: "-0.3px"
     }
-  }, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4F01\u753B\u30AB\u30EC\u30F3\u30C0\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
       maxWidth: 細い ? "none" : 1600,
       margin: "0 auto",

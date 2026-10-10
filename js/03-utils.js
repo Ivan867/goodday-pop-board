@@ -8,7 +8,7 @@ var {
 
 // ═══════════ UTILS：共有ユーティリティ（日付・行事・文字列） ═══════════
 
-// 日本の祝日（2026〜2028）。行事カレンダーの表示用。
+// 日本の祝日（2026〜2028）。企画カレンダーの表示用。
 const JP_HOLIDAYS = {
   2026: {
     "1-1": "元日",
@@ -74,7 +74,7 @@ function holidayName(year, month, day) {
   return t ? t[`${month}-${day}`] || null : null;
 }
 
-// 行事（ハレの日）データ：TodayInfoCard と 行事カレンダー の共通ソース
+// 行事（ハレの日）データ：TodayInfoCard と 企画カレンダー の共通ソース
 function seasonalEventsFor(year) {
   const mk = (y, m, d, name, food) => ({
     date: new Date(y, m - 1, d),
