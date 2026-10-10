@@ -323,11 +323,17 @@ body { position: relative; overscroll-behavior-y: none; }
 
 .cat-grid.c-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
 /* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
-@media (min-width: 900px) {
-  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
+/* 2026-10-10：画面の幅ではなく「入力支援の面の幅」で決める。
+   パソコンで左右の柱がある時は真ん中が狭く、右の設定がはみ出していたため */
+.gne-root { container-type: inline-size; }
+.gne-grid > * { min-width: 0; }
+@container (min-width: 820px) {
+  .gne-grid { display: grid !important; grid-template-columns: minmax(0, 360px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
   .gne-preview { position: sticky; top: 12px; }
   .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
 }
+/* 1列のときも、プレビューが縦に大きくなりすぎないように */
+.gne-preview canvas { max-height: 78vh; width: auto !important; max-width: 100% !important; margin: 0 auto; display: block; }
 /* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
 .board-head .hig-pill, .board-head .bt-btn {
   border-color: transparent !important;
@@ -749,7 +755,7 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 @media (min-width: 1280px) {
   .menu-dock .menu-list.menu-grid { gap: 7px !important; }
   .menu-dock .menu-list .menu-item.menu-tile { min-height: 80px !important; padding: 11px 3px 9px !important; }
-  .menu-dock .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 11.5px !important; }
+  .menu-dock .menu-list .menu-item.menu-tile .menu-tile-t { font-size: 13px !important; }
 }
 
 /* ── 一覧を整える（2026-10-08） ── */
@@ -769,3 +775,177 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
   .board-head .bh-catalog { display: none !important; }
   .menu-dock .menu-row-catalog { display: flex !important; }
 }
+
+/* ═════════════ デザインの決まり（2026-10-10 UI/UX総合改善） ═════════════
+   文字・余白・角丸・線・動きを、ここで1か所にまとめる。
+   見た目の方向（濃紺の柱・白い一覧・淡い青）は変えず、精度だけを上げる。 */
+:root {
+  /* 文字 */
+  --font-ui: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', sans-serif;
+  --fs-title: 17px;  --fw-title: 700;    /* 柱の見出し・ページの見出し */
+  --fs-section: 13px; --fw-section: 600; /* まとまりの見出し */
+  --fs-side: 13px;   --fw-side: 600;     /* 柱の項目 */
+  --fs-btn: 13.5px;  --fw-btn: 600;      /* ボタン */
+  --fs-meta: 12px;   --fw-meta: 500;     /* 日付・件数・補足 */
+  --fs-en: 10.5px;   --fw-en: 500;       /* 英字の副題 */
+  /* 余白（4の倍数） */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-6: 24px;
+  /* 角丸 */
+  --r-card: 12px; --r-btn: 12px; --r-ctl: 10px; --r-chip: 8px;
+  /* 線と動き */
+  --hair: 1px solid var(--line);
+  --dur: 180ms; --ease: cubic-bezier(.2,.8,.2,1);
+  --focus-ring: #6FA3D8;
+  /* 柱の幅 */
+  --dock-l: 288px; --dock-r: 272px; --dock-r-min: 68px;
+}
+
+/* 文字：Inter（英数）＋ Noto Sans JP（日本語）。太さは 400〜700 だけ読み込むので、800・900 は 700 で出る */
+body { font-family: var(--font-ui); font-optical-sizing: auto; text-rendering: optimizeLegibility; }
+button, input, select, textarea { font-family: inherit; }
+
+/* キーボードで動かしたときの枠（マウスでは出ない） */
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--focus-ring) !important; outline-offset: 2px; }
+
+/* 押したときの反応は小さく、そろえる */
+button, .ucard, .wcard { transition: transform var(--dur) var(--ease), box-shadow var(--dur) ease, background-color var(--dur) ease, border-color var(--dur) ease, color var(--dur) ease; }
+button:active, .ucard:active { transform: scale(.98); }
+
+/* ── ポップの一覧：列数を選べる・横長は2列ぶん ── */
+.pop-grid.pg-fixed {
+  grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)) !important;
+  gap: var(--pg-gap, 12px) !important;
+  grid-auto-flow: row dense;
+  container-type: inline-size;
+}
+/* 横長は2列ぶん。A判なら高さが縦長1枚と同じになる */
+.pop-grid.pg-fixed .ucard.pc-land { grid-column: span 2; }
+/* 絵の枠の高さ＝「1列の幅 × 1.414」。縦長も横長も同じ高さなので、段がそろい、名前の位置もそろう */
+.pop-grid.pg-fixed .ucard .pc-img-el {
+  width: 100% !important;
+  height: calc((100cqw - (var(--cols, 2) - 1) * var(--pg-gap, 12px)) / var(--cols, 2) * 1.414) !important;
+  object-fit: contain;
+}
+.pop-grid.pg-fixed .pc-img { min-height: 0 !important; }
+/* 品名：3列以上は列数に合わせた大きさ・太さ600。スマホ（2列）は今までどおり大きめ */
+.pop-grid.pg-fixed.pg-wide .pc-name { font-size: var(--pg-name, 14px) !important; font-weight: 600 !important; line-height: 1.4 !important; }
+.pop-grid.pg-fixed .pc-body { padding: 8px 10px 10px !important; }
+.pop-grid.pg-fixed.pg-wide .pc-body { padding: 8px 10px 9px !important; }
+/* ホバーは控えめに（指で触る端末では出さない） */
+@media (hover: hover) {
+  .pop-grid .ucard:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(16,32,48,.06), 0 10px 24px rgba(16,32,48,.12) !important; }
+}
+
+/* 一覧の上：列数の切り替え（4・5・6列） */
+.bt-num { display: inline-flex; align-items: baseline; gap: 1px; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bt-num i { font-style: normal; font-size: 11px; font-weight: 500; opacity: .8; }
+
+/* ── 左の柱：企画カレンダー ── */
+.cal-dock { --cd-w: 56px; }
+.dock-head b { font-size: var(--fs-title) !important; font-weight: var(--fw-title) !important; letter-spacing: .01em; }
+.dock-head i { font-size: var(--fs-en) !important; font-weight: var(--fw-en) !important; letter-spacing: .2em; }
+.cd-month span { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cd-h { display: flex; align-items: baseline; margin: var(--sp-6) 0 var(--sp-2); padding: 0 2px; }
+.cd-h > span { font-size: 12px; font-weight: 600; color: var(--sub); letter-spacing: .06em; }
+.cd-day { width: var(--cd-w) !important; height: 40px; box-sizing: border-box; padding: 0 !important;
+  display: flex !important; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--r-ctl) !important; }
+.cd-day b { font-size: 16px !important; font-weight: 700 !important; line-height: 1.1 !important; font-variant-numeric: tabular-nums; }
+.cd-day i { font-size: 10.5px !important; font-weight: 500 !important; line-height: 1.2 !important; }
+/* 期間（10–11月）は1行で、折り返さない */
+.cd-day.cd-span b { font-size: 11.5px !important; font-weight: 600 !important; white-space: nowrap; letter-spacing: -.01em; }
+.cd-row { min-height: 50px; }
+.cd-row::before { left: calc(var(--cd-w) + 9px) !important; }
+.cd-dot { width: 8px !important; height: 8px !important; margin: 0 10px 0 5px !important; }
+.cd-name { font-size: var(--fs-side) !important; font-weight: 600 !important; white-space: nowrap; text-overflow: ellipsis; }
+.cd-num { font-size: var(--fs-meta) !important; font-weight: var(--fw-meta) !important; color: #8398AE; font-variant-numeric: tabular-nums;
+  min-width: 34px; text-align: right; }
+.cd-next { min-height: 40px; padding: 0 !important; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.cd-next-d { width: var(--cd-w) !important; text-align: center; font-size: var(--fs-meta) !important; font-weight: 600 !important;
+  font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cd-tap { border-radius: var(--r-chip) !important; }
+.cd-tap:hover { background: rgba(255,255,255,0.055) !important; }
+.cd-hol { font-size: 11.5px !important; font-weight: 500 !important; color: #C49A97 !important; margin-top: var(--sp-3) !important; }
+
+/* ── 右の柱：アイコンと字の位置・大きさをそろえる ── */
+.menu-tile-ic, .menu-tile-wide .menu-tile-ic { width: 24px !important; height: 24px !important; }
+.menu-tile-ic svg, .menu-tile-wide .menu-tile-ic svg { width: 24px !important; height: 24px !important; }
+.menu-drawer .menu-list .menu-item.menu-tile { gap: var(--sp-2) !important; border-radius: var(--r-btn) !important; }
+.menu-drawer .menu-list .menu-item.menu-tile .menu-tile-t { font-weight: var(--fw-side) !important; letter-spacing: .02em; }
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide { gap: var(--sp-3) !important; }
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide .menu-tile-t { font-size: 13.5px !important; }
+.menu-drawer .menu-list .menu-item.menu-tile:active { transform: scale(.98); }
+.dock-brand img.dock-mark { display: none; }
+
+/* ── 広い画面：柱の幅を詰め、真ん中の一覧を広げる。右の柱はたためる ── */
+@media (min-width: 1280px) {
+  .cal-dock { width: var(--dock-l) !important; padding: var(--sp-4) var(--sp-4) calc(18px + env(safe-area-inset-bottom)) !important; }
+  .menu-dock { width: var(--dock-r) !important; transition: width .2s var(--ease), padding .2s var(--ease); }
+  #app-scroll { padding-left: var(--dock-l) !important; padding-right: var(--dock-r) !important; transition: padding-right .2s var(--ease); }
+  .fab-search { right: calc(var(--dock-r) + 28px) !important; }
+  .guide-hint { left: calc(var(--dock-l) + 20px) !important; }
+  .menu-dock .menu-list .menu-item.menu-tile { min-height: 76px !important; padding: 12px 6px 10px !important; }
+
+  /* たたむつまみ：右の柱の左のふちに乗せる */
+  .dock-fold { position: fixed; z-index: 125; top: 50%; right: var(--dock-r); transform: translate(50%, -50%);
+    width: 22px; height: 44px; padding: 0; min-height: 0 !important; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.14); background: #0F1A28; color: #93A6BA; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(10,20,35,0.25);
+    transition: right .2s var(--ease), color var(--dur) ease, background-color var(--dur) ease; }
+  .dock-fold:hover { color: #EAF1F8; background: #18263A; }
+  .dock-fold:active { transform: translate(50%, -50%) scale(.96); }
+
+  /* たたんだとき：アイコンだけの細い柱 */
+  html[data-dock-min="1"] .menu-dock { width: var(--dock-r-min) !important; padding-left: 8px !important; padding-right: 8px !important; overflow-x: hidden; }
+  html[data-dock-min="1"] #app-scroll { padding-right: var(--dock-r-min) !important; }
+  html[data-dock-min="1"] .fab-search { right: calc(var(--dock-r-min) + 28px) !important; }
+  html[data-dock-min="1"] .dock-fold { right: var(--dock-r-min); }
+  html[data-dock-min="1"] .menu-dock .dock-top { padding: 10px 0 !important; margin-left: 0 !important; margin-right: 0 !important; }
+  html[data-dock-min="1"] .menu-dock .dock-brand img.dock-logo { display: none; }
+  html[data-dock-min="1"] .menu-dock .dock-brand img.dock-mark { display: block; width: 34px !important; max-width: 34px; margin: 0 auto; }
+  html[data-dock-min="1"] .menu-dock .dock-ctl { flex-direction: column; gap: 8px; margin-top: 8px; }
+  html[data-dock-min="1"] .menu-dock .dept-mini { padding: 4px 0; width: 44px; justify-content: center; font-size: 11px; font-weight: 700; }
+  html[data-dock-min="1"] .menu-dock .dept-mini svg { display: none; }
+  html[data-dock-min="1"] .menu-dock .menu-list.menu-grid { grid-template-columns: 1fr !important; gap: 6px !important; }
+  html[data-dock-min="1"] .menu-dock .menu-list .menu-item.menu-tile,
+  html[data-dock-min="1"] .menu-dock .menu-list .menu-item.menu-tile.menu-tile-wide {
+    grid-column: auto; min-height: 48px !important; padding: 0 !important; flex-direction: column; justify-content: center; }
+  html[data-dock-min="1"] .menu-dock .menu-tile-t { display: none !important; }
+  html[data-dock-min="1"] .menu-dock .menu-reload { padding: 11px 0 !important; }
+  html[data-dock-min="1"] .menu-dock .menu-reload .mr-t { display: none; }
+}
+
+/* ── 動きを減らす設定の端末では、動きを止める ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* 品名の下に空けていた2行目の余白をやめる。2行になる名前だけ2行の高さになる（2026-10-10） */
+.pop-grid .pc-name { min-height: 0 !important; }
+
+/* 品名はいつも1行。入りきらない分は「…」で切る（全文は押した先と、パソコンでは指をのせると出る）（2026-10-10） */
+.pop-grid .pc-name { display: block !important; white-space: nowrap !important; overflow: hidden !important;
+  text-overflow: ellipsis !important; -webkit-line-clamp: unset !important; word-break: normal !important; overflow-wrap: normal !important; }
+
+/* スマホの3列・4列：小さいカードに合わせて、内側の余白と角を詰める（2026-10-10） */
+.pop-grid.pg-narrow .ucard { border-radius: 10px !important; }
+.pop-grid.pg-narrow .pc-body { padding: 5px 6px 6px !important; }
+.pop-grid.pg-narrow .pc-name { line-height: 1.35 !important; }
+
+@container (min-width: 1080px) {
+  .gne-grid { grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; }
+}
+.gne-settings > * { min-width: 0; }
+
+/* ═════ 見やすさ（2026-10-10） ═════ */
+/* 濃紺の上の薄い字は、明るさの比 4.5 以上に（測って 4.07〜4.46 だったもの） */
+.dept-sw-b { color: #8EA0B5; }
+.dock-head i { color: #8EA0B5 !important; }
+.cd-day i { color: #46525F !important; }
+/* iPhone・iPad：入力欄の字が16pxより小さいと、触ったときに画面が勝手に拡大される。16px以上にして防ぐ */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea { font-size: max(16px, 1em) !important; }
+}
+/* カードをキーボードで選んだときの枠 */
+.pop-grid .ucard:focus-visible { outline: 3px solid var(--focus-ring) !important; outline-offset: 2px; }

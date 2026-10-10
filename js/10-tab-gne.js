@@ -264,6 +264,114 @@ const GNE_PRESETS = [{
     }
   }
 }, {
+  id: "shun",
+  name: "横A4",
+  land: true,
+  img: "tpl/yoko_a4.jpg",
+  thumb: "tpl/yoko_a4_thumb.jpg",
+  useCopy: true,
+  // 2026-10-10 絵を差し替え（旧：旬の味覚）
+  taxFmt: "（税込 *{n}*円）",
+  labels: {
+    taxLabel: "本体価格"
+  },
+  layout: {
+    name: {
+      x: 70,
+      y: 880,
+      size: 150,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 10,
+      align: "left",
+      maxW: 900,
+      maxH: 270,
+      lastLineFill: "#d6121a"
+    },
+    copy: {
+      x: 70,
+      y: 1068,
+      size: 50,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "left",
+      maxW: 900,
+      maxH: 120,
+      em: "#d6121a"
+    },
+    origin: {
+      x: 70,
+      y: 1162,
+      size: 40,
+      fill: "#0f2347",
+      stroke: "#ffffff",
+      sw: 4,
+      align: "left",
+      maxW: 640
+    },
+    count: {
+      x: 990,
+      y: 1150,
+      size: 66,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "right",
+      maxW: 300
+    },
+    price: {
+      x: 1520,
+      y: 1000,
+      size: 300,
+      fill: "#e0101a",
+      stroke: "#ffffff",
+      sw: 13,
+      align: "right",
+      maxW: 540,
+      skew: -0.17,
+      shadow: "rgba(0,0,0,0.55)"
+    },
+    plus: {
+      x: 1600,
+      y: 900,
+      size: 1,
+      fill: "#141414",
+      stroke: "#141414",
+      sw: 0,
+      align: "center"
+    },
+    taxLabel: {
+      x: 1600,
+      y: 952,
+      size: 36,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 3,
+      align: "center"
+    },
+    yen: {
+      x: 1600,
+      y: 1035,
+      size: 120,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 6,
+      align: "center"
+    },
+    taxPrice: {
+      x: 1670,
+      y: 1150,
+      size: 62,
+      fill: "#141414",
+      stroke: "#ffffff",
+      sw: 5,
+      align: "right",
+      maxW: 640,
+      em: "#e0101a"
+    }
+  }
+}, {
   id: "mon",
   name: "毎週月曜日限定",
   land: false,
@@ -525,118 +633,10 @@ const GNE_PRESETS = [{
       align: "center"
     }
   }
-},
+}
 // 魚屋のおすすめ 旬の味覚（よこ）：配置はCGCフェアの見本にならう。
 // 左に品名（2行以上は最後の行が赤）とキャッチ、右下に大きな価格、その下に（税込 ○○円）
-{
-  id: "shun",
-  name: "横A4",
-  land: true,
-  img: "tpl/yoko_a4.jpg",
-  thumb: "tpl/yoko_a4_thumb.jpg",
-  useCopy: true,
-  // 2026-10-10 絵を差し替え（旧：旬の味覚）
-  taxFmt: "（税込 *{n}*円）",
-  labels: {
-    taxLabel: "本体価格"
-  },
-  layout: {
-    name: {
-      x: 70,
-      y: 880,
-      size: 150,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 10,
-      align: "left",
-      maxW: 900,
-      maxH: 270,
-      lastLineFill: "#d6121a"
-    },
-    copy: {
-      x: 70,
-      y: 1068,
-      size: 50,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 5,
-      align: "left",
-      maxW: 900,
-      maxH: 120,
-      em: "#d6121a"
-    },
-    origin: {
-      x: 70,
-      y: 1162,
-      size: 40,
-      fill: "#0f2347",
-      stroke: "#ffffff",
-      sw: 4,
-      align: "left",
-      maxW: 640
-    },
-    count: {
-      x: 990,
-      y: 1150,
-      size: 66,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 5,
-      align: "right",
-      maxW: 300
-    },
-    price: {
-      x: 1520,
-      y: 1000,
-      size: 300,
-      fill: "#e0101a",
-      stroke: "#ffffff",
-      sw: 13,
-      align: "right",
-      maxW: 540,
-      skew: -0.17,
-      shadow: "rgba(0,0,0,0.55)"
-    },
-    plus: {
-      x: 1600,
-      y: 900,
-      size: 1,
-      fill: "#141414",
-      stroke: "#141414",
-      sw: 0,
-      align: "center"
-    },
-    taxLabel: {
-      x: 1600,
-      y: 952,
-      size: 36,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 3,
-      align: "center"
-    },
-    yen: {
-      x: 1600,
-      y: 1035,
-      size: 120,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 6,
-      align: "center"
-    },
-    taxPrice: {
-      x: 1670,
-      y: 1150,
-      size: 62,
-      fill: "#141414",
-      stroke: "#ffffff",
-      sw: 5,
-      align: "right",
-      maxW: 640,
-      em: "#e0101a"
-    }
-  }
-}];
+];
 const GNE_FIXED = {
   plus: "+税",
   yen: "円",
