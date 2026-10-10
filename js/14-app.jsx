@@ -486,7 +486,8 @@ function App() {
           <button className="gh-x" onClick={案内を閉じる} aria-label="案内を閉じる">✕</button>
         </div>
       )}
-      {tab === "board" && !searchOpen && (広い || !moreOpen) && (!広い || showToTop) && (
+      {/* パソコンもスマホと同じく「さがす」を右下に出す（2026-10-10 もどした）。下へ送ると「上へ」に変わる */}
+      {tab === "board" && !searchOpen && (広い || !moreOpen) && (
         <button onClick={() => {
             if (showToTop) { scrollerTop(true); return; }
             setMoreOpen(false); setRadialOpen(false);

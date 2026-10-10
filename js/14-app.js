@@ -1075,7 +1075,7 @@ function App() {
     className: "gh-x",
     onClick: 案内を閉じる,
     "aria-label": "\u6848\u5185\u3092\u9589\u3058\u308B"
-  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && (!広い || showToTop) && /*#__PURE__*/React.createElement("button", {
+  }, "\u2715")), tab === "board" && !searchOpen && (広い || !moreOpen) && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (showToTop) {
         scrollerTop(true);
