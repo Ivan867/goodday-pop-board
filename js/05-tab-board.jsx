@@ -89,7 +89,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
     try { const seen = localStorage.getItem("featSeen"); return !feat || (seen !== (feat.ver || feat.message)); } catch(e) { return true; }
   });
   const tipOn = tipEnabled !== false;
-  const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const tipText = tipMessage || "時期が過ぎたポップは、一覧から下げて保管しています。";
   const [tip済み, setTip済み] = useState(() => { try { return localStorage.getItem("tipSeen") === tipText; } catch(e) { return false; } });
   useEffect(() => {
     let 済 = false; try { 済 = localStorage.getItem("tipSeen") === tipText; } catch(e) {}

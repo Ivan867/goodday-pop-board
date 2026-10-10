@@ -550,7 +550,7 @@ function App() {
     enabled: false,
     message: "",
     tip_enabled: false,
-    tip_message: "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。",
+    tip_message: "時期が過ぎたポップは、一覧から下げて保管しています。",
     feat_enabled: false,
     feat_message: "",
     feat_tab: "",
@@ -702,6 +702,10 @@ function App() {
   useEffect(() => {
     if (広い) setMoreOpen(true);
   }, [広い]);
+  // 前の「アーカイブ」画面へ飛ぼうとしたら一覧へ（2026-10-10 一覧側のアーカイブをやめた）
+  useEffect(() => {
+    if (tab === "archive") setTab("board");
+  }, [tab]);
   const [畳む, set畳む] = useState(() => {
     try {
       return localStorage.getItem("dockMin") === "1";
@@ -957,11 +961,6 @@ function App() {
     }
   }), tab === "request" && /*#__PURE__*/React.createElement(LazyTab, {
     tabKey: "request"
-  }), tab === "archive" && /*#__PURE__*/React.createElement(LazyTab, {
-    tabKey: "archive",
-    compProps: {
-      onCreateFromPop: handleCreateFromPop
-    }
   }), tab === "dev" && /*#__PURE__*/React.createElement(DevTab, null), showToTop && tab !== "board" && !moreOpen && !radialOpen && !popDetailOpen && /*#__PURE__*/React.createElement("button", {
     onClick: () => scrollerTop(true),
     "aria-label": "\u4E0A\u3078\u623B\u308B",
@@ -1255,7 +1254,7 @@ function App() {
   }, (() => {
     // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
     const 青果 = typeof deptKey === "function" && deptKey() === "produce";
-    const ORDER = 青果 ? ["archive", "guide", "admin"] : ["bundle", "archive", "catalog", "gne", "order", "request", "admin"]; // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
+    const ORDER = 青果 ? ["guide", "admin"] : ["bundle", "catalog", "gne", "order", "request", "admin"]; // アーカイブは管理画面の中だけに（2026-10-10）   // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
     // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
     const 外す = 広い ? ["search", "bundle"] : [];
     return TAB_REGISTRY.filter(o => !外す.includes(o.key)).filter(o => !o.hideInMenu && ORDER.includes(o.key) && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key))).sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key)).map(o => 青果 ? {
@@ -1268,7 +1267,9 @@ function App() {
     // 数が合わないときは管理画面の1つ前のタイルを横いっぱいにする（2026-10-10）
     const 列 = 広い ? 2 : 3;
     const 管理の位置 = 全部.findIndex(x => x.key === "admin");
-    const 余り = 列 === 2 && (全部.length + 1) % 2 === 1 && 管理の位置 > 0 && i === 管理の位置 - 1;
+    const 前 = 管理の位置 > 0 && i === 管理の位置 - 1;
+    const 余り = 列 === 2 && (全部.length + 1) % 2 === 1 && 前; // 2列：1つ前を横いっぱい
+    const 二枠 = 列 === 3 && (全部.length + 1) % 3 === 1 && 前; // 3列：1つ前を2枠ぶん
     return /*#__PURE__*/React.createElement("button", {
       key: o.key,
       onClick: () => {
@@ -1278,7 +1279,7 @@ function App() {
       "aria-label": o.label,
       title: o.label,
       "aria-current": tab === o.key ? "page" : undefined,
-      className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
+      className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (二枠 ? " menu-tile-span2" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
     }, /*#__PURE__*/React.createElement("span", {
       className: "menu-tile-ic"
     }, MENU_ICON[o.key] || MENU_ICON.search, o.badge && /*#__PURE__*/React.createElement("span", {

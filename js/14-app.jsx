@@ -243,7 +243,7 @@ function App() {
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [dataVer, setDataVer] = useState(0);
-  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"", badge_tab:"", badge_text:"", badge_ver:"", badge_until:null });
+  const [notice, setNotice] = useState({ enabled:false, message:"", tip_enabled:false, tip_message:"時期が過ぎたポップは、一覧から下げて保管しています。", feat_enabled:false, feat_message:"", feat_tab:"", feat_ver:"", badge_tab:"", badge_text:"", badge_ver:"", badge_until:null });
   const [badgeOn, setBadgeOn] = useState(false);
   const [bubbleShow, setBubbleShow] = useState(false);   // 開いた瞬間だけ出る吹き出し
   const pullActive = React.useRef(false);
@@ -347,6 +347,8 @@ function App() {
     return () => window.removeEventListener("resize", み);
   }, []);
   useEffect(() => { if (広い) setMoreOpen(true); }, [広い]);
+  // 前の「アーカイブ」画面へ飛ぼうとしたら一覧へ（2026-10-10 一覧側のアーカイブをやめた）
+  useEffect(() => { if (tab === "archive") setTab("board"); }, [tab]);
   const [畳む, set畳む] = useState(() => { try { return localStorage.getItem("dockMin") === "1"; } catch (e) { return false; } });
   const 畳みを切替 = () => set畳む(v => { const n = !v; try { localStorage.setItem("dockMin", n ? "1" : "0"); } catch (e) {} return n; });
   useEffect(() => {
@@ -451,7 +453,7 @@ function App() {
       {tab==="popcheck" && <PopCheckTab />}
       {tab==="admin"  && <LazyTab tabKey="admin" compProps={{ onNoticeChange:setNotice, onCreateFromPop:handleCreateFromPop }} />}
       {tab==="request" && <LazyTab tabKey="request" />}
-      {tab==="archive" && <LazyTab tabKey="archive" compProps={{ onCreateFromPop:handleCreateFromPop }} />}
+      {/* 一覧側のアーカイブは 2026-10-10 にやめた。しまったポップは管理画面の「アーカイブ」でだけ見る */}
       {tab==="dev"    && <DevTab />}
 
       {/* 下部固定ナビ */}
@@ -560,8 +562,8 @@ function App() {
                 // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
                 const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
                 const ORDER = 青果
-                  ? ["archive","guide","admin"]
-                  : ["bundle","archive","catalog","gne","order","request","admin"];   // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
+                  ? ["guide","admin"]
+                  : ["bundle","catalog","gne","order","request","admin"];   // アーカイブは管理画面の中だけに（2026-10-10）   // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
                 // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
                 const 外す = 広い ? ["search","bundle"] : [];
                 return TAB_REGISTRY
@@ -577,11 +579,13 @@ function App() {
                 // 数が合わないときは管理画面の1つ前のタイルを横いっぱいにする（2026-10-10）
                 const 列 = 広い ? 2 : 3;
                 const 管理の位置 = 全部.findIndex(x => x.key === "admin");
-                const 余り = 列 === 2 && (全部.length + 1) % 2 === 1 && 管理の位置 > 0 && i === 管理の位置 - 1;
+                const 前 = 管理の位置 > 0 && i === 管理の位置 - 1;
+                const 余り = 列 === 2 && (全部.length + 1) % 2 === 1 && 前;          // 2列：1つ前を横いっぱい
+                const 二枠 = 列 === 3 && (全部.length + 1) % 3 === 1 && 前;          // 3列：1つ前を2枠ぶん
                 return (
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} title={o.label} aria-current={tab===o.key ? "page" : undefined}
-                  className={"menu-item menu-tile menu-row-" + o.key + ((o.key === "search" || 余り) ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab===o.key ? " on" : "")}>
+                  className={"menu-item menu-tile menu-row-" + o.key + ((o.key === "search" || 余り) ? " menu-tile-wide" : "") + (二枠 ? " menu-tile-span2" : "") + (o.__押し ? " menu-push" : "") + (tab===o.key ? " on" : "")}>
                   <span className="menu-tile-ic">
                     {MENU_ICON[o.key] || MENU_ICON.search}
                     {o.badge && <span className="menu-tile-badge">{o.badge}</span>}

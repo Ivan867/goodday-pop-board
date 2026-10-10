@@ -949,3 +949,6 @@ button:active, .ucard:active { transform: scale(.98); }
 }
 /* カードをキーボードで選んだときの枠 */
 .pop-grid .ucard:focus-visible { outline: 3px solid var(--focus-ring) !important; outline-offset: 2px; }
+
+/* メニューのタイル：3列で1つ余るとき、管理画面の1つ前を2枠ぶんにして、管理画面と読み込み直すを同じ段に（2026-10-10） */
+.menu-drawer .menu-list .menu-item.menu-tile.menu-tile-span2 { grid-column: span 2; }

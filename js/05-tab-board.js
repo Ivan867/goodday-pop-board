@@ -157,7 +157,7 @@ function BoardTab({
     }
   });
   const tipOn = tipEnabled !== false;
-  const tipText = tipMessage || "季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。";
+  const tipText = tipMessage || "時期が過ぎたポップは、一覧から下げて保管しています。";
   const [tip済み, setTip済み] = useState(() => {
     try {
       return localStorage.getItem("tipSeen") === tipText;
