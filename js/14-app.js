@@ -329,11 +329,12 @@ const NAV_ひとこと = {
   request: "依頼・不具合を送る",
   admin: "整理・記録・お知らせ"
 };
-const NAV_組 = [["つくる・しらべる", ["catalog", "gne", "order", "guide"]], ["連絡と管理", ["request", "admin"]]];
+const NAV_組 = [["つくる・しらべる", ["bundle", "catalog", "gne", "order", "guide"]], ["連絡と管理", ["request", "admin"]]];
 function RightNav({
   items,
   tab,
-  onGo
+  onGo,
+  phone
 }) {
   const 箱 = React.useRef(null);
   const [帯, set帯] = useState({
@@ -357,7 +358,7 @@ function RightNav({
     });
   }, [tab, items.length]);
   return /*#__PURE__*/React.createElement("nav", {
-    className: "mn",
+    className: "mn" + (phone ? " mn-phone" : ""),
     ref: 箱,
     "aria-label": "\u30E1\u30CB\u30E5\u30FC"
   }, /*#__PURE__*/React.createElement("span", {
@@ -386,7 +387,9 @@ function RightNav({
       className: "mn-ic"
     }, (o.key === "admin" ? MENU_ICON.adminMono : MENU_ICON[o.key]) || MENU_ICON.search), /*#__PURE__*/React.createElement("span", {
       className: "mn-tx"
-    }, /*#__PURE__*/React.createElement("b", null, o.label)), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("b", null, o.label)), o.badge && /*#__PURE__*/React.createElement("span", {
+      className: "mn-badge"
+    }, o.badge), /*#__PURE__*/React.createElement("span", {
       className: "mn-go",
       "aria-hidden": "true"
     }, /*#__PURE__*/React.createElement("svg", {
@@ -400,9 +403,7 @@ function RightNav({
       strokeLinejoin: "round"
     }, /*#__PURE__*/React.createElement("path", {
       d: "M9 6l6 6-6 6"
-    }))), o.badge && /*#__PURE__*/React.createElement("span", {
-      className: "mn-badge"
-    }, o.badge))));
+    }))))));
   }), /*#__PURE__*/React.createElement("div", {
     className: "mn-foot"
   }, /*#__PURE__*/React.createElement("span", {
@@ -1391,12 +1392,13 @@ function App() {
     alt: "GoodDay NEXUS PROJECT"
   })), /*#__PURE__*/React.createElement("div", {
     className: "dock-ctl"
-  }, /*#__PURE__*/React.createElement(部門スイッチ, null))), 広い && !畳む ? /*#__PURE__*/React.createElement(RightNav, {
+  }, /*#__PURE__*/React.createElement(部門スイッチ, null))), !(広い && 畳む) ? /*#__PURE__*/React.createElement(RightNav, {
     items: メニューの項目(),
     tab: tab,
+    phone: !広い,
     onGo: k => {
       setTab(k);
-      setMoreOpen(false);
+      if (!広い) setMoreOpen(false);
     }
   }) : /*#__PURE__*/React.createElement("div", {
     className: "menu-list menu-grid"

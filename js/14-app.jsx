@@ -109,8 +109,8 @@ const NAV_ひとこと = {
   request: "依頼・不具合を送る",
   admin:   "整理・記録・お知らせ",
 };
-const NAV_組 = [["つくる・しらべる", ["catalog","gne","order","guide"]], ["連絡と管理", ["request","admin"]]];
-function RightNav({ items, tab, onGo }) {
+const NAV_組 = [["つくる・しらべる", ["bundle","catalog","gne","order","guide"]], ["連絡と管理", ["request","admin"]]];
+function RightNav({ items, tab, onGo, phone }) {
   const 箱 = React.useRef(null);
   const [帯, set帯] = useState({ y:0, h:0, on:false });
   React.useLayoutEffect(() => {
@@ -119,7 +119,7 @@ function RightNav({ items, tab, onGo }) {
     set帯({ y: el.offsetTop, h: el.offsetHeight, on:true });
   }, [tab, items.length]);
   return (
-    <nav className="mn" ref={箱} aria-label="メニュー">
+    <nav className={"mn" + (phone ? " mn-phone" : "")} ref={箱} aria-label="メニュー">
       <span className={"mn-band" + (帯.on ? " on" : "")} aria-hidden="true"
         style={{ transform: "translateY(" + 帯.y + "px)", height: 帯.h }} />
       {NAV_組.map(([題, keys]) => {
@@ -134,10 +134,10 @@ function RightNav({ items, tab, onGo }) {
                 aria-current={tab === o.key ? "page" : undefined}>
                 <span className="mn-ic">{(o.key === "admin" ? MENU_ICON.adminMono : MENU_ICON[o.key]) || MENU_ICON.search}</span>
                 <span className="mn-tx"><b>{o.label}</b></span>
+                {o.badge && <span className="mn-badge">{o.badge}</span>}
                 <span className="mn-go" aria-hidden="true">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                 </span>
-                {o.badge && <span className="mn-badge">{o.badge}</span>}
               </button>
             ))}
           </div>
@@ -637,8 +637,8 @@ function App() {
             </div>}
 
             {/* 項目：スマホは3列のタイル。パソコンの右の柱は1列のナビ（たたんだ時はアイコンだけ）（2026-10-10） */}
-            {広い && !畳む ? (
-              <RightNav items={メニューの項目()} tab={tab} onGo={(k) => { setTab(k); setMoreOpen(false); }} />
+            {!(広い && 畳む) ? (
+              <RightNav items={メニューの項目()} tab={tab} phone={!広い} onGo={(k) => { setTab(k); if (!広い) setMoreOpen(false); }} />
             ) : (
             <div className="menu-list menu-grid">
               {メニューの項目().map((o, i, 全部) => {
