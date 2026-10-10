@@ -921,3 +921,8 @@ button:active, .ucard:active { transform: scale(.98); }
 /* 品名はいつも1行。入りきらない分は「…」で切る（全文は押した先と、パソコンでは指をのせると出る）（2026-10-10） */
 .pop-grid .pc-name { display: block !important; white-space: nowrap !important; overflow: hidden !important;
   text-overflow: ellipsis !important; -webkit-line-clamp: unset !important; word-break: normal !important; overflow-wrap: normal !important; }
+
+/* スマホの3列・4列：小さいカードに合わせて、内側の余白と角を詰める（2026-10-10） */
+.pop-grid.pg-narrow .ucard { border-radius: 10px !important; }
+.pop-grid.pg-narrow .pc-body { padding: 5px 6px 6px !important; }
+.pop-grid.pg-narrow .pc-name { line-height: 1.35 !important; }

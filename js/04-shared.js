@@ -1812,19 +1812,24 @@ function PopDetail({
 
 // ── Pop Card (shared) ──
 // ── 一覧の列数（2026-10-10） ──
-// 好み（4・5・6列）と、その幅に実際に入る数の小さいほうで並べる。スマホは2列のまま。
+// パソコン・タブレット：4列（大）か6列（小）。その幅に入る数より多くは並べない。
+// スマホ（一覧の幅が600未満）：3列（大）か4列（小）。
 // 横長のポップは2列ぶんを使う。A判なら、横2列ぶんの高さ＝縦1列ぶんの高さになるので、段がそろい、上下の余白も出ない。
 const POP_最小幅 = 120;
-// 選べるのは4列（大）と6列（小）だけ（2026-10-10）。前に選んでいた3・5は近いほうへ寄せる
-function 列の好み() {
+const POP_狭い幅 = 600;
+function 列の好み(狭い) {
   try {
+    if (狭い) {
+      const n = +localStorage.getItem("popColsS");
+      return n === 4 ? 4 : 3;
+    }
     const n = +localStorage.getItem("popCols");
     return n === 3 || n === 4 ? 4 : 6;
   } catch (e) {
-    return 6;
+    return 狭い ? 3 : 6;
   }
 }
-function usePopCols(好み) {
+function usePopCols(好み, 好み狭) {
   const [el, setEl] = useState(null);
   const [w, setW] = useState(0);
   useEffect(() => {
@@ -1845,21 +1850,25 @@ function usePopCols(好み) {
       window.removeEventListener("resize", 測る);
     };
   }, [el]);
-  const gap = w && w < 600 ? 10 : 12;
-  const 入る = w ? Math.max(2, Math.floor((w + gap) / (POP_最小幅 + gap))) : 2;
-  const 列 = Math.max(2, Math.min(好み || 列の好み(), 入る));
-  const 名 = 列 <= 2 ? null : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
+  // 測る前は画面の幅で見当をつける（最初の一瞬だけ）
+  const 幅 = w || (typeof window !== "undefined" ? window.innerWidth : 1200) - 32;
+  const 狭い = 幅 < POP_狭い幅;
+  const gap = 狭い ? 8 : 12;
+  const 入る = Math.max(2, Math.floor((幅 + gap) / (POP_最小幅 + gap)));
+  const 列 = 狭い ? 好み狭 || 列の好み(true) : Math.max(2, Math.min(好み || 列の好み(false), 入る));
+  const 名 = 狭い ? 列 >= 4 ? "11px" : "12.5px" : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
   const style = {
     "--cols": 列,
-    "--pg-gap": gap + "px"
+    "--pg-gap": gap + "px",
+    "--pg-name": 名
   };
-  if (名) style["--pg-name"] = 名;
   return {
     ref: setEl,
     列,
     入る,
+    狭い,
     style,
-    cls: " pg-fixed" + (列 > 2 ? " pg-wide" : "")
+    cls: " pg-fixed pg-wide" + (狭い ? " pg-narrow" : "")
   };
 }
 

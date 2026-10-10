@@ -121,20 +121,27 @@ function BoardTab({
       localStorage.setItem("popView", v);
     } catch (e) {}
   };
-  // 列の数（4・5・6）。入りきらない幅では自動で減る（2026-10-10）
-  const [列好み, set列好み] = useState(列の好み);
+  // 列の数。パソコンは4・6列、スマホは3・4列。入りきらない幅では自動で減る（2026-10-10）
+  const [列好み, set列好み] = useState(() => 列の好み(false));
+  const [列好み狭, set列好み狭] = useState(() => 列の好み(true));
+  const 盤 = usePopCols(列好み, 列好み狭);
+  const 束盤 = usePopCols(列好み, 列好み狭);
   const 列にする = n => {
-    set列好み(n);
     setViewSave("md");
     try {
-      localStorage.setItem("popCols", String(n));
+      if (盤.狭い) {
+        set列好み狭(n);
+        localStorage.setItem("popColsS", String(n));
+      } else {
+        set列好み(n);
+        localStorage.setItem("popCols", String(n));
+      }
     } catch (e) {}
   };
-  const 盤 = usePopCols(列好み);
+  // 「1まい」は 2026-10-10 にやめた。前に選んでいた端末は列の表示にもどす
   useEffect(() => {
-    if (盤.入る >= 4 && view === "lg") setViewSave("md");
-  }, [盤.入る]);
-  const 束盤 = usePopCols(列好み);
+    if (view === "lg") setViewSave("md");
+  }, []);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
@@ -385,10 +392,10 @@ function BoardTab({
       padding: 3,
       flexShrink: 0
     }
-  }, (盤.入る >= 4
-  // パソコン・タブレット：4列（大きいマス）と6列（小さいマス）だけ。字は出さずマークで（2026-10-10）
-  ? [["md4", "4列（大きく）", /*#__PURE__*/React.createElement("svg", {
-    key: "c4",
+  }, (盤.狭い
+  // スマホ：3列（大きいマス）と4列（小さいマス）。字は出さずマークで（2026-10-10）
+  ? [["md3", "3列（大きく）", /*#__PURE__*/React.createElement("svg", {
+    key: "big",
     width: "20",
     height: "20",
     viewBox: "0 0 24 24",
@@ -421,8 +428,8 @@ function BoardTab({
     width: "7",
     height: "7",
     rx: "1.2"
-  }))], ["md6", "6列（小さく）", /*#__PURE__*/React.createElement("svg", {
-    key: "c6",
+  }))], ["md4", "4列（小さく）", /*#__PURE__*/React.createElement("svg", {
+    key: "small",
     width: "20",
     height: "20",
     viewBox: "0 0 24 24",
@@ -482,10 +489,12 @@ function BoardTab({
     width: "4.4",
     height: "4.4",
     rx: ".8"
-  }))]] : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
-    key: "3",
-    width: "18",
-    height: "18",
+  }))]]
+  // パソコン・タブレット：4列（大きいマス）と6列（小さいマス）
+  : [["md4", "4列（大きく）", /*#__PURE__*/React.createElement("svg", {
+    key: "big",
+    width: "20",
+    height: "20",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -497,46 +506,91 @@ function BoardTab({
     y: "3.5",
     width: "7",
     height: "7",
-    rx: "1"
+    rx: "1.2"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "13.5",
     y: "3.5",
     width: "7",
     height: "7",
-    rx: "1"
+    rx: "1.2"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "3.5",
     y: "13.5",
     width: "7",
     height: "7",
-    rx: "1"
+    rx: "1.2"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "13.5",
     y: "13.5",
     width: "7",
     height: "7",
-    rx: "1"
-  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
-    key: "4",
-    width: "18",
-    height: "18",
+    rx: "1.2"
+  }))], ["md6", "6列（小さく）", /*#__PURE__*/React.createElement("svg", {
+    key: "small",
+    width: "20",
+    height: "20",
     viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.75",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
+    fill: "currentColor",
+    stroke: "none"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "4",
+    x: "3.5",
     y: "3.5",
-    width: "16",
-    height: "17",
-    rx: "1.5"
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }))]]).map(([k, label, icon]) => {
-    const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : view === "md" && 列好み === +k.slice(2);
+    const 選 = view === "md" && (盤.狭い ? 列好み狭 : 列好み) === +k.slice(2);
     return /*#__PURE__*/React.createElement("button", {
       key: k,
-      onClick: () => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k),
+      onClick: () => 列にする(+k.slice(2)),
       title: label,
       "aria-label": label,
       "aria-pressed": 選,
