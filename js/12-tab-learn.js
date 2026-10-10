@@ -7,9 +7,76 @@ var {
 } = React;
 
 /* ───────── パソコンの左の柱に出す、行事カレンダーの一覧 ─────────
-   今月の行事（日付つき）／今後の予定／行事のまとまり、の三段。
-   日付は JP_HOLIDAYS と seasonalEventsFor から、
-   まとまりと枚数は pop_bundles から取る。 */
+   中身は「行事カレンダー」（pop_bundles）そのもの。2026-10-10 につなぎ直し。
+   以前はアプリに書き込んだ決まった行事表を出していて、作った行事と食い違っていた。
+   ・今月の行事＝その月が入っている行事（12か月ぜんぶの「定番」は除く）
+   ・日付は、行事の名前から分かるものだけ付ける（祝日・季節の行事・メモの「◯月◯日」）
+   ・今後の予定＝来月以降に始まる行事
+   ・いつも使う＝12か月ぜんぶの行事
+   押すと、その行事のまとめが直接ひらく。 */
+// 名前から日付が分かる、表にない行事（年で変わるものは年ごとに）
+const 追加の日 = y => {
+  const 第n木 = (yy, m, n) => {
+    const f = new Date(yy, m - 1, 1);
+    const off = (4 - f.getDay() + 7) % 7;
+    return new Date(yy, m - 1, 1 + off + (n - 1) * 7);
+  };
+  const 十五夜 = {
+    2026: [9, 25],
+    2027: [9, 15],
+    2028: [10, 3]
+  }[y];
+  const a = [{
+    d: new Date(y, 10, 15),
+    n: "七五三"
+  }, {
+    d: 第n木(y, 11, 3),
+    n: "ボジョレー"
+  }];
+  if (十五夜) a.push({
+    d: new Date(y, 十五夜[0] - 1, 十五夜[1]),
+    n: "十五夜"
+  });
+  return a;
+};
+// 行事（束）の、その月の日付。分からなければ null
+function 束の日(b, y, m) {
+  const 候補 = [...seasonalEventsFor(y).map(e => ({
+    d: e.date,
+    n: e.name
+  })), ...Object.entries(JP_HOLIDAYS[y] || {}).map(([k, n]) => {
+    const [mm, dd] = k.split("-").map(Number);
+    return {
+      d: new Date(y, mm - 1, dd),
+      n
+    };
+  }), ...追加の日(y)];
+  const 部分 = String(b.name || "").split(/[・／\/、]/).map(t => t.replace(/^お/, "").trim()).filter(t => t.length >= 2);
+  const 当たり = [];
+  const mt = String(b.note || "").match(/(\d{1,2})月(\d{1,2})日/);
+  if (mt) 当たり.push(new Date(y, +mt[1] - 1, +mt[2]));
+  候補.forEach(c => {
+    const n = c.n.replace(/^お/, "");
+    if (部分.some(t => n.includes(t) || t.includes(n))) 当たり.push(c.d);
+  });
+  const d = 当たり.filter(x => x.getMonth() === m).sort((p, q) => p - q)[0];
+  if (!d) return null;
+  const r = new Date(d);
+  r.setHours(0, 0, 0, 0);
+  return r;
+}
+// 行事カレンダーの、その束を直接ひらく
+function 束をひらく(id) {
+  try {
+    window.__bundleOpen = id || "";
+    window.dispatchEvent(new CustomEvent("goTab", {
+      detail: "bundle"
+    }));
+    if (id) window.dispatchEvent(new CustomEvent("bundleOpen", {
+      detail: id
+    }));
+  } catch (e) {}
+}
 function CalendarDock() {
   const 今日 = new Date();
   今日.setHours(0, 0, 0, 0);
@@ -19,6 +86,7 @@ function CalendarDock() {
   });
   const [束, set束] = useState([]);
   const [枚数, set枚数] = useState({});
+  const [読めた, set読めた] = useState(!!window.__bundleCache);
   const 曜 = ["日", "月", "火", "水", "木", "金", "土"];
   const 色 = ["#d1554f", "#c39a3c", "#3f9e63", "#3b7dd8", "#8a5fc4", "#c4685f", "#3f8f9e", "#9e7b3f"];
   useEffect(() => {
@@ -31,44 +99,62 @@ function CalendarDock() {
         m[r.bundle_id] = (m[r.bundle_id] || 0) + 1;
       });
       set枚数(m);
+      set読めた(true);
     };
     if (window.__bundleCache) 入れる(window.__bundleCache);
     (async () => {
       try {
         入れる(await prefetchBundles(false));
-      } catch (e) {}
+      } catch (e) {
+        if (生きてる) set読めた(true);
+      }
     })();
     return () => {
       生きてる = false;
     };
   }, []);
+  const 出す = 束.filter(b => b.visible !== false && Array.isArray(b.months) && b.months.length > 0);
+  const 季節 = 出す.filter(b => b.months.length < 12);
+  const いつも = 出す.filter(b => b.months.length >= 12);
+  // 行事カレンダーの帯と同じ色にそろえる（並びも同じ）
+  const 色の = b => 色[季節.findIndex(x => x.id === b.id) % 色.length] || "#3f9e63";
+  const 月番 = 年月.m + 1;
+  const 並べ = (list, y, m) => list.map(b => ({
+    b,
+    d: 束の日(b, y, m)
+  })).sort((p, q) => p.d && q.d ? p.d - q.d : p.d ? -1 : q.d ? 1 : (p.b.sort_order || 0) - (q.b.sort_order || 0));
+  const 今月の = 並べ(季節.filter(b => b.months.includes(月番)), 年月.y, 年月.m);
+  const 期間 = b => {
+    const ms = b.months.slice().sort((p, q) => p - q);
+    // 12月→1月のようにまたぐ並びは、つながる順に直す
+    let i = ms.findIndex((v, k) => k > 0 && v - ms[k - 1] > 1);
+    const 順 = i > 0 && ms[0] === 1 && ms[ms.length - 1] === 12 ? ms.slice(i).concat(ms.slice(0, i)) : ms;
+    return 順.length === 1 ? 順[0] + "月" : 順[0] + "〜" + 順[順.length - 1] + "月";
+  };
 
-  // その年の、日付のついた行事（祝日＋季節の行事）をまとめる
-  const 年の行事 = y => {
-    const a = seasonalEventsFor(y).map(e => ({
-      date: e.date,
-      name: e.name,
-      food: e.food,
-      祝: false
-    }));
-    Object.entries(JP_HOLIDAYS[y] || {}).forEach(([k, name]) => {
-      const [mm, dd] = k.split("-").map(Number);
-      a.push({
-        date: new Date(y, mm - 1, dd),
-        name,
-        food: null,
-        祝: true
+  // 来月から3か月のうちに始まる行事
+  const これから = [];
+  for (let k = 1; k <= 3 && これから.length < 5; k++) {
+    const d0 = new Date(年月.y, 年月.m + k, 1);
+    const mm = d0.getMonth() + 1,
+      前 = new Date(年月.y, 年月.m + k - 1, 1).getMonth() + 1;
+    並べ(季節.filter(b => b.months.includes(mm) && !b.months.includes(前) && !これから.some(x => x.b.id === b.id)), d0.getFullYear(), d0.getMonth()).forEach(x => {
+      if (これから.length < 5) これから.push({
+        ...x,
+        mm
       });
     });
-    a.forEach(e => e.date.setHours(0, 0, 0, 0));
-    return a.sort((x, y2) => x.date - y2.date);
-  };
-  const 全部 = [...年の行事(年月.y), ...(年月.m >= 10 ? 年の行事(年月.y + 1) : [])];
-  const 今月の = 全部.filter(e => e.date.getFullYear() === 年月.y && e.date.getMonth() === 年月.m);
-  const これから = 全部.filter(e => {
-    const 先 = new Date(年月.y, 年月.m + 1, 1);
-    return e.date >= 先;
-  }).slice(0, 4);
+  }
+
+  // 祝日はその月の分を一行だけ（作った行事とは別の目安として）
+  const 祝 = Object.entries(JP_HOLIDAYS[年月.y] || {}).map(([k, n]) => {
+    const [mm, dd] = k.split("-").map(Number);
+    return {
+      mm,
+      dd,
+      n
+    };
+  }).filter(h => h.mm === 月番).sort((p, q) => p.dd - q.dd);
   const 前月 = () => set年月(v => v.m === 0 ? {
     y: v.y - 1,
     m: 11
@@ -83,13 +169,6 @@ function CalendarDock() {
     y: v.y,
     m: v.m + 1
   });
-  const 開く = t => {
-    try {
-      window.dispatchEvent(new CustomEvent("goTab", {
-        detail: t
-      }));
-    } catch (e) {}
-  };
   const 見出し = (文字, 右) => /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -106,7 +185,7 @@ function CalendarDock() {
   }, 文字), 右);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     className: "dock-head",
-    onClick: () => 開く("bundle"),
+    onClick: () => 束をひらく(""),
     "aria-label": "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC\u306E\u30DA\u30FC\u30B8\u3092\u958B\u304F"
   }, /*#__PURE__*/React.createElement("b", null, "\u884C\u4E8B\u30AB\u30EC\u30F3\u30C0\u30FC"), /*#__PURE__*/React.createElement("i", null, "SEASONAL CALENDAR")), /*#__PURE__*/React.createElement("div", {
     className: "cd-month"
@@ -124,7 +203,7 @@ function CalendarDock() {
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M15 5l-7 7 7 7"
-  }))), /*#__PURE__*/React.createElement("span", null, 年月.y, "\u5E74 ", 年月.m + 1, "\u6708"), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("span", null, 年月.y, "\u5E74 ", 月番, "\u6708"), /*#__PURE__*/React.createElement("button", {
     onClick: 次月,
     "aria-label": "\u6B21\u306E\u6708"
   }, /*#__PURE__*/React.createElement("svg", {
@@ -138,53 +217,82 @@ function CalendarDock() {
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M9 6l6 6-6 6"
-  })))), 今月の.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  })))), !読めた ? /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "var(--faint)",
       padding: "18px 2px",
       textAlign: "center"
     }
-  }, 年月.m + 1, "\u6708\u306B\u6C7A\u307E\u3063\u305F\u884C\u4E8B\u306F\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
+  }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : 今月の.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--faint)",
+      padding: "18px 2px",
+      textAlign: "center"
+    }
+  }, 月番, "\u6708\u306E\u884C\u4E8B\u306F\u307E\u3060\u767B\u9332\u3055\u308C\u3066\u3044\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     className: "cd-line"
-  }, 今月の.map((e, i) => {
-    const 今日か = e.date.getTime() === 今日.getTime();
-    return /*#__PURE__*/React.createElement("div", {
-      className: "cd-row",
-      key: i
-    }, /*#__PURE__*/React.createElement("span", {
+  }, 今月の.map(({
+    b,
+    d
+  }) => {
+    const 今日か = d && d.getTime() === 今日.getTime();
+    const n = 枚数[b.id] || 0;
+    return /*#__PURE__*/React.createElement("button", {
+      className: "cd-row cd-tap",
+      key: b.id,
+      onClick: () => 束をひらく(b.id),
+      title: b.note || b.name,
+      "aria-label": b.name + "のまとめを開く"
+    }, d ? /*#__PURE__*/React.createElement("span", {
       className: "cd-day" + (今日か ? " cd-now" : "")
-    }, /*#__PURE__*/React.createElement("b", null, e.date.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[e.date.getDay()])), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("b", null, d.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[d.getDay()])) : /*#__PURE__*/React.createElement("span", {
+      className: "cd-day cd-span"
+    }, /*#__PURE__*/React.createElement("b", null, 期間(b).replace("月", "")), /*#__PURE__*/React.createElement("i", null, "\u6708")), /*#__PURE__*/React.createElement("span", {
       className: "cd-dot",
       style: {
-        background: e.祝 ? "#d1554f" : "#3b7dd8"
+        background: 色の(b)
       }
     }), /*#__PURE__*/React.createElement("span", {
       className: "cd-name"
-    }, e.name, e.food && /*#__PURE__*/React.createElement("em", null, "\u30FB", e.food)));
-  })), これから.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("今後の予定", /*#__PURE__*/React.createElement("button", {
-    onClick: () => 開く("bundle"),
+    }, b.name), /*#__PURE__*/React.createElement("span", {
+      className: "cd-num"
+    }, n > 0 ? n + "枚" : "—"));
+  })), 祝.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "cd-hol"
+  }, "\u795D\u65E5\u3000", 祝.map(h => `${h.dd}日 ${h.n}`).join("・")), これから.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("今後の予定", /*#__PURE__*/React.createElement("button", {
+    onClick: () => 束をひらく(""),
     className: "cd-more"
-  }, "\u3059\u3079\u3066\u898B\u308B \u203A")), これから.map((e, i) => /*#__PURE__*/React.createElement("div", {
-    className: "cd-next",
-    key: i
+  }, "\u3059\u3079\u3066\u898B\u308B \u203A")), これから.map(({
+    b,
+    d,
+    mm
+  }) => /*#__PURE__*/React.createElement("button", {
+    className: "cd-next cd-tap",
+    key: b.id,
+    onClick: () => 束をひらく(b.id),
+    title: b.note || b.name
   }, /*#__PURE__*/React.createElement("span", {
     className: "cd-next-d"
-  }, e.date.getMonth() + 1, "/", e.date.getDate()), /*#__PURE__*/React.createElement("span", {
+  }, d ? `${d.getMonth() + 1}/${d.getDate()}` : `${mm}月`), /*#__PURE__*/React.createElement("span", {
     className: "cd-dot",
     style: {
-      background: e.祝 ? "#d1554f" : "#c39a3c"
+      background: 色の(b)
     }
   }), /*#__PURE__*/React.createElement("span", {
     className: "cd-name"
-  }, e.name)))), 束.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("カテゴリ", null), 束.filter(b => !b.hidden).slice(0, 8).map((b, i) => /*#__PURE__*/React.createElement("button", {
+  }, b.name), /*#__PURE__*/React.createElement("span", {
+    className: "cd-num"
+  }, (枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—")))), いつも.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("いつも使う", null), いつも.map(b => /*#__PURE__*/React.createElement("button", {
     key: b.id,
     className: "cd-cat",
-    onClick: () => 開く("bundle")
+    onClick: () => 束をひらく(b.id),
+    title: b.note || b.name
   }, /*#__PURE__*/React.createElement("span", {
     className: "cd-chip",
     style: {
-      background: 色[i % 色.length]
+      background: "#5C6B7A"
     }
   }), /*#__PURE__*/React.createElement("span", {
     className: "cd-name"
@@ -6567,6 +6675,13 @@ function BundleTab({
   const [copied, setCopied] = useState("");
   const NOW_M = new Date().getMonth() + 1;
   const chartBox = useRef(null);
+  // 左の柱から「この行事」を押されたら、その束をひらく
+  const [指定, set指定] = useState(window.__bundleOpen || "");
+  useEffect(() => {
+    const h = e => set指定(e && e.detail || "");
+    window.addEventListener("bundleOpen", h);
+    return () => window.removeEventListener("bundleOpen", h);
+  }, []);
   useEffect(() => {
     let alive = true;
     const apply = c => {
@@ -6655,6 +6770,14 @@ function BundleTab({
       setPrompts(prs || []);
     } catch (e) {}
   };
+  useEffect(() => {
+    if (!指定) return;
+    const b = bundles.find(x => x.id === 指定);
+    if (!b) return;
+    window.__bundleOpen = "";
+    set指定("");
+    openBundle(b);
+  }, [指定, bundles]);
   const popById = id => pops.find(p => p.id === id);
   const bundleNow = bundles.filter(b => Array.isArray(b.months) && b.months.includes(NOW_M) && b.months.length < 12);
   const bundleAll = bundles.filter(b => !bundleNow.some(x => x.id === b.id));

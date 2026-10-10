@@ -473,6 +473,16 @@ font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
 .cd-cat .cd-name { flex:1; white-space:nowrap; text-overflow:ellipsis; }
 .cd-chip { width:24px; height:24px; border-radius:7px; flex-shrink:0; }
 .cd-num { font-size:12.5px; font-weight:800; color:#8398AE; flex-shrink:0; }
+.cd-tap { width:100%; border:none; background:transparent; font-family:inherit; text-align:left;
+  cursor:pointer; border-radius:10px; }
+.cd-tap:hover { background: rgba(255,255,255,0.06); }
+.cd-tap .cd-name { flex:1; white-space:nowrap; text-overflow:ellipsis; }
+.cd-tap .cd-num { padding-right:6px; }
+.cd-row.cd-tap { padding:5px 0; }
+.cd-day.cd-span { background: rgba(255,255,255,0.12); }
+.cd-day.cd-span b { font-size:12.5px; color:#DCE6F0; letter-spacing:-0.02em; }
+.cd-day.cd-span i { color:#93A6BA; }
+.cd-hol { margin-top:10px; font-size:11.5px; font-weight:700; color:#C98A86; line-height:1.6; padding:0 2px; }
 
 /* ───── 広い画面（パソコン）：左に行事カレンダー、右にメニューを置く ───── */
 @media (min-width: 1280px) {
