@@ -30,7 +30,7 @@ const GNE_LAYOUT_LAND = {
 
 // 使えるテンプレ一覧（サムネを押して切り替える）
 const GNE_PRESETS = [
-  { id:"washoku", name:"和風・ご馳走", land:false, img:"tpl/portrait.jpg", thumb:"tpl/washoku_thumb.jpg",
+  { id:"washoku", name:"縦A4", land:false, img:"tpl/tate_a4.jpg", thumb:"tpl/tate_a4_thumb.jpg",   // 2026-10-10 絵を差し替え（旧：和風・ご馳走）
     layout:{
       origin:   { x:70,  y:1150, size:74,  fill:"#3a2f22", stroke:"#ffffff", sw:6,  align:"left",   maxW:1060 },
       name:     { x:600, y:1290, size:150, fill:"#2a2118", stroke:"#ffffff", sw:10, align:"center", maxW:1070 },
