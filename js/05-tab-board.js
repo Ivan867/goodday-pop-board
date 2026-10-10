@@ -131,6 +131,9 @@ function BoardTab({
     } catch (e) {}
   };
   const 盤 = usePopCols(列好み);
+  useEffect(() => {
+    if (盤.入る >= 4 && view === "lg") setViewSave("md");
+  }, [盤.入る]);
   const 束盤 = usePopCols(列好み);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
@@ -382,10 +385,83 @@ function BoardTab({
       padding: 3,
       flexShrink: 0
     }
-  }, (盤.入る >= 4 ? [4, 5, 6].filter(n => n <= 盤.入る).map(n => ["md" + n, n + "列", /*#__PURE__*/React.createElement("span", {
-    key: "n" + n,
-    className: "bt-num"
-  }, n, /*#__PURE__*/React.createElement("i", null, "\u5217"))]) : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
+  }, (盤.入る >= 4
+  // パソコン・タブレット：3列と6列だけ。字は出さずマークで（2026-10-10）
+  ? [["md3", "3列", /*#__PURE__*/React.createElement("svg", {
+    key: "c3",
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "4",
+    width: "4.6",
+    height: "16",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.7",
+    y: "4",
+    width: "4.6",
+    height: "16",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.4",
+    y: "4",
+    width: "4.6",
+    height: "16",
+    rx: "1"
+  }))], ["md6", "6列", /*#__PURE__*/React.createElement("svg", {
+    key: "c6",
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "4",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.7",
+    y: "4",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.4",
+    y: "4",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "13",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.7",
+    y: "13",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.4",
+    y: "13",
+    width: "4.6",
+    height: "7",
+    rx: "1"
+  }))]] : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
     width: "18",
     height: "18",
@@ -419,7 +495,7 @@ function BoardTab({
     width: "7",
     height: "7",
     rx: "1"
-  }))]]).concat([["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
+  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
     key: "4",
     width: "18",
     height: "18",
@@ -436,7 +512,7 @@ function BoardTab({
     height: "17",
     rx: "1.5"
   }))]]).map(([k, label, icon]) => {
-    const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : view === "md" && 盤.列 === +k.slice(2);
+    const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : view === "md" && 列好み === +k.slice(2);
     return /*#__PURE__*/React.createElement("button", {
       key: k,
       onClick: () => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k),

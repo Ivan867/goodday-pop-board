@@ -1815,12 +1815,13 @@ function PopDetail({
 // 好み（4・5・6列）と、その幅に実際に入る数の小さいほうで並べる。スマホは2列のまま。
 // 横長のポップは2列ぶんを使う。A判なら、横2列ぶんの高さ＝縦1列ぶんの高さになるので、段がそろい、上下の余白も出ない。
 const POP_最小幅 = 120;
+// 選べるのは3列と6列だけ（2026-10-10）。前に選んでいた4・5は近いほうへ寄せる
 function 列の好み() {
   try {
     const n = +localStorage.getItem("popCols");
-    return [4, 5, 6].includes(n) ? n : 5;
+    return n === 3 || n === 4 ? 3 : 6;
   } catch (e) {
-    return 5;
+    return 6;
   }
 }
 function usePopCols(好み) {
@@ -1847,7 +1848,7 @@ function usePopCols(好み) {
   const gap = w && w < 600 ? 10 : 12;
   const 入る = w ? Math.max(2, Math.floor((w + gap) / (POP_最小幅 + gap))) : 2;
   const 列 = Math.max(2, Math.min(好み || 列の好み(), 入る));
-  const 名 = 列 <= 2 ? null : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
+  const 名 = 列 <= 2 ? null : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
   const style = {
     "--cols": 列,
     "--pg-gap": gap + "px"

@@ -69,6 +69,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
   const [列好み, set列好み] = useState(列の好み);
   const 列にする = (n) => { set列好み(n); setViewSave("md"); try { localStorage.setItem("popCols", String(n)); } catch(e) {} };
   const 盤 = usePopCols(列好み);
+  useEffect(() => { if (盤.入る >= 4 && view === "lg") setViewSave("md"); }, [盤.入る]);
   const 束盤 = usePopCols(列好み);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
@@ -191,12 +192,13 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
           <div className="board-tools" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:4, marginBottom:10 }}>
             <div style={{ display:"flex", gap:3, background:"var(--chip)", borderRadius:10, padding:3, flexShrink:0 }}>
               {(盤.入る >= 4
-                ? [4, 5, 6].filter(n => n <= 盤.入る).map(n => ["md" + n, n + "列", <span key={"n" + n} className="bt-num">{n}<i>列</i></span>])
-                : [["md", "2まい", <svg key="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>]]
-              ).concat([
-                ["lg", "1まい", <svg key="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="1.5"/></svg>],
-              ]).map(([k, label, icon]) => {
-                const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : (view === "md" && 盤.列 === +k.slice(2));
+                // パソコン・タブレット：3列と6列だけ。字は出さずマークで（2026-10-10）
+                ? [["md3", "3列", <svg key="c3" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="4.6" height="16" rx="1"/><rect x="9.7" y="4" width="4.6" height="16" rx="1"/><rect x="16.4" y="4" width="4.6" height="16" rx="1"/></svg>],
+                   ["md6", "6列", <svg key="c6" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="4.6" height="7" rx="1"/><rect x="9.7" y="4" width="4.6" height="7" rx="1"/><rect x="16.4" y="4" width="4.6" height="7" rx="1"/><rect x="3" y="13" width="4.6" height="7" rx="1"/><rect x="9.7" y="13" width="4.6" height="7" rx="1"/><rect x="16.4" y="13" width="4.6" height="7" rx="1"/></svg>]]
+                : [["md", "2まい", <svg key="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>],
+                   ["lg", "1まい", <svg key="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="1.5"/></svg>]]
+              ).map(([k, label, icon]) => {
+                const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : (view === "md" && 列好み === +k.slice(2));
                 return (
                 <button key={k} onClick={() => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k)} title={label}
                   aria-label={label} aria-pressed={選} className={"bt-seg" + (選 ? " on" : "")} style={{ border:"none", background: 選 ? "var(--card, #fff)" : "transparent", color: 選 ? "var(--primary-soft)" : "var(--sub)", borderRadius:8, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow: 選 ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>

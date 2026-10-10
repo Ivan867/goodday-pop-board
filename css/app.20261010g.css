@@ -914,3 +914,6 @@ button:active, .ucard:active { transform: scale(.98); }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important;
     transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* 品名の下に空けていた2行目の余白をやめる。2行になる名前だけ2行の高さになる（2026-10-10） */
+.pop-grid .pc-name { min-height: 0 !important; }
