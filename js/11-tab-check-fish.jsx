@@ -246,7 +246,7 @@ function PopCheckTab() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6, marginTop:10 }}>
               {recent.length === 0 ? <div style={{ gridColumn:"1/-1", fontSize:12, color:"var(--faint)", textAlign:"center", padding:"10px 0" }}>読み込み中…</div>
                 : recent.map(pp => (
-                  <img key={pp.id} src={pp.image_url} onClick={() => { setRes(null); setErr(""); setSrc(pp.image_url); setPicker(false); }}
+                  <img alt={pp.product_name || ""} key={pp.id} src={pp.image_url} onClick={() => { setRes(null); setErr(""); setSrc(pp.image_url); setPicker(false); }}
                     style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", border:"1px solid var(--line)" }} />
                 ))}
             </div>
@@ -255,7 +255,7 @@ function PopCheckTab() {
 
         {src && (
           <div className="wcard" style={{ textAlign:"center" }}>
-            <img ref={imgRef} src={src} crossOrigin="anonymous"
+            <img alt="" ref={imgRef} src={src} crossOrigin="anonymous"
               onError={() => setErr("画像を読み込めませんでした。形式が未対応（HEICなど）の可能性があります。")}
               style={{ maxWidth:"100%", maxHeight:260, borderRadius:10, border:"1px solid var(--line)" }} />
             <button onClick={runAnalyze} disabled={busy}

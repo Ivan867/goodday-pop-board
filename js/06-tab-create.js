@@ -84,6 +84,7 @@ function NewPostForm({
       background: preview ? "transparent" : "#fafafa"
     }
   }, preview ? /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: preview,
     style: {
       maxWidth: "100%",
@@ -166,6 +167,7 @@ function PostCard({
       e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.07)";
     }
   }, post.image_url && /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: post.image_url,
     style: {
       width: "100%",
@@ -257,6 +259,7 @@ function PostModal({
       zIndex: 1
     }
   }, "\u2715"), post.image_url && /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: post.image_url,
     style: {
       width: "100%",
@@ -869,6 +872,7 @@ function PopCreateInner({
       alignItems: "center"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: refImage,
     style: {
       width: 64,

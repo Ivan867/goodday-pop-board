@@ -1632,6 +1632,7 @@ function SearchTab({
       gap: 3
     }
   }, allPops.map(pop => /*#__PURE__*/React.createElement("img", {
+    alt: pop.product_name || "",
     key: pop.id,
     src: pop.image_url,
     loading: "lazy",

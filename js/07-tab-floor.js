@@ -250,6 +250,7 @@ function FloorPhotoTab() {
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: photo.image_url,
     style: {
       width: "100%",
@@ -389,6 +390,7 @@ function FloorPhotoTab() {
     },
     onClick: () => setSel(storePhotos[0])
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: storePhotos[0].image_url,
     style: {
       width: "100%",
@@ -423,6 +425,7 @@ function FloorPhotoTab() {
       overflowX: "auto"
     }
   }, storePhotos.slice(1).map(p => /*#__PURE__*/React.createElement("img", {
+    alt: p.store_name ? p.store_name + "の売場写真" : "売場写真",
     key: p.id,
     src: p.image_url,
     onClick: () => setSel(p),
@@ -474,6 +477,7 @@ function FloorPhotoTab() {
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: sel.image_url,
     style: {
       width: "100%",
@@ -767,6 +771,7 @@ function FloorUploadModal({
       marginBottom: 5
     }
   }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5E97\u8217",
     value: store,
     onChange: e => setStore(e.target.value),
     style: {
@@ -791,6 +796,7 @@ function FloorUploadModal({
       marginBottom: 5
     }
   }, "\u30AB\u30C6\u30B4\u30EA\u30FC"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u7A2E\u985E",
     value: category,
     onChange: e => setCategory(e.target.value),
     style: {
@@ -876,6 +882,7 @@ function FloorUploadModal({
       ...dzFloor.style
     }
   }), preview ? /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: preview,
     style: {
       maxWidth: "100%",

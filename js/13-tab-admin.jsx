@@ -979,7 +979,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                   <div style={{ fontSize:12.5, fontWeight:600, color:"var(--primary)", marginBottom:6 }}>📌 現在のピン留め</div>
                   {pops.find(p => p.id === pinnedPopId) && (
                     <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                      <img src={pops.find(p => p.id === pinnedPopId).image_url} style={{ width:60, height:60, objectFit:"cover", borderRadius:8 }} />
+                      <img alt="" src={pops.find(p => p.id === pinnedPopId).image_url} style={{ width:60, height:60, objectFit:"cover", borderRadius:8 }} />
                       <div style={{ flex:1, fontSize:13.5, fontWeight:700 }}>{pops.find(p => p.id === pinnedPopId).product_name || "無題"}</div>
                       <button onClick={() => setPinned(null)} style={{ border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12.5, fontWeight:700, cursor:"pointer" }}>外す</button>
                     </div>
@@ -990,7 +990,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(100px, 1fr))", gap:8 }}>
                 {pops.slice(0, 20).map(p => (
                   <div key={p.id} onClick={() => setPinned(p.id)} style={{ cursor:"pointer", opacity: p.id === pinnedPopId ? 0.5 : 1, position:"relative" }}>
-                    <img loading="lazy" decoding="async" src={p.image_url} style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, border: p.id === pinnedPopId ? "3px solid var(--primary)" : "none" }} />
+                    <img alt={p.product_name || ""} loading="lazy" decoding="async" src={p.image_url} style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, border: p.id === pinnedPopId ? "3px solid var(--primary)" : "none" }} />
                     {p.id === pinnedPopId && <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>📌</div>}
                   </div>
                 ))}
@@ -1059,7 +1059,7 @@ function ArchiveTab({ onCreateFromPop }) {
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
             {pops.map(pop => (
               <div key={pop.id} style={{ position:"relative" }}>
-                <img src={pop.image_url} loading="lazy" onClick={() => setSel(pop)}
+                <img alt={pop.product_name || ""} src={pop.image_url} loading="lazy" onClick={() => setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"var(--chip)", display:"block" }} />
                 <button onClick={(e) => openResForm(pop, e)} title="資料に登録"
                   style={{ position:"absolute", right:5, bottom:5, border:"none", background:"rgba(29,58,87,0.86)", color:"#fff", borderRadius:999, padding:"4px 9px", fontSize:12.5, fontWeight:700, cursor:"pointer" }}>
@@ -1078,7 +1078,7 @@ function ArchiveTab({ onCreateFromPop }) {
             style={{ background:"var(--card, #fff)", borderRadius:12, padding:18, width:"100%", maxWidth:340, maxHeight:"86vh", overflowY:"auto" }}>
             <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>資料に登録</div>
             <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。</div>
-            <img src={resTarget.image_url} style={{ width:"100%", borderRadius:10, marginBottom:12, background:"var(--chip)" }} />
+            <img alt="" src={resTarget.image_url} style={{ width:"100%", borderRadius:10, marginBottom:12, background:"var(--chip)" }} />
             <input value={resTitle} onChange={e => setResTitle(e.target.value)} placeholder="タイトル"
               style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:8, fontSize:13.5, outline:"none", marginBottom:8 }} />
             <input value={resDesc} onChange={e => setResDesc(e.target.value)} placeholder="説明（任意）"
@@ -1189,7 +1189,7 @@ function RequestTab() {
         </div>
         <div>
           <div style={lbl}>店舗</div>
-          <select value={store} onChange={e=>setStore(e.target.value)} style={inp}>
+          <select aria-label="店舗" value={store} onChange={e=>setStore(e.target.value)} style={inp}>
             <option value="">未指定</option>
             {STORES.map(s=><option key={s} value={s}>{s}</option>)}
           </select>
@@ -1374,7 +1374,7 @@ function NoticeAdmin({ onNoticeChange }) {
           style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
 
         <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", margin:"14px 0 6px" }}>タップで開く機能（任意）</div>
-        <select value={featTab} onChange={e => setFeatTab(e.target.value)}
+        <select aria-label="開く画面" value={featTab} onChange={e => setFeatTab(e.target.value)}
           style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit" }}>
           <option value="">（移動しない）</option>
           {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
@@ -1421,7 +1421,7 @@ function NoticeAdmin({ onNoticeChange }) {
         <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
 
         <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>どのボタンに付けるか</div>
-        <select value={badgeTab} onChange={e => setBadgeTab(e.target.value)}
+        <select aria-label="印をつける画面" value={badgeTab} onChange={e => setBadgeTab(e.target.value)}
           style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit", marginBottom:12 }}>
           <option value="">（付けない）</option>
           <option value="board">一覧</option>
@@ -1520,7 +1520,7 @@ function RotateAdmin() {
             return (
               <div key={pop.id} style={{ border:"1px solid var(--line)", borderRadius:10, padding:8, background:"var(--card, #fff)" }}>
                 <div style={{ width:"100%", aspectRatio:"1/1", overflow:"hidden", borderRadius:8, background:"var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:7 }}>
-                  <img src={pop.image_url} loading="lazy"
+                  <img alt={pop.product_name || ""} src={pop.image_url} loading="lazy"
                     style={{ maxWidth: side ? "100%" : "100%", maxHeight:"100%", objectFit:"contain", transform: rot ? `rotate(${rot}deg)` : "none", transition:"transform .25s ease" }} />
                 </div>
                 <div style={{ fontSize:12.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
@@ -1657,7 +1657,7 @@ function CatalogAdmin() {
           </div>
           <div style={{ flex:2, minWidth:0 }}>
             <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:4 }}>時期</div>
-            <select value={form.season} onChange={e => setF("season", e.target.value)} style={{ ...inp, appearance:"auto" }}>
+            <select aria-label="季節" value={form.season} onChange={e => setF("season", e.target.value)} style={{ ...inp, appearance:"auto" }}>
               {SEASONS.map(x => <option key={x} value={x}>{x}</option>)}
             </select>
           </div>
@@ -1666,7 +1666,7 @@ function CatalogAdmin() {
         <div style={{ marginBottom:9 }}>
           <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
           <input ref={thumbRef} type="file" accept="image/*" onChange={pickThumb} disabled={busy} style={{ fontSize:12.5, width:"100%" }} />
-          {form.thumb_url && <img src={form.thumb_url} style={{ width:60, borderRadius:8, marginTop:6, display:"block" }} />}
+          {form.thumb_url && <img alt="" src={form.thumb_url} style={{ width:60, borderRadius:8, marginTop:6, display:"block" }} />}
         </div>
 
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="カタログ名（例：お歳暮 2026）" style={{ ...inp, marginBottom:8 }} />
@@ -1694,7 +1694,7 @@ function CatalogAdmin() {
           {list.map(c => (
             <div key={c.id} style={{ border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", background:"var(--card, #fff)", opacity: c.visible ? 1 : 0.55, display:"flex", alignItems:"center", gap:10 }}>
               {c.kind === "image"
-                ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--chip)" }} />
+                ? <img alt="" src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--chip)" }} />
                 : <div style={{ width:38, height:48, borderRadius:8, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
               <div style={{ minWidth:0, flex:1 }}>
                 <div style={{ fontSize:12.5, fontWeight:700, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
@@ -2433,7 +2433,7 @@ function RankingPanel({ onCreateFromPop }) {
           <div key={p.id} onClick={() => setSel(p)}
             style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card, #fff)", border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)", borderRadius:12, padding:"10px 12px", marginBottom:9, cursor:"pointer" }}>
             <div style={{ width:34, height:34, borderRadius:8, background:rs.bg, color:rs.fg, display:"flex", alignItems:"center", justifyContent:"center", fontSize: i < 3 ? 16 : 13, fontWeight:700, flexShrink:0 }}>{i + 1}</div>
-            <img src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:8, flexShrink:0, border:"1px solid var(--line)" }} />
+            <img alt={p.product_name || ""} src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:8, flexShrink:0, border:"1px solid var(--line)" }} />
             <div style={{ minWidth:0, flex:1 }}>
               <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
               <div style={{ fontSize:12.5, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>

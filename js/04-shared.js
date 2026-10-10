@@ -262,6 +262,7 @@ function UploadModal({
       marginBottom: 6
     }
   }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5E97\u8217",
     value: store,
     onChange: e => setStore(e.target.value),
     style: {
@@ -1028,6 +1029,7 @@ function PopDetail({
       zIndex: 6
     }
   }), /*#__PURE__*/React.createElement("img", {
+    alt: pop.product_name || "",
     src: pop.image_url,
     onTouchStart: onPinchStart,
     onTouchMove: onPinchMove,
@@ -1755,6 +1757,7 @@ function PopDetail({
       alignItems: "flex-end"
     }
   }, /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5E97\u8217",
     value: cStore,
     onChange: e => setCStore(e.target.value),
     style: {
@@ -1856,7 +1859,8 @@ function usePopCols(好み, 好み狭) {
   const gap = 狭い ? 8 : 12;
   const 入る = Math.max(2, Math.floor((幅 + gap) / (POP_最小幅 + gap)));
   const 列 = 狭い ? 好み狭 || 列の好み(true) : Math.max(2, Math.min(好み || 列の好み(false), 入る));
-  const 名 = 狭い ? 列 >= 4 ? "11px" : "12.5px" : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
+  const 名 = 狭い ? 列 >= 4 ? "12px" : "13px" // 11pxは読みにくいので12pxを下限に（2026-10-10）
+  : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
   const style = {
     "--cols": 列,
     "--pg-gap": gap + "px",
@@ -2015,7 +2019,16 @@ function PopCard({
       } : {})
     },
     onClick: () => onClick(pop),
-    title: pop.__group ? pop.group_name || pop.product_name : pop.product_name
+    title: pop.__group ? pop.group_name || pop.product_name : pop.product_name,
+    role: "button",
+    tabIndex: 0,
+    "aria-label": (pop.__group ? (pop.group_name || pop.product_name) + "（" + (pop.__count || "") + "枚のまとまり）" : pop.product_name) + "を開く",
+    onKeyDown: e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick(pop);
+      }
+    }
   }, /*#__PURE__*/React.createElement("div", {
     className: "imgskel pc-img",
     style: {
@@ -2024,6 +2037,7 @@ function PopCard({
     }
   }, pop.image_url ? /*#__PURE__*/React.createElement("img", {
     src: pop.image_url,
+    alt: "",
     loading: "lazy",
     decoding: "async",
     className: "fdin pc-img-el",

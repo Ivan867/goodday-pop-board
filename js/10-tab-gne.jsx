@@ -547,11 +547,11 @@ function GeneratorTab({ onCreatePop }) {
             </div>
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{ fontSize:12.5, fontWeight:600, color:"var(--text)", marginBottom:2 }}>横（左 ⇄ 右）：{gx > 0 ? `+${gx}` : gx}</div>
-              <input type="range" min={-120} max={120} step={5} value={gx} onChange={e => setGx(+e.target.value)} style={{ width:"100%" }} />
+              <input aria-label="横の位置" type="range" min={-120} max={120} step={5} value={gx} onChange={e => setGx(+e.target.value)} style={{ width:"100%" }} />
               <div style={{ fontSize:12.5, fontWeight:600, color:"var(--text)", margin:"10px 0 2px" }}>縦（上 ⇄ 下）：{gy > 0 ? `+${gy}` : gy}</div>
-              <input type="range" min={-320} max={40} step={5} value={gy} onChange={e => setGy(+e.target.value)} style={{ width:"100%" }} />
+              <input aria-label="縦の位置" type="range" min={-320} max={40} step={5} value={gy} onChange={e => setGy(+e.target.value)} style={{ width:"100%" }} />
               <div style={{ fontSize:12.5, fontWeight:600, color:"var(--text)", margin:"10px 0 2px" }}>文字サイズ（全体）：{gScale}%</div>
-              <input type="range" min={70} max={130} step={5} value={gScale} onChange={e => setGScale(+e.target.value)} style={{ width:"100%" }} />
+              <input aria-label="文字サイズ（全体）" type="range" min={70} max={130} step={5} value={gScale} onChange={e => setGScale(+e.target.value)} style={{ width:"100%" }} />
             </div>
           </div>
 
@@ -606,7 +606,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ fontSize:12.5, fontWeight:700, color:"var(--ink)", marginBottom:3 }}>💾 設定を保存する</div>
           <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:8, lineHeight:1.5 }}>いまの文字の位置・サイズ・税の設定をまとめて保存します。次回そのまま呼び出せます。</div>
           <div style={{ display:"flex", gap:6, marginBottom:8, flexWrap:"wrap" }}>
-            <input value={pName} onChange={e => setPName(e.target.value)} placeholder="名前（例：うなぎ用）"
+            <input aria-label="共有する型の名前" value={pName} onChange={e => setPName(e.target.value)} placeholder="名前（例：うなぎ用）"
               style={{ flex:"1 1 140px", minWidth:0, border:"1px solid var(--line)", borderRadius:8, padding:"8px 10px", fontSize:12.5, outline:"none" }} />
             <button onClick={saveLocal}
               style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:8, padding:"8px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>この端末に保存</button>
@@ -682,11 +682,11 @@ function GeneratorTab({ onCreatePop }) {
                 {key === "copy" && <span style={{ color:"var(--faint)" }}>（改行で2行。*ここ* と囲むと赤）</span>}
               </div>
               {(key === "name" || key === "copy") ? (
-                <textarea value={f[key] || ""} onChange={set(key)} rows={2}
+                <textarea aria-label={label} value={f[key] || ""} onChange={set(key)} rows={2}
                   placeholder="長いときは改行してください"
                   style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15, resize:"vertical", fontFamily:"inherit", lineHeight:1.5 }} />
               ) : (
-                <input value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
+                <input aria-label={label} value={f[key] || ""} onChange={set(key)} inputMode={key === "price" ? "numeric" : "text"}
                   style={{ width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:15 }} />
               )}
             </div>
@@ -694,7 +694,7 @@ function GeneratorTab({ onCreatePop }) {
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
               <span style={{ fontSize:12.5, color:"var(--sub)" }}>税込丸め</span>
-              <select value={taxMode} onChange={(e) => setTaxMode(e.target.value)} style={{ border:"1px solid var(--line)", borderRadius:8, padding:"6px 8px", fontSize:14 }}>
+              <select aria-label="税込の丸め方" value={taxMode} onChange={(e) => setTaxMode(e.target.value)} style={{ border:"1px solid var(--line)", borderRadius:8, padding:"6px 8px", fontSize:14 }}>
                 <option value="ceil">切り上げ</option>
                 <option value="round">四捨五入</option>
                 <option value="floor">切り捨て</option>

@@ -430,6 +430,7 @@ function PopCheckTab() {
       padding: "10px 0"
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : recent.map(pp => /*#__PURE__*/React.createElement("img", {
+    alt: pp.product_name || "",
     key: pp.id,
     src: pp.image_url,
     onClick: () => {
@@ -452,6 +453,7 @@ function PopCheckTab() {
       textAlign: "center"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     ref: imgRef,
     src: src,
     crossOrigin: "anonymous",

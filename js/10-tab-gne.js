@@ -1604,6 +1604,7 @@ function GeneratorTab({
       marginBottom: 2
     }
   }, "\u6A2A\uFF08\u5DE6 \u21C4 \u53F3\uFF09\uFF1A", gx > 0 ? `+${gx}` : gx), /*#__PURE__*/React.createElement("input", {
+    "aria-label": "\u6A2A\u306E\u4F4D\u7F6E",
     type: "range",
     min: -120,
     max: 120,
@@ -1621,6 +1622,7 @@ function GeneratorTab({
       margin: "10px 0 2px"
     }
   }, "\u7E26\uFF08\u4E0A \u21C4 \u4E0B\uFF09\uFF1A", gy > 0 ? `+${gy}` : gy), /*#__PURE__*/React.createElement("input", {
+    "aria-label": "\u7E26\u306E\u4F4D\u7F6E",
     type: "range",
     min: -320,
     max: 40,
@@ -1638,6 +1640,7 @@ function GeneratorTab({
       margin: "10px 0 2px"
     }
   }, "\u6587\u5B57\u30B5\u30A4\u30BA\uFF08\u5168\u4F53\uFF09\uFF1A", gScale, "%"), /*#__PURE__*/React.createElement("input", {
+    "aria-label": "\u6587\u5B57\u30B5\u30A4\u30BA\uFF08\u5168\u4F53\uFF09",
     type: "range",
     min: 70,
     max: 130,
@@ -1897,6 +1900,7 @@ function GeneratorTab({
       flexWrap: "wrap"
     }
   }, /*#__PURE__*/React.createElement("input", {
+    "aria-label": "\u5171\u6709\u3059\u308B\u578B\u306E\u540D\u524D",
     value: pName,
     onChange: e => setPName(e.target.value),
     placeholder: "\u540D\u524D\uFF08\u4F8B\uFF1A\u3046\u306A\u304E\u7528\uFF09",
@@ -2146,6 +2150,7 @@ function GeneratorTab({
       color: "var(--faint)"
     }
   }, "\uFF08\u6539\u884C\u30672\u884C\u3002*\u3053\u3053* \u3068\u56F2\u3080\u3068\u8D64\uFF09")), key === "name" || key === "copy" ? /*#__PURE__*/React.createElement("textarea", {
+    "aria-label": label,
     value: f[key] || "",
     onChange: set(key),
     rows: 2,
@@ -2162,6 +2167,7 @@ function GeneratorTab({
       lineHeight: 1.5
     }
   }) : /*#__PURE__*/React.createElement("input", {
+    "aria-label": label,
     value: f[key] || "",
     onChange: set(key),
     inputMode: key === "price" ? "numeric" : "text",
@@ -2192,6 +2198,7 @@ function GeneratorTab({
       color: "var(--sub)"
     }
   }, "\u7A0E\u8FBC\u4E38\u3081"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u7A0E\u8FBC\u306E\u4E38\u3081\u65B9",
     value: taxMode,
     onChange: e => setTaxMode(e.target.value),
     style: {

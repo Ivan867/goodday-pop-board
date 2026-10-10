@@ -937,3 +937,15 @@ button:active, .ucard:active { transform: scale(.98); }
   .gne-grid { grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; }
 }
 .gne-settings > * { min-width: 0; }
+
+/* ═════ 見やすさ（2026-10-10） ═════ */
+/* 濃紺の上の薄い字は、明るさの比 4.5 以上に（測って 4.07〜4.46 だったもの） */
+.dept-sw-b { color: #8EA0B5; }
+.dock-head i { color: #8EA0B5 !important; }
+.cd-day i { color: #46525F !important; }
+/* iPhone・iPad：入力欄の字が16pxより小さいと、触ったときに画面が勝手に拡大される。16px以上にして防ぐ */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea { font-size: max(16px, 1em) !important; }
+}
+/* カードをキーボードで選んだときの枠 */
+.pop-grid .ucard:focus-visible { outline: 3px solid var(--focus-ring) !important; outline-offset: 2px; }

@@ -2314,6 +2314,7 @@ function AdminTab({
       alignItems: "center"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: pops.find(p => p.id === pinnedPopId).image_url,
     style: {
       width: 60,
@@ -2361,6 +2362,7 @@ function AdminTab({
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: p.product_name || "",
     loading: "lazy",
     decoding: "async",
     src: p.image_url,
@@ -2511,6 +2513,7 @@ function ArchiveTab({
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("img", {
+    alt: pop.product_name || "",
     src: pop.image_url,
     loading: "lazy",
     onClick: () => setSel(pop),
@@ -2577,6 +2580,7 @@ function ArchiveTab({
       marginBottom: 12
     }
   }, "\u3053\u306E\u30DD\u30C3\u30D7\u306E\u753B\u50CF\u3092\u8CC7\u6599\u3068\u3057\u3066\u767B\u9332\u3057\u307E\u3059\u3002\u300C\u4E00\u89A7\u306B\u8868\u793A\u3059\u308B\u300D\u3092\u5165\u308C\u306A\u3051\u308C\u3070\u3001\u7BA1\u7406\u753B\u9762\u304B\u3089\u3060\u3051\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: resTarget.image_url,
     style: {
       width: "100%",
@@ -2893,6 +2897,7 @@ function RequestTab() {
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: lbl
   }, "\u5E97\u8217"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5E97\u8217",
     value: store,
     onChange: e => setStore(e.target.value),
     style: inp
@@ -3456,6 +3461,7 @@ function NoticeAdmin({
       margin: "14px 0 6px"
     }
   }, "\u30BF\u30C3\u30D7\u3067\u958B\u304F\u6A5F\u80FD\uFF08\u4EFB\u610F\uFF09"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u958B\u304F\u753B\u9762",
     value: featTab,
     onChange: e => setFeatTab(e.target.value),
     style: {
@@ -3628,6 +3634,7 @@ function NoticeAdmin({
       marginBottom: 6
     }
   }, "\u3069\u306E\u30DC\u30BF\u30F3\u306B\u4ED8\u3051\u308B\u304B"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5370\u3092\u3064\u3051\u308B\u753B\u9762",
     value: badgeTab,
     onChange: e => setBadgeTab(e.target.value),
     style: {
@@ -3900,6 +3907,7 @@ function RotateAdmin() {
         marginBottom: 7
       }
     }, /*#__PURE__*/React.createElement("img", {
+      alt: pop.product_name || "",
       src: pop.image_url,
       loading: "lazy",
       style: {
@@ -4269,6 +4277,7 @@ function CatalogAdmin() {
       marginBottom: 4
     }
   }, "\u6642\u671F"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5B63\u7BC0",
     value: form.season,
     onChange: e => setF("season", e.target.value),
     style: {
@@ -4300,6 +4309,7 @@ function CatalogAdmin() {
       width: "100%"
     }
   }), form.thumb_url && /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: form.thumb_url,
     style: {
       width: 60,
@@ -4413,6 +4423,7 @@ function CatalogAdmin() {
       gap: 10
     }
   }, c.kind === "image" ? /*#__PURE__*/React.createElement("img", {
+    alt: "",
     src: c.url,
     style: {
       width: 38,
@@ -6146,6 +6157,7 @@ function RankingPanel({
         flexShrink: 0
       }
     }, i + 1), /*#__PURE__*/React.createElement("img", {
+      alt: p.product_name || "",
       src: p.image_url,
       loading: "lazy",
       style: {

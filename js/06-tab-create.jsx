@@ -32,7 +32,7 @@ function NewPostForm({ onPost, onCancel }) {
       <div style={{ fontWeight:900, fontSize:15, marginBottom:14, color:"#2d6a4f" }}>新しい投稿</div>
       <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="売り場の様子、発見、コツなど..." rows={4} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14, resize:"vertical", fontFamily:"inherit", outline:"none", marginBottom:10 }} />
       <label style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:10, padding:12, textAlign:"center", cursor:"pointer", marginBottom:10, background:preview?"transparent":"#fafafa" }}>
-        {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:160, borderRadius:6 }} /> : <div style={{ color:"var(--faint)", fontSize:13 }}>写真を追加（任意）</div>}
+        {preview ? <img alt="" src={preview} style={{ maxWidth:"100%", maxHeight:160, borderRadius:6 }} /> : <div style={{ color:"var(--faint)", fontSize:13 }}>写真を追加（任意）</div>}
         <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
       </label>
       {error && <div style={{ color:"var(--primary)", fontSize:13, marginBottom:8 }}>{error}</div>}
@@ -51,7 +51,7 @@ function PostCard({ post, onOpen }) {
     <div onClick={()=>onOpen(post)} style={{ background:"var(--card)", borderRadius:14, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 10px rgba(0,0,0,0.07)", transition:"all 0.15s" }}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)"}}
       onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
-      {post.image_url && <img src={post.image_url} style={{ width:"100%", height:200, objectFit:"cover", display:"block" }} />}
+      {post.image_url && <img alt="" src={post.image_url} style={{ width:"100%", height:200, objectFit:"cover", display:"block" }} />}
       <div style={{ padding:"14px 16px" }}>
         {post.text && <div style={{ fontSize:14, color:"var(--ink)", lineHeight:1.6, marginBottom:8, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{post.text}</div>}
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -70,7 +70,7 @@ function PostModal({ post, onClose, onViewed }) {
       <div style={{ background:"var(--card)", borderRadius:"22px 22px 0 0", width:"100%", maxWidth:560, maxHeight:"92vh", overflow:"auto", animation:"sheetUp .32s cubic-bezier(.16,1,.3,1)" }} onClick={e=>e.stopPropagation()}>
         <div style={{ position:"relative" }}>
           <button onClick={onClose} style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.5)", border:"none", color:"white", fontSize:16, width:32, height:32, borderRadius:"50%", cursor:"pointer", zIndex:1 }}>✕</button>
-          {post.image_url && <img src={post.image_url} style={{ width:"100%", display:"block", borderRadius:"22px 22px 0 0" }} />}
+          {post.image_url && <img alt="" src={post.image_url} style={{ width:"100%", display:"block", borderRadius:"22px 22px 0 0" }} />}
         </div>
         <div style={{ padding:20 }}>
           <div style={{ fontSize:15, color:"var(--ink)", lineHeight:1.8, marginBottom:14, whiteSpace:"pre-wrap" }}>{post.text}</div>
@@ -418,7 +418,7 @@ function PopCreateInner({ seed, onSeedConsumed }) {
             </div>
             {refImage && (
               <div style={{ background:"#1e1e1e", border:"1px solid #3a3a3a", borderRadius:8, padding:"11px 13px", marginBottom:14, display:"flex", gap:12, alignItems:"center" }}>
-                <img src={refImage} style={{ width:64, height:64, objectFit:"cover", borderRadius:6, flexShrink:0, background:"#111" }} />
+                <img alt="" src={refImage} style={{ width:64, height:64, objectFit:"cover", borderRadius:6, flexShrink:0, background:"#111" }} />
                 <div style={{ fontSize:12, color:"#c8a840", lineHeight:1.7 }}>
                   <div style={{ fontWeight:800, marginBottom:2 }}>このPOPを参照元にします</div>
                   <div style={{ color:"var(--sub)" }}>この画像を長押しで保存し、AIにアップロードしてから下のプロンプトを貼り付けてください。</div>

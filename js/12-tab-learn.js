@@ -3205,6 +3205,7 @@ function CatalogTab() {
       marginBottom: 4
     }
   }, "\u898B\u305F\u3044\u3082\u306E"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u76EE\u6A19",
     value: dailyTarget,
     onChange: e => setDailyTarget(e.target.value),
     style: selBase
@@ -3224,6 +3225,7 @@ function CatalogTab() {
       marginBottom: 4
     }
   }, "\u691C\u7D22\u5BFE\u8C61\u5E74"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5E74",
     value: searchYear,
     onChange: e => setSearchYear(Number(e.target.value)),
     style: selBase
@@ -3243,6 +3245,7 @@ function CatalogTab() {
       marginBottom: 4
     }
   }, "\u6642\u671F"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u5B63\u7BC0",
     value: season,
     onChange: e => setSeason(e.target.value),
     style: selBase
@@ -3262,6 +3265,7 @@ function CatalogTab() {
       marginBottom: 4
     }
   }, "\u5546\u54C1\u30B8\u30E3\u30F3\u30EB"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u30B8\u30E3\u30F3\u30EB",
     value: genre,
     onChange: e => setGenre(e.target.value),
     style: selBase
@@ -3281,6 +3285,7 @@ function CatalogTab() {
       marginBottom: 4
     }
   }, "\u691C\u7D22\u306E\u3057\u304B\u305F"), /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u8868\u793A\u306E\u3057\u304B\u305F",
     value: mode,
     onChange: e => setModeSave(e.target.value),
     style: selBase
@@ -5702,6 +5707,7 @@ function OrderTab() {
       color: "var(--sub)"
     }
   }, monthCount, "\u56DE / ", monthQty > 0 ? monthQty : 0)), active.length > 0 && /*#__PURE__*/React.createElement("select", {
+    "aria-label": "\u54C1\u76EE",
     value: focusItem,
     onChange: e => setFocusItem(e.target.value),
     style: {

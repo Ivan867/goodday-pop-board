@@ -133,7 +133,7 @@ function UploadModal({ currentStore, onClose, onSuccess }) {
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:6 }}>店舗</div>
-            <select value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14 }}>
+            <select aria-label="店舗" value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"10px 12px", border:"2px solid var(--line)", borderRadius:10, fontSize:14 }}>
               {STORES.map(s=><option key={s}>{s}</option>)}
             </select>
           </div>
@@ -486,7 +486,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
         {/* 画像エリア（ショート風・シート内で大きく） */}
         <div onTouchStart={onImgTouchStart} onTouchEnd={onImgTouchEnd} style={{ position:"relative", background:"var(--chip)", borderRadius:"22px 22px 0 0", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", flex:"1 1 auto", minHeight:0, paddingTop:15, transform: slideAnim === "up" ? "translateY(-34px)" : "translateY(0)", opacity: slideAnim === "up" ? 0.25 : 1, transition:"transform .18s cubic-bezier(.4,0,.6,1), opacity .18s ease" }}>
           <div style={{ position:"absolute", top:8, left:"50%", transform:"translateX(-50%)", width:40, height:5, borderRadius:3, background:"rgba(255,255,255,0.75)", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", zIndex:6 }} />
-          <img src={pop.image_url}
+          <img alt={pop.product_name || ""} src={pop.image_url}
             onTouchStart={onPinchStart} onTouchMove={onPinchMove} onTouchEnd={onPinchEnd}
             onDoubleClick={() => zoom > 1 ? resetZoom() : setZoom(2)}
             style={{ maxWidth: (pop.rotation === 90 || pop.rotation === 270) ? "56vh" : "100%", maxHeight: "100%", objectFit:"contain", display:"block",
@@ -656,7 +656,7 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
             </div>
           )}
           {cOpen && <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
-            <select value={cStore} onChange={e=>setCStore(e.target.value)}
+            <select aria-label="店舗" value={cStore} onChange={e=>setCStore(e.target.value)}
               style={{ padding:"10px 8px", border:"1.5px solid var(--line)", borderRadius:9, fontSize:12.5, outline:"none", background:"var(--card, #fff)", flexShrink:0, maxWidth:110 }}>
               {STORES.map(s=><option key={s}>{s}</option>)}
             </select>
@@ -702,7 +702,7 @@ function usePopCols(好み, 好み狭) {
   const gap = 狭い ? 8 : 12;
   const 入る = Math.max(2, Math.floor((幅 + gap) / (POP_最小幅 + gap)));
   const 列 = 狭い ? (好み狭 || 列の好み(true)) : Math.max(2, Math.min(好み || 列の好み(false), 入る));
-  const 名 = 狭い ? (列 >= 4 ? "11px" : "12.5px")
+  const 名 = 狭い ? (列 >= 4 ? "12px" : "13px")   // 11pxは読みにくいので12pxを下限に（2026-10-10）
     : 列 <= 3 ? "15px" : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
   const style = { "--cols": 列, "--pg-gap": gap + "px", "--pg-name": 名 };
   return { ref: setEl, 列, 入る, 狭い, style, cls: " pg-fixed pg-wide" + (狭い ? " pg-narrow" : "") };
@@ -781,10 +781,13 @@ function PopCard({ pop, index, onClick, hasComment }) {
         boxShadow:"var(--card-shadow)", transition:"transform var(--dur, .18s) var(--ease, ease), box-shadow var(--dur, .18s) ease",
         animation:`fadeUp 0.42s cubic-bezier(.16,1,.3,1) ${Math.min(index,11)*0.045}s both`,
         ...(dims && !rotated ? { "--nat-ar": (land && pop.__pairLand && pop.__rowAr) ? String(pop.__rowAr) : `${dims.w} / ${dims.h}` } : {}) }}
-      onClick={()=>onClick(pop)} title={pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}>
+      onClick={()=>onClick(pop)} title={pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}
+      role="button" tabIndex={0}
+      aria-label={(pop.__group ? (pop.group_name || pop.product_name) + "（" + (pop.__count || "") + "枚のまとまり）" : pop.product_name) + "を開く"}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(pop); } }}>
       <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
-          ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin pc-img-el" onLoad={onImgLoad} style={{ width:"100%", objectFit:"contain", display:"block", background:"var(--mat)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
+          ? <img src={pop.image_url} alt="" loading="lazy" decoding="async" className="fdin pc-img-el" onLoad={onImgLoad} style={{ width:"100%", objectFit:"contain", display:"block", background:"var(--mat)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
           : <div style={{ width:"100%", aspectRatio:"1 / 1.414", background:"var(--mat)" }} />}
         <div style={{ position:"absolute", top:6, right:6, display:"flex", gap:4, alignItems:"center" }}>
           {pop.__group && (

@@ -121,7 +121,7 @@ function FloorPhotoTab() {
                   onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
                   onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 10px rgba(0,0,0,0.07)"}}>
                   <div style={{ background:"#efefef", minHeight:120, position:"relative" }}>
-                    <img src={photo.image_url} style={{ width:"100%", display:"block" }} />
+                    <img alt="" src={photo.image_url} style={{ width:"100%", display:"block" }} />
                     <div style={{ position:"absolute", top:6, left:6, background:"rgba(47,111,176,0.9)", color:"white", fontSize:11, fontWeight:900, padding:"2px 8px", borderRadius:20 }}>{photo.category}</div>
                   </div>
                   <div style={{ padding:"10px 12px" }}>
@@ -176,7 +176,7 @@ function FloorPhotoTab() {
                     <div>
                       {/* 最新写真をメイン表示 */}
                       <div style={{ cursor:"pointer", position:"relative" }} onClick={()=>setSel(storePhotos[0])}>
-                        <img src={storePhotos[0].image_url} style={{ width:"100%", display:"block", maxHeight:220, objectFit:"cover" }} />
+                        <img alt="" src={storePhotos[0].image_url} style={{ width:"100%", display:"block", maxHeight:220, objectFit:"cover" }} />
                         <div style={{ position:"absolute", bottom:6, right:6, background:"rgba(0,0,0,0.55)", color:"white", fontSize:11, padding:"2px 7px", borderRadius:10 }}>
                           {timeAgo(storePhotos[0].created_at)}
                         </div>
@@ -190,7 +190,7 @@ function FloorPhotoTab() {
                       {storePhotos.length > 1 && (
                         <div style={{ display:"flex", gap:4, padding:"8px 10px", overflowX:"auto" }}>
                           {storePhotos.slice(1).map(p=>(
-                            <img key={p.id} src={p.image_url} onClick={()=>setSel(p)}
+                            <img alt={p.store_name ? p.store_name + "の売場写真" : "売場写真"} key={p.id} src={p.image_url} onClick={()=>setSel(p)}
                               style={{ width:50, height:50, objectFit:"cover", borderRadius:6, cursor:"pointer", flexShrink:0, opacity:0.75 }} />
                           ))}
                         </div>
@@ -212,7 +212,7 @@ function FloorPhotoTab() {
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }} onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}>
           <div style={{ background:"var(--card)", borderRadius:20, width:"100%", maxWidth:500, maxHeight:"90vh", overflowY:"auto", animation:"fadeUp 0.2s ease" }} onClick={e=>e.stopPropagation()}>
             <div style={{ position:"relative" }}>
-              <img src={sel.image_url} style={{ width:"100%", display:"block", borderRadius:"20px 20px 0 0" }} />
+              <img alt="" src={sel.image_url} style={{ width:"100%", display:"block", borderRadius:"20px 20px 0 0" }} />
               <button onClick={()=>{ setSel(null); setDelTarget(null); setPwInput(""); setPwError(""); }}
                 style={{ position:"absolute", top:12, right:12, background:"rgba(0,0,0,0.5)", border:"none", color:"white", fontSize:18, width:36, height:36, borderRadius:"50%", cursor:"pointer" }}>✕</button>
               <div style={{ position:"absolute", top:12, left:12, background:"rgba(47,111,176,0.9)", color:"white", fontSize:12, fontWeight:800, padding:"3px 10px", borderRadius:20 }}>{sel.category}</div>
@@ -303,13 +303,13 @@ function FloorUploadModal({ onClose, onSuccess }) {
           <div style={{ display:"flex", gap:10 }}>
             <div style={{ flex:1 }}>
               <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:5 }}>店舗</div>
-              <select value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid var(--line)", borderRadius:8, fontSize:13, outline:"none" }}>
+              <select aria-label="店舗" value={store} onChange={e=>setStore(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid var(--line)", borderRadius:8, fontSize:13, outline:"none" }}>
                 {FLOOR_STORES.map(s=><option key={s}>{s}</option>)}
               </select>
             </div>
             <div style={{ flex:1 }}>
               <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:5 }}>カテゴリー</div>
-              <select value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid var(--line)", borderRadius:8, fontSize:13, outline:"none" }}>
+              <select aria-label="種類" value={category} onChange={e=>setCategory(e.target.value)} style={{ width:"100%", padding:"9px 10px", border:"2px solid var(--line)", borderRadius:8, fontSize:13, outline:"none" }}>
                 {FLOOR_CATS.map(c=><option key={c}>{c}</option>)}
               </select>
             </div>
@@ -327,7 +327,7 @@ function FloorUploadModal({ onClose, onSuccess }) {
           <div>
             <div style={{ fontSize:12, fontWeight:700, color:"var(--text)", marginBottom:5 }}>写真 <span style={{ color:"var(--primary)" }}>*</span></div>
             <label {...dzFloor.props} style={{ display:"block", border:"2px dashed #e0e0e0", borderRadius:12, padding:16, textAlign:"center", cursor:"pointer", background: preview?"transparent":"#fafafa", ...dzFloor.style }}>
-              {preview ? <img src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>{dzFloor.over ? "ここに離してください" : "タップして選択（ドラッグでもOK）"}</div>}
+              {preview ? <img alt="" src={preview} style={{ maxWidth:"100%", maxHeight:180, borderRadius:8 }} /> : <div style={{ color:"var(--sub)", fontSize:14 }}>{dzFloor.over ? "ここに離してください" : "タップして選択（ドラッグでもOK）"}</div>}
               <input type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
             </label>
           </div>

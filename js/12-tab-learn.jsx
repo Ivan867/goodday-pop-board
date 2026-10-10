@@ -1281,7 +1281,7 @@ function CatalogTab() {
             {pageMode === "daily" ? (
               <label style={{ display:"block" }}>
                 <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>見たいもの</span>
-                <select value={dailyTarget} onChange={e => setDailyTarget(e.target.value)} style={selBase}>
+                <select aria-label="目標" value={dailyTarget} onChange={e => setDailyTarget(e.target.value)} style={selBase}>
                   {DAILY_TARGET_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                 </select>
               </label>
@@ -1289,25 +1289,25 @@ function CatalogTab() {
             <>
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索対象年</span>
-              <select value={searchYear} onChange={e => setSearchYear(Number(e.target.value))} style={selBase}>
+              <select aria-label="年" value={searchYear} onChange={e => setSearchYear(Number(e.target.value))} style={selBase}>
                 {YEAR_OPTS.map(y => <option key={y} value={y}>{y}年</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</span>
-              <select value={season} onChange={e => setSeason(e.target.value)} style={selBase}>
+              <select aria-label="季節" value={season} onChange={e => setSeason(e.target.value)} style={selBase}>
                 {CAT_SEASON_OPTS.map(sn => <option key={sn} value={sn}>{sn}</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>商品ジャンル</span>
-              <select value={genre} onChange={e => setGenre(e.target.value)} style={selBase}>
+              <select aria-label="ジャンル" value={genre} onChange={e => setGenre(e.target.value)} style={selBase}>
                 {CAT_GENRE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
             </label>
             <label style={{ display:"block" }}>
               <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>検索のしかた</span>
-              <select value={mode} onChange={e => setModeSave(e.target.value)} style={selBase}>
+              <select aria-label="表示のしかた" value={mode} onChange={e => setModeSave(e.target.value)} style={selBase}>
                 {CAT_MODE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
             </label>
@@ -2312,7 +2312,7 @@ function OrderTab() {
 
             {/* 品目でしぼる */}
             {active.length > 0 && (
-              <select value={focusItem} onChange={e => setFocusItem(e.target.value)}
+              <select aria-label="品目" value={focusItem} onChange={e => setFocusItem(e.target.value)}
                 style={{ ...inp, marginBottom:11, fontSize:12.5, background:"var(--card, #fff)" }}>
                 <option value="">すべての品目</option>
                 {active.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
