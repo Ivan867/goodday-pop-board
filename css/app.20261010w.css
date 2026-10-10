@@ -953,36 +953,46 @@ button:active, .ucard:active { transform: scale(.98); }
 /* メニューのタイル：3列で1つ余るとき、管理画面の1つ前を2枠ぶんにして、管理画面と読み込み直すを同じ段に（2026-10-10） */
 .menu-drawer .menu-list .menu-item.menu-tile.menu-tile-span2 { grid-column: span 2; }
 
-/* ═════ パソコンの右の柱：1列のナビ（2026-10-10） ═════ */
-.mn { position: relative; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+/* ═════ パソコンの右の柱：1列のナビ（2026-10-10 洗練版） ═════
+   囲い・説明・見出しを減らし、字とアイコンだけで並べる。
+   開いている画面は、うすい面がすべって重なるだけ。指をのせると右に小さな矢印。 */
+@media (min-width: 1280px) {
+  html:not([data-dock-min="1"]) .menu-dock .dock-top { background: transparent !important; border-color: transparent !important; padding: 18px 4px 6px !important; gap: 16px !important; }
+  html:not([data-dock-min="1"]) .menu-dock .dock-brand img.dock-logo { width: 56% !important; max-width: 124px !important; }
+}
+.mn { position: relative; display: flex; flex-direction: column; margin-top: 10px; }
 .mn-grp { display: flex; flex-direction: column; gap: 2px; }
-.mn-grp + .mn-grp { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
-.mn-h { font-size: 11px; font-weight: 600; letter-spacing: .14em; color: #7F92A6; padding: 0 12px 6px; }
-.mn-item { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; width: 100%;
-  min-height: 56px !important; padding: 8px 12px; border: none; border-radius: 12px; background: transparent;
-  color: #D6E1EC; font: inherit; text-align: left; cursor: pointer;
-  transition: background-color var(--dur) ease, color var(--dur) ease; }
-.mn-item:hover { background: rgba(255,255,255,0.05); }
-.mn-item:active { transform: scale(.985); }
-.mn-ic { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.05); color: #7FB2E4; transition: background-color var(--dur) ease, color var(--dur) ease; }
-.mn-ic svg { width: 21px; height: 21px; }
-.mn-tx { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
-.mn-tx b { font-size: 14px; font-weight: 600; color: #EAF1F8; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mn-tx i { font-style: normal; font-size: 11.5px; font-weight: 500; color: #8EA0B5; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mn-item.on .mn-ic { background: #3a6b9e; color: #fff; }
-.mn-item.on .mn-tx i { color: #B9CDE2; }
-.mn-badge { margin-left: auto; background: var(--fill); color: #fff; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 1px 7px; }
-/* いま開いている画面にのる帯：画面を移ると、すべって動く */
-.mn-band { position: absolute; left: 0; right: 0; top: 0; z-index: 0; border-radius: 12px; pointer-events: none;
-  background: rgba(111,163,216,0.13); box-shadow: inset 0 0 0 1px rgba(156,200,242,0.28);
-  opacity: 0; transition: transform .22s var(--ease), height .22s var(--ease), opacity .18s ease; }
+.mn-grp + .mn-grp { margin-top: 12px; padding-top: 12px; position: relative; }
+.mn-grp + .mn-grp::before { content: ""; position: absolute; top: 0; left: 14px; right: 14px; height: 1px; background: rgba(255,255,255,0.07); }
+.mn-item { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; width: 100%;
+  min-height: 46px !important; padding: 0 14px; border: none; border-radius: 10px; background: transparent;
+  color: #A9BACB; font: inherit; text-align: left; cursor: pointer;
+  transition: color .18s ease; }
+.mn-item:hover { color: #EAF1F8; }
+.mn-item:active { transform: none; }
+.mn-ic { flex: 0 0 20px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: currentColor; opacity: .85; }
+.mn-ic svg { width: 20px; height: 20px; }
+.mn-tx { flex: 1; min-width: 0; }
+.mn-tx b { display: block; font-size: 14.5px; font-weight: 500; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mn-go { flex: 0 0 auto; opacity: 0; transform: translateX(-4px); transition: opacity .18s ease, transform .18s var(--ease); color: #7F92A6; display: flex; }
+.mn-item:hover .mn-go { opacity: 1; transform: none; }
+.mn-item.on { color: #FFFFFF; }
+.mn-item.on .mn-ic { opacity: 1; color: #9CC8F2; }
+.mn-item.on .mn-tx b { font-weight: 600; }
+.mn-item.on .mn-go { opacity: 0; }
+.mn-badge { margin-left: auto; background: var(--fill); color: #fff; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 1px 7px; }
+/* いま開いている画面：うすい面がすべって重なる。指をのせた行にも、もっと薄い面 */
+.mn-band { position: absolute; left: 0; right: 0; top: 0; z-index: 0; border-radius: 10px; pointer-events: none;
+  background: rgba(255,255,255,0.075); opacity: 0;
+  transition: transform .26s var(--ease), height .26s var(--ease), opacity .2s ease; }
 .mn-band.on { opacity: 1; }
-.mn-band::before { content: ""; position: absolute; left: -1px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: #9CC8F2; }
-/* 足もと：版と、読み込み直す */
-.mn-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding: 10px 6px 0 12px;
-  border-top: 1px solid rgba(255,255,255,0.07); }
-.mn-ver { font-size: 11px; font-weight: 500; color: #7F92A6; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
-.mn-reload { width: 36px; height: 36px; min-height: 0 !important; padding: 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04); color: #93A6BA; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.mn-reload:hover { color: #EAF1F8; background: rgba(255,255,255,0.09); }
+.mn-item:not(.on):hover { background: rgba(255,255,255,0.03); }
+/* 足もと：静かに */
+.mn-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; padding: 0 6px 0 14px; }
+.mn-ver { font-size: 10.5px; font-weight: 500; color: #8EA0B5; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.mn-reload { width: 32px; height: 32px; min-height: 0 !important; padding: 0; border-radius: 8px; border: none;
+  background: transparent; color: #8EA0B5; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: color .18s ease, background-color .18s ease; }
+.mn-reload:hover { color: #EAF1F8; background: rgba(255,255,255,0.06); }
+.mn-reload:hover svg { transform: rotate(-90deg); }
+.mn-reload svg { transition: transform .3s var(--ease); }
