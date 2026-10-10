@@ -1343,89 +1343,37 @@ function WeatherWidget({
 }
 
 // ── 開発・お知らせ Tab ──
+// 中身（400件を超える履歴）は 24-news に分け、開いたときだけ読む（2026-10-10）
 function DevTab() {
+  const [ok, setOk] = useState(!!window.NewsList);
+  const [err, setErr] = useState(null);
+  useEffect(() => {
+    if (ok) return;
+    window.loadLazyTab("24-news").then(() => setOk(true)).catch(setErr);
+  }, []);
+  if (ok && window.NewsList) return React.createElement(window.NewsList);
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      maxWidth: 680,
-      margin: "0 auto",
-      padding: "20px 16px 60px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 22,
-      fontWeight: 900,
-      color: "var(--ink)",
-      marginBottom: 4
-    }
-  }, "\u304A\u77E5\u3089\u305B\u30FB\u66F4\u65B0\u5C65\u6B74"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "var(--sub)",
-      marginBottom: 20
-    }
-  }, "\u30A2\u30D7\u30EA\u306E\u66F4\u65B0\u5C65\u6B74\u3068\u304A\u77E5\u3089\u305B"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12
-    }
-  }, ANNOUNCEMENTS.map((a, i) => {
-    const t = ANN_TYPES[a.type] || ANN_TYPES["お知らせ"];
-    return /*#__PURE__*/React.createElement("div", {
-      key: i,
-      style: {
-        background: "var(--card)",
-        borderRadius: 14,
-        padding: "16px 18px",
-        border: "1px solid #ececec",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: t.bg,
-        color: t.color,
-        border: `1px solid ${t.border}`,
-        borderRadius: 20,
-        padding: "3px 10px",
-        fontSize: 11,
-        fontWeight: 800
-      }
-    }, a.type), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        color: "var(--faint)",
-        fontWeight: 700
-      }
-    }, a.date)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 15,
-        fontWeight: 800,
-        color: "var(--ink)",
-        marginBottom: 6
-      }
-    }, a.title), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        color: "var(--text)",
-        lineHeight: 1.75,
-        whiteSpace: "pre-wrap"
-      }
-    }, a.body));
-  }), ANNOUNCEMENTS.length === 0 && /*#__PURE__*/React.createElement("div", {
-    style: {
       textAlign: "center",
+      padding: "40px 16px",
       color: "var(--faint)",
-      fontSize: 13,
-      padding: "40px 0"
+      fontSize: 13
     }
-  }, "\u307E\u3060\u304A\u77E5\u3089\u305B\u306F\u3042\u308A\u307E\u305B\u3093")));
+  }, err ? /*#__PURE__*/React.createElement(React.Fragment, null, "\u304A\u77E5\u3089\u305B\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093\u3067\u3057\u305F\u3002", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setErr(null);
+      window.loadLazyTab("24-news").then(() => setOk(true)).catch(setErr);
+    },
+    style: {
+      marginLeft: 6,
+      border: "1px solid var(--line)",
+      background: "var(--card)",
+      borderRadius: 8,
+      padding: "4px 10px",
+      cursor: "pointer",
+      fontFamily: "inherit"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6")) : "読み込み中…");
 }
 
 // ── Main App ──

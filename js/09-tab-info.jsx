@@ -498,29 +498,19 @@ function WeatherWidget({ onTheme }) {
 }
 
 // ── 開発・お知らせ Tab ──
+// 中身（400件を超える履歴）は 24-news に分け、開いたときだけ読む（2026-10-10）
 function DevTab() {
+  const [ok, setOk] = useState(!!window.NewsList);
+  const [err, setErr] = useState(null);
+  useEffect(() => {
+    if (ok) return;
+    window.loadLazyTab("24-news").then(() => setOk(true)).catch(setErr);
+  }, []);
+  if (ok && window.NewsList) return React.createElement(window.NewsList);
   return (
-    <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px 60px" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>お知らせ・更新履歴</div>
-      <div style={{ fontSize:12, color:"var(--sub)", marginBottom:20 }}>アプリの更新履歴とお知らせ</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-        {ANNOUNCEMENTS.map((a,i)=>{
-          const t = ANN_TYPES[a.type] || ANN_TYPES["お知らせ"];
-          return (
-            <div key={i} style={{ background:"var(--card)", borderRadius:14, padding:"16px 18px", border:"1px solid #ececec", boxShadow:"0 1px 4px rgba(0,0,0,0.04)" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
-                <span style={{ background:t.bg, color:t.color, border:`1px solid ${t.border}`, borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:800 }}>{a.type}</span>
-                <span style={{ fontSize:11, color:"var(--faint)", fontWeight:700 }}>{a.date}</span>
-              </div>
-              <div style={{ fontSize:15, fontWeight:800, color:"var(--ink)", marginBottom:6 }}>{a.title}</div>
-              <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.75, whiteSpace:"pre-wrap" }}>{a.body}</div>
-            </div>
-          );
-        })}
-        {ANNOUNCEMENTS.length === 0 && (
-          <div style={{ textAlign:"center", color:"var(--faint)", fontSize:13, padding:"40px 0" }}>まだお知らせはありません</div>
-        )}
-      </div>
+    <div style={{ textAlign:"center", padding:"40px 16px", color:"var(--faint)", fontSize:13 }}>
+      {err ? <>お知らせを読み込めませんでした。<button onClick={() => { setErr(null); window.loadLazyTab("24-news").then(() => setOk(true)).catch(setErr); }}
+        style={{ marginLeft:6, border:"1px solid var(--line)", background:"var(--card)", borderRadius:8, padding:"4px 10px", cursor:"pointer", fontFamily:"inherit" }}>もう一度</button></> : "読み込み中…"}
     </div>
   );
 }

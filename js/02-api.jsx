@@ -175,9 +175,17 @@ function 黙って送る(path, body) {
 const 機能の最終 = {};
 
 // 品目・まとめ・カタログ・資料の書き換え：管理の通行証つきの命令 admin_write で（表に直接は書けない）
-async function 管理で書く(表, 操作, id, 中身) {
+// 種類："admin"（管理の合言葉）か "delete"（削除の合言葉。消すときだけ通る）。
+// 管理の通行証がまだなければ、ここで合言葉を聞く（2026-10-10）
+async function 管理で書く(表, 操作, id, 中身, 種類) {
+  種類 = 種類 || "admin";
+  let 証 = PW_CACHE[種類];
+  if (!(証 && String(証).length === 48) && 種類 === "admin" && window.管理の確認) {
+    if (!(await window.管理の確認())) throw new Error("cancelled");
+    証 = PW_CACHE.admin;
+  }
   return sbJson(`/rest/v1/rpc/admin_write`, { method:"POST",
-    body:{ p_table: 表, p_op: 操作, p_id: id || null, p_row: 中身 || null, p_password: PW_CACHE.admin || "" } });
+    body:{ p_table: 表, p_op: 操作, p_id: id || null, p_row: 中身 || null, p_password: 証 || "" } });
 }
 
 const api = {
@@ -380,8 +388,9 @@ const api = {
   // ── pop_requests：ポップ依頼 ──
   async listRequests() { return sbJson(`/rest/v1/pop_requests?select=*&order=created_at.desc`); },
   async insertRequest(data) { return sbOne(`/rest/v1/pop_requests`, { method:"POST", body:data, prefer:"return=representation" }); },
-  async updateRequest(id, patch) { await sbFetch(`/rest/v1/pop_requests?id=eq.${id}`, { method:"PATCH", body:patch, prefer:"return=minimal" }); },
-  async delRequest(id) { await sbFetch(`/rest/v1/pop_requests?id=eq.${id}`, { method:"DELETE" }); },
+  // 返信・状態の変更・削除は管理の命令で（2026-10-10）
+  async updateRequest(id, patch) { return 管理で書く("pop_requests", "update", id, patch); },
+  async delRequest(id) { await 管理で書く("pop_requests", "delete", id, null); },
 
   // ── storage：画像アップロード（JSONでないため個別実装） ──
   async upload(file) {
@@ -442,7 +451,7 @@ const api = {
   },
   async insertFloorPhoto(data) { return sbOne(`/rest/v1/floor_photos`, { method:"POST", body:data, prefer:"return=representation" }); },
   async deleteFloorPhoto(id) {
-    await sbFetch(`/rest/v1/floor_photos?id=eq.${id}`, { method:"DELETE" });
+    await 管理で書く("floor_photos", "delete", id, null);   // 管理の命令で（2026-10-10）
     return true;
   },
   // 保存領域の画像そのものを消す（消し残りを出さないため）。失敗しても止めない
@@ -486,12 +495,12 @@ const api = {
   // ── prompt_library：プロンプト記録集 ──
   async listPrompts() { return sbJson(`/rest/v1/prompt_library?select=*&order=created_at.desc`); },
   async insertPrompt(data) { return sbOne(`/rest/v1/prompt_library`, { method:"POST", body:data, prefer:"return=representation" }); },
-  async delPrompt(id) { await sbFetch(`/rest/v1/prompt_library?id=eq.${id}`, { method:"DELETE" }); },
+  async delPrompt(id) { await 管理で書く("prompt_library", "delete", id, null, "delete"); },   // 削除の合言葉の通行証で（2026-10-10）
 
   // ── shared_tray_presets：発注バーコードの共有プリセット ──
   async listSharedPresets() { return sbJson(`/rest/v1/shared_tray_presets?select=*&order=sort_order.asc,created_at.asc`); },
   async insertSharedPreset(data) { return sbOne(`/rest/v1/shared_tray_presets`, { method:"POST", body:data, prefer:"return=representation" }); },
-  async delSharedPreset(id) { await sbFetch(`/rest/v1/shared_tray_presets?id=eq.${id}`, { method:"DELETE" }); },
+  async delSharedPreset(id) { await 管理で書く("shared_tray_presets", "delete", id, null); },   // 管理の命令で（2026-10-10）
 
   // ── site_notice：一時お知らせ／機能停止バナー（全店共有） ──
   async getNotice() {
@@ -520,8 +529,7 @@ const api = {
   async listPresets() { return sbJson(`/rest/v1/gne_presets?select=*&order=created_at.desc`); },
   async addPreset(p) { return sbOne(`/rest/v1/gne_presets`, { method:"POST", body:p, prefer:"return=representation" }); },
   async deletePreset(id) {
-    const r = await sbFetch(`/rest/v1/gne_presets?id=eq.${id}`, { method:"DELETE" });
-    if (!r.ok) throw new Error(await r.text());
+    await 管理で書く("gne_presets", "delete", id, null);   // 共有プリセットを消すのは管理の人だけ（2026-10-10）
     return true;
   },
 
