@@ -542,14 +542,14 @@ function App() {
               <div className="dock-ctl"><部門スイッチ /></div>
             </div>}
 
-            {/* 項目は3列のタイル。縦に長い一覧をスクロールしなくても、全部がひと目で押せる（2026-10-08） */}
+            {/* 項目はタイル。スマホは3列、パソコンの右の柱は2列（2026-10-10） */}
             <div className="menu-list menu-grid">
               {(() => {
                 // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
                 const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
                 const ORDER = 青果
                   ? ["archive","guide","admin"]
-                  : ["bundle","archive","guide","catalog","gne","order","lab","request","admin"];
+                  : ["bundle","archive","catalog","gne","order","lab","request","admin"];   // 手引きは青果だけ（2026-10-10）
                 // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
                 const 外す = 広い ? ["search","bundle"] : [];
                 return TAB_REGISTRY
@@ -563,7 +563,8 @@ function App() {
               })().map((o, i, 全部) => {
                 // タイルが1つだけ最後の行に余るときは、その1つを横いっぱいにする
                 const タイル = 全部.filter(x => x.key !== "search");
-                const 余り = タイル.length % 3 === 1 && o.key === タイル[タイル.length - 1].key;
+                const 列 = 広い ? 2 : 3;
+                const 余り = タイル.length % 列 === 1 && o.key === タイル[タイル.length - 1].key;
                 return (
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
                   aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}

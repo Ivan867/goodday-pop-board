@@ -744,6 +744,8 @@ html[data-theme="dark"] .res-ops .res-del { color: #ff8a80; }
 .menu-drawer .menu-list .menu-item.menu-tile.menu-tile-wide .menu-tile-t { font-size: 14px !important; color: #A9BACB; }
 /* 青果の「はじめに」（手引き）を目立たせる */
 .menu-drawer .menu-list .menu-item.menu-tile.menu-push { border-color: rgba(127,201,140,0.6) !important; background: rgba(53,116,61,0.22) !important; }
+/* パソコンの右の柱は2列（2026-10-10） */
+.menu-dock .menu-list.menu-grid { grid-template-columns: repeat(2, 1fr); }
 @media (min-width: 1280px) {
   .menu-dock .menu-list.menu-grid { gap: 7px !important; }
   .menu-dock .menu-list .menu-item.menu-tile { min-height: 80px !important; padding: 11px 3px 9px !important; }
