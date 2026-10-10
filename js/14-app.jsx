@@ -24,7 +24,7 @@ var LAZY_TABS = {
 const MENU_ICON = (() => {
   const P = (d, extra) => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {d}{extra}
     </svg>
   );
@@ -33,7 +33,7 @@ const MENU_ICON = (() => {
     bundle:  P(<><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></>),
     tool:    P(<><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></>),
     request: P(<><path d="M4 5.5h16v13H4z"/><path d="M4 7l8 6 8-6"/></>),
-    order:   P(<><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></>),
+    order:   P(<><path d="M4 10v9.5a1 1 0 001 1h14a1 1 0 001-1V10"/><path d="M3 9.5L4.6 4h14.8L21 9.5"/><path d="M3 9.5h18"/><path d="M9.5 20.5v-5.5h5v5.5"/></>),   // 店舗支援（2026-10-10 鍵→店）
     barcode: P(<><path d="M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"/></>),
     catalog: P(<><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></>),
     lab:     P(<><path d="M9.5 3v6.2L4.8 17a2 2 0 001.7 3h11a2 2 0 001.7-3l-4.7-7.8V3"/><path d="M8.5 3h7M8 14h8"/></>),
@@ -342,6 +342,14 @@ function App() {
     return () => window.removeEventListener("resize", み);
   }, []);
   useEffect(() => { if (広い) setMoreOpen(true); }, [広い]);
+  const [畳む, set畳む] = useState(() => { try { return localStorage.getItem("dockMin") === "1"; } catch (e) { return false; } });
+  const 畳みを切替 = () => set畳む(v => { const n = !v; try { localStorage.setItem("dockMin", n ? "1" : "0"); } catch (e) {} return n; });
+  useEffect(() => {
+    try {
+      if (広い && 畳む) document.documentElement.setAttribute("data-dock-min", "1");
+      else document.documentElement.removeAttribute("data-dock-min");
+    } catch (e) {}
+  }, [広い, 畳む]);
 
   useEffect(() => {
     const sp = document.getElementById("splash");
@@ -512,10 +520,11 @@ function App() {
                 <div className="dock-top">
                   <a className="dock-brand" href="./" aria-label="ホーム（一覧）にもどる"
                     onClick={(e) => { e.preventDefault(); setTab("board"); try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(_) {} }}>
-                    <img src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
+                    <img className="dock-logo" src={"brand-logo-dark.png?v=" + (window.APP_VER || "")} alt="GoodDay NEXUS PROJECT" />
+                    <img className="dock-mark" src="brand-mark.png" alt="" aria-hidden="true" />
                   </a>
                   <div className="dock-ctl">
-                    <部門スイッチ />
+                    {畳む ? <部門切替 /> : <部門スイッチ />}
                     <button className="dock-find" aria-label="ポップをさがす" title="さがす"
                       onClick={() => { try { window.dispatchEvent(new CustomEvent("openSearch")); } catch(e){} }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
@@ -567,7 +576,7 @@ function App() {
                 const 余り = タイル.length % 列 === 1 && o.key === タイル[タイル.length - 1].key;
                 return (
                 <button key={o.key} onClick={()=>{ setTab(o.key); setMoreOpen(false); }}
-                  aria-label={o.label} aria-current={tab===o.key ? "page" : undefined}
+                  aria-label={o.label} title={o.label} aria-current={tab===o.key ? "page" : undefined}
                   className={"menu-item menu-tile menu-row-" + o.key + ((o.key === "search" || 余り) ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab===o.key ? " on" : "")}>
                   <span className="menu-tile-ic">
                     {MENU_ICON[o.key] || MENU_ICON.search}
@@ -579,15 +588,25 @@ function App() {
               })}
             </div>
             {/* アドレスバーのないホーム画面のアプリでも、自分で読み直せるように */}
-            <button className="menu-reload" onClick={() => { try { location.reload(); } catch (e) {} }}
+            <button className="menu-reload" onClick={() => { try { location.reload(); } catch (e) {} }} title="読み込み直す" aria-label="読み込み直す"
               style={{ marginTop:12, width:"100%", border:"1px dashed var(--line)", background:"transparent", color:"var(--sub)",
                 borderRadius:12, padding:"11px 14px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
-                gap:8, fontFamily:"inherit", fontSize:14, fontWeight:800, flexShrink:0 }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
-              読み込み直す
+                gap:8, fontFamily:"inherit", fontSize:14, fontWeight:600, flexShrink:0 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+              <span className="mr-t">読み込み直す</span>
             </button>
 
           </div>
+          {/* 右の柱をたたむ／ひろげる（パソコンだけ・2026-10-10） */}
+          {広い && (
+            <button className="dock-fold" onClick={畳みを切替}
+              aria-label={畳む ? "メニューをひろげる" : "メニューをたたむ"} title={畳む ? "メニューをひろげる" : "メニューをたたむ"}
+              aria-expanded={!畳む}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {畳む ? <path d="M15 5l-7 7 7 7"/> : <path d="M9 5l7 7-7 7"/>}
+              </svg>
+            </button>
+          )}
         </>
       )}
 

@@ -103,10 +103,7 @@ function CalendarDock() {
   const 次月 = () => set年月(v => v.m === 11 ? { y:v.y+1, m:0 } : { y:v.y, m:v.m+1 });
 
   const 見出し = (文字, 右) => (
-    <div style={{ display:"flex", alignItems:"baseline", margin:"20px 0 10px" }}>
-      <span style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", letterSpacing:"0.04em" }}>{文字}</span>
-      {右}
-    </div>
+    <div className="cd-h"><span>{文字}</span>{右}</div>
   );
 
   return (
@@ -147,7 +144,7 @@ function CalendarDock() {
                     <b>{d.getDate()}</b><i>{曜[d.getDay()]}</i>
                   </span>
                 ) : (
-                  <span className="cd-day cd-span"><b>{期間(b).replace("月", "")}</b><i>月</i></span>
+                  <span className="cd-day cd-span"><b>{期間(b).replace("〜", "–")}</b></span>
                 )}
                 <span className="cd-dot" style={{ background: 色の(b) }} />
                 <span className="cd-name">{b.name}</span>
@@ -171,7 +168,7 @@ function CalendarDock() {
             <button onClick={() => 束をひらく("")} className="cd-more">すべて見る ›</button>)}
           {これから.map(({ b, d, mm }) => (
             <button className="cd-next cd-tap" key={b.id} onClick={() => 束をひらく(b.id)} title={b.note || b.name}>
-              <span className="cd-next-d">{d ? `${d.getMonth()+1}/${d.getDate()}` : `${mm}月`}</span>
+              <span className="cd-next-d">{d ? `${d.getMonth()+1}/${d.getDate()}` : `${mm}月〜`}</span>
               <span className="cd-dot" style={{ background: 色の(b) }} />
               <span className="cd-name">{b.name}</span>
               <span className="cd-num">{(枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—"}</span>
@@ -185,10 +182,11 @@ function CalendarDock() {
         <>
           {見出し("いつも使う", null)}
           {いつも.map(b => (
-            <button key={b.id} className="cd-cat" onClick={() => 束をひらく(b.id)} title={b.note || b.name}>
-              <span className="cd-chip" style={{ background:"#5C6B7A" }} />
+            <button key={b.id} className="cd-next cd-tap" onClick={() => 束をひらく(b.id)} title={b.note || b.name}>
+              <span className="cd-next-d">通年</span>
+              <span className="cd-dot" style={{ background:"#7F92A6" }} />
               <span className="cd-name">{b.name}</span>
-              <span className="cd-num">{枚数[b.id] || 0}</span>
+              <span className="cd-num">{(枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—"}</span>
             </button>
           ))}
         </>

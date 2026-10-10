@@ -121,6 +121,17 @@ function BoardTab({
       localStorage.setItem("popView", v);
     } catch (e) {}
   };
+  // 列の数（4・5・6）。入りきらない幅では自動で減る（2026-10-10）
+  const [列好み, set列好み] = useState(列の好み);
+  const 列にする = n => {
+    set列好み(n);
+    setViewSave("md");
+    try {
+      localStorage.setItem("popCols", String(n));
+    } catch (e) {}
+  };
+  const 盤 = usePopCols(列好み);
+  const 束盤 = usePopCols(列好み);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
@@ -371,67 +382,82 @@ function BoardTab({
       padding: 3,
       flexShrink: 0
     }
-  }, [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
+  }, (盤.入る >= 4 ? [4, 5, 6].filter(n => n <= 盤.入る).map(n => ["md" + n, n + "列", /*#__PURE__*/React.createElement("span", {
+    key: "n" + n,
+    className: "bt-num"
+  }, n, /*#__PURE__*/React.createElement("i", null, "\u5217"))]) : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
     width: "18",
     height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8"
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "8",
-    height: "8"
+    x: "3.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "3",
-    width: "8",
-    height: "8"
+    x: "13.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "13",
-    width: "8",
-    height: "8"
+    x: "3.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "13",
-    y: "13",
-    width: "8",
-    height: "8"
-  }))], ["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
+    x: "13.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1"
+  }))]]).concat([["lg", "1まい", /*#__PURE__*/React.createElement("svg", {
     key: "4",
     width: "18",
     height: "18",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8"
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "3",
-    width: "18",
-    height: "18",
+    x: "4",
+    y: "3.5",
+    width: "16",
+    height: "17",
     rx: "1.5"
-  }))]].map(([k, label, icon]) => /*#__PURE__*/React.createElement("button", {
-    key: k,
-    onClick: () => setViewSave(k),
-    title: label,
-    "aria-label": label,
-    className: "bt-seg",
-    style: {
-      border: "none",
-      background: view === k ? "var(--card, #fff)" : "transparent",
-      color: view === k ? "var(--primary-soft)" : "var(--sub)",
-      borderRadius: 7,
-      padding: 0,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: view === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
-    }
-  }, icon))))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
+  }))]]).map(([k, label, icon]) => {
+    const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : view === "md" && 盤.列 === +k.slice(2);
+    return /*#__PURE__*/React.createElement("button", {
+      key: k,
+      onClick: () => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k),
+      title: label,
+      "aria-label": label,
+      "aria-pressed": 選,
+      className: "bt-seg" + (選 ? " on" : ""),
+      style: {
+        border: "none",
+        background: 選 ? "var(--card, #fff)" : "transparent",
+        color: 選 ? "var(--primary-soft)" : "var(--sub)",
+        borderRadius: 8,
+        padding: 0,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: 選 ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
+      }
+    }, icon);
+  })))), /*#__PURE__*/React.createElement(TodayInfoCard, null), feat && feat.enabled && feat.message && featShow && /*#__PURE__*/React.createElement("div", {
     onClick: () => {
       if (feat.tab && onFeatGo) onFeatGo(feat.tab);
     },
@@ -535,20 +561,22 @@ function BoardTab({
       flex: 1
     }
   }, tipText))), loading ? /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-" + view
-  }, [210, 150, 180, 230, 160, 200, 140, 190].map((h, i) => /*#__PURE__*/React.createElement("div", {
+    ref: 盤.ref,
+    className: "pop-grid v-" + view + (view === "md" ? 盤.cls : ""),
+    style: view === "md" ? 盤.style : undefined
+  }, [0, 1, 2, 3, 4, 5, 6, 7].map((h, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       background: "var(--card, #fff)",
-      border: "1px solid var(--line)",
-      borderRadius: 14,
-      overflow: "hidden"
+      borderRadius: "var(--r-card, 12px)",
+      overflow: "hidden",
+      boxShadow: "var(--card-shadow)"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "sk",
+    className: "sk pc-img-el",
     style: {
       width: "100%",
-      height: h
+      aspectRatio: "1 / 1.414"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -618,7 +646,9 @@ function BoardTab({
       fontSize: 13
     }
   }, "\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u30DC\u30BF\u30F3\u304B\u3089\u6700\u521D\u306E\u30DD\u30C3\u30D7\u3092\u5171\u6709\u3057\u307E\u3057\u3087\u3046\uFF01")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-" + view
+    ref: 盤.ref,
+    className: "pop-grid v-" + view + (view === "md" ? 盤.cls : ""),
+    style: view === "md" ? 盤.style : undefined
   }, (() => {
     // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）
     const seen = {};
@@ -651,10 +681,8 @@ function BoardTab({
         list.push(head);
       } else list.push(pop);
     });
-    // 2まい表示：縦長どうし・横長どうしを同じ段に
-    const cols = typeof window !== "undefined" && window.innerWidth >= 620 ? 3 : 2;
-    const shown = view === "md" ? pairByShape(list, cols) : list;
-    return shown.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+    // 並べ方（2026-10-10）：横長は2列ぶんを使う（CSS）。順番は投稿の新しい順のまま
+    return list.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,
@@ -758,8 +786,10 @@ function BoardTab({
         padding: "12px 14px 120px"
       }
     }, /*#__PURE__*/React.createElement("div", {
-      className: "pop-grid v-" + view
-    }, (view === "md" ? pairByShape(inGroup, window.innerWidth >= 620 ? 3 : 2) : inGroup).map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
+      ref: 束盤.ref,
+      className: "pop-grid v-" + view + (view === "md" ? 束盤.cls : ""),
+      style: view === "md" ? 束盤.style : undefined
+    }, inGroup.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
       key: pop.id,
       pop: pop,
       index: i,
@@ -1110,6 +1140,7 @@ function SearchTab({
   radialOpen,
   setRadialOpen
 }) {
+  const 結果盤 = usePopCols();
   const [allPops, setAllPops] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -1543,7 +1574,9 @@ function SearchTab({
       color: "var(--ink)"
     }
   }, results.length, "\u4EF6")), /*#__PURE__*/React.createElement("div", {
-    className: "pop-grid v-md"
+    ref: 結果盤.ref,
+    className: "pop-grid v-md" + 結果盤.cls,
+    style: 結果盤.style
   }, results.map((pop, i) => /*#__PURE__*/React.createElement(PopCard, {
     key: pop.id,
     pop: pop,

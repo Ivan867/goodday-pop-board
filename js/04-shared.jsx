@@ -673,6 +673,31 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 }
 
 // ── Pop Card (shared) ──
+// ── 一覧の列数（2026-10-10） ──
+// 好み（4・5・6列）と、その幅に実際に入る数の小さいほうで並べる。スマホは2列のまま。
+// 横長のポップは2列ぶんを使う。A判なら、横2列ぶんの高さ＝縦1列ぶんの高さになるので、段がそろい、上下の余白も出ない。
+const POP_最小幅 = 120;
+function 列の好み() { try { const n = +localStorage.getItem("popCols"); return [4,5,6].includes(n) ? n : 5; } catch (e) { return 5; } }
+function usePopCols(好み) {
+  const [el, setEl] = useState(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    if (!el) return;
+    const 測る = () => setW(el.clientWidth || 0);
+    測る();
+    let ro = null;
+    try { ro = new ResizeObserver(測る); ro.observe(el); } catch (e) { window.addEventListener("resize", 測る); }
+    return () => { try { ro && ro.disconnect(); } catch (e) {} window.removeEventListener("resize", 測る); };
+  }, [el]);
+  const gap = (w && w < 600) ? 10 : 12;
+  const 入る = w ? Math.max(2, Math.floor((w + gap) / (POP_最小幅 + gap))) : 2;
+  const 列 = Math.max(2, Math.min(好み || 列の好み(), 入る));
+  const 名 = 列 <= 2 ? null : 列 <= 4 ? "14.5px" : 列 === 5 ? "14px" : "13px";
+  const style = { "--cols": 列, "--pg-gap": gap + "px" };
+  if (名) style["--pg-name"] = 名;
+  return { ref: setEl, 列, 入る, style, cls: " pg-fixed" + (列 > 2 ? " pg-wide" : "") };
+}
+
 // 一覧の並べ替え：同じ形（縦長どうし・横長どうし）を同じ段にそろえる。
 // 近く（K件以内）に同じ形があれば1段ぶん前に寄せる。見つからなければ次のものと並べる。
 function popShape(p) {
@@ -742,13 +767,11 @@ function PopCard({ pop, index, onClick, hasComment }) {
   };
   return (
     <div className={"ucard" + (land ? " pc-land" : "") + (land && pop.__pairLand ? " pc-pair-land" : "")}
-      style={{ borderRadius:14, overflow:"hidden", background:"var(--card, #fff)", cursor:"pointer",
-        boxShadow:"var(--card-shadow)", transition:"transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease",
+      style={{ borderRadius:"var(--r-card, 12px)", overflow:"hidden", background:"var(--card, #fff)", cursor:"pointer",
+        boxShadow:"var(--card-shadow)", transition:"transform var(--dur, .18s) var(--ease, ease), box-shadow var(--dur, .18s) ease",
         animation:`fadeUp 0.42s cubic-bezier(.16,1,.3,1) ${Math.min(index,11)*0.045}s both`,
         ...(dims && !rotated ? { "--nat-ar": (land && pop.__pairLand && pop.__rowAr) ? String(pop.__rowAr) : `${dims.w} / ${dims.h}` } : {}) }}
-      onClick={()=>onClick(pop)}
-      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.14)"}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=""}}>
+      onClick={()=>onClick(pop)} title={pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}>
       <div className="imgskel pc-img" style={{ minHeight:120, position:"relative" }}>
         {pop.image_url
           ? <img src={pop.image_url} loading="lazy" decoding="async" className="fdin pc-img-el" onLoad={onImgLoad} style={{ width:"100%", objectFit:"contain", display:"block", background:"var(--mat)", transform: pop.rotation ? `rotate(${pop.rotation}deg)` : "none" }} />
@@ -765,7 +788,7 @@ function PopCard({ pop, index, onClick, hasComment }) {
         </div>
       </div>
       <div className="pc-body" style={{ padding:"9px 11px 10px" }}>
-        <div className="pc-name" style={{ fontWeight:800, fontSize:"var(--pc-name-size, 13px)", lineHeight:1.4,
+        <div className="pc-name" style={{ fontWeight:700, fontSize:"var(--pc-name-size, 13px)", lineHeight:1.4,
           whiteSpace:"normal", overflowWrap:"anywhere", wordBreak:"break-word", color:"var(--ink)" }}>
           {pop.__group ? (pop.group_name || pop.product_name) : pop.product_name}
         </div>
@@ -849,4 +872,4 @@ function 資料の絵({ r }) {
   );
 }
 
-;Object.assign(window, { PopCard, PopDetail, UploadModal, pairByShape, popShape, 管理の確認, 資料の色, 資料の名, 資料の縮小URL, 資料の絵 });
+;Object.assign(window, { usePopCols, 列の好み, PopCard, PopDetail, UploadModal, pairByShape, popShape, 管理の確認, 資料の色, 資料の名, 資料の縮小URL, 資料の絵 });

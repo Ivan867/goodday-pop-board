@@ -80,7 +80,7 @@ const MENU_ICON = (() => {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "1.8",
+    strokeWidth: "1.75",
     strokeLinecap: "round",
     strokeLinejoin: "round",
     "aria-hidden": "true"
@@ -112,15 +112,16 @@ const MENU_ICON = (() => {
     }), /*#__PURE__*/React.createElement("path", {
       d: "M4 7l8 6 8-6"
     }))),
-    order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
-      x: "4",
-      y: "10.5",
-      width: "16",
-      height: "10.5",
-      rx: "2"
+    order: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+      d: "M4 10v9.5a1 1 0 001 1h14a1 1 0 001-1V10"
     }), /*#__PURE__*/React.createElement("path", {
-      d: "M8 10.5V7a4 4 0 018 0v3.5"
+      d: "M3 9.5L4.6 4h14.8L21 9.5"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M3 9.5h18"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M9.5 20.5v-5.5h5v5.5"
     }))),
+    // 店舗支援（2026-10-10 鍵→店）
     barcode: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M3.5 5.5v13M7 5.5v13M10.5 5.5v13M14 5.5v13M17.5 5.5v13M21 5.5v13"
     }))),
@@ -686,6 +687,25 @@ function App() {
   useEffect(() => {
     if (広い) setMoreOpen(true);
   }, [広い]);
+  const [畳む, set畳む] = useState(() => {
+    try {
+      return localStorage.getItem("dockMin") === "1";
+    } catch (e) {
+      return false;
+    }
+  });
+  const 畳みを切替 = () => set畳む(v => {
+    const n = !v;
+    try {
+      localStorage.setItem("dockMin", n ? "1" : "0");
+    } catch (e) {}
+    return n;
+  });
+  useEffect(() => {
+    try {
+      if (広い && 畳む) document.documentElement.setAttribute("data-dock-min", "1");else document.documentElement.removeAttribute("data-dock-min");
+    } catch (e) {}
+  }, [広い, 畳む]);
   useEffect(() => {
     const sp = document.getElementById("splash");
     if (!sp) return;
@@ -1152,11 +1172,17 @@ function App() {
       } catch (_) {}
     }
   }, /*#__PURE__*/React.createElement("img", {
+    className: "dock-logo",
     src: "brand-logo-dark.png?v=" + (window.APP_VER || ""),
     alt: "GoodDay NEXUS PROJECT"
+  }), /*#__PURE__*/React.createElement("img", {
+    className: "dock-mark",
+    src: "brand-mark.png",
+    alt: "",
+    "aria-hidden": "true"
   })), /*#__PURE__*/React.createElement("div", {
     className: "dock-ctl"
-  }, /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
+  }, 畳む ? /*#__PURE__*/React.createElement(部門切替, null) : /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
     className: "dock-find",
     "aria-label": "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059",
     title: "\u3055\u304C\u3059",
@@ -1257,6 +1283,7 @@ function App() {
         setMoreOpen(false);
       },
       "aria-label": o.label,
+      title: o.label,
       "aria-current": tab === o.key ? "page" : undefined,
       className: "menu-item menu-tile menu-row-" + o.key + (o.key === "search" || 余り ? " menu-tile-wide" : "") + (o.__押し ? " menu-push" : "") + (tab === o.key ? " on" : "")
     }, /*#__PURE__*/React.createElement("span", {
@@ -1273,6 +1300,8 @@ function App() {
         location.reload();
       } catch (e) {}
     },
+    title: "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
+    "aria-label": "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
     style: {
       marginTop: 12,
       width: "100%",
@@ -1288,7 +1317,7 @@ function App() {
       gap: 8,
       fontFamily: "inherit",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
@@ -1297,14 +1326,36 @@ function App() {
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: "2.2",
+    strokeWidth: "1.9",
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M20 12a8 8 0 11-2.3-5.6"
   }), /*#__PURE__*/React.createElement("path", {
     d: "M20 4v5h-5"
-  })), "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("aside", {
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "mr-t"
+  }, "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("button", {
+    className: "dock-fold",
+    onClick: 畳みを切替,
+    "aria-label": 畳む ? "メニューをひろげる" : "メニューをたたむ",
+    title: 畳む ? "メニューをひろげる" : "メニューをたたむ",
+    "aria-expanded": !畳む
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true"
+  }, 畳む ? /*#__PURE__*/React.createElement("path", {
+    d: "M15 5l-7 7 7 7"
+  }) : /*#__PURE__*/React.createElement("path", {
+    d: "M9 5l7 7-7 7"
+  })))), 広い && /*#__PURE__*/React.createElement("aside", {
     className: "cal-dock fs-top"
   }, /*#__PURE__*/React.createElement(CalendarDock, null)), showUpload && /*#__PURE__*/React.createElement(UploadModal, {
     currentStore: currentStore,

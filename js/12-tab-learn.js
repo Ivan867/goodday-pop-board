@@ -170,19 +170,8 @@ function CalendarDock() {
     m: v.m + 1
   });
   const 見出し = (文字, 右) => /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "baseline",
-      margin: "20px 0 10px"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
-      color: "var(--sub)",
-      letterSpacing: "0.04em"
-    }
-  }, 文字), 右);
+    className: "cd-h"
+  }, /*#__PURE__*/React.createElement("span", null, 文字), 右);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     className: "dock-head",
     onClick: () => 束をひらく(""),
@@ -249,7 +238,7 @@ function CalendarDock() {
       className: "cd-day" + (今日か ? " cd-now" : "")
     }, /*#__PURE__*/React.createElement("b", null, d.getDate()), /*#__PURE__*/React.createElement("i", null, 曜[d.getDay()])) : /*#__PURE__*/React.createElement("span", {
       className: "cd-day cd-span"
-    }, /*#__PURE__*/React.createElement("b", null, 期間(b).replace("月", "")), /*#__PURE__*/React.createElement("i", null, "\u6708")), /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("b", null, 期間(b).replace("〜", "–"))), /*#__PURE__*/React.createElement("span", {
       className: "cd-dot",
       style: {
         background: 色の(b)
@@ -275,7 +264,7 @@ function CalendarDock() {
     title: b.note || b.name
   }, /*#__PURE__*/React.createElement("span", {
     className: "cd-next-d"
-  }, d ? `${d.getMonth() + 1}/${d.getDate()}` : `${mm}月`), /*#__PURE__*/React.createElement("span", {
+  }, d ? `${d.getMonth() + 1}/${d.getDate()}` : `${mm}月〜`), /*#__PURE__*/React.createElement("span", {
     className: "cd-dot",
     style: {
       background: 色の(b)
@@ -286,19 +275,21 @@ function CalendarDock() {
     className: "cd-num"
   }, (枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—")))), いつも.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, 見出し("いつも使う", null), いつも.map(b => /*#__PURE__*/React.createElement("button", {
     key: b.id,
-    className: "cd-cat",
+    className: "cd-next cd-tap",
     onClick: () => 束をひらく(b.id),
     title: b.note || b.name
   }, /*#__PURE__*/React.createElement("span", {
-    className: "cd-chip",
+    className: "cd-next-d"
+  }, "\u901A\u5E74"), /*#__PURE__*/React.createElement("span", {
+    className: "cd-dot",
     style: {
-      background: "#5C6B7A"
+      background: "#7F92A6"
     }
   }), /*#__PURE__*/React.createElement("span", {
     className: "cd-name"
   }, b.name), /*#__PURE__*/React.createElement("span", {
     className: "cd-num"
-  }, 枚数[b.id] || 0)))));
+  }, (枚数[b.id] || 0) > 0 ? 枚数[b.id] + "枚" : "—")))));
 }
 function CalendarTab({
   細い

@@ -65,6 +65,11 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
   const [view, setView] = useState(() => { try { const v = localStorage.getItem("popView"); return (v === "md" || v === "lg") ? v : "md"; } catch(e) { return "md"; } });
   const setViewSave = (v) => { setView(v); try { localStorage.setItem("popView", v); } catch(e) {} };
+  // 列の数（4・5・6）。入りきらない幅では自動で減る（2026-10-10）
+  const [列好み, set列好み] = useState(列の好み);
+  const 列にする = (n) => { set列好み(n); setViewSave("md"); try { localStorage.setItem("popCols", String(n)); } catch(e) {} };
+  const 盤 = usePopCols(列好み);
+  const 束盤 = usePopCols(列好み);
   const [sel, setSel] = useState(null);
   const [commentedIds, setCommentedIds] = useState(new Set());
   const [radialChanged, setRadialChanged] = useState(false);
@@ -185,13 +190,18 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
         </div>
           <div className="board-tools" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:4, marginBottom:10 }}>
             <div style={{ display:"flex", gap:3, background:"var(--chip)", borderRadius:10, padding:3, flexShrink:0 }}>
-              {[
-                ["md", "2まい", <svg key="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>],
-                ["lg", "1まい", <svg key="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>],
-              ].map(([k, label, icon]) => (
-                <button key={k} onClick={() => setViewSave(k)} title={label}
-                  aria-label={label} className="bt-seg" style={{ border:"none", background: view===k ? "var(--card, #fff)" : "transparent", color: view===k ? "var(--primary-soft)" : "var(--sub)", borderRadius:7, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow: view===k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
-              ))}
+              {(盤.入る >= 4
+                ? [4, 5, 6].filter(n => n <= 盤.入る).map(n => ["md" + n, n + "列", <span key={"n" + n} className="bt-num">{n}<i>列</i></span>])
+                : [["md", "2まい", <svg key="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>]]
+              ).concat([
+                ["lg", "1まい", <svg key="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="1.5"/></svg>],
+              ]).map(([k, label, icon]) => {
+                const 選 = k === "lg" ? view === "lg" : k === "md" ? view === "md" : (view === "md" && 盤.列 === +k.slice(2));
+                return (
+                <button key={k} onClick={() => k.length > 2 ? 列にする(+k.slice(2)) : setViewSave(k)} title={label}
+                  aria-label={label} aria-pressed={選} className={"bt-seg" + (選 ? " on" : "")} style={{ border:"none", background: 選 ? "var(--card, #fff)" : "transparent", color: 選 ? "var(--primary-soft)" : "var(--sub)", borderRadius:8, padding:0, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow: 選 ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{icon}</button>
+                );
+              })}
             </div>
 
             {/* 部門の切り替えはメニューのマークの右へ移した。暗い画面の切り替えはやめた（2026-10-06） */}
@@ -221,10 +231,10 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
           </div>
         )}
         {loading ? (
-          <div className={"pop-grid v-" + view}>
-            {[210,150,180,230,160,200,140,190].map((h,i) => (
-              <div key={i} style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14, overflow:"hidden" }}>
-                <div className="sk" style={{ width:"100%", height:h }} />
+          <div ref={盤.ref} className={"pop-grid v-" + view + (view === "md" ? 盤.cls : "")} style={view === "md" ? 盤.style : undefined}>
+            {[0,1,2,3,4,5,6,7].map((h,i) => (
+              <div key={i} style={{ background:"var(--card, #fff)", borderRadius:"var(--r-card, 12px)", overflow:"hidden", boxShadow:"var(--card-shadow)" }}>
+                <div className="sk pc-img-el" style={{ width:"100%", aspectRatio:"1 / 1.414" }} />
                 <div style={{ padding:"9px 11px" }}>
                   <div className="sk" style={{ width:"62%", height:11, borderRadius:6 }} />
                   <div className="sk" style={{ width:"40%", height:10, borderRadius:6, marginTop:7 }} />
@@ -247,7 +257,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
           </div>
         ) : (
           <>
-            <div className={"pop-grid v-" + view}>
+            <div ref={盤.ref} className={"pop-grid v-" + view + (view === "md" ? 盤.cls : "")} style={view === "md" ? 盤.style : undefined}>
               {(() => {
                 // 同じまとまりは1件にたたむ（表紙に選んだ1枚＝group_posが小さいものを代表にする）
                 const seen = {}; const list = [];
@@ -271,10 +281,8 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
                     seen[pop.group_id] = head; list.push(head);
                   } else list.push(pop);
                 });
-                // 2まい表示：縦長どうし・横長どうしを同じ段に
-                const cols = (typeof window !== "undefined" && window.innerWidth >= 620) ? 3 : 2;
-                const shown = view === "md" ? pairByShape(list, cols) : list;
-                return shown.map((pop, i) => (
+                // 並べ方（2026-10-10）：横長は2列ぶんを使う（CSS）。順番は投稿の新しい順のまま
+                return list.map((pop, i) => (
                   <PopCard key={pop.id} pop={pop} index={i}
                     onClick={() => pop.__group ? setOpenGroup(pop) : setSel(pop)}
                     hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />
@@ -314,8 +322,8 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
               </span>
             </div>
             <div style={{ maxWidth:1600, margin:"0 auto", padding:"12px 14px 120px" }}>
-              <div className={"pop-grid v-" + view}>
-                {(view === "md" ? pairByShape(inGroup, (window.innerWidth >= 620 ? 3 : 2)) : inGroup).map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel}
+              <div ref={束盤.ref} className={"pop-grid v-" + view + (view === "md" ? 束盤.cls : "")} style={view === "md" ? 束盤.style : undefined}>
+                {inGroup.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel}
                   hasComment={(pop.comment_count||0) > 0 || commentedIds.has(pop.id)} />)}
               </div>
             </div>
@@ -461,6 +469,7 @@ function BoardTab({ onMenu, menuBadge, currentStore, actionsRef, onCreateFromPop
 
 // ── Search Tab ──
 function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
+  const 結果盤 = usePopCols();
   const [allPops, setAllPops] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -625,7 +634,7 @@ function SearchTab({ onCreateFromPop, radialOpen, setRadialOpen }) {
             {(fGenre||fStore||fCat) && <span style={{ marginLeft: q?4:0 }}>{[fGenre,fStore,fCat].filter(Boolean).join(" · ")} </span>}
             の検索結果：<span style={{ color:"var(--ink)" }}>{results.length}件</span>
           </div>
-          <div className="pop-grid v-md">
+          <div ref={結果盤.ref} className={"pop-grid v-md" + 結果盤.cls} style={結果盤.style}>
             {results.map((pop,i)=><PopCard key={pop.id} pop={pop} index={i} onClick={setSel} />)}
           </div>
         </>
