@@ -68,6 +68,13 @@ function SupportTab() {
   // 塩干発注は、この先で店舗ごとの番号に分かれる（お店によって中身が違うため）
   // 塩干発注は 2026-10-10 に試作システムへ移した
   // 画像の共有は 2026-10-06 にやめた
+  // 試作システムは 2026-10-10 に店舗支援の中へ移した。開くときは今までどおり試作システムの番号を聞く
+  if (どれ === "lab") return (
+    <div>
+      {戻る}
+      {React.createElement(LazyTab, { tabKey: "lab" })}
+    </div>
+  );
   return <SupportDocs 選ぶ={選ぶ} />;
 }
 
@@ -130,6 +137,13 @@ function SupportDocs({ 選ぶ }) {
       )}
 
       {/* 塩干発注は 2026-10-10 に試作システムへ移した */}
+
+      {/* 試作システム：資料の下に小さな入口。中に入るときは別の番号を聞く（2026-10-10） */}
+      <div style={{ marginTop:28 }}>
+        <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", margin:"0 2px 8px" }}>試作中の道具</div>
+        {小入口("lab", "試作システム", "読み込み・伝票検算・バーコード・塩干発注（別の番号が要ります）",
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 3v6.2L4.8 17a2 2 0 001.7 3h11a2 2 0 001.7-3l-4.7-7.8V3"/><path d="M8.5 3h7M8 14h8"/></svg>)}
+      </div>
     </div>
   );
 }
