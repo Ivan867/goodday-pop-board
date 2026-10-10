@@ -92,6 +92,62 @@ function LazyTab(props) {
 
 // 部門（鮮魚／青果）の切り替え。メニューのマークの右に小さく置く。押すと読み込み直して切り替わる
 // パソコン用：スイッチの形。つまみが滑ってから切り替わる（切り替えは読み込み直しになるので、先に動きを見せる）
+// ── パソコンの右の柱：1列のナビ（2026-10-10） ──
+// 字とひとことの説明を並べ、いま開いている画面には、すべって動く帯をのせる。
+// まとまりを2つに分ける（つくる・しらべる／連絡と管理）。読み込み直すと版は下の足もとへ。
+const NAV_ひとこと = {
+  catalog: "予約カタログ・チラシ",
+  gne:     "POP画像・木札をつくる",
+  order:   "資料・試作システム",
+  guide:   "使い方を見る",
+  request: "依頼・不具合を送る",
+  admin:   "整理・記録・お知らせ",
+};
+const NAV_組 = [["つくる・しらべる", ["catalog","gne","order","guide"]], ["連絡と管理", ["request","admin"]]];
+function RightNav({ items, tab, onGo }) {
+  const 箱 = React.useRef(null);
+  const [帯, set帯] = useState({ y:0, h:0, on:false });
+  React.useLayoutEffect(() => {
+    const el = 箱.current && 箱.current.querySelector('[data-nav="' + tab + '"]');
+    if (!el) { set帯(v => ({ ...v, on:false })); return; }
+    set帯({ y: el.offsetTop, h: el.offsetHeight, on:true });
+  }, [tab, items.length]);
+  return (
+    <nav className="mn" ref={箱} aria-label="メニュー">
+      <span className={"mn-band" + (帯.on ? " on" : "")} aria-hidden="true"
+        style={{ transform: "translateY(" + 帯.y + "px)", height: 帯.h }} />
+      {NAV_組.map(([題, keys]) => {
+        const 中 = items.filter(o => keys.includes(o.key));
+        if (!中.length) return null;
+        return (
+          <div className="mn-grp" key={題}>
+            <div className="mn-h">{題}</div>
+            {中.map(o => (
+              <button key={o.key} data-nav={o.key} onClick={() => onGo(o.key)}
+                className={"mn-item menu-row-" + o.key + (tab === o.key ? " on" : "")}
+                aria-current={tab === o.key ? "page" : undefined}>
+                <span className="mn-ic">{MENU_ICON[o.key] || MENU_ICON.search}</span>
+                <span className="mn-tx">
+                  <b>{o.label}</b>
+                  {NAV_ひとこと[o.key] && <i>{NAV_ひとこと[o.key]}</i>}
+                </span>
+                {o.badge && <span className="mn-badge">{o.badge}</span>}
+              </button>
+            ))}
+          </div>
+        );
+      })}
+      <div className="mn-foot">
+        <span className="mn-ver">版 {window.APP_VER || ""}</span>
+        <button className="mn-reload" onClick={() => { try { location.reload(); } catch (e) {} }}
+          title="読み込み直す" aria-label="読み込み直す">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.97 15.22A8.6 8.6 0 0 0 6.71 5.22L8.80 7.90A5.2 5.2 0 0 1 16.82 13.95ZM5.10 3.17L4.13 9.39L10.40 9.95ZM4.03 8.78A8.6 8.6 0 0 0 17.29 18.78L15.20 16.10A5.2 5.2 0 0 1 7.18 10.05ZM18.90 20.83L19.87 14.61L13.60 14.05Z"/></svg>
+        </button>
+      </div>
+    </nav>
+  );
+}
+
 function 部門スイッチ() {
   const 今 = deptKey();
   const [行き先, set行き先] = useState(今);
@@ -347,6 +403,24 @@ function App() {
     return () => window.removeEventListener("resize", み);
   }, []);
   useEffect(() => { if (広い) setMoreOpen(true); }, [広い]);
+  // メニューに並べる項目（スマホのタイルと、パソコンの右の柱のナビで共通）
+  const メニューの項目 = () => {
+                // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
+                const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
+                const ORDER = 青果
+                  ? ["guide","admin"]
+                  : ["bundle","catalog","gne","order","request","admin"];   // アーカイブは管理画面の中だけに（2026-10-10）   // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
+                // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
+                const 外す = 広い ? ["search","bundle"] : [];
+                return TAB_REGISTRY
+                  .filter(o => !外す.includes(o.key))
+                  .filter(o => !o.hideInMenu && ORDER.includes(o.key)
+                    && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
+                  .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
+                  .map(o => 青果
+                    ? { ...o, label: o.key === "admin" ? "管理" : o.label, __押し: o.key === "guide" }
+                    : o);
+  };
   // 前の「アーカイブ」画面へ飛ぼうとしたら一覧へ（2026-10-10 一覧側のアーカイブをやめた）
   useEffect(() => { if (tab === "archive") setTab("board"); }, [tab]);
   const [畳む, set畳む] = useState(() => { try { return localStorage.getItem("dockMin") === "1"; } catch (e) { return false; } });
@@ -556,25 +630,12 @@ function App() {
               <div className="dock-ctl"><部門スイッチ /></div>
             </div>}
 
-            {/* 項目はタイル。スマホは3列、パソコンの右の柱は2列（2026-10-10） */}
+            {/* 項目：スマホは3列のタイル。パソコンの右の柱は1列のナビ（たたんだ時はアイコンだけ）（2026-10-10） */}
+            {広い && !畳む ? (
+              <RightNav items={メニューの項目()} tab={tab} onGo={(k) => { setTab(k); setMoreOpen(false); }} />
+            ) : (
             <div className="menu-list menu-grid">
-              {(() => {
-                // 青果では、ポップにまつわる3つだけを出す。開発まわりは鮮魚だけ。
-                const 青果 = (typeof deptKey === "function" && deptKey() === "produce");
-                const ORDER = 青果
-                  ? ["guide","admin"]
-                  : ["bundle","catalog","gne","order","request","admin"];   // アーカイブは管理画面の中だけに（2026-10-10）   // 手引きは青果だけ／試作システムは店舗支援の中へ（2026-10-10）
-                // パソコンの右の柱では、検索（虫眼鏡）・行事（左の柱）・カタログ（上の行）が別にあるので出さない
-                const 外す = 広い ? ["search","bundle"] : [];
-                return TAB_REGISTRY
-                  .filter(o => !外す.includes(o.key))
-                  .filter(o => !o.hideInMenu && ORDER.includes(o.key)
-                    && (o.key === "admin" || !(notice.menu_hidden || []).includes(o.key)))
-                  .sort((a,b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
-                  .map(o => 青果
-                    ? { ...o, label: o.key === "admin" ? "管理" : o.label, __押し: o.key === "guide" }
-                    : o);
-              })().map((o, i, 全部) => {
+              {メニューの項目().map((o, i, 全部) => {
                 // 最後に「読み込み直す」のタイルが並ぶ。管理画面と読み込み直すが同じ段に並ぶよう、
                 // 数が合わないときは管理画面の1つ前のタイルを横いっぱいにする（2026-10-10）
                 const 列 = 広い ? 2 : 3;
@@ -603,6 +664,7 @@ function App() {
                 </span>
               </button>
             </div>
+            )}
 
           </div>
           {/* 右の柱をたたむ／ひろげる（パソコンだけ・2026-10-10） */}
