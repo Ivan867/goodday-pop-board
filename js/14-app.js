@@ -1264,10 +1264,8 @@ function App() {
       __押し: o.key === "guide"
     } : o);
   })().map((o, i, 全部) => {
-    // タイルが1つだけ最後の行に余るときは、その1つを横いっぱいにする
-    const タイル = 全部.filter(x => x.key !== "search");
-    const 列 = 広い ? 2 : 3;
-    const 余り = タイル.length % 列 === 1 && o.key === タイル[タイル.length - 1].key;
+    // 最後に「読み込み直す」のタイルが並ぶので、横いっぱいにする余りはやめた（2026-10-10）
+    const 余り = false;
     return /*#__PURE__*/React.createElement("button", {
       key: o.key,
       onClick: () => {
@@ -1285,44 +1283,26 @@ function App() {
     }, o.badge)), /*#__PURE__*/React.createElement("span", {
       className: "menu-tile-t"
     }, o.label));
-  })), /*#__PURE__*/React.createElement("button", {
-    className: "menu-reload",
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "menu-item menu-tile menu-row-reload",
     onClick: () => {
       try {
         location.reload();
       } catch (e) {}
     },
     title: "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
-    "aria-label": "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059",
-    style: {
-      marginTop: 12,
-      width: "100%",
-      border: "1px dashed var(--line)",
-      background: "transparent",
-      color: "var(--sub)",
-      borderRadius: 12,
-      padding: "11px 14px",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      fontFamily: "inherit",
-      fontSize: 14,
-      fontWeight: 600,
-      flexShrink: 0
-    }
+    "aria-label": "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "menu-tile-ic"
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "20",
-    height: "20",
+    width: "24",
+    height: "24",
     viewBox: "0 0 24 24",
     "aria-hidden": "true"
   }, /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     d: "M19.97 15.22A8.6 8.6 0 0 0 6.71 5.22L8.80 7.90A5.2 5.2 0 0 1 16.82 13.95ZM5.10 3.17L4.13 9.39L10.40 9.95ZM4.03 8.78A8.6 8.6 0 0 0 17.29 18.78L15.20 16.10A5.2 5.2 0 0 1 7.18 10.05ZM18.90 20.83L19.87 14.61L13.60 14.05Z"
-  })), /*#__PURE__*/React.createElement("span", {
-    className: "mr-t"
-  }, "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("button", {
+  })))))), 広い && /*#__PURE__*/React.createElement("button", {
     className: "dock-fold",
     onClick: 畳みを切替,
     "aria-label": 畳む ? "メニューをひろげる" : "メニューをたたむ",
