@@ -323,11 +323,17 @@ body { position: relative; overscroll-behavior-y: none; }
 
 .cat-grid.c-list { grid-template-columns: minmax(0, 1fr); gap: 7px; }
 /* GNE（POP画像ジェネレーター）：PCでは左にプレビュー固定＋右に設定を並べる */
-@media (min-width: 900px) {
+/* 2026-10-10：画面の幅ではなく「入力支援の面の幅」で決める。
+   パソコンで左右の柱がある時は真ん中が狭く、右の設定がはみ出していたため */
+.gne-root { container-type: inline-size; }
+.gne-grid > * { min-width: 0; }
+@container (min-width: 1080px) {
   .gne-grid { display: grid !important; grid-template-columns: minmax(0, 420px) minmax(0, 1fr) !important; gap: 18px !important; align-items: start; }
   .gne-preview { position: sticky; top: 12px; }
   .gne-preview canvas { max-height: calc(100vh - 130px); width: auto !important; max-width: 100% !important; margin: 0 auto; }
 }
+/* 1列のときも、プレビューが縦に大きくなりすぎないように */
+.gne-preview canvas { max-height: 78vh; width: auto !important; max-width: 100% !important; margin: 0 auto; display: block; }
 /* 一覧の上の行：囲いをやめ、灰色の面に置くだけにする（横のメニューと同じ調子） */
 .board-head .hig-pill, .board-head .bt-btn {
   border-color: transparent !important;

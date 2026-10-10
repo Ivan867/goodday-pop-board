@@ -324,7 +324,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
   };
   const seg = (v, label, n) => (
     <button onClick={() => switchView(v)}
-      style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:800,
+      style={{ flex:1, border:"none", padding:"10px", fontSize:14, fontWeight:600,
         background: view===v ? "var(--fill)" : "var(--card)", color: view===v ? "#fff" : "#888", cursor:"pointer" }}>
       {label}（{n}）
     </button>
@@ -385,18 +385,18 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       <button onClick={() => setSection(v)} className="hig-pill"
         style={{ position:"relative", border: on ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
           background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)",
-          borderRadius:12, padding:"11px 6px", fontSize:12, fontWeight:800, cursor:"pointer",
+          borderRadius:12, padding:"11px 6px", fontSize:12.5, fontWeight:600, cursor:"pointer",
           display:"flex", flexDirection:"column", alignItems:"center", gap:5, lineHeight:1.3 }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{SEG_ICON[v]}</svg>
         <span style={{ whiteSpace:"nowrap" }}>{label}</span>
-        {badge ? <span style={{ position:"absolute", top:5, right:6, background:"#e0555f", color:"#fff", fontSize:12.5, fontWeight:900, borderRadius:999, minWidth:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 4px" }}>{badge}</span> : null}
+        {badge ? <span style={{ position:"absolute", top:5, right:6, background:"#e0555f", color:"#fff", fontSize:12.5, fontWeight:700, borderRadius:999, minWidth:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 4px" }}>{badge}</span> : null}
       </button>
     );
   };
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:140, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom: scope === "produce" ? 4 : 12 }}>
+      <div style={{ fontSize:22, fontWeight:700, color:"var(--ink)", marginBottom: scope === "produce" ? 4 : 12 }}>
         {scope === "produce" ? "青果の管理" : "管理画面"}
       </div>
       {scope === "produce" && (
@@ -424,15 +424,15 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           ].filter(([k]) => scope !== "produce" || ["rename","genre","archive","trash","pinned"].includes(k))
            .map(([k,label,n,col,icon]) => (
             <button key={k} onClick={() => setSection(k)}
-              style={{ position:"relative", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:14,
+              style={{ position:"relative", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12,
                 padding:"18px 8px 13px", cursor:"pointer", display:"flex", flexDirection:"column",
-                alignItems:"center", gap:9, minHeight:104, boxShadow:"0 1px 3px rgba(20,40,70,0.06)" }}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke={col}
-                strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
-              <span style={{ fontSize:12.5, fontWeight:800, color:"var(--text)", lineHeight:1.3, textAlign:"center" }}>{label}</span>
+                alignItems:"center", gap:8, minHeight:100, boxShadow:"var(--card-shadow)" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-soft)"
+                strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+              <span style={{ fontSize:12.5, fontWeight:600, color:"var(--text)", lineHeight:1.3, textAlign:"center" }}>{label}</span>
               {n != null && n > 0 && (
-                <span style={{ position:"absolute", top:8, right:9, background:col, color:"#fff",
-                  fontSize:12.5, fontWeight:900, minWidth:21, height:21, borderRadius:11,
+                <span style={{ position:"absolute", top:8, right:9, background:"var(--fill)", color:"#fff",
+                  fontSize:12.5, fontWeight:700, minWidth:21, height:21, borderRadius:10,
                   display:"flex", alignItems:"center", justifyContent:"center", padding:"0 5px" }}>{n}</span>
               )}
             </button>
@@ -441,7 +441,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
       ) : (
         <button onClick={() => setSection("home")}
           style={{ display:"flex", alignItems:"center", gap:5, border:"1px solid var(--line)", background:"var(--card, #fff)",
-            color:"var(--sub)", borderRadius:10, padding:"8px 14px 8px 10px", fontSize:13.5, fontWeight:800,
+            color:"var(--sub)", borderRadius:10, padding:"8px 14px 8px 10px", fontSize:13.5, fontWeight:600,
             cursor:"pointer", marginBottom:16 }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
           メニューへ
@@ -468,7 +468,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <div style={{ textAlign:"center", padding:50, color:"var(--faint)" }}>
             
             <div style={{ fontSize:15, fontWeight:700, color:"var(--sub)" }}>依頼はまだありません</div>
-            <div style={{ fontSize:13, marginTop:6, color:"var(--faint)" }}>「ポップ依頼」からみんなが投稿できます</div>
+            <div style={{ fontSize:13.5, marginTop:6, color:"var(--faint)" }}>「ポップ依頼」からみんなが投稿できます</div>
           </div>
         ) : (
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
@@ -476,21 +476,21 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               const done = r.status === "対応済み";
               const urgent = r.priority === "急ぎ";
               return (
-                <div key={r.id} style={{ background: done ? "#f6faf7" : "var(--card)", borderRadius:14, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
+                <div key={r.id} style={{ background: done ? "#f6faf7" : "var(--card)", borderRadius:12, border: done ? "1px solid #cfe8d8" : "1px solid var(--line)", padding:14, borderLeft:`5px solid ${done?"#3f9e63":urgent?"#e01010":"var(--primary)"}` }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:6, flexWrap:"wrap" }}>
-                    {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:12.5, fontWeight:900, padding:"2px 7px", borderRadius:7 }}>急ぎ</span>}
+                    {urgent && !done && <span style={{ background:"#e01010", color:"#fff", fontSize:12.5, fontWeight:700, padding:"2px 7px", borderRadius:8 }}>急ぎ</span>}
                     {done && (
-                      <span style={{ display:"flex", alignItems:"center", gap:3, background:"#3f9e63", color:"#fff", fontSize:12.5, fontWeight:900, padding:"3px 9px", borderRadius:7 }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:3, background:"#3f9e63", color:"#fff", fontSize:12.5, fontWeight:700, padding:"3px 9px", borderRadius:8 }}>
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
                         対応済み
                       </span>
                     )}
-                    {r.kind && r.kind !== "POP作成依頼" && <span style={{ fontSize:12.5, fontWeight:800, color:"#2f6fb0", background:"#eaf2fb", borderRadius:6, padding:"2px 7px", marginRight:6, flexShrink:0 }}>{r.kind}</span>}
-                    <span style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>{r.product_name}</span>
-                    <span style={{ marginLeft:"auto", fontSize:12, color:"var(--faint)", whiteSpace:"nowrap" }}>{fmtDate(r.created_at)} 受付</span>
+                    {r.kind && r.kind !== "POP作成依頼" && <span style={{ fontSize:12.5, fontWeight:600, color:"#2f6fb0", background:"#eaf2fb", borderRadius:8, padding:"2px 7px", marginRight:6, flexShrink:0 }}>{r.kind}</span>}
+                    <span style={{ fontSize:15, fontWeight:700, color:"var(--ink)" }}>{r.product_name}</span>
+                    <span style={{ marginLeft:"auto", fontSize:12.5, color:"var(--faint)", whiteSpace:"nowrap" }}>{fmtDate(r.created_at)} 受付</span>
                   </div>
-                  <div style={{ fontSize:12, color:"var(--sub)", marginBottom: r.reason ? 8 : 10 }}>{r.store_name}</div>
-                  {r.reason && <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.5, background:"var(--bg)", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
+                  <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom: r.reason ? 8 : 10 }}>{r.store_name}</div>
+                  {r.reason && <div style={{ fontSize:13.5, color:"var(--text)", lineHeight:1.5, background:"var(--bg)", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>{r.reason}</div>}
                   {Array.isArray(r.files) && r.files.length > 0 && (
                     <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
                       {r.files.map((f, i) => (
@@ -498,10 +498,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                           style={{ display:"flex", alignItems:"center", gap:7, textDecoration:"none", border:"1px solid var(--line)", borderRadius:8, padding:"5px 9px 5px 5px", background:"var(--card, #fff)" }}>
                           {(f.type || "").startsWith("image/")
                             ? <img src={f.url} alt="" style={{ width:30, height:30, objectFit:"cover", borderRadius:5, background:"var(--bg)" }} />
-                            : <span style={{ width:30, height:30, borderRadius:5, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, fontWeight:900, color:"var(--sub)" }}>
+                            : <span style={{ width:30, height:30, borderRadius:5, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, fontWeight:700, color:"var(--sub)" }}>
                                 {(String(f.name).split(".").pop() || "").slice(0,4).toUpperCase()}
                               </span>}
-                          <span style={{ fontSize:12, fontWeight:700, color:"var(--primary)", maxWidth:130, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
+                          <span style={{ fontSize:12.5, fontWeight:700, color:"var(--primary)", maxWidth:130, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
                         </a>
                       ))}
                     </div>
@@ -509,7 +509,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
                   {done && r.reply && (
                     <div style={{ fontSize:12.5, color:"#2c6b45", lineHeight:1.6, background:"#eaf6ee", borderRadius:8, padding:"8px 10px", marginBottom:10, whiteSpace:"pre-wrap" }}>
-                      <span style={{ fontWeight:900 }}>返答：</span>{r.reply}
+                      <span style={{ fontWeight:700 }}>返答：</span>{r.reply}
                       {r.replied_at && <span style={{ marginLeft:8, fontSize:12.5, color:"#6a9a7c" }}>（{fmtDate(r.replied_at)}）</span>}
                     </div>
                   )}
@@ -520,11 +520,11 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
                   <div style={{ display:"flex", gap:8 }}>
                     <button onClick={()=> done ? setReqStatus(r, "未対応") : saveReply(r)}
-                      style={{ flex:1, border:"none", background: done ? "#eee" : "#3f9e63", color: done ? "#888" : "#fff", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px", cursor:"pointer" }}>
+                      style={{ flex:1, border:"none", background: done ? "var(--chip)" : "var(--fill)", color: done ? "var(--sub)" : "#fff", fontWeight:600, fontSize:13.5, borderRadius:8, padding:"9px", cursor:"pointer" }}>
                       {done ? "未対応に戻す" : "返答して対応済みにする"}
                     </button>
                     <button onClick={()=>delReq(r)}
-                      style={{ border:"1px solid #f0d0d0", background:"var(--card, #fff)", color:"#d33", fontWeight:800, fontSize:13, borderRadius:9, padding:"9px 14px", cursor:"pointer" }}>削除</button>
+                      style={{ border:"1px solid #f0d0d0", background:"var(--card, #fff)", color:"#d33", fontWeight:600, fontSize:13.5, borderRadius:8, padding:"9px 14px", cursor:"pointer" }}>削除</button>
                   </div>
                 </div>
               );
@@ -535,7 +535,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
       {section === "genre" && (
         <div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:14, lineHeight:1.6 }}>
+          <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:14, lineHeight:1.6 }}>
             検索画面の左タブで使うジャンルを、ここで振り分けます。ボタンをタップで設定（同じものをもう一度タップで未分類に戻す）。公開中のPOPのみ表示。「除外」を選ぶと、そのPOPは検索結果に出なくなります（一覧には残り、左タブにも出ません）。
           </div>
           <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
@@ -546,8 +546,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 <button key={g} onClick={() => setGFilter(g)}
                   style={{ border: on ? "none" : "1px solid var(--line)",
                     background: on ? (c ? c.solid : "#222") : "var(--card)",
-                    color: on ? "#fff" : "#777", fontSize:13, fontWeight:800,
-                    padding:"8px 12px", borderRadius:9, cursor:"pointer" }}>
+                    color: on ? "#fff" : "#777", fontSize:13.5, fontWeight:600,
+                    padding:"8px 12px", borderRadius:8, cursor:"pointer" }}>
                   {g}（{genreCount(g)}）
                 </button>
               );
@@ -565,8 +565,8 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 <div key={p.id} style={{ background:"var(--card, #fff)", borderRadius:12, boxShadow:"0 1px 8px rgba(0,0,0,0.06)", padding:10, display:"flex", gap:11, alignItems:"flex-start" }}>
                   <img loading="lazy" decoding="async" src={p.image_url} alt="" style={{ width:52, height:68, objectFit:"cover", borderRadius:8, background:"var(--chip)", flexShrink:0 }} />
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:14, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
-                    <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8 }}>{p.store_name}{p.category ? ` ・ ${p.category}` : ""}</div>
+                    <div style={{ fontSize:14, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
+                    <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:8 }}>{p.store_name}{p.category ? ` ・ ${p.category}` : ""}</div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
                       {[...deptGenres(), "除外"].map(g => {
                         const gc = deptGenreColors()[g];
@@ -574,7 +574,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                         return (
                           <button key={g} onClick={() => assignGenre(p, g)}
                             style={{ border:`1.5px solid ${gc.solid}`, background: on ? gc.solid : "var(--card)",
-                              color: on ? "#fff" : gc.solid, fontSize:12, fontWeight:800,
+                              color: on ? "#fff" : gc.solid, fontSize:12.5, fontWeight:600,
                               padding:"7px 11px", borderRadius:8, cursor:"pointer", whiteSpace:"nowrap" }}>
                             {g}
                           </button>
@@ -608,24 +608,24 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         };
         return (
           <div>
-            <div style={{ fontSize:13, color:"var(--text)", lineHeight:1.9, marginBottom:16 }}>
+            <div style={{ fontSize:13.5, color:"var(--text)", lineHeight:1.9, marginBottom:16 }}>
               いまの中身をまとめて1つのファイルに書き出します。<br/>
               ポップの名前・カタログ・発注の品目・行事など、文字の情報が入ります。
             </div>
-            <div style={{ background:"#fff6de", border:"1px solid #eeddad", color:"#8a6d00", borderRadius:10, padding:"11px 13px", fontSize:12, lineHeight:1.8, marginBottom:18 }}>
+            <div style={{ background:"#fff6de", border:"1px solid #eeddad", color:"#8a6d00", borderRadius:10, padding:"11px 13px", fontSize:12.5, lineHeight:1.8, marginBottom:18 }}>
               写真そのものは入りません。写真はサーバーに置いたままです。<br/>
               月に一度など、ときどき取っておくと安心です。
             </div>
             <button onClick={run} disabled={bkBusy}
               style={{ width:"100%", border:"none", background: bkBusy ? "#ccc" : "var(--fill)", color:"#fff",
-                borderRadius:12, padding:"15px", fontSize:15, fontWeight:900, cursor:"pointer" }}>
+                borderRadius:12, padding:"15px", fontSize:15, fontWeight:700, cursor:"pointer" }}>
               {bkBusy ? "書き出しています…" : "控えを取る（ファイルに保存）"}
             </button>
-            {bkMsg && <div style={{ fontSize:12, color:"var(--sub)", marginTop:12, textAlign:"center" }}>{bkMsg}</div>}
+            {bkMsg && <div style={{ fontSize:12.5, color:"var(--sub)", marginTop:12, textAlign:"center" }}>{bkMsg}</div>}
             {bkDone && (
               <div style={{ marginTop:14, background: bkDone.includes("うまく") ? "#fdeceb" : "#eaf6ee",
                 color: bkDone.includes("うまく") ? "#b3261e" : "#2c6b45", border:"1px solid " + (bkDone.includes("うまく") ? "#f5c6c2" : "#c9e6d4"),
-                borderRadius:10, padding:"12px 13px", fontSize:13, fontWeight:800 }}>{bkDone}</div>
+                borderRadius:10, padding:"12px 13px", fontSize:13.5, fontWeight:600 }}>{bkDone}</div>
             )}
             <div style={{ fontSize:12.5, color:"var(--faint)", lineHeight:1.8, marginTop:18 }}>
               取ったファイルは、パソコンや iCloud など手元に残しておいてください。<br/>
@@ -645,7 +645,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         const 札 = (k, label) => (
           <button key={k} onClick={() => setOplogTab(k)} aria-pressed={oplogTab === k}
             style={{ flex:1, border:"none", borderRadius:8, padding:"9px 0", cursor:"pointer", fontFamily:"inherit",
-              fontSize:13, fontWeight:800,
+              fontSize:13.5, fontWeight:600,
               background: oplogTab === k ? "var(--card, #fff)" : "transparent",
               color: oplogTab === k ? "var(--ink)" : "var(--sub)",
               boxShadow: oplogTab === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
@@ -659,7 +659,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           <div>
             {切替}
             {window.DevTab ? React.createElement(window.DevTab, { embedded: true })
-              : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13 }}>読み込み中…</div>}
+              : <div style={{ textAlign:"center", padding:40, color:"var(--faint)", fontSize:13.5 }}>読み込み中…</div>}
           </div>
         );
         const LABEL = { delete:"消した", rename:"名前を直した", restore:"戻した", purge:"完全に消した", group:"まとめた", idea_add:"アイデアをのせた", idea_del:"アイデアを消した" };
@@ -671,17 +671,17 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               消したり名前を直したりした記録です。新しい順に200件まで見られます。
             </div>
             {opLogs.length === 0 ? (
-              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13 }}>
-                <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>まだ記録がありません</div>
+              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13.5 }}>
+                <div style={{ fontSize:15, fontWeight:600, color:"var(--sub)" }}>まだ記録がありません</div>
               </div>
             ) : (
               <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
                 {opLogs.map(lg => (
                   <div key={lg.id} style={{ display:"flex", alignItems:"flex-start", gap:9, background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:10, padding:"9px 11px" }}>
-                    <span style={{ fontSize:12.5, fontWeight:900, color:"#fff", background: COLOR[lg.action] || "#889",
-                      borderRadius:6, padding:"3px 7px", flexShrink:0, whiteSpace:"nowrap" }}>{LABEL[lg.action] || lg.action}</span>
+                    <span style={{ fontSize:12.5, fontWeight:700, color:"#fff", background: COLOR[lg.action] || "#889",
+                      borderRadius:8, padding:"3px 7px", flexShrink:0, whiteSpace:"nowrap" }}>{LABEL[lg.action] || lg.action}</span>
                     <span style={{ minWidth:0, flex:1 }}>
-                      <span style={{ display:"block", fontSize:13, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                      <span style={{ display:"block", fontSize:13.5, fontWeight:600, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                         {lg.target_name || "（名前なし）"}
                       </span>
                       {lg.detail && <span style={{ display:"block", fontSize:12.5, color:"var(--sub)", marginTop:2 }}>{lg.detail}</span>}
@@ -718,7 +718,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 style={{ flex:1, border:"1px solid " + (supView===k ? "var(--primary)" : "var(--line)"),
                   background: supView===k ? "var(--fill)" : "var(--card, #fff)",
                   color: supView===k ? "#fff" : "var(--text)", borderRadius:10, padding:"10px 6px",
-                  fontSize:13.5, fontWeight:800, cursor:"pointer" }}>{label}（{n}）</button>
+                  fontSize:13.5, fontWeight:600, cursor:"pointer" }}>{label}（{n}）</button>
             ))}
           </div>
 
@@ -729,7 +729,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
           </div>
 
           {rows.length === 0 ? (
-            <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13, padding:"40px 0" }}>
+            <div style={{ textAlign:"center", color:"var(--sub)", fontSize:13.5, padding:"40px 0" }}>
               {supView === "trash" ? "ゴミ箱は空です。" : "まだ1枚もありません。"}
             </div>
           ) : (
@@ -743,7 +743,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                       style={{ width:"100%", aspectRatio:"3/4", objectFit:"cover", display:"block", background:"var(--chip)" }} />
                   </button>
                   <div style={{ padding:"7px 9px 9px" }}>
-                    <div style={{ fontSize:11.5, color:"var(--sub)", marginBottom:7 }}>
+                    <div style={{ fontSize:12, color:"var(--sub)", marginBottom:7 }}>
                       {formatDate ? formatDate(p2.created_at) : String(p2.created_at || "").slice(0, 10)}
                       {p2.author ? "　" + p2.author : ""}
                     </div>
@@ -752,15 +752,15 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                         <button onClick={() => restore(p2)}
                           style={{ flex:1, border:"1px solid var(--primary-soft)", background:"transparent",
                             color:"var(--primary-soft)", borderRadius:8, padding:"7px 4px", fontSize:12.5,
-                            fontWeight:800, cursor:"pointer" }}>戻す</button>
+                            fontWeight:600, cursor:"pointer" }}>戻す</button>
                         <button onClick={() => erase(p2)}
                           style={{ flex:1, border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
-                            borderRadius:8, padding:"7px 4px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>完全に消す</button>
+                            borderRadius:8, padding:"7px 4px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>完全に消す</button>
                       </div>
                     ) : (
                       <button onClick={() => erase(p2)}
                         style={{ width:"100%", border:"1px solid #b3261e", background:"transparent", color:"#b3261e",
-                          borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>完全に消す</button>
+                          borderRadius:8, padding:"7px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>完全に消す</button>
                     )}
                   </div>
                 </div>
@@ -773,7 +773,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(8,14,20,0.92)",
                 display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
               <img src={supOpen.image_url} alt=""
-                style={{ maxWidth:"100%", maxHeight:"92vh", objectFit:"contain", borderRadius:6 }} />
+                style={{ maxWidth:"100%", maxHeight:"92vh", objectFit:"contain", borderRadius:8 }} />
             </div>
           )}
         </div>
@@ -801,20 +801,20 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
               みんなが消した投稿です。一覧には出ませんが、ここから戻せます。
             </div>
             {delPops.length === 0 ? (
-              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13 }}>
-                <div style={{ fontSize:15, fontWeight:800, color:"var(--sub)" }}>消された投稿はありません</div>
+              <div style={{ textAlign:"center", color:"var(--faint)", padding:"44px 20px", fontSize:13.5 }}>
+                <div style={{ fontSize:15, fontWeight:600, color:"var(--sub)" }}>消された投稿はありません</div>
               </div>
             ) : (
               <>
                 {ids.length > 0 && (
                   <div style={{ position:"sticky", top:0, zIndex:5, background:"var(--bg)", padding:"10px 0", display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
-                    <span style={{ fontSize:13.5, fontWeight:800, color:"var(--ink)" }}>{ids.length}件 選択中</span>
+                    <span style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)" }}>{ids.length}件 選択中</span>
                     <button onClick={() => setTrashSel({})}
-                      style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
+                      style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:8, padding:"9px 12px", fontSize:13.5, fontWeight:700, cursor:"pointer" }}>解除</button>
                     <button onClick={doRestore} disabled={trashBusy}
-                      style={{ border:"none", background:"#3f9e63", color:"#fff", borderRadius:9, padding:"9px 15px", fontSize:13, fontWeight:800, cursor:"pointer" }}>もどす</button>
+                      style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, padding:"9px 15px", fontSize:13.5, fontWeight:600, cursor:"pointer" }}>もどす</button>
                     <button onClick={doPurge} disabled={trashBusy}
-                      style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>完全に消す</button>
+                      style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:8, padding:"9px 13px", fontSize:13.5, fontWeight:600, cursor:"pointer" }}>完全に消す</button>
                   </div>
                 )}
                 <div className="pop-grid v-sm">
@@ -825,14 +825,14 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                         style={{ position:"relative", border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
                           background:"var(--card, #fff)", borderRadius:10, overflow:"hidden", cursor:"pointer", textAlign:"left" }}>
                         <img loading="lazy" decoding="async" src={pop.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", display:"block", background:"var(--card, #fff)", opacity:0.75 }} />
-                        <span style={{ display:"block", fontSize:12.5, fontWeight:800, color:"var(--ink)", padding:"6px 7px 2px", lineHeight:1.4 }}>{pop.product_name}</span>
+                        <span style={{ display:"block", fontSize:12.5, fontWeight:600, color:"var(--ink)", padding:"6px 7px 2px", lineHeight:1.4 }}>{pop.product_name}</span>
                         <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", padding:"0 7px 7px" }}>{fmtDate(pop.deleted_at)} に削除</span>
                         <button onClick={(e) => { e.stopPropagation(); setTrashSel(v => ({ ...v, [pop.id]: !v[pop.id] })); }}
                           aria-label={on ? "選ぶのをやめる" : "選ぶ"} aria-pressed={on}
                           style={{ position:"absolute", top:6, right:6, width:28, height:28, borderRadius:"50%", cursor:"pointer",
                             border: on ? "none" : "1.5px solid rgba(255,255,255,0.9)",
                             background: on ? "var(--fill)" : "rgba(20,25,35,0.45)", color:"#fff",
-                            display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:900, padding:0 }}>
+                            display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:700, padding:0 }}>
                           {on ? "✓" : ""}
                         </button>
                       </div>
@@ -846,7 +846,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
       {section === "archive" && (
         <div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:14 }}>写真をタップして選び、まとめてアーカイブ／公開に戻せます。</div>
+          <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:14 }}>写真をタップして選び、まとめてアーカイブ／公開に戻せます。</div>
           <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid var(--line)", marginBottom:14 }}>
             {seg("active","公開中",aCount)}
             {seg("archived","アーカイブ済み",arCount)}
@@ -866,10 +866,10 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                     style={{ position:"relative", border: on ? "3px solid var(--primary)" : "1px solid var(--line)", borderRadius:12, overflow:"hidden",
                       background:"var(--card, #fff)", padding:0, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
                     <img loading="lazy" decoding="async" src={p.image_url} alt="" style={{ width:"100%", aspectRatio:"3 / 4", objectFit:"cover", display:"block", background:"var(--chip)", opacity: on ? 0.85 : 1 }} />
-                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--fill)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, lineHeight:1 }}>✓</span>}
+                    {on && <span style={{ position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%", background:"var(--fill)", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:700, lineHeight:1 }}>✓</span>}
                     <div style={{ padding:"6px 8px" }}>
-                      <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
-                      <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
+                      <div style={{ fontSize:12.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.product_name}</div>
+                      <div style={{ fontSize:12.5, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.store_name}</div>
                     </div>
                   </button>
                 );
@@ -883,15 +883,15 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div style={{ position:"fixed", left:0, right:0, bottom:"calc(78px + env(safe-area-inset-bottom))", zIndex:190,
           background:"var(--card, #fff)", borderTop:"1px solid #ececec", boxShadow:"0 -2px 14px rgba(0,0,0,0.1)", padding:"12px 16px",
           display:"flex", alignItems:"center", gap:12 }}>
-          <span style={{ fontSize:14, fontWeight:800, color:"var(--ink)" }}>{selIds.length}件 選択中</span>
+          <span style={{ fontSize:14, fontWeight:600, color:"var(--ink)" }}>{selIds.length}件 選択中</span>
           <button onClick={() => setSel({})}
-            style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:9, padding:"9px 12px", fontSize:13, fontWeight:700, cursor:"pointer" }}>解除</button>
+            style={{ marginLeft:"auto", border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--sub)", borderRadius:8, padding:"9px 12px", fontSize:13.5, fontWeight:700, cursor:"pointer" }}>解除</button>
           <button onClick={() => { setGrpAsk(true); setGrpName(""); setGrpCover(selIds[0] || null); }}
-            style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>まとめる</button>
+            style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--primary)", borderRadius:8, padding:"9px 13px", fontSize:13.5, fontWeight:600, cursor:"pointer" }}>まとめる</button>
           <button onClick={() => { setDelAsk(true); setDelWord(""); }}
-            style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:9, padding:"9px 13px", fontSize:13, fontWeight:800, cursor:"pointer" }}>消す</button>
+            style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:8, padding:"9px 13px", fontSize:13.5, fontWeight:600, cursor:"pointer" }}>消す</button>
           <button onClick={apply} disabled={applying}
-            style={{ border:"none", background: toArchive ? "var(--fill)" : "#2f6fb0", color:"#fff", borderRadius:9, padding:"10px 16px", fontSize:14, fontWeight:800, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
+            style={{ border:"none", background: toArchive ? "var(--fill)" : "#2f6fb0", color:"#fff", borderRadius:8, padding:"10px 16px", fontSize:14, fontWeight:600, cursor:"pointer", opacity: applying ? 0.6 : 1 }}>
             {applying ? "処理中…" : (toArchive ? "アーカイブする" : "公開に戻す")}
           </button>
         </div>
@@ -901,15 +901,15 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div onClick={() => !grpBusy && setGrpAsk(false)}
           style={{ position:"fixed", inset:0, zIndex:1300, background:"rgba(15,25,38,0.6)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"var(--card, #fff)", borderRadius:16, width:"100%", maxWidth:420, padding:"22px 20px" }}>
-            <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:8 }}>{selIds.length}件をひとまとめにします</div>
+            style={{ background:"var(--card, #fff)", borderRadius:12, width:"100%", maxWidth:420, padding:"22px 20px" }}>
+            <div style={{ fontSize:17, fontWeight:700, color:"var(--ink)", marginBottom:8 }}>{selIds.length}件をひとまとめにします</div>
             <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:14 }}>
               一覧には、この名前で1件だけ出るようになります。押すと中の全部が見られます。
             </div>
-            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>まとまりの名前</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:6 }}>まとまりの名前</div>
             <input value={grpName} onChange={e => setGrpName(e.target.value)} placeholder="例：9月8日の月曜販促"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:14 }} />
-            <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>表紙にするポップ（一覧に出ます）</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:6 }}>表紙にするポップ（一覧に出ます）</div>
             <div style={{ display:"flex", gap:7, overflowX:"auto", paddingBottom:6, marginBottom:14 }}>
               {selIds.map(id => {
                 const p2 = pops.find(x => x.id === id);
@@ -918,7 +918,7 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
                 return (
                   <button key={id} onClick={() => setGrpCover(id)} aria-pressed={on}
                     style={{ flexShrink:0, width:62, border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
-                      background:"var(--card, #fff)", borderRadius:9, padding:3, cursor:"pointer" }}>
+                      background:"var(--card, #fff)", borderRadius:8, padding:3, cursor:"pointer" }}>
                     <img loading="lazy" decoding="async" src={p2.image_url} alt="" style={{ width:"100%", aspectRatio:"1/1.414", objectFit:"contain", background:"var(--card)", borderRadius:5, display:"block" }} />
                   </button>
                 );
@@ -927,9 +927,9 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
             <div style={{ display:"flex", gap:9, marginBottom:10 }}>
               <button onClick={() => setGrpAsk(false)} disabled={grpBusy}
-                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
+                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:600, cursor:"pointer" }}>やめる</button>
               <button onClick={() => doGroup(grpName.trim(), grpCover)} disabled={grpBusy || !grpName.trim()}
-                style={{ flex:1, border:"none", background: (grpBusy || !grpName.trim()) ? "#ddd" : "var(--fill)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                style={{ flex:1, border:"none", background: (grpBusy || !grpName.trim()) ? "#ddd" : "var(--fill)", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
                 {grpBusy ? "まとめています…" : "まとめる"}
               </button>
             </div>
@@ -945,21 +945,21 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
         <div onClick={() => !delBusy && setDelAsk(false)}
           style={{ position:"fixed", inset:0, zIndex:1300, background:"rgba(15,25,38,0.6)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"var(--card, #fff)", borderRadius:16, width:"100%", maxWidth:420, padding:"22px 20px" }}>
-            <div style={{ fontSize:17, fontWeight:900, color:"#b3261e", marginBottom:8 }}>{selIds.length}件を完全に消します</div>
+            style={{ background:"var(--card, #fff)", borderRadius:12, width:"100%", maxWidth:420, padding:"22px 20px" }}>
+            <div style={{ fontSize:17, fontWeight:700, color:"#b3261e", marginBottom:8 }}>{selIds.length}件を完全に消します</div>
             <div style={{ fontSize:12.5, color:"var(--text)", lineHeight:1.8, marginBottom:14 }}>
               選んだポップと、そこに付いたコメントも一緒に消えます。<br/>
               <b>一度消すと元に戻せません。</b><br/>
               残しておきたいだけなら「アーカイブする」をお使いください。
             </div>
-            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:6 }}>確認のため「削除」と入力してください</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:6 }}>確認のため「削除」と入力してください</div>
             <input value={delWord} onChange={e => setDelWord(e.target.value)} placeholder="削除"
               style={{ width:"100%", boxSizing:"border-box", border:"2px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:16 }} />
             <div style={{ display:"flex", gap:9 }}>
               <button onClick={() => setDelAsk(false)} disabled={delBusy}
-                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:800, cursor:"pointer" }}>やめる</button>
+                style={{ flex:1, border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:10, padding:"12px", fontSize:14, fontWeight:600, cursor:"pointer" }}>やめる</button>
               <button onClick={doDelete} disabled={delBusy || delWord.trim() !== "削除"}
-                style={{ flex:1, border:"none", background: (delBusy || delWord.trim() !== "削除") ? "#ddd" : "#b3261e", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                style={{ flex:1, border:"none", background: (delBusy || delWord.trim() !== "削除") ? "#ddd" : "#b3261e", color:"#fff", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
                 {delBusy ? "消しています…" : "完全に消す"}
               </button>
             </div>
@@ -969,24 +969,24 @@ function AdminTab({ onNoticeChange, onCreateFromPop }) {
 
       {section === "pinned" && (
         <div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:14 }}>ホーム画面の一覧最上部に固定するPOPを選択できます</div>
+          <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:14 }}>ホーム画面の一覧最上部に固定するPOPを選択できます</div>
           {loading ? (
             <div style={{ textAlign:"center", color:"var(--sub)", padding:"40px 0", fontSize:14 }}>読み込み中…</div>
           ) : (
             <>
               {pinnedPopId && (
                 <div style={{ background:"#fff8f0", border:"2px solid var(--primary)", borderRadius:12, padding:12, marginBottom:14 }}>
-                  <div style={{ fontSize:12, fontWeight:800, color:"var(--primary)", marginBottom:6 }}>📌 現在のピン留め</div>
+                  <div style={{ fontSize:12.5, fontWeight:600, color:"var(--primary)", marginBottom:6 }}>📌 現在のピン留め</div>
                   {pops.find(p => p.id === pinnedPopId) && (
                     <div style={{ display:"flex", gap:8, alignItems:"center" }}>
                       <img src={pops.find(p => p.id === pinnedPopId).image_url} style={{ width:60, height:60, objectFit:"cover", borderRadius:8 }} />
-                      <div style={{ flex:1, fontSize:13, fontWeight:700 }}>{pops.find(p => p.id === pinnedPopId).product_name || "無題"}</div>
-                      <button onClick={() => setPinned(null)} style={{ border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer" }}>外す</button>
+                      <div style={{ flex:1, fontSize:13.5, fontWeight:700 }}>{pops.find(p => p.id === pinnedPopId).product_name || "無題"}</div>
+                      <button onClick={() => setPinned(null)} style={{ border:"none", background:"var(--chip)", color:"var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12.5, fontWeight:700, cursor:"pointer" }}>外す</button>
                     </div>
                   )}
                 </div>
               )}
-              <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:8 }}>最近投稿したPOP</div>
+              <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:8 }}>最近投稿したPOP</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(100px, 1fr))", gap:8 }}>
                 {pops.slice(0, 20).map(p => (
                   <div key={p.id} onClick={() => setPinned(p.id)} style={{ cursor:"pointer", opacity: p.id === pinnedPopId ? 0.5 : 1, position:"relative" }}>
@@ -1042,8 +1042,8 @@ function ArchiveTab({ onCreateFromPop }) {
 
   return (
     <div style={{ maxWidth:1080, margin:"0 auto", padding:16, paddingBottom:90, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>アーカイブ</div>
-      <div style={{ fontSize:13, color:"var(--sub)", marginBottom:14 }}>販売が終わったPOPの保管庫です。過去の参考にどうぞ。</div>
+      <div style={{ fontSize:22, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>アーカイブ</div>
+      <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:14 }}>販売が終わったPOPの保管庫です。過去の参考にどうぞ。</div>
 
       {loading ? (
         <div style={{ textAlign:"center", color:"var(--sub)", padding:"50px 0", fontSize:14 }}>読み込み中…</div>
@@ -1051,18 +1051,18 @@ function ArchiveTab({ onCreateFromPop }) {
         <div style={{ textAlign:"center", padding:60, color:"var(--faint)" }}>
           
           <div style={{ fontSize:15, fontWeight:700, color:"var(--sub)" }}>アーカイブはまだ空です</div>
-          <div style={{ fontSize:13, marginTop:6, color:"var(--faint)" }}>管理画面からPOPをアーカイブできます</div>
+          <div style={{ fontSize:13.5, marginTop:6, color:"var(--faint)" }}>管理画面からPOPをアーカイブできます</div>
         </div>
       ) : (
         <>
-          <div style={{ fontSize:13, fontWeight:800, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>アーカイブ済み（{pops.length}）</div>
+          <div style={{ fontSize:13.5, fontWeight:600, color:"var(--sub)", marginBottom:12, paddingLeft:2 }}>アーカイブ済み（{pops.length}）</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:3 }}>
             {pops.map(pop => (
               <div key={pop.id} style={{ position:"relative" }}>
                 <img src={pop.image_url} loading="lazy" onClick={() => setSel(pop)}
                   style={{ width:"100%", aspectRatio:"1/1", objectFit:"cover", borderRadius:8, cursor:"pointer", background:"var(--chip)", display:"block" }} />
                 <button onClick={(e) => openResForm(pop, e)} title="資料に登録"
-                  style={{ position:"absolute", right:5, bottom:5, border:"none", background:"rgba(29,58,87,0.86)", color:"#fff", borderRadius:999, padding:"4px 9px", fontSize:12.5, fontWeight:900, cursor:"pointer" }}>
+                  style={{ position:"absolute", right:5, bottom:5, border:"none", background:"rgba(29,58,87,0.86)", color:"#fff", borderRadius:999, padding:"4px 9px", fontSize:12.5, fontWeight:700, cursor:"pointer" }}>
                   資料へ
                 </button>
               </div>
@@ -1075,24 +1075,24 @@ function ArchiveTab({ onCreateFromPop }) {
         <div onClick={() => setResTarget(null)}
           style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1100, padding:20 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background:"var(--card, #fff)", borderRadius:16, padding:18, width:"100%", maxWidth:340, maxHeight:"86vh", overflowY:"auto" }}>
-            <div style={{ fontSize:14.5, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>資料に登録</div>
-            <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。</div>
+            style={{ background:"var(--card, #fff)", borderRadius:12, padding:18, width:"100%", maxWidth:340, maxHeight:"86vh", overflowY:"auto" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>資料に登録</div>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>このポップの画像を資料として登録します。「一覧に表示する」を入れなければ、管理画面からだけ見られます。</div>
             <img src={resTarget.image_url} style={{ width:"100%", borderRadius:10, marginBottom:12, background:"var(--chip)" }} />
             <input value={resTitle} onChange={e => setResTitle(e.target.value)} placeholder="タイトル"
-              style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:9, fontSize:13.5, outline:"none", marginBottom:8 }} />
+              style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:8, fontSize:13.5, outline:"none", marginBottom:8 }} />
             <input value={resDesc} onChange={e => setResDesc(e.target.value)} placeholder="説明（任意）"
-              style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:9, fontSize:13, outline:"none", marginBottom:11 }} />
-            <label style={{ display:"flex", alignItems:"center", gap:7, fontSize:12.5, fontWeight:800, color:"var(--text)", cursor:"pointer", marginBottom:13 }}>
+              style={{ width:"100%", boxSizing:"border-box", padding:"10px 11px", border:"1px solid var(--line)", borderRadius:8, fontSize:13.5, outline:"none", marginBottom:11 }} />
+            <label style={{ display:"flex", alignItems:"center", gap:7, fontSize:12.5, fontWeight:600, color:"var(--text)", cursor:"pointer", marginBottom:13 }}>
               <input type="checkbox" checked={resVisible} onChange={e => setResVisible(e.target.checked)} />
               一覧に表示する（みんなが見られます）
             </label>
-            {resMsg && <div style={{ fontSize:12, color:"var(--sub)", fontWeight:700, marginBottom:10 }}>{resMsg}</div>}
+            {resMsg && <div style={{ fontSize:12.5, color:"var(--sub)", fontWeight:700, marginBottom:10 }}>{resMsg}</div>}
             <div style={{ display:"flex", gap:8 }}>
               <button onClick={() => setResTarget(null)}
-                style={{ flex:1, padding:"11px", background:"var(--chip)", color:"var(--text)", border:"none", borderRadius:9, fontSize:13, fontWeight:800, cursor:"pointer" }}>やめる</button>
+                style={{ flex:1, padding:"11px", background:"var(--chip)", color:"var(--text)", border:"none", borderRadius:8, fontSize:13.5, fontWeight:600, cursor:"pointer" }}>やめる</button>
               <button onClick={saveAsResource} disabled={resBusy}
-                style={{ flex:1, padding:"11px", background: resBusy ? "#ccc" : "var(--primary-soft, #4a7ab0)", color:"#fff", border:"none", borderRadius:9, fontSize:13, fontWeight:900, cursor: resBusy ? "default" : "pointer" }}>{resBusy ? "登録中…" : "登録する"}</button>
+                style={{ flex:1, padding:"11px", background: resBusy ? "#ccc" : "var(--primary-soft, #4a7ab0)", color:"#fff", border:"none", borderRadius:8, fontSize:13.5, fontWeight:700, cursor: resBusy ? "default" : "pointer" }}>{resBusy ? "登録中…" : "登録する"}</button>
             </div>
           </div>
         </div>
@@ -1152,7 +1152,7 @@ function RequestTab() {
   };
   const reset = () => { setProduct(""); setReason(""); setPriority("普通"); setDone(false); setError(""); };
 
-  const card = { background:"var(--card, #fff)", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.06)", padding:16 };
+  const card = { background:"var(--card, #fff)", borderRadius:12, boxShadow:"var(--card-shadow)", padding:16 };
   const lbl = { fontSize:12, color:"var(--sub)", marginBottom:5, fontWeight:700 };
   const inp = { width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"11px 12px", fontSize:15, outline:"none", background:"var(--card, #fff)" };
 
@@ -1161,9 +1161,9 @@ function RequestTab() {
       <div style={{ maxWidth:560, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
         <div style={{ ...card, textAlign:"center", padding:"40px 24px" }}>
           
-          <div style={{ fontSize:17, fontWeight:900, color:"var(--ink)", marginBottom:6 }}>送信しました</div>
-          <div style={{ fontSize:13, color:"var(--sub)", marginBottom:20, lineHeight:1.6 }}>{isPop ? "担当者に届きました。POPができるまでお待ちください。" : "担当者に届きました。内容を確認して対応します。"}</div>
-          <button onClick={reset} style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて送信する</button>
+          <div style={{ fontSize:17, fontWeight:700, color:"var(--ink)", marginBottom:6 }}>送信しました</div>
+          <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:20, lineHeight:1.6 }}>{isPop ? "担当者に届きました。POPができるまでお待ちください。" : "担当者に届きました。内容を確認して対応します。"}</div>
+          <button onClick={reset} style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:600, fontSize:15, borderRadius:10, padding:"12px 24px", cursor:"pointer" }}>続けて送信する</button>
         </div>
       </div>
     );
@@ -1171,14 +1171,14 @@ function RequestTab() {
 
   return (
     <div style={{ maxWidth:560, margin:"0 auto", padding:16, animation:"fadeUp .3s ease" }}>
-      <div style={{ fontSize:22, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>お問い合わせ</div>
-      <div style={{ fontSize:13, color:"var(--sub)", marginBottom:14 }}>POPの作成依頼、アプリや売場へのご要望、質問など、なんでもここからどうぞ。内容は担当者に届きます。</div>
+      <div style={{ fontSize:22, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>お問い合わせ</div>
+      <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:14 }}>POPの作成依頼、アプリや売場へのご要望、質問など、なんでもここからどうぞ。内容は担当者に届きます。</div>
       <div style={{ display:"flex", gap:7, marginBottom:16 }}>
         {["POP作成依頼","ご要望","質問・お問い合わせ"].map(k => {
           const on = kind === k;
           return (
             <button key={k} onClick={() => { setKind(k); setError(""); }}
-              style={{ flex:1, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)", fontWeight:800, fontSize:12, borderRadius:11, padding:"10px 4px", cursor:"pointer", lineHeight:1.3 }}>{k}</button>
+              style={{ flex:1, border: on ? "2px solid var(--primary)" : "1px solid var(--line)", background: on ? "var(--soft)" : "var(--card)", color: on ? "var(--primary)" : "var(--text)", fontWeight:600, fontSize:12.5, borderRadius:10, padding:"10px 4px", cursor:"pointer", lineHeight:1.3 }}>{k}</button>
           );
         })}
       </div>
@@ -1203,7 +1203,7 @@ function RequestTab() {
                 <button key={pr} onClick={()=>setPriority(pr)}
                   style={{ flex:1, border:`2px solid ${on?(urgent?"#c21a1a":"var(--primary)"):"var(--line)"}`,
                     background: on ? "var(--soft)" : "var(--card)",
-                    color: on ? (urgent?"#c21a1a":"var(--primary)") : "var(--sub)", fontWeight:800, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
+                    color: on ? (urgent?"#c21a1a":"var(--primary)") : "var(--sub)", fontWeight:600, fontSize:14, borderRadius:10, padding:"9px", cursor:"pointer" }}>
                   {urgent?"急ぎ":"普通"}
                 </button>
               );
@@ -1218,7 +1218,7 @@ function RequestTab() {
           <div style={{ marginTop:12 }}>
             <label style={{ display:"block", position:"relative", overflow:"hidden", border:"1px dashed var(--line)", background: upBusy ? "#f6f6f6" : "var(--card)",
               borderRadius:10, padding:"13px", textAlign:"center", cursor: upBusy ? "default" : "pointer" }}>
-              <span style={{ fontSize:13, fontWeight:800, color:"var(--sub)" }}>
+              <span style={{ fontSize:13.5, fontWeight:600, color:"var(--sub)" }}>
                 {upBusy ? "送っています…" : "＋ ファイルを添付する"}
               </span>
               <span style={{ display:"block", fontSize:12.5, color:"var(--faint)", marginTop:3 }}>
@@ -1233,27 +1233,27 @@ function RequestTab() {
             {files.length > 0 && (
               <div style={{ display:"flex", flexDirection:"column", gap:6, marginTop:9 }}>
                 {files.map((f, i) => (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:9, border:"1px solid var(--line)", borderRadius:9, padding:"7px 9px", background:"var(--card, #fff)" }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:9, border:"1px solid var(--line)", borderRadius:8, padding:"7px 9px", background:"var(--card, #fff)" }}>
                     {isImg(f)
-                      ? <img src={f.url} alt="" style={{ width:38, height:38, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--bg)" }} />
-                      : <span style={{ width:38, height:38, borderRadius:6, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, fontWeight:900, color:"var(--sub)" }}>
+                      ? <img src={f.url} alt="" style={{ width:38, height:38, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--bg)" }} />
+                      : <span style={{ width:38, height:38, borderRadius:8, flexShrink:0, background:"var(--bg)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, fontWeight:700, color:"var(--sub)" }}>
                           {(f.name.split(".").pop() || "").slice(0,4).toUpperCase()}
                         </span>}
                     <span style={{ minWidth:0, flex:1 }}>
-                      <span style={{ display:"block", fontSize:12, fontWeight:700, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
+                      <span style={{ display:"block", fontSize:12.5, fontWeight:700, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.name}</span>
                       <span style={{ display:"block", fontSize:12.5, color:"var(--faint)" }}>{fileKB(f.size)}</span>
                     </span>
                     <button onClick={() => setFiles(v => v.filter((_, k) => k !== i))} aria-label={`${f.name}を外す`}
-                      style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:16, fontWeight:900, cursor:"pointer", padding:"0 3px", flexShrink:0 }}>×</button>
+                      style={{ border:"none", background:"transparent", color:"var(--faint)", fontSize:17, fontWeight:700, cursor:"pointer", padding:"0 3px", flexShrink:0 }}>×</button>
                   </div>
                 ))}
               </div>
             )}
           </div>
         </div>
-        {error && <div style={{ fontSize:13, color:"#e01010", fontWeight:700 }}>{error}</div>}
+        {error && <div style={{ fontSize:13.5, color:"#e01010", fontWeight:700 }}>{error}</div>}
         <button onClick={submit} disabled={busy}
-          style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:800, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
+          style={{ border:"none", background:"var(--fill)", color:"#fff", fontWeight:600, fontSize:15, borderRadius:10, padding:"13px", cursor:"pointer", opacity:busy?0.6:1 }}>
           {busy ? "送信中…" : "送信する"}
         </button>
       </div>
@@ -1305,95 +1305,95 @@ function NoticeAdmin({ onNoticeChange }) {
     } catch(e) { alert("保存に失敗しました"); }
     setSaving(false);
   };
-  const card = { background:"var(--card, #fff)", borderRadius:14, boxShadow:"0 2px 12px rgba(0,0,0,0.07)", padding:"16px 18px", marginBottom:14 };
+  const card = { background:"var(--card, #fff)", borderRadius:12, boxShadow:"var(--card-shadow)", padding:"16px 18px", marginBottom:14 };
   if (loading) return <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0" }}>読み込み中…</div>;
   return (
     <div>
-      <div style={{ ...card, fontSize:13, color:"var(--text)", lineHeight:1.7 }}>
+      <div style={{ ...card, fontSize:13.5, color:"var(--text)", lineHeight:1.7 }}>
         2種類のお知らせを、ここからON/OFFできます。①は不具合などの<b>緊急のお知らせバナー</b>（メインページ上部に固定）、②はホーム画面下に出る<b>案内メッセージ</b>（タップ／スクロールで消えるもの）です。保存すると、みんなの画面に反映されます。
       </div>
       <div style={card}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
-          <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>① 緊急お知らせバナーを表示する</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"var(--ink)" }}>① 緊急お知らせバナーを表示する</div>
           <button onClick={() => setEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: enabled?"var(--fill)":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:12, border:"none", cursor:"pointer", position:"relative", background: enabled?"var(--fill)":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: enabled?29:3, width:26, height:26, borderRadius:"50%", background:"var(--card, #fff)", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
-        <div style={{ fontSize:12, color: enabled?"var(--primary)":"#999", fontWeight:700, marginBottom:14 }}>{enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"}</div>
+        <div style={{ fontSize:12.5, color: enabled?"var(--primary)":"#999", fontWeight:700, marginBottom:14 }}>{enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"}</div>
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
         <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4}
           placeholder="例：発注バーコードの印刷がWindowsで一部ずれる不具合のため、印刷機能を一時調整中です。MacやiPhoneでは利用できます。"
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
 
-        <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー（実際の見え方）</div>
-        <div style={{ background:"#fff4e5", border:"1px solid #ffc98a", color:"#8a4b00", borderRadius:12, padding:"12px 14px", fontSize:13.5, fontWeight:700, lineHeight:1.6, display:"flex", gap:9, alignItems:"flex-start" }}>
-          <span style={{ fontSize:16, lineHeight:1.3 }}>⚠️</span>
-          <span style={{ whiteSpace:"pre-wrap", color: message.trim()?"#8a4b00":"#c79a6a" }}>{message.trim() || "（ここにお知らせ文が表示されます）"}</span>
+        <div style={{ fontSize:12.5, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー（実際の見え方）</div>
+        <div className="notice-line">
+          <span className="notice-dot" aria-hidden="true" />
+          <span style={{ whiteSpace:"pre-wrap", color: message.trim() ? "var(--ink)" : "var(--faint)" }}>{message.trim() || "（ここにお知らせ文が表示されます）"}</span>
         </div>
 
       </div>
 
       <div style={card}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
-          <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>② ホーム画面の案内メッセージ</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"var(--ink)" }}>② ホーム画面の案内メッセージ</div>
           <button onClick={() => setTipEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: tipEnabled?"#2f6fed":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:12, border:"none", cursor:"pointer", position:"relative", background: tipEnabled?"#2f6fed":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: tipEnabled?29:3, width:26, height:26, borderRadius:"50%", background:"var(--card, #fff)", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
-        <div style={{ fontSize:12, color: tipEnabled?"#2f6fed":"#999", fontWeight:700, marginBottom:6 }}>{tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"}</div>
-        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。</div>
+        <div style={{ fontSize:12.5, color: tipEnabled?"#2f6fed":"#999", fontWeight:700, marginBottom:6 }}>{tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"}</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>タップまたはスクロールで自動的に消える、ホーム画面下のフローティング案内です。「季節のポップは自動でアーカイブされます」といった軽い案内に使います。</div>
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>案内文</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>案内文</div>
         <textarea value={tipMessage} onChange={e => setTipMessage(e.target.value)} rows={2}
           placeholder="例：季節のポップや時期が過ぎたポップは「アーカイブ」に収納されます。"
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
 
-        <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
-        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:14, padding:"12px 14px" }}>
-          <span style={{ fontSize:13, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipMessage.trim() || "（ここに案内文が表示されます）"}</span>
+        <div style={{ fontSize:12.5, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
+        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#fff3ea,#ffe9d6)", border:"1.5px solid #ffd9bd", borderRadius:12, padding:"12px 14px" }}>
+          <span style={{ fontSize:13.5, fontWeight:700, color:"#a8480a", lineHeight:1.5, flex:1 }}>{tipMessage.trim() || "（ここに案内文が表示されます）"}</span>
         </div>
       </div>
 
       <div style={card}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
-          <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)" }}>③ 新機能のお知らせバナー</div>
+          <div style={{ fontSize:15, fontWeight:700, color:"var(--ink)" }}>③ 新機能のお知らせバナー</div>
           <button onClick={() => setFeatEnabled(v => !v)}
-            style={{ width:58, height:32, borderRadius:16, border:"none", cursor:"pointer", position:"relative", background: featEnabled?"#2f6fb0":"#d4d4d8", transition:"background .2s" }}>
+            style={{ width:58, height:32, borderRadius:12, border:"none", cursor:"pointer", position:"relative", background: featEnabled?"#2f6fb0":"#d4d4d8", transition:"background .2s" }}>
             <span style={{ position:"absolute", top:3, left: featEnabled?29:3, width:26, height:26, borderRadius:"50%", background:"var(--card, #fff)", boxShadow:"0 1px 3px rgba(0,0,0,0.3)", transition:"left .2s" }} />
           </button>
         </div>
-        <div style={{ fontSize:12, color: featEnabled?"#2f6fb0":"#999", fontWeight:700, marginBottom:6 }}>{featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"}</div>
-        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。</div>
+        <div style={{ fontSize:12.5, color: featEnabled?"#2f6fb0":"#999", fontWeight:700, marginBottom:6 }}>{featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"}</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>新機能を追加したときに、ホーム画面の上部に出す案内です。各自が一度「×」で閉じると、その人には再表示されません（文面を変えて保存すると、また全員に表示されます）。</div>
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>お知らせ文</div>
         <textarea value={featMessage} onChange={e => setFeatMessage(e.target.value)} rows={2}
           placeholder="例：魚図鑑ができました！旬の魚や売り方のヒントが見られます。"
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, outline:"none", resize:"vertical", fontFamily:"inherit", lineHeight:1.6 }} />
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", margin:"14px 0 6px" }}>タップで開く機能（任意）</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", margin:"14px 0 6px" }}>タップで開く機能（任意）</div>
         <select value={featTab} onChange={e => setFeatTab(e.target.value)}
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit" }}>
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit" }}>
           <option value="">（移動しない）</option>
           {TAB_REGISTRY.filter(t => t.key !== "admin").map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
         </select>
 
-        <div style={{ fontSize:12, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
-        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:14, padding:"12px 14px" }}>
+        <div style={{ fontSize:12.5, color:"var(--sub)", margin:"14px 0 6px", fontWeight:700 }}>プレビュー</div>
+        <div style={{ display:"flex", alignItems:"center", gap:10, background:"linear-gradient(135deg,#2f6fb0,#4a8fd4)", borderRadius:12, padding:"12px 14px" }}>
           <span style={{ fontSize:20 }}>🎉</span>
           <div style={{ minWidth:0, flex:1 }}>
-            <div style={{ fontSize:12.5, fontWeight:800, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
-            <div style={{ fontSize:13, fontWeight:800, color:"#fff", lineHeight:1.4 }}>{featMessage.trim() || "（ここにお知らせ文が表示されます）"}</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"rgba(255,255,255,0.8)" }}>新機能のお知らせ</div>
+            <div style={{ fontSize:13.5, fontWeight:600, color:"#fff", lineHeight:1.4 }}>{featMessage.trim() || "（ここにお知らせ文が表示されます）"}</div>
           </div>
-          {featTab && <span style={{ fontSize:12, fontWeight:800, color:"#2f6fb0", background:"var(--card, #fff)", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
+          {featTab && <span style={{ fontSize:12.5, fontWeight:600, color:"#2f6fb0", background:"var(--card, #fff)", borderRadius:8, padding:"4px 10px" }}>ひらく</span>}
         </div>
       </div>
 
       <div style={card}>
-        <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>メニューに出すものをえらぶ</div>
-        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:11, lineHeight:1.6 }}>
+        <div style={{ fontSize:15, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>メニューに出すものをえらぶ</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:11, lineHeight:1.6 }}>
           チェックを外すと、メニューから消えます（「管理画面」は常に出ます）
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:5, marginBottom:22 }}>
@@ -1404,59 +1404,59 @@ function NoticeAdmin({ onNoticeChange }) {
                 aria-pressed={on}
                 style={{ display:"flex", alignItems:"center", gap:10, textAlign:"left", width:"100%",
                   border: on ? "1px solid #cfe8d8" : "1px solid var(--line)", background: on ? "#f4faf6" : "#fafafa",
-                  borderRadius:9, padding:"9px 11px", cursor:"pointer" }}>
-                <span style={{ width:20, height:20, borderRadius:6, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
+                  borderRadius:8, padding:"9px 11px", cursor:"pointer" }}>
+                <span style={{ width:20, height:20, borderRadius:8, flexShrink:0, border: on ? "none" : "1.5px solid var(--line)",
                   background: on ? "#3f9e63" : "var(--card)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {on && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>}
                 </span>
                 <span style={{ fontSize:17, width:24, textAlign:"center", flexShrink:0, opacity: on ? 1 : 0.4 }}>{t.icon}</span>
-                <span style={{ fontSize:13.5, fontWeight:800, color: on ? "var(--ink)" : "var(--faint)", flex:1 }}>{t.label}</span>
+                <span style={{ fontSize:13.5, fontWeight:600, color: on ? "var(--ink)" : "var(--faint)", flex:1 }}>{t.label}</span>
                 <span style={{ fontSize:12.5, color:"var(--faint)", flexShrink:0 }}>{t.section}</span>
               </button>
             );
           })}
         </div>
 
-        <div style={{ fontSize:15, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>④ 下のボタンに赤い印をつける</div>
-        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
+        <div style={{ fontSize:15, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>④ 下のボタンに赤い印をつける</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:12, lineHeight:1.6 }}>下のバーのボタンに赤い丸と吹き出しを出します。「カタログにハローデイを追加しました」のように、対応したことを知らせたい時に。一度タップすると消え、指定した日数が過ぎても自動で消えます。</div>
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>どのボタンに付けるか</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>どのボタンに付けるか</div>
         <select value={badgeTab} onChange={e => setBadgeTab(e.target.value)}
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit", marginBottom:12 }}>
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, background:"var(--card, #fff)", fontFamily:"inherit", marginBottom:12 }}>
           <option value="">（付けない）</option>
           <option value="board">一覧</option>
           <option value="catalog">カタログ</option>
           <option value="__more">メニュー</option>
         </select>
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>吹き出しの文言</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>吹き出しの文言</div>
         <input value={badgeText} onChange={e => setBadgeText(e.target.value)}
           placeholder="例：ハローデイ追加しました！"
-          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid #e2e2e6", borderRadius:10, fontSize:14, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
+          style={{ width:"100%", boxSizing:"border-box", padding:"11px 13px", border:"1px solid var(--line)", borderRadius:10, fontSize:14, outline:"none", fontFamily:"inherit", marginBottom:12 }} />
 
-        <div style={{ fontSize:13, fontWeight:800, color:"var(--text)", marginBottom:6 }}>表示する日数</div>
+        <div style={{ fontSize:13.5, fontWeight:600, color:"var(--text)", marginBottom:6 }}>表示する日数</div>
         <div style={{ display:"flex", gap:6, marginBottom:14 }}>
           {[3, 5, 7].map(d => (
             <button key={d} onClick={() => setBadgeDays(d)}
-              style={{ flex:1, border: badgeDays===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: badgeDays===d ? "var(--soft)" : "var(--card)", color: badgeDays===d ? "var(--primary)" : "var(--sub)", borderRadius:9, padding:"9px 0", fontSize:13, fontWeight:800, cursor:"pointer" }}>{d}日間</button>
+              style={{ flex:1, border: badgeDays===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: badgeDays===d ? "var(--soft)" : "var(--card)", color: badgeDays===d ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"9px 0", fontSize:13.5, fontWeight:600, cursor:"pointer" }}>{d}日間</button>
           ))}
         </div>
 
-        <div style={{ fontSize:12, color:"var(--sub)", marginBottom:6, fontWeight:700 }}>プレビュー</div>
-        <div style={{ background:"var(--fill)", borderRadius:14, padding:"22px 14px 12px", display:"flex", justifyContent:"center" }}>
+        <div style={{ fontSize:12.5, color:"var(--sub)", marginBottom:6, fontWeight:700 }}>プレビュー</div>
+        <div style={{ background:"var(--fill)", borderRadius:12, padding:"22px 14px 12px", display:"flex", justifyContent:"center" }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center", gap:7, background:"var(--card, #fff)", color:"var(--primary-soft)", borderRadius:24, padding:"9px 18px" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5.5s2.5-1.5 4.5-1.5S12 5.5 12 5.5v14s-2-1.5-4.5-1.5S3 19.5 3 19.5z"/><path d="M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"/></svg>
-            <span style={{ fontSize:13, fontWeight:800 }}>カタログ</span>
+            <span style={{ fontSize:13.5, fontWeight:600 }}>カタログ</span>
             <span style={{ position:"absolute", top:2, right:10, width:9, height:9, borderRadius:"50%", background:"#e0555f", boxShadow:"0 0 0 2px #fff" }} />
             {badgeText.trim() && (
-              <span style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:12, fontWeight:800, borderRadius:9, padding:"6px 11px", whiteSpace:"nowrap" }}>{badgeText.trim()}</span>
+              <span style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#e0555f", color:"#fff", fontSize:12.5, fontWeight:600, borderRadius:8, padding:"6px 11px", whiteSpace:"nowrap" }}>{badgeText.trim()}</span>
             )}
           </div>
         </div>
       </div>
 
       <button onClick={save} disabled={saving}
-        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#2f6fb0":"var(--fill)"), color:"#fff", borderRadius:11, padding:"13px", fontSize:15, fontWeight:800, cursor: saving?"default":"pointer", marginBottom:14 }}>
+        style={{ width:"100%", border:"none", background: saving?"#bbb":(saved?"#2f6fb0":"var(--fill)"), color:"#fff", borderRadius:10, padding:"13px", fontSize:15, fontWeight:600, cursor: saving?"default":"pointer", marginBottom:14 }}>
         {saving ? "保存中…" : saved ? "✓ 保存しました（全員に反映）" : "まとめて保存する"}
       </button>
     </div>
@@ -1499,42 +1499,42 @@ function RotateAdmin() {
 
   return (
     <div>
-      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:10 }}>
+      <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:10 }}>
         横向きになってしまったポップを、90度ずつ回して直せます。見た目だけを回す方式なので、投稿日は変わらず<b>並び順もそのまま</b>です。
       </div>
-      <label style={{ display:"flex", alignItems:"center", gap:7, fontSize:12, fontWeight:800, color:"var(--text)", marginBottom:12, cursor:"pointer" }}>
+      <label style={{ display:"flex", alignItems:"center", gap:7, fontSize:12.5, fontWeight:600, color:"var(--text)", marginBottom:12, cursor:"pointer" }}>
         <input type="checkbox" checked={onlyRotated} onChange={e => setOnlyRotated(e.target.checked)} />
         回転させたものだけ表示
       </label>
-      {msg && <div style={{ fontSize:12, color:"#b3261e", fontWeight:800, marginBottom:10 }}>{msg}</div>}
+      {msg && <div style={{ fontSize:12.5, color:"#b3261e", fontWeight:600, marginBottom:10 }}>{msg}</div>}
 
       {loading ? (
-        <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0", fontSize:13 }}>読み込み中…</div>
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"30px 0", fontSize:13.5 }}>読み込み中…</div>
       ) : shown.length === 0 ? (
-        <div style={{ textAlign:"center", color:"var(--faint)", padding:"36px 0", fontSize:13 }}>該当するポップがありません</div>
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"36px 0", fontSize:13.5 }}>該当するポップがありません</div>
       ) : (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(132px, 1fr))", gap:10 }}>
           {shown.map(pop => {
             const rot = pop.rotation || 0;
             const side = (rot === 90 || rot === 270);
             return (
-              <div key={pop.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:8, background:"var(--card, #fff)" }}>
+              <div key={pop.id} style={{ border:"1px solid var(--line)", borderRadius:10, padding:8, background:"var(--card, #fff)" }}>
                 <div style={{ width:"100%", aspectRatio:"1/1", overflow:"hidden", borderRadius:8, background:"var(--chip)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:7 }}>
                   <img src={pop.image_url} loading="lazy"
                     style={{ maxWidth: side ? "100%" : "100%", maxHeight:"100%", objectFit:"contain", transform: rot ? `rotate(${rot}deg)` : "none", transition:"transform .25s ease" }} />
                 </div>
-                <div style={{ fontSize:12, fontWeight:800, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
+                <div style={{ fontSize:12.5, fontWeight:600, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:6 }}>{pop.product_name || "（無題）"}</div>
                 <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                   <button onClick={() => rotate(pop, -90)} disabled={busyId === pop.id}
-                    style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="左に90度">↺</button>
+                    style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:8, padding:"6px 0", fontSize:13.5, fontWeight:700, cursor:"pointer" }} title="左に90度">↺</button>
                   <button onClick={() => rotate(pop, 90)} disabled={busyId === pop.id}
-                    style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:7, padding:"6px 0", fontSize:13, fontWeight:900, cursor:"pointer" }} title="右に90度">↻</button>
+                    style={{ flex:1, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:8, padding:"6px 0", fontSize:13.5, fontWeight:700, cursor:"pointer" }} title="右に90度">↻</button>
                   {rot !== 0 && (
                     <button onClick={() => rotate(pop, -rot)} disabled={busyId === pop.id}
-                      style={{ border:"1px solid var(--line)", background:"var(--soft)", color:"var(--primary)", borderRadius:7, padding:"6px 8px", fontSize:12.5, fontWeight:800, cursor:"pointer" }} title="元に戻す">戻す</button>
+                      style={{ border:"1px solid var(--line)", background:"var(--soft)", color:"var(--primary)", borderRadius:8, padding:"6px 8px", fontSize:12.5, fontWeight:600, cursor:"pointer" }} title="元に戻す">戻す</button>
                   )}
                 </div>
-                {rot !== 0 && <div style={{ fontSize:12.5, color:"var(--primary-soft)", fontWeight:800, marginTop:5, textAlign:"center" }}>{rot}度</div>}
+                {rot !== 0 && <div style={{ fontSize:12.5, color:"var(--primary-soft)", fontWeight:600, marginTop:5, textAlign:"center" }}>{rot}度</div>}
               </div>
             );
           })}
@@ -1621,42 +1621,42 @@ function CatalogAdmin() {
 
   return (
     <div>
-      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
+      <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
         各スーパーの予約カタログを登録します。写真やPDFをアップロードするか、WebカタログのURLを貼ってください。「表示」にしたものが予約カタログのページに並びます。
       </div>
 
       <div style={{ border:"1px solid var(--line)", borderRadius:12, padding:13, marginBottom:16, background:"var(--card, #fff)" }}>
-        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>カタログを追加</div>
+        <div style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)", marginBottom:10 }}>カタログを追加</div>
 
-        <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:5 }}>スーパー名</div>
+        <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:5 }}>スーパー名</div>
         <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10 }}>
           {STORES.map(st => (
             <button key={st} onClick={() => setF("store", st)}
-              style={{ border: form.store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.store===st ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{st}</button>
+              style={{ border: form.store===st ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.store===st ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"5px 11px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{st}</button>
           ))}
         </div>
         <input value={STORES.includes(form.store) ? "" : form.store} onChange={e => setF("store", e.target.value)} placeholder="上に無ければ入力（例：マルマン）"
-          style={{ ...inp, marginBottom:10, fontSize:12 }} />
+          style={{ ...inp, marginBottom:10, fontSize:12.5 }} />
 
         <div style={{ display:"flex", gap:6, marginBottom:10 }}>
           {[["image","写真"],["pdf","PDF"],["link","リンク"]].map(([k,l]) => (
             <button key={k} onClick={() => setF("kind", k)}
-              style={{ flex:1, border: form.kind===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.kind===k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"7px 0", fontSize:12, fontWeight:800, cursor:"pointer" }}>{l}</button>
+              style={{ flex:1, border: form.kind===k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.kind===k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"7px 0", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{l}</button>
           ))}
         </div>
 
         {form.kind !== "link" && (
           <input ref={fileRef} type="file" accept={form.kind === "image" ? "image/*" : "application/pdf,image/*"} onChange={pickFile} disabled={busy}
-            style={{ fontSize:12, width:"100%", marginBottom:10 }} />
+            style={{ fontSize:12.5, width:"100%", marginBottom:10 }} />
         )}
 
         <div style={{ display:"flex", gap:7, marginBottom:9 }}>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>年</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:4 }}>年</div>
             <input value={form.year} onChange={e => setF("year", e.target.value.replace(/[^0-9]/g, ""))} inputMode="numeric" placeholder="2026" style={{ ...inp }} />
           </div>
           <div style={{ flex:2, minWidth:0 }}>
-            <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>時期</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:4 }}>時期</div>
             <select value={form.season} onChange={e => setF("season", e.target.value)} style={{ ...inp, appearance:"auto" }}>
               {SEASONS.map(x => <option key={x} value={x}>{x}</option>)}
             </select>
@@ -1664,50 +1664,50 @@ function CatalogAdmin() {
         </div>
 
         <div style={{ marginBottom:9 }}>
-          <div style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
-          <input ref={thumbRef} type="file" accept="image/*" onChange={pickThumb} disabled={busy} style={{ fontSize:12, width:"100%" }} />
-          {form.thumb_url && <img src={form.thumb_url} style={{ width:60, borderRadius:6, marginTop:6, display:"block" }} />}
+          <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginBottom:4 }}>表紙の画像（任意・ページが消えても残ります）</div>
+          <input ref={thumbRef} type="file" accept="image/*" onChange={pickThumb} disabled={busy} style={{ fontSize:12.5, width:"100%" }} />
+          {form.thumb_url && <img src={form.thumb_url} style={{ width:60, borderRadius:8, marginTop:6, display:"block" }} />}
         </div>
 
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="カタログ名（例：お歳暮 2026）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.note} onChange={e => setF("note", e.target.value)} placeholder="メモ（例：締切 12/10）" style={{ ...inp, marginBottom:8 }} />
-        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:12 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:11, fontSize:12.5 }} />
 
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
+          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12.5, fontWeight:600, color:"var(--text)", cursor:"pointer" }}>
             <input type="checkbox" checked={form.visible} onChange={e => setF("visible", e.target.checked)} />
             みんなに表示する
           </label>
           <button onClick={add} disabled={busy}
-            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:9, padding:"10px 20px", fontSize:13, fontWeight:900, cursor: busy ? "default" : "pointer" }}>{busy ? "処理中…" : "追加"}</button>
+            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:8, padding:"10px 20px", fontSize:13.5, fontWeight:700, cursor: busy ? "default" : "pointer" }}>{busy ? "処理中…" : "追加"}</button>
         </div>
-        {msg && <div style={{ fontSize:12, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+        {msg && <div style={{ fontSize:12.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
       </div>
 
-      <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:9 }}>登録済み（{list.length}）</div>
+      <div style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)", marginBottom:9 }}>登録済み（{list.length}）</div>
       {loading ? (
-        <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 0", fontSize:13 }}>読み込み中…</div>
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"26px 0", fontSize:13.5 }}>読み込み中…</div>
       ) : list.length === 0 ? (
-        <div style={{ textAlign:"center", color:"var(--faint)", padding:"32px 0", fontSize:13 }}>まだ登録がありません</div>
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"32px 0", fontSize:13.5 }}>まだ登録がありません</div>
       ) : (
         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
           {list.map(c => (
-            <div key={c.id} style={{ border:"1px solid var(--line)", borderRadius:11, padding:"10px 12px", background:"var(--card, #fff)", opacity: c.visible ? 1 : 0.55, display:"flex", alignItems:"center", gap:10 }}>
+            <div key={c.id} style={{ border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", background:"var(--card, #fff)", opacity: c.visible ? 1 : 0.55, display:"flex", alignItems:"center", gap:10 }}>
               {c.kind === "image"
-                ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:6, flexShrink:0, background:"var(--chip)" }} />
-                : <div style={{ width:38, height:48, borderRadius:6, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
+                ? <img src={c.url} style={{ width:38, height:48, objectFit:"cover", borderRadius:8, flexShrink:0, background:"var(--chip)" }} />
+                : <div style={{ width:38, height:48, borderRadius:8, background:"var(--soft)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:"var(--primary-soft)", fontSize:17 }}>📄</div>}
               <div style={{ minWidth:0, flex:1 }}>
-                <div style={{ fontSize:12.5, fontWeight:900, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
-                <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.title}</div>
-                {c.note && <div style={{ fontSize:12, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
+                <div style={{ fontSize:12.5, fontWeight:700, color:"var(--primary-soft)" }}>{c.store}{c.year ? `　${c.year}${c.season || ""}` : ""}{c.link_status === "dead" ? "　⚠リンク切れ" : ""}</div>
+                <div style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.title}</div>
+                {c.note && <div style={{ fontSize:12.5, color:"var(--sub)", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{c.note}</div>}
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
                 <button onClick={() => toggle(c)}
-                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "var(--card)", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.visible ? "var(--soft)" : "var(--card)", color: c.visible ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"4px 10px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{c.visible ? "表示中" : "非表示"}</button>
                 <button onClick={() => toggleDead(c)}
-                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "var(--card)", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
+                  style={{ border:"1px solid var(--line)", background: c.link_status === "dead" ? "#fdeaea" : "var(--card)", color: c.link_status === "dead" ? "#b3261e" : "var(--sub)", borderRadius:8, padding:"4px 10px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{c.link_status === "dead" ? "切れ中" : "切れ報告"}</button>
                 <button onClick={() => del(c)}
-                  style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:7, padding:"4px 10px", fontSize:12.5, fontWeight:800, cursor:"pointer" }}>削除</button>
+                  style={{ border:"1px solid #f0c8c4", background:"var(--card, #fff)", color:"#b3261e", borderRadius:8, padding:"4px 10px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>削除</button>
               </div>
             </div>
           ))}
@@ -1775,7 +1775,7 @@ function RenameReview({ pops, onRenamed }) {
 
   return (
     <div>
-      <div style={{ fontSize:13, color:"var(--sub)", lineHeight:1.7, marginBottom:12 }}>
+      <div style={{ fontSize:13.5, color:"var(--sub)", lineHeight:1.7, marginBottom:12 }}>
         写真の番号や「ChatGPT 画像…」のように、ファイル名のまま上がったポップを集めています。
         中身の分かる名前（例：真さば 刺身用）にすると、さがすで見つかるようになります。
         いま <b style={{ color:"var(--ink)" }}>{残り}件</b>。
@@ -1783,13 +1783,13 @@ function RenameReview({ pops, onRenamed }) {
 
       {!通った ? (
         <div style={{ background:"var(--card)", border:"1px solid var(--line)", borderRadius:12, padding:14, marginBottom:14 }}>
-          <div style={{ fontSize:13, fontWeight:800, color:"var(--ink)", marginBottom:8 }}>名前を直すには、削除と同じ番号を1回だけ入れてください</div>
+          <div style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)", marginBottom:8 }}>名前を直すには、削除と同じ番号を1回だけ入れてください</div>
           <div style={{ display:"flex", gap:8 }}>
             <input type="password" inputMode="numeric" value={番号} onChange={e => set番号(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") 確かめる(); }}
-              style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:16, background:"var(--bg)", color:"var(--text)" }} />
+              style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:17, background:"var(--bg)", color:"var(--text)" }} />
             <button onClick={確かめる} disabled={!番号.trim()}
-              style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"0 18px", fontSize:14, fontWeight:800, cursor:"pointer" }}>確かめる</button>
+              style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:10, padding:"0 18px", fontSize:14, fontWeight:600, cursor:"pointer" }}>確かめる</button>
           </div>
           {番号Err && <div style={{ fontSize:12.5, color:"#b3261e", marginTop:6, fontWeight:700 }}>{番号Err}</div>}
         </div>
@@ -1820,9 +1820,9 @@ function RenameReview({ pops, onRenamed }) {
                     <input value={新[p.id] || ""} placeholder="新しい名前（例：真さば 刺身用）" disabled={!通った || 保存中[p.id]}
                       onChange={e => set新(v => ({ ...v, [p.id]: e.target.value }))}
                       onKeyDown={e => { if (e.key === "Enter" && !e.isComposing) 保存(p); }}
-                      style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:9, padding:"9px 10px", fontSize:15, background:"var(--bg)", color:"var(--text)" }} />
+                      style={{ flex:1, minWidth:0, border:"1px solid var(--line)", borderRadius:8, padding:"9px 10px", fontSize:15, background:"var(--bg)", color:"var(--text)" }} />
                     <button onClick={() => 保存(p)} disabled={!通った || 保存中[p.id] || !String(新[p.id] || "").trim()}
-                      style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:9, padding:"0 14px", fontSize:13.5, fontWeight:800, cursor:"pointer",
+                      style={{ border:"none", background:"var(--fill)", color:"#fff", borderRadius:8, padding:"0 14px", fontSize:13.5, fontWeight:600, cursor:"pointer",
                         opacity: (!通った || !String(新[p.id] || "").trim()) ? 0.45 : 1 }}>{保存中[p.id] ? "…" : "直す"}</button>
                   </div>
                 </div>
@@ -1915,18 +1915,18 @@ function ResourceAdmin() {
 
   return (
     <div>
-      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
+      <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6, marginBottom:12 }}>
         PDF・画像はここからアップロードできます。スプレッドシートなどはURLを貼り付けてください。「表示」をオンにしたものが、一覧ページの資料カードに並びます。
       </div>
 
       {/* 追加フォーム */}
       <div style={{ border:"1px solid var(--line)", borderRadius:12, padding:13, marginBottom:16, background:"var(--card, #fff)" }}>
-        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)", marginBottom:10 }}>資料を追加</div>
+        <div style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)", marginBottom:10 }}>資料を追加</div>
 
         <div style={{ display:"flex", gap:6, marginBottom:10, flexWrap:"wrap" }}>
           {KINDS.map(k => (
             <button key={k.k} onClick={() => { setF("kind", k.k); setF("emoji", k.emoji); }}
-              style={{ border: form.kind===k.k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.kind===k.k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"6px 11px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              style={{ border: form.kind===k.k ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background:"var(--card, #fff)", color: form.kind===k.k ? "var(--primary)" : "var(--sub)", borderRadius:8, padding:"6px 11px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>
               {k.emoji} {k.label}
             </button>
           ))}
@@ -1935,38 +1935,38 @@ function ResourceAdmin() {
         {(form.kind === "pdf" || form.kind === "image") && (
           <div style={{ marginBottom:10 }}>
             <input ref={fileRef} type="file" accept={form.kind === "image" ? "image/*" : "application/pdf,image/*"} onChange={pickFile} disabled={busy}
-              style={{ fontSize:12, width:"100%" }} />
+              style={{ fontSize:12.5, width:"100%" }} />
           </div>
         )}
 
         <input value={form.title} onChange={e => setF("title", e.target.value)} placeholder="タイトル（例：魚売場POP 10シリーズ）" style={{ ...inp, marginBottom:8 }} />
         <input value={form.description} onChange={e => setF("description", e.target.value)} placeholder="説明（任意）" style={{ ...inp, marginBottom:8 }} />
-        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:10, fontSize:12 }} />
+        <input value={form.url} onChange={e => setF("url", e.target.value)} placeholder="URL（ファイルを選ぶと自動で入ります）" style={{ ...inp, marginBottom:10, fontSize:12.5 }} />
 
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:800, color:"var(--text)", cursor:"pointer" }}>
+          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:12.5, fontWeight:600, color:"var(--text)", cursor:"pointer" }}>
             <input type="checkbox" checked={form.visible} onChange={e => setF("visible", e.target.checked)} />
             一覧に表示する
           </label>
           <button onClick={add} disabled={busy}
-            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:9, padding:"10px 20px", fontSize:13, fontWeight:900, cursor: busy ? "default" : "pointer" }}>
+            style={{ marginLeft:"auto", border:"none", background: busy ? "#ccc" : "var(--primary-soft)", color:"#fff", borderRadius:8, padding:"10px 20px", fontSize:13.5, fontWeight:700, cursor: busy ? "default" : "pointer" }}>
             {busy ? "処理中…" : "追加"}
           </button>
         </div>
-        {msg && <div style={{ fontSize:12, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
+        {msg && <div style={{ fontSize:12.5, color:"var(--sub)", marginTop:9, lineHeight:1.5 }}>{msg}</div>}
       </div>
 
       {/* 一覧 */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:9 }}>
-        <div style={{ fontSize:13, fontWeight:900, color:"var(--ink)" }}>登録済み（{list.length}）</div>
+        <div style={{ fontSize:13.5, fontWeight:700, color:"var(--ink)" }}>登録済み（{list.length}）</div>
         <button onClick={() => setVer(v => v + 1)} disabled={loading}
-          style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:9, padding:"6px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>{loading ? "更新中…" : "更新"}</button>
+          style={{ border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{loading ? "更新中…" : "更新"}</button>
       </div>
 
       {loading ? (
-        <div style={{ textAlign:"center", color:"var(--sub)", padding:"26px 0", fontSize:13 }}>読み込み中…</div>
+        <div style={{ textAlign:"center", color:"var(--sub)", padding:"26px 0", fontSize:13.5 }}>読み込み中…</div>
       ) : list.length === 0 ? (
-        <div style={{ textAlign:"center", color:"var(--sub)", padding:"32px 0", fontSize:13 }}>まだ登録がありません</div>
+        <div style={{ textAlign:"center", color:"var(--sub)", padding:"32px 0", fontSize:13.5 }}>まだ登録がありません</div>
       ) : (
         <div className="res-grid">
           {list.map((r, i) => (
@@ -2017,12 +2017,12 @@ function 数字札({ 名, 値, 差, 単位, 注 }) {
   const 上 = 差 > 0, 下 = 差 < 0;
   return (
     <div style={{ flex:"1 1 0", minWidth:0, background:"var(--card)", borderRadius:12, padding:"11px 12px", boxShadow:"var(--card-shadow)" }}>
-      <div style={{ fontSize:11.5, fontWeight:800, color:"var(--sub)", whiteSpace:"nowrap" }}>{名}</div>
-      <div style={{ fontSize:24, fontWeight:900, color:"var(--ink)", lineHeight:1.15, marginTop:3, fontVariantNumeric:"tabular-nums" }}>
-        {値}<span style={{ fontSize:12, fontWeight:800, color:"var(--sub)", marginLeft:2 }}>{単位}</span>
+      <div style={{ fontSize:12, fontWeight:600, color:"var(--sub)", whiteSpace:"nowrap" }}>{名}</div>
+      <div style={{ fontSize:24, fontWeight:700, color:"var(--ink)", lineHeight:1.15, marginTop:3, fontVariantNumeric:"tabular-nums" }}>
+        {値}<span style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginLeft:2 }}>{単位}</span>
       </div>
       {差 != null && (
-        <div style={{ fontSize:11.5, fontWeight:800, marginTop:2, color: 上 ? "var(--ink)" : "var(--sub)" }}>
+        <div style={{ fontSize:12, fontWeight:600, marginTop:2, color: 上 ? "var(--ink)" : "var(--sub)" }}>
           <span style={{ fontWeight:700, color:"var(--sub)" }}>{注 || "先週より "}</span>{上 ? "▲" : 下 ? "▼" : "±"}{Math.abs(差)}
         </div>
       )}
@@ -2033,8 +2033,8 @@ function 数字札({ 名, 値, 差, 単位, 注 }) {
 function 見出し({ children, 補 }) {
   return (
     <div style={{ display:"flex", alignItems:"baseline", gap:8, margin:"20px 0 9px" }}>
-      <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>{children}</div>
-      {補 && <div style={{ fontSize:11.5, color:"var(--sub)" }}>{補}</div>}
+      <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)" }}>{children}</div>
+      {補 && <div style={{ fontSize:12, color:"var(--sub)" }}>{補}</div>}
     </div>
   );
 }
@@ -2051,7 +2051,7 @@ function 日別棒({ rows, 日数, 単位 }) {
   const 表示 = i == null ? `${日数}日で ${合計}${単位}・最多 ${最大}${単位}/日` : `${日[i].getMonth()+1}/${日[i].getDate()}（${曜[日[i].getDay()]}） ${値[i]}${単位}`;
   return (
     <div style={{ background:"var(--card)", borderRadius:12, padding:"12px 12px 10px", boxShadow:"var(--card-shadow)" }}>
-      <div style={{ fontSize:12.5, fontWeight:800, color: i == null ? "var(--sub)" : "var(--ink)", marginBottom:8, minHeight:18 }}>{表示}</div>
+      <div style={{ fontSize:12.5, fontWeight:600, color: i == null ? "var(--sub)" : "var(--ink)", marginBottom:8, minHeight:18 }}>{表示}</div>
       <div style={{ display:"flex", alignItems:"flex-end", gap:2, height:96, borderBottom:"1px solid var(--line)" }}>
         {値.map((v, k) => (
           <button key={k} onClick={() => set選(選 === k ? null : k)} title={`${日[k].getMonth()+1}/${日[k].getDate()} ${v}${単位}`}
@@ -2085,7 +2085,7 @@ function 時間帯の地図({ rows }) {
   const 順 = [1,2,3,4,5,6,0];  // 月曜はじまり
   return (
     <div style={{ background:"var(--card)", borderRadius:12, padding:"12px", boxShadow:"var(--card-shadow)" }}>
-      <div style={{ fontSize:12.5, fontWeight:800, color: 選 ? "var(--ink)" : "var(--sub)", marginBottom:8, minHeight:18 }}>
+      <div style={{ fontSize:12.5, fontWeight:600, color: 選 ? "var(--ink)" : "var(--sub)", marginBottom:8, minHeight:18 }}>
         {選 ? `${曜[選[0]]}曜 ${帯[選[1]][0]}〜${帯[選[1]][0]+2}時 … ${表[選[0]][選[1]]}件` : "濃いほど多く使われています。マスを押すと件数が出ます"}
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"22px repeat(8, 1fr)", gap:2 }}>
@@ -2093,7 +2093,7 @@ function 時間帯の地図({ rows }) {
         {帯.map(([, l]) => <span key={l} style={{ fontSize:10, color:"var(--sub)", textAlign:"center", fontWeight:700 }}>{l}</span>)}
         {順.map(w => (
           <React.Fragment key={w}>
-            <span style={{ fontSize:11, color:"var(--sub)", fontWeight:800, alignSelf:"center" }}>{曜[w]}</span>
+            <span style={{ fontSize:12, color:"var(--sub)", fontWeight:600, alignSelf:"center" }}>{曜[w]}</span>
             {表[w].map((v, b) => (
               <button key={b} onClick={() => set選(選 && 選[0]===w && 選[1]===b ? null : [w, b])}
                 title={`${曜[w]} ${帯[b][0]}時台 ${v}件`} aria-label={`${曜[w]}曜 ${帯[b][0]}時から ${v}件`}
@@ -2103,7 +2103,7 @@ function 時間帯の地図({ rows }) {
           </React.Fragment>
         ))}
       </div>
-      {夜 > 0 && <div style={{ fontSize:11, color:"var(--sub)", marginTop:7 }}>※ 6時より前の利用 {夜}件 は表に入れていません</div>}
+      {夜 > 0 && <div style={{ fontSize:12, color:"var(--sub)", marginTop:7 }}>※ 6時より前の利用 {夜}件 は表に入れていません</div>}
     </div>
   );
 }
@@ -2118,7 +2118,7 @@ function 横棒({ items, 単位, 上限 }) {
     <div style={{ background:"var(--card)", borderRadius:12, padding:"12px 13px 4px", boxShadow:"var(--card-shadow)" }}>
       {並.map(([名, n]) => (
         <div key={名} style={{ marginBottom:10 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, fontWeight:800, color:"var(--ink)", marginBottom:4 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, fontWeight:600, color:"var(--ink)", marginBottom:4 }}>
             <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{名}</span>
             <span style={{ fontVariantNumeric:"tabular-nums", flexShrink:0, marginLeft:8 }}>{n}{単位}<span style={{ color:"var(--sub)", fontWeight:700 }}>（{合計 ? Math.round(n/合計*100) : 0}%）</span></span>
           </div>
@@ -2127,7 +2127,7 @@ function 横棒({ items, 単位, 上限 }) {
           </div>
         </div>
       ))}
-      {items.length > 並.length && <div style={{ fontSize:11, color:"var(--sub)", marginBottom:8 }}>ほか {items.length - 並.length}件</div>}
+      {items.length > 並.length && <div style={{ fontSize:12, color:"var(--sub)", marginBottom:8 }}>ほか {items.length - 並.length}件</div>}
     </div>
   );
 }
@@ -2163,18 +2163,18 @@ function DeviceStatsPanel() {
   return (
     <div>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, marginBottom:12 }}>
-        <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.7 }}>
+        <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.7 }}>
           アプリを開いた端末の記録です。同じ端末は1日1回まで数えます。誰が使ったかは記録していません。
         </div>
         <button onClick={() => setVer(v => v + 1)} disabled={loading}
-          style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card)", color:"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+          style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card)", color:"var(--text)", borderRadius:8, padding:"7px 13px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>
           {loading ? "…" : "更新"}
         </button>
       </div>
       {loading ? (
-        <div style={{ textAlign:"center", color:"var(--sub)", padding:"30px 0", fontSize:13 }}>読み込み中…</div>
+        <div style={{ textAlign:"center", color:"var(--sub)", padding:"30px 0", fontSize:13.5 }}>読み込み中…</div>
       ) : rows.length === 0 ? (
-        <div style={{ textAlign:"center", color:"var(--sub)", padding:"40px 0", fontSize:13 }}>まだ記録がありません。</div>
+        <div style={{ textAlign:"center", color:"var(--sub)", padding:"40px 0", fontSize:13.5 }}>まだ記録がありません。</div>
       ) : (
         <>
           <div style={{ display:"flex", gap:8 }}>
@@ -2188,7 +2188,7 @@ function DeviceStatsPanel() {
             {[14, 30, 90].map(d => (
               <button key={d} onClick={() => set日数(d)} aria-pressed={日数 === d}
                 style={{ border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)", background: 日数 === d ? "var(--soft)" : "var(--card)",
-                  color: 日数 === d ? "var(--primary)" : "var(--text)", borderRadius:9, padding:"6px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+                  color: 日数 === d ? "var(--primary)" : "var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>
                 {d === 90 ? "3か月" : d + "日"}
               </button>
             ))}
@@ -2239,7 +2239,7 @@ function DeviceStatsPanel() {
             );
           })()}
 
-          <div style={{ fontSize:11.5, color:"var(--sub)", lineHeight:1.8, marginTop:16 }}>
+          <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.8, marginTop:16 }}>
             ※ 店舗別の集計は出していません。これまでの記録は、どの店で開いても「北部店」として残っていたためです。
           </div>
         </>
@@ -2267,7 +2267,7 @@ function ViewInsights({ pops, views }) {
         <数字札 名="30日で見られた" 値={見られた.size} 単位="枚" />
         <数字札 名="眠っている" 値={眠り} 単位="枚" />
       </div>
-      <div style={{ fontSize:11, color:"var(--sub)", marginTop:6, lineHeight:1.7 }}>
+      <div style={{ fontSize:12, color:"var(--sub)", marginTop:6, lineHeight:1.7 }}>
         「眠っている」は、公開中・投稿から2週間以上・30日間開かれていないもの。下の順位の「眠っている」から整理できます。
       </div>
 
@@ -2276,7 +2276,7 @@ function ViewInsights({ pops, views }) {
         {[14, 30, 90].map(d => (
           <button key={d} onClick={() => set日数(d)} aria-pressed={日数 === d}
             style={{ border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)", background: 日数 === d ? "var(--soft)" : "var(--card)",
-              color: 日数 === d ? "var(--primary)" : "var(--text)", borderRadius:9, padding:"6px 12px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              color: 日数 === d ? "var(--primary)" : "var(--text)", borderRadius:8, padding:"6px 12px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>
             {d === 90 ? "3か月" : d + "日"}
           </button>
         ))}
@@ -2356,19 +2356,19 @@ function RankingPanel({ onCreateFromPop }) {
   return (
     <div>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-        <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.6 }}>ポップの閲覧・使った回数・いいねの記録です。<br/>「最近」は直近{days}日でよく見られたポップです。</div>
+        <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.6 }}>ポップの閲覧・使った回数・いいねの記録です。<br/>「最近」は直近{days}日でよく見られたポップです。</div>
         <button onClick={() => setVer(v => v + 1)} disabled={loading}
-          style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:9, padding:"7px 13px", fontSize:12, fontWeight:800, cursor: loading?"default":"pointer" }}>{loading ? "更新中…" : "更新"}</button>
+          style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card, #fff)", color:"var(--text)", borderRadius:8, padding:"7px 13px", fontSize:12.5, fontWeight:600, cursor: loading?"default":"pointer" }}>{loading ? "更新中…" : "更新"}</button>
       </div>
 
       {!loading && <ViewInsights pops={pops} views={views} />}
-      <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", margin:"4px 0 9px" }}>ポップごとの順位</div>
+      <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", margin:"4px 0 9px" }}>ポップごとの順位</div>
 
       {metric === "recent" && (
         <div style={{ display:"flex", gap:6, marginBottom:10 }}>
           {[3,7,30].map(d => (
             <button key={d} onClick={() => setDays(d)}
-              style={{ border: days===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: days===d ? "var(--soft)" : "var(--card)", color: days===d ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 14px", fontSize:12, fontWeight:800, cursor:"pointer" }}>
+              style={{ border: days===d ? "2px solid var(--primary-soft)" : "1px solid var(--line)", background: days===d ? "var(--soft)" : "var(--card)", color: days===d ? "var(--primary)" : "var(--sub)", borderRadius:999, padding:"5px 14px", fontSize:12.5, fontWeight:600, cursor:"pointer" }}>
               {d === 30 ? "1か月" : d + "日間"}
             </button>
           ))}
@@ -2378,10 +2378,10 @@ function RankingPanel({ onCreateFromPop }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:7, marginBottom:12 }}>
         {METRICS.map(x => (
           <button key={x.key} onClick={() => setMetric(x.key)}
-            style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:11, padding:"9px 6px", cursor:"pointer",
+            style={{ flex:1, border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)", borderRadius:10, padding:"9px 6px", cursor:"pointer",
               background: metric === x.key ? "var(--soft)" : "var(--card)", color: metric === x.key ? "var(--primary)" : "var(--text)" }}>
-            <div style={{ fontSize:13, fontWeight:800 }}>{x.label}</div>
-            <div style={{ fontSize:12, fontWeight:700, opacity:0.75, marginTop:2 }}>
+            <div style={{ fontSize:13.5, fontWeight:600 }}>{x.label}</div>
+            <div style={{ fontSize:12.5, fontWeight:700, opacity:0.75, marginTop:2 }}>
               {x.key === "cold" ? `${眠り.length}枚` : x.key === "rise" ? `${pops.filter(p => x.get(p) > 0).length}枚` : `計 ${totals[x.key]}`}
             </div>
           </button>
@@ -2390,34 +2390,34 @@ function RankingPanel({ onCreateFromPop }) {
 
       {loading ? (
         <div>{[0,1,2,3,4].map(i => (
-          <div key={i} style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:13, padding:"10px 12px", marginBottom:9 }}>
-            <div className="sk" style={{ width:34, height:34, borderRadius:9 }} />
-            <div className="sk" style={{ width:56, height:56, borderRadius:9 }} />
-            <div style={{ flex:1 }}><div className="sk" style={{ width:"70%", height:13, borderRadius:6 }} /><div className="sk" style={{ width:"40%", height:11, borderRadius:6, marginTop:7 }} /></div>
+          <div key={i} style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"10px 12px", marginBottom:9 }}>
+            <div className="sk" style={{ width:34, height:34, borderRadius:8 }} />
+            <div className="sk" style={{ width:56, height:56, borderRadius:8 }} />
+            <div style={{ flex:1 }}><div className="sk" style={{ width:"70%", height:13, borderRadius:8 }} /><div className="sk" style={{ width:"40%", height:11, borderRadius:8, marginTop:7 }} /></div>
           </div>
         ))}</div>
       ) : metric === "cold" ? (
         眠り.filter(p => !p.archived).length === 0 ? (
-          <div style={{ textAlign:"center", color:"var(--sub)", padding:"36px 0", fontSize:13, lineHeight:1.8 }}>眠っているポップはありません。</div>
+          <div style={{ textAlign:"center", color:"var(--sub)", padding:"36px 0", fontSize:13.5, lineHeight:1.8 }}>眠っているポップはありません。</div>
         ) : (
           <div>
-            <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.8, marginBottom:10 }}>
+            <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:10 }}>
               公開中で、投稿から2週間以上たち、30日間だれにも開かれていないものです。古い順。<br />
               売場で使い終わったものは、アーカイブへ移すと一覧がすっきりします（いつでも戻せます）。
             </div>
             {眠り.filter(p => !p.archived).map(p => {
               const 日 = Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000);
               return (
-                <div key={p.id} style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card)", borderRadius:13, padding:"9px 10px", marginBottom:8, boxShadow:"var(--card-shadow)" }}>
+                <div key={p.id} style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card)", borderRadius:12, padding:"9px 10px", marginBottom:8, boxShadow:"var(--card-shadow)" }}>
                   <img src={p.image_url} alt="" loading="lazy" onClick={() => setSel(p)}
-                    style={{ width:52, height:52, objectFit:"cover", borderRadius:9, background:"var(--mat)", flexShrink:0, cursor:"pointer" }} />
+                    style={{ width:52, height:52, objectFit:"cover", borderRadius:8, background:"var(--mat)", flexShrink:0, cursor:"pointer" }} />
                   <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setSel(p)}>
-                    <div style={{ fontSize:13.5, fontWeight:800, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
-                    <div style={{ fontSize:11.5, color:"var(--sub)", marginTop:2 }}>{[p.genre, p.store_name].filter(Boolean).join(" · ")}　投稿から{日}日</div>
+                    <div style={{ fontSize:13.5, fontWeight:600, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
+                    <div style={{ fontSize:12, color:"var(--sub)", marginTop:2 }}>{[p.genre, p.store_name].filter(Boolean).join(" · ")}　投稿から{日}日</div>
                   </div>
                   <button onClick={() => 寝かせる(p)} disabled={片付け中 === p.id}
-                    style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card)", color:"var(--text)", borderRadius:9,
-                      padding:"8px 10px", fontSize:12, fontWeight:800, cursor:"pointer", fontFamily:"inherit" }}>
+                    style={{ flexShrink:0, border:"1px solid var(--line)", background:"var(--card)", color:"var(--text)", borderRadius:8,
+                      padding:"8px 10px", fontSize:12.5, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
                     {片付け中 === p.id ? "移しています…" : "アーカイブへ"}
                   </button>
                 </div>
@@ -2426,20 +2426,20 @@ function RankingPanel({ onCreateFromPop }) {
           </div>
         )
       ) : ranked.length === 0 ? (
-        <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13, lineHeight:1.8 }}>まだ記録がありません。<br/>ポップが見られる・使われると、ここに順位が並びます。</div>
+        <div style={{ textAlign:"center", color:"var(--faint)", padding:"40px 0", fontSize:13.5, lineHeight:1.8 }}>まだ記録がありません。<br/>ポップが見られる・使われると、ここに順位が並びます。</div>
       ) : ranked.map((p, i) => {
         const rs = rankStyle(i);
         return (
           <div key={p.id} onClick={() => setSel(p)}
-            style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card, #fff)", border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)", borderRadius:13, padding:"10px 12px", marginBottom:9, cursor:"pointer" }}>
-            <div style={{ width:34, height:34, borderRadius:9, background:rs.bg, color:rs.fg, display:"flex", alignItems:"center", justifyContent:"center", fontSize: i < 3 ? 16 : 13, fontWeight:900, flexShrink:0 }}>{i + 1}</div>
-            <img src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:9, flexShrink:0, border:"1px solid var(--line)" }} />
+            style={{ display:"flex", gap:11, alignItems:"center", background:"var(--card, #fff)", border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)", borderRadius:12, padding:"10px 12px", marginBottom:9, cursor:"pointer" }}>
+            <div style={{ width:34, height:34, borderRadius:8, background:rs.bg, color:rs.fg, display:"flex", alignItems:"center", justifyContent:"center", fontSize: i < 3 ? 16 : 13, fontWeight:700, flexShrink:0 }}>{i + 1}</div>
+            <img src={p.image_url} loading="lazy" style={{ width:56, height:56, objectFit:"cover", borderRadius:8, flexShrink:0, border:"1px solid var(--line)" }} />
             <div style={{ minWidth:0, flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
-              <div style={{ fontSize:12, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>
+              <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.product_name}</div>
+              <div style={{ fontSize:12.5, color:"var(--sub)", marginTop:2 }}>{p.store_name}{p.author ? `　·　${p.author}` : ""}</div>
             </div>
             <div style={{ textAlign:"right", flexShrink:0 }}>
-              <div style={{ fontSize:17, fontWeight:900, color: i < 3 ? "var(--primary)" : "var(--ink)", lineHeight:1 }}>{m.get(p)}</div>
+              <div style={{ fontSize:17, fontWeight:700, color: i < 3 ? "var(--primary)" : "var(--ink)", lineHeight:1 }}>{m.get(p)}</div>
               <div style={{ fontSize:12.5, color:"var(--faint)", fontWeight:700 }}>{m.label}{m.unit}</div>
             </div>
           </div>
@@ -2477,16 +2477,16 @@ function DimsBackfill() {
   };
   return (
     <div style={{ background:"var(--card, #fff)", border:"1px solid var(--line)", borderRadius:12, padding:"14px 15px", marginBottom:16 }}>
-      <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)", marginBottom:4 }}>ポップの縦長・横長を測る</div>
-      <div style={{ fontSize:12, color:"var(--sub)", lineHeight:1.8, marginBottom:10 }}>
+      <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)", marginBottom:4 }}>ポップの縦長・横長を測る</div>
+      <div style={{ fontSize:12.5, color:"var(--sub)", lineHeight:1.8, marginBottom:10 }}>
         一覧で横長のポップを2列ぶんの幅で並べるために、形を記録します。一度やれば十分です（新しい投稿は自動で記録されます）。
       </div>
       <button onClick={run} disabled={st.busy}
         style={{ width:"100%", border:"none", background: st.busy ? "#ccc" : "var(--fill)", color:"#fff",
-          borderRadius:10, padding:"12px", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+          borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
         {st.busy ? (st.total ? `測っています… ${st.done} / ${st.total}` : "準備しています…") : "まとめて測る"}
       </button>
-      {st.msg && <div style={{ fontSize:12.5, fontWeight:800, color:"var(--sub)", marginTop:9, textAlign:"center" }}>{st.msg}</div>}
+      {st.msg && <div style={{ fontSize:12.5, fontWeight:600, color:"var(--sub)", marginTop:9, textAlign:"center" }}>{st.msg}</div>}
     </div>
   );
 }

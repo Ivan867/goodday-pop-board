@@ -828,7 +828,7 @@ function KifudaLoader() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 10
     }
@@ -841,7 +841,7 @@ function KifudaLoader() {
       textAlign: "center",
       color: "var(--faint)",
       padding: "40px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026");
 }
@@ -1276,12 +1276,14 @@ function GeneratorTab({
   const fontNote = fontSt === true ? "" : fontSt === "failed" ? "（このフォントは取得失敗・代替表示中）" : "（フォント読込中…）";
   const card = {
     background: "var(--card, #fff)",
-    borderRadius: 14,
-    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+    borderRadius: 12,
+    boxShadow: "var(--card-shadow)",
     padding: 16
   };
-  const ACC = "#7c3aed";
+  const ACC = "var(--fill)"; // 紫をやめ、アプリの色に合わせる（2026-10-10）
+
   return /*#__PURE__*/React.createElement("div", {
+    className: "gne-root",
     style: {
       maxWidth: 1600,
       margin: "0 auto",
@@ -1291,7 +1293,7 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 12
     }
@@ -1309,15 +1311,15 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       borderRadius: 10,
       padding: "10px 6px",
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer",
       background: gTab === k ? "var(--fill)" : "var(--card)",
       color: gTab === k ? "#fff" : "var(--text)"
     }
   }, l))), gTab === "fuda" ? /*#__PURE__*/React.createElement(KifudaLoader, null) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 16
     }
@@ -1341,13 +1343,13 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)"
     }
   }, "\u30D7\u30EC\u30D3\u30E5\u30FC ", fontNote), /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: "auto",
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--faint)"
     }
   }, preset.name)), /*#__PURE__*/React.createElement("canvas", {
@@ -1364,8 +1366,8 @@ function GeneratorTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       margin: "14px 0 7px"
     }
@@ -1399,7 +1401,7 @@ function GeneratorTab({
         width: "100%",
         aspectRatio: pr.land ? "1.414/1" : "1/1.414",
         objectFit: "cover",
-        borderRadius: 6,
+        borderRadius: 8,
         display: "block",
         background: "var(--bg)"
       }
@@ -1407,7 +1409,7 @@ function GeneratorTab({
       style: {
         display: "block",
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: on ? "var(--primary)" : "var(--sub)",
         marginTop: 4,
         lineHeight: 1.3,
@@ -1420,6 +1422,7 @@ function GeneratorTab({
     className: "gne-settings",
     style: {
       display: "grid",
+      gridTemplateColumns: "minmax(0, 1fr)",
       gap: 14,
       minWidth: 0
     }
@@ -1428,7 +1431,7 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)",
       marginBottom: 8
     }
@@ -1448,7 +1451,7 @@ function GeneratorTab({
   }), dzTpl.over ? "ここに離す" : "画像を選択（ドラッグでもOK）"), tpl && /*#__PURE__*/React.createElement("span", {
     style: {
       marginLeft: 10,
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--primary)",
       fontWeight: 700
     }
@@ -1464,8 +1467,8 @@ function GeneratorTab({
     style: card
   }, /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       margin: "16px 0 7px"
     }
@@ -1498,14 +1501,14 @@ function GeneratorTab({
         width: "100%",
         border: on ? "1.5px solid var(--primary)" : "1px solid var(--line)",
         background: on ? "var(--soft)" : "var(--card)",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "8px 10px",
         cursor: "pointer"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "var(--faint)",
         width: 20,
         flexShrink: 0
@@ -1518,8 +1521,8 @@ function GeneratorTab({
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         color: "var(--ink)",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -1534,8 +1537,8 @@ function GeneratorTab({
       }
     }, [r.origin, r.count].filter(Boolean).join(" ／ "))), r.price != null && r.price !== "" && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13,
-        fontWeight: 900,
+        fontSize: 13.5,
+        fontWeight: 700,
         color: on ? "var(--primary)" : "var(--sub)",
         flexShrink: 0
       }
@@ -1545,13 +1548,13 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u6587\u5B57\u306E\u4F4D\u7F6E\u30FB\u30B5\u30A4\u30BA"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12
     }
@@ -1583,8 +1586,8 @@ function GeneratorTab({
         background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--text)",
         borderRadius: 10,
-        fontSize: 16,
-        fontWeight: 900,
+        fontSize: 17,
+        fontWeight: 700,
         cursor: "pointer"
       }
     }, lbl);
@@ -1595,8 +1598,8 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 2
     }
@@ -1612,8 +1615,8 @@ function GeneratorTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       margin: "10px 0 2px"
     }
@@ -1629,8 +1632,8 @@ function GeneratorTab({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       margin: "10px 0 2px"
     }
@@ -1653,7 +1656,7 @@ function GeneratorTab({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 8
     }
@@ -1672,8 +1675,8 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       width: 56,
       flexShrink: 0
@@ -1690,15 +1693,15 @@ function GeneratorTab({
       background: "var(--card, #fff)",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--text)",
       cursor: "pointer",
       lineHeight: 1
     }
   }, "\u2212"), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
-      fontWeight: 900,
+      fontSize: 12.5,
+      fontWeight: 700,
       color: fScale[k] !== 100 ? "var(--primary)" : "var(--sub)",
       width: 40,
       textAlign: "center"
@@ -1715,7 +1718,7 @@ function GeneratorTab({
       background: "var(--card, #fff)",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--text)",
       cursor: "pointer",
       lineHeight: 1
@@ -1729,13 +1732,13 @@ function GeneratorTab({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--primary)",
       marginBottom: 3
     }
   }, "\u25BC 1\u3064\u305A\u3064\u52D5\u304B\u3059\uFF08\u9078\u3093\u3060\u9805\u76EE\u3060\u3051\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
@@ -1761,8 +1764,8 @@ function GeneratorTab({
         color: posTarget === k ? "var(--primary)" : "var(--sub)",
         borderRadius: 999,
         padding: "5px 12px",
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, lbl, moved ? " ●" : "");
@@ -1793,7 +1796,7 @@ function GeneratorTab({
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u2191"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
@@ -1806,7 +1809,7 @@ function GeneratorTab({
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u2190"), /*#__PURE__*/React.createElement("button", {
@@ -1818,7 +1821,7 @@ function GeneratorTab({
       background: "var(--bg)",
       borderRadius: 8,
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--sub)",
       cursor: "pointer"
     }
@@ -1832,7 +1835,7 @@ function GeneratorTab({
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u2192"), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("button", {
@@ -1845,14 +1848,14 @@ function GeneratorTab({
       color: "#fff",
       borderRadius: 8,
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u2193"), /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
-      fontWeight: 800,
+      fontWeight: 600,
       lineHeight: 1.7,
       minWidth: 96
     }
@@ -1875,13 +1878,13 @@ function GeneratorTab({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 3
     }
   }, "\uD83D\uDCBE \u8A2D\u5B9A\u3092\u4FDD\u5B58\u3059\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 8,
       lineHeight: 1.5
@@ -1901,7 +1904,7 @@ function GeneratorTab({
       flex: "1 1 140px",
       minWidth: 0,
       border: "1px solid var(--line)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "8px 10px",
       fontSize: 12.5,
       outline: "none"
@@ -1912,10 +1915,10 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--primary)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "8px 13px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
@@ -1926,18 +1929,18 @@ function GeneratorTab({
       border: "none",
       background: "var(--fill)",
       color: "#fff",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "8px 13px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer",
       whiteSpace: "nowrap"
     }
   }, "\u307F\u3093\u306A\u3068\u5171\u6709")), pMsg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--primary)",
-      fontWeight: 800,
+      fontWeight: 600,
       marginBottom: 8
     }
   }, pMsg), presets.length > 0 && /*#__PURE__*/React.createElement("div", {
@@ -1946,8 +1949,8 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 5
     }
@@ -1974,8 +1977,8 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--ink)",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer",
       padding: 0
     }
@@ -1986,8 +1989,8 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--faint)",
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       cursor: "pointer",
       padding: "0 4px",
       lineHeight: 1
@@ -1998,8 +2001,8 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 5
     }
@@ -2026,8 +2029,8 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--primary)",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer",
       padding: 0
     }
@@ -2038,8 +2041,8 @@ function GeneratorTab({
       border: "none",
       background: "transparent",
       color: "var(--faint)",
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       cursor: "pointer",
       padding: "0 4px",
       lineHeight: 1
@@ -2067,15 +2070,15 @@ function GeneratorTab({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "7px 14px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u6A19\u6E96\u306B\u623B\u3059")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--faint)",
       marginTop: 10
     }
@@ -2084,7 +2087,7 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)",
       marginBottom: 10
     }
@@ -2108,7 +2111,7 @@ function GeneratorTab({
         borderRadius: 12,
         padding: "9px 14px",
         fontSize: 14,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer",
         whiteSpace: "nowrap"
       }
@@ -2123,14 +2126,14 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)"
     }
   }, "\u5358\u54C1\u5165\u529B\uFF08\u30E9\u30A4\u30D6\u30D7\u30EC\u30D3\u30E5\u30FC\uFF09"), [["産地", "origin"], ["補足（養殖・解凍 など）", "origin2"], ["商品名", "name"], ["個数", "count"], ["本体価格", "price"]].concat(preset.useOff ? [["約◯割安（星の中の数字）", "offRate"]] : []).concat(preset.useCopy ? [["キャッチコピー", "copy"]] : []).map(([label, key]) => /*#__PURE__*/React.createElement("div", {
     key: key
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 4
     }
@@ -2185,7 +2188,7 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)"
     }
   }, "\u7A0E\u8FBC\u4E38\u3081"), /*#__PURE__*/React.createElement("select", {
@@ -2219,16 +2222,16 @@ function GeneratorTab({
       border: "none",
       background: taxYen === v ? "var(--card)" : "transparent",
       color: taxYen === v ? "var(--ink)" : "var(--sub)",
-      borderRadius: 6,
+      borderRadius: 8,
       padding: "5px 10px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer",
       boxShadow: taxYen === v ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
     }
   }, l))), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)"
     }
   }, "\u7A0E\u8FBC\uFF08", taxRate, "%\uFF09\uFF1A", /*#__PURE__*/React.createElement("b", {
@@ -2244,7 +2247,7 @@ function GeneratorTab({
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginRight: 2
     }
@@ -2255,8 +2258,8 @@ function GeneratorTab({
       minWidth: 36,
       padding: "6px 0",
       borderRadius: 8,
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer",
       border: taxRate === r ? `2px solid ${ACC}` : "1px solid var(--line)",
       background: taxRate === r ? ACC : "var(--card)",
@@ -2272,7 +2275,7 @@ function GeneratorTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 15,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u3053\u306E1\u679A\u3092 PNG \u30C0\u30A6\u30F3\u30ED\u30FC\u30C9")), /*#__PURE__*/React.createElement("div", {
@@ -2285,12 +2288,12 @@ function GeneratorTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)"
     }
   }, "Excel \u4E00\u62EC\uFF08products.xlsx\uFF09"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6
     }
@@ -2306,7 +2309,7 @@ function GeneratorTab({
       borderRadius: 10,
       padding: "10px 15px",
       fontSize: 13.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer",
       width: "fit-content"
     }
@@ -2356,12 +2359,12 @@ function GeneratorTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 15,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: !rows.length || busy ? "default" : "pointer"
     }
   }, busy ? "生成中…" : rows.length ? `${rows.length} 件を ZIP 出力` : "ファイル未読込"), status && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)"
     }
   }, status))))));

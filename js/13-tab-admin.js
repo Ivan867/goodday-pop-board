@@ -520,7 +520,7 @@ function AdminTab({
       border: "none",
       padding: "10px",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       background: view === v ? "var(--fill)" : "var(--card)",
       color: view === v ? "#fff" : "#888",
       cursor: "pointer"
@@ -682,8 +682,8 @@ function AdminTab({
         color: on ? "var(--primary)" : "var(--text)",
         borderRadius: 12,
         padding: "11px 6px",
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
@@ -712,7 +712,7 @@ function AdminTab({
         background: "#e0555f",
         color: "#fff",
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         borderRadius: 999,
         minWidth: 16,
         height: 16,
@@ -734,7 +734,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: scope === "produce" ? 4 : 12
     }
@@ -816,29 +816,29 @@ function AdminTab({
       position: "relative",
       background: "var(--card, #fff)",
       border: "1px solid var(--line)",
-      borderRadius: 14,
+      borderRadius: 12,
       padding: "18px 8px 13px",
       cursor: "pointer",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 9,
-      minHeight: 104,
-      boxShadow: "0 1px 3px rgba(20,40,70,0.06)"
+      gap: 8,
+      minHeight: 100,
+      boxShadow: "var(--card-shadow)"
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "30",
-    height: "30",
+    width: "28",
+    height: "28",
     viewBox: "0 0 24 24",
     fill: "none",
-    stroke: col,
-    strokeWidth: "1.7",
+    stroke: "var(--primary-soft)",
+    strokeWidth: "1.75",
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, icon), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--text)",
       lineHeight: 1.3,
       textAlign: "center"
@@ -848,13 +848,13 @@ function AdminTab({
       position: "absolute",
       top: 8,
       right: 9,
-      background: col,
+      background: "var(--fill)",
       color: "#fff",
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       minWidth: 21,
       height: 21,
-      borderRadius: 11,
+      borderRadius: 10,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -872,7 +872,7 @@ function AdminTab({
       borderRadius: 10,
       padding: "8px 14px 8px 10px",
       fontSize: 13.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer",
       marginBottom: 16
     }
@@ -918,7 +918,7 @@ function AdminTab({
     }
   }, "\u4F9D\u983C\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       marginTop: 6,
       color: "var(--faint)"
     }
@@ -935,7 +935,7 @@ function AdminTab({
       key: r.id,
       style: {
         background: done ? "#f6faf7" : "var(--card)",
-        borderRadius: 14,
+        borderRadius: 12,
         border: done ? "1px solid #cfe8d8" : "1px solid var(--line)",
         padding: 14,
         borderLeft: `5px solid ${done ? "#3f9e63" : urgent ? "#e01010" : "var(--primary)"}`
@@ -953,9 +953,9 @@ function AdminTab({
         background: "#e01010",
         color: "#fff",
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         padding: "2px 7px",
-        borderRadius: 7
+        borderRadius: 8
       }
     }, "\u6025\u304E"), done && /*#__PURE__*/React.createElement("span", {
       style: {
@@ -965,9 +965,9 @@ function AdminTab({
         background: "#3f9e63",
         color: "#fff",
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         padding: "3px 9px",
-        borderRadius: 7
+        borderRadius: 8
       }
     }, /*#__PURE__*/React.createElement("svg", {
       width: "11",
@@ -983,10 +983,10 @@ function AdminTab({
     })), "\u5BFE\u5FDC\u6E08\u307F"), r.kind && r.kind !== "POP作成依頼" && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "#2f6fb0",
         background: "#eaf2fb",
-        borderRadius: 6,
+        borderRadius: 8,
         padding: "2px 7px",
         marginRight: 6,
         flexShrink: 0
@@ -994,25 +994,25 @@ function AdminTab({
     }, r.kind), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 15,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "var(--ink)"
       }
     }, r.product_name), /*#__PURE__*/React.createElement("span", {
       style: {
         marginLeft: "auto",
-        fontSize: 12,
+        fontSize: 12.5,
         color: "var(--faint)",
         whiteSpace: "nowrap"
       }
     }, fmtDate(r.created_at), " \u53D7\u4ED8")), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         color: "var(--sub)",
         marginBottom: r.reason ? 8 : 10
       }
     }, r.store_name), r.reason && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 13,
+        fontSize: 13.5,
         color: "var(--text)",
         lineHeight: 1.5,
         background: "var(--bg)",
@@ -1064,12 +1064,12 @@ function AdminTab({
         alignItems: "center",
         justifyContent: "center",
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "var(--sub)"
       }
     }, (String(f.name).split(".").pop() || "").slice(0, 4).toUpperCase()), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         fontWeight: 700,
         color: "var(--primary)",
         maxWidth: 130,
@@ -1090,7 +1090,7 @@ function AdminTab({
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontWeight: 900
+        fontWeight: 700
       }
     }, "\u8FD4\u7B54\uFF1A"), r.reply, r.replied_at && /*#__PURE__*/React.createElement("span", {
       style: {
@@ -1126,11 +1126,11 @@ function AdminTab({
       style: {
         flex: 1,
         border: "none",
-        background: done ? "#eee" : "#3f9e63",
-        color: done ? "#888" : "#fff",
-        fontWeight: 800,
-        fontSize: 13,
-        borderRadius: 9,
+        background: done ? "var(--chip)" : "var(--fill)",
+        color: done ? "var(--sub)" : "#fff",
+        fontWeight: 600,
+        fontSize: 13.5,
+        borderRadius: 8,
         padding: "9px",
         cursor: "pointer"
       }
@@ -1140,16 +1140,16 @@ function AdminTab({
         border: "1px solid #f0d0d0",
         background: "var(--card, #fff)",
         color: "#d33",
-        fontWeight: 800,
-        fontSize: 13,
-        borderRadius: 9,
+        fontWeight: 600,
+        fontSize: 13.5,
+        borderRadius: 8,
         padding: "9px 14px",
         cursor: "pointer"
       }
     }, "\u524A\u9664")));
   }))), section === "genre" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 14,
       lineHeight: 1.6
@@ -1171,10 +1171,10 @@ function AdminTab({
         border: on ? "none" : "1px solid var(--line)",
         background: on ? c ? c.solid : "#222" : "var(--card)",
         color: on ? "#fff" : "#777",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         padding: "8px 12px",
-        borderRadius: 9,
+        borderRadius: 8,
         cursor: "pointer"
       }
     }, g, "\uFF08", genreCount(g), "\uFF09");
@@ -1230,7 +1230,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)",
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -1238,7 +1238,7 @@ function AdminTab({
     }
   }, p.product_name), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 8
     }
@@ -1258,8 +1258,8 @@ function AdminTab({
         border: `1.5px solid ${gc.solid}`,
         background: on ? gc.solid : "var(--card)",
         color: on ? "#fff" : gc.solid,
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         padding: "7px 11px",
         borderRadius: 8,
         cursor: "pointer",
@@ -1296,7 +1296,7 @@ function AdminTab({
     };
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 13,
+        fontSize: 13.5,
         color: "var(--text)",
         lineHeight: 1.9,
         marginBottom: 16
@@ -1308,7 +1308,7 @@ function AdminTab({
         color: "#8a6d00",
         borderRadius: 10,
         padding: "11px 13px",
-        fontSize: 12,
+        fontSize: 12.5,
         lineHeight: 1.8,
         marginBottom: 18
       }
@@ -1323,12 +1323,12 @@ function AdminTab({
         borderRadius: 12,
         padding: "15px",
         fontSize: 15,
-        fontWeight: 900,
+        fontWeight: 700,
         cursor: "pointer"
       }
     }, bkBusy ? "書き出しています…" : "控えを取る（ファイルに保存）"), bkMsg && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         color: "var(--sub)",
         marginTop: 12,
         textAlign: "center"
@@ -1341,8 +1341,8 @@ function AdminTab({
         border: "1px solid " + (bkDone.includes("うまく") ? "#f5c6c2" : "#c9e6d4"),
         borderRadius: 10,
         padding: "12px 13px",
-        fontSize: 13,
-        fontWeight: 800
+        fontSize: 13.5,
+        fontWeight: 600
       }
     }, bkDone), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1375,8 +1375,8 @@ function AdminTab({
         padding: "9px 0",
         cursor: "pointer",
         fontFamily: "inherit",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         background: oplogTab === k ? "var(--card, #fff)" : "transparent",
         color: oplogTab === k ? "var(--ink)" : "var(--sub)",
         boxShadow: oplogTab === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none"
@@ -1399,7 +1399,7 @@ function AdminTab({
         textAlign: "center",
         padding: 40,
         color: "var(--faint)",
-        fontSize: 13
+        fontSize: 13.5
       }
     }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026"));
     const LABEL = {
@@ -1432,12 +1432,12 @@ function AdminTab({
         textAlign: "center",
         color: "var(--faint)",
         padding: "44px 20px",
-        fontSize: 13
+        fontSize: 13.5
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 15,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--sub)"
       }
     }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement("div", {
@@ -1460,10 +1460,10 @@ function AdminTab({
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 12.5,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "#fff",
         background: COLOR[lg.action] || "#889",
-        borderRadius: 6,
+        borderRadius: 8,
         padding: "3px 7px",
         flexShrink: 0,
         whiteSpace: "nowrap"
@@ -1476,8 +1476,8 @@ function AdminTab({
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         display: "block",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         color: "var(--ink)",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -1539,7 +1539,7 @@ function AdminTab({
         borderRadius: 10,
         padding: "10px 6px",
         fontSize: 13.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, label, "\uFF08", n, "\uFF09"))), /*#__PURE__*/React.createElement("div", {
@@ -1553,7 +1553,7 @@ function AdminTab({
       style: {
         textAlign: "center",
         color: "var(--sub)",
-        fontSize: 13,
+        fontSize: 13.5,
         padding: "40px 0"
       }
     }, supView === "trash" ? "ゴミ箱は空です。" : "まだ1枚もありません。") : /*#__PURE__*/React.createElement("div", {
@@ -1597,7 +1597,7 @@ function AdminTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         marginBottom: 7
       }
@@ -1616,7 +1616,7 @@ function AdminTab({
         borderRadius: 8,
         padding: "7px 4px",
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, "\u623B\u3059"), /*#__PURE__*/React.createElement("button", {
@@ -1629,7 +1629,7 @@ function AdminTab({
         borderRadius: 8,
         padding: "7px 4px",
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, "\u5B8C\u5168\u306B\u6D88\u3059")) : /*#__PURE__*/React.createElement("button", {
@@ -1642,7 +1642,7 @@ function AdminTab({
         borderRadius: 8,
         padding: "7px",
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, "\u5B8C\u5168\u306B\u6D88\u3059"))))), supOpen && /*#__PURE__*/React.createElement("div", {
@@ -1664,7 +1664,7 @@ function AdminTab({
         maxWidth: "100%",
         maxHeight: "92vh",
         objectFit: "contain",
-        borderRadius: 6
+        borderRadius: 8
       }
     })));
   })(), section === "trash" && (() => {
@@ -1717,12 +1717,12 @@ function AdminTab({
         textAlign: "center",
         color: "var(--faint)",
         padding: "44px 20px",
-        fontSize: 13
+        fontSize: 13.5
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 15,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--sub)"
       }
     }, "\u6D88\u3055\u308C\u305F\u6295\u7A3F\u306F\u3042\u308A\u307E\u305B\u3093")) : /*#__PURE__*/React.createElement(React.Fragment, null, ids.length > 0 && /*#__PURE__*/React.createElement("div", {
@@ -1740,7 +1740,7 @@ function AdminTab({
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--ink)"
       }
     }, ids.length, "\u4EF6 \u9078\u629E\u4E2D"), /*#__PURE__*/React.createElement("button", {
@@ -1750,9 +1750,9 @@ function AdminTab({
         border: "1px solid var(--line)",
         background: "var(--card, #fff)",
         color: "var(--sub)",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "9px 12px",
-        fontSize: 13,
+        fontSize: 13.5,
         fontWeight: 700,
         cursor: "pointer"
       }
@@ -1761,12 +1761,12 @@ function AdminTab({
       disabled: trashBusy,
       style: {
         border: "none",
-        background: "#3f9e63",
+        background: "var(--fill)",
         color: "#fff",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "9px 15px",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, "\u3082\u3069\u3059"), /*#__PURE__*/React.createElement("button", {
@@ -1776,10 +1776,10 @@ function AdminTab({
         border: "1px solid #f0c8c4",
         background: "var(--card, #fff)",
         color: "#b3261e",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "9px 13px",
-        fontSize: 13,
-        fontWeight: 800,
+        fontSize: 13.5,
+        fontWeight: 600,
         cursor: "pointer"
       }
     }, "\u5B8C\u5168\u306B\u6D88\u3059")), /*#__PURE__*/React.createElement("div", {
@@ -1815,7 +1815,7 @@ function AdminTab({
         style: {
           display: "block",
           fontSize: 12.5,
-          fontWeight: 800,
+          fontWeight: 600,
           color: "var(--ink)",
           padding: "6px 7px 2px",
           lineHeight: 1.4
@@ -1852,14 +1852,14 @@ function AdminTab({
           alignItems: "center",
           justifyContent: "center",
           fontSize: 14,
-          fontWeight: 900,
+          fontWeight: 700,
           padding: 0
         }
       }, on ? "✓" : ""));
     }))));
   })(), section === "archive" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 14
     }
@@ -1934,7 +1934,7 @@ function AdminTab({
         alignItems: "center",
         justifyContent: "center",
         fontSize: 15,
-        fontWeight: 900,
+        fontWeight: 700,
         lineHeight: 1
       }
     }, "\u2713"), /*#__PURE__*/React.createElement("div", {
@@ -1943,8 +1943,8 @@ function AdminTab({
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         color: "var(--ink)",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -1952,7 +1952,7 @@ function AdminTab({
       }
     }, p.product_name), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         color: "var(--sub)",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -1977,7 +1977,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)"
     }
   }, selIds.length, "\u4EF6 \u9078\u629E\u4E2D"), /*#__PURE__*/React.createElement("button", {
@@ -1987,9 +1987,9 @@ function AdminTab({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--sub)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "9px 12px",
-      fontSize: 13,
+      fontSize: 13.5,
       fontWeight: 700,
       cursor: "pointer"
     }
@@ -2003,10 +2003,10 @@ function AdminTab({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--primary)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "9px 13px",
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u307E\u3068\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
@@ -2018,10 +2018,10 @@ function AdminTab({
       border: "1px solid #f0c8c4",
       background: "var(--card, #fff)",
       color: "#b3261e",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "9px 13px",
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u6D88\u3059"), /*#__PURE__*/React.createElement("button", {
@@ -2031,10 +2031,10 @@ function AdminTab({
       border: "none",
       background: toArchive ? "var(--fill)" : "#2f6fb0",
       color: "#fff",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "10px 16px",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer",
       opacity: applying ? 0.6 : 1
     }
@@ -2054,7 +2054,7 @@ function AdminTab({
     onClick: e => e.stopPropagation(),
     style: {
       background: "var(--card, #fff)",
-      borderRadius: 16,
+      borderRadius: 12,
       width: "100%",
       maxWidth: 420,
       padding: "22px 20px"
@@ -2062,7 +2062,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 17,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 8
     }
@@ -2075,8 +2075,8 @@ function AdminTab({
     }
   }, "\u4E00\u89A7\u306B\u306F\u3001\u3053\u306E\u540D\u524D\u30671\u4EF6\u3060\u3051\u51FA\u308B\u3088\u3046\u306B\u306A\u308A\u307E\u3059\u3002\u62BC\u3059\u3068\u4E2D\u306E\u5168\u90E8\u304C\u898B\u3089\u308C\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 6
     }
@@ -2098,7 +2098,7 @@ function AdminTab({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 6
     }
@@ -2123,7 +2123,7 @@ function AdminTab({
         width: 62,
         border: on ? "2.5px solid var(--primary)" : "1px solid var(--line)",
         background: "var(--card, #fff)",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: 3,
         cursor: "pointer"
       }
@@ -2158,7 +2158,7 @@ function AdminTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
@@ -2172,7 +2172,7 @@ function AdminTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, grpBusy ? "まとめています…" : "まとめる")), /*#__PURE__*/React.createElement("button", {
@@ -2205,7 +2205,7 @@ function AdminTab({
     onClick: e => e.stopPropagation(),
     style: {
       background: "var(--card, #fff)",
-      borderRadius: 16,
+      borderRadius: 12,
       width: "100%",
       maxWidth: 420,
       padding: "22px 20px"
@@ -2213,7 +2213,7 @@ function AdminTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 17,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "#b3261e",
       marginBottom: 8
     }
@@ -2226,8 +2226,8 @@ function AdminTab({
     }
   }, "\u9078\u3093\u3060\u30DD\u30C3\u30D7\u3068\u3001\u305D\u3053\u306B\u4ED8\u3044\u305F\u30B3\u30E1\u30F3\u30C8\u3082\u4E00\u7DD2\u306B\u6D88\u3048\u307E\u3059\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u4E00\u5EA6\u6D88\u3059\u3068\u5143\u306B\u623B\u305B\u307E\u305B\u3093\u3002"), /*#__PURE__*/React.createElement("br", null), "\u6B8B\u3057\u3066\u304A\u304D\u305F\u3044\u3060\u3051\u306A\u3089\u300C\u30A2\u30FC\u30AB\u30A4\u30D6\u3059\u308B\u300D\u3092\u304A\u4F7F\u3044\u304F\u3060\u3055\u3044\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 6
     }
@@ -2262,7 +2262,7 @@ function AdminTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
@@ -2276,12 +2276,12 @@ function AdminTab({
       borderRadius: 10,
       padding: "12px",
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, delBusy ? "消しています…" : "完全に消す")))), section === "pinned" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 14
     }
@@ -2302,8 +2302,8 @@ function AdminTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--primary)",
       marginBottom: 6
     }
@@ -2324,7 +2324,7 @@ function AdminTab({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
-      fontSize: 13,
+      fontSize: 13.5,
       fontWeight: 700
     }
   }, pops.find(p => p.id === pinnedPopId).product_name || "無題"), /*#__PURE__*/React.createElement("button", {
@@ -2335,14 +2335,14 @@ function AdminTab({
       color: "var(--text)",
       borderRadius: 8,
       padding: "6px 12px",
-      fontSize: 12,
+      fontSize: 12.5,
       fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u5916\u3059"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 8
     }
@@ -2456,13 +2456,13 @@ function ArchiveTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u30A2\u30FC\u30AB\u30A4\u30D6"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 14
     }
@@ -2487,14 +2487,14 @@ function ArchiveTab({
     }
   }, "\u30A2\u30FC\u30AB\u30A4\u30D6\u306F\u307E\u3060\u7A7A\u3067\u3059"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       marginTop: 6,
       color: "var(--faint)"
     }
   }, "\u7BA1\u7406\u753B\u9762\u304B\u3089POP\u3092\u30A2\u30FC\u30AB\u30A4\u30D6\u3067\u304D\u307E\u3059")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 12,
       paddingLeft: 2
@@ -2536,7 +2536,7 @@ function ArchiveTab({
       borderRadius: 999,
       padding: "4px 9px",
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, "\u8CC7\u6599\u3078"))))), resTarget && /*#__PURE__*/React.createElement("div", {
@@ -2555,7 +2555,7 @@ function ArchiveTab({
     onClick: e => e.stopPropagation(),
     style: {
       background: "var(--card, #fff)",
-      borderRadius: 16,
+      borderRadius: 12,
       padding: 18,
       width: "100%",
       maxWidth: 340,
@@ -2564,14 +2564,14 @@ function ArchiveTab({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 14.5,
-      fontWeight: 900,
+      fontSize: 14,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u8CC7\u6599\u306B\u767B\u9332"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 12
@@ -2593,7 +2593,7 @@ function ArchiveTab({
       boxSizing: "border-box",
       padding: "10px 11px",
       border: "1px solid var(--line)",
-      borderRadius: 9,
+      borderRadius: 8,
       fontSize: 13.5,
       outline: "none",
       marginBottom: 8
@@ -2607,8 +2607,8 @@ function ArchiveTab({
       boxSizing: "border-box",
       padding: "10px 11px",
       border: "1px solid var(--line)",
-      borderRadius: 9,
-      fontSize: 13,
+      borderRadius: 8,
+      fontSize: 13.5,
       outline: "none",
       marginBottom: 11
     }
@@ -2618,7 +2618,7 @@ function ArchiveTab({
       alignItems: "center",
       gap: 7,
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--text)",
       cursor: "pointer",
       marginBottom: 13
@@ -2629,7 +2629,7 @@ function ArchiveTab({
     onChange: e => setResVisible(e.target.checked)
   }), "\u4E00\u89A7\u306B\u8868\u793A\u3059\u308B\uFF08\u307F\u3093\u306A\u304C\u898B\u3089\u308C\u307E\u3059\uFF09"), resMsg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       fontWeight: 700,
       marginBottom: 10
@@ -2647,9 +2647,9 @@ function ArchiveTab({
       background: "var(--chip)",
       color: "var(--text)",
       border: "none",
-      borderRadius: 9,
-      fontSize: 13,
-      fontWeight: 800,
+      borderRadius: 8,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u3084\u3081\u308B"), /*#__PURE__*/React.createElement("button", {
@@ -2661,9 +2661,9 @@ function ArchiveTab({
       background: resBusy ? "#ccc" : "var(--primary-soft, #4a7ab0)",
       color: "#fff",
       border: "none",
-      borderRadius: 9,
-      fontSize: 13,
-      fontWeight: 900,
+      borderRadius: 8,
+      fontSize: 13.5,
+      fontWeight: 700,
       cursor: resBusy ? "default" : "pointer"
     }
   }, resBusy ? "登録中…" : "登録する")))), sel && /*#__PURE__*/React.createElement(PopDetail, {
@@ -2763,8 +2763,8 @@ function RequestTab() {
   };
   const card = {
     background: "var(--card, #fff)",
-    borderRadius: 14,
-    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+    borderRadius: 12,
+    boxShadow: "var(--card-shadow)",
     padding: 16
   };
   const lbl = {
@@ -2800,13 +2800,13 @@ function RequestTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 17,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "var(--ink)",
         marginBottom: 6
       }
     }, "\u9001\u4FE1\u3057\u307E\u3057\u305F"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 13,
+        fontSize: 13.5,
         color: "var(--sub)",
         marginBottom: 20,
         lineHeight: 1.6
@@ -2817,7 +2817,7 @@ function RequestTab() {
         border: "none",
         background: "var(--fill)",
         color: "#fff",
-        fontWeight: 800,
+        fontWeight: 600,
         fontSize: 15,
         borderRadius: 10,
         padding: "12px 24px",
@@ -2835,13 +2835,13 @@ function RequestTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u304A\u554F\u3044\u5408\u308F\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 14
     }
@@ -2864,9 +2864,9 @@ function RequestTab() {
         border: on ? "2px solid var(--primary)" : "1px solid var(--line)",
         background: on ? "var(--soft)" : "var(--card)",
         color: on ? "var(--primary)" : "var(--text)",
-        fontWeight: 800,
-        fontSize: 12,
-        borderRadius: 11,
+        fontWeight: 600,
+        fontSize: 12.5,
+        borderRadius: 10,
         padding: "10px 4px",
         cursor: "pointer",
         lineHeight: 1.3
@@ -2919,7 +2919,7 @@ function RequestTab() {
         border: `2px solid ${on ? urgent ? "#c21a1a" : "var(--primary)" : "var(--line)"}`,
         background: on ? "var(--soft)" : "var(--card)",
         color: on ? urgent ? "#c21a1a" : "var(--primary)" : "var(--sub)",
-        fontWeight: 800,
+        fontWeight: 600,
         fontSize: 14,
         borderRadius: 10,
         padding: "9px",
@@ -2960,8 +2960,8 @@ function RequestTab() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--sub)"
     }
   }, upBusy ? "送っています…" : "＋ ファイルを添付する"), /*#__PURE__*/React.createElement("span", {
@@ -3003,7 +3003,7 @@ function RequestTab() {
       alignItems: "center",
       gap: 9,
       border: "1px solid var(--line)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "7px 9px",
       background: "var(--card, #fff)"
     }
@@ -3014,7 +3014,7 @@ function RequestTab() {
       width: 38,
       height: 38,
       objectFit: "cover",
-      borderRadius: 6,
+      borderRadius: 8,
       flexShrink: 0,
       background: "var(--bg)"
     }
@@ -3022,14 +3022,14 @@ function RequestTab() {
     style: {
       width: 38,
       height: 38,
-      borderRadius: 6,
+      borderRadius: 8,
       flexShrink: 0,
       background: "var(--bg)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--sub)"
     }
   }, (f.name.split(".").pop() || "").slice(0, 4).toUpperCase()), /*#__PURE__*/React.createElement("span", {
@@ -3040,7 +3040,7 @@ function RequestTab() {
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       display: "block",
-      fontSize: 12,
+      fontSize: 12.5,
       fontWeight: 700,
       color: "var(--ink)",
       overflow: "hidden",
@@ -3060,15 +3060,15 @@ function RequestTab() {
       border: "none",
       background: "transparent",
       color: "var(--faint)",
-      fontSize: 16,
-      fontWeight: 900,
+      fontSize: 17,
+      fontWeight: 700,
       cursor: "pointer",
       padding: "0 3px",
       flexShrink: 0
     }
   }, "\xD7")))))), error && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "#e01010",
       fontWeight: 700
     }
@@ -3079,7 +3079,7 @@ function RequestTab() {
       border: "none",
       background: "var(--fill)",
       color: "#fff",
-      fontWeight: 800,
+      fontWeight: 600,
       fontSize: 15,
       borderRadius: 10,
       padding: "13px",
@@ -3163,8 +3163,8 @@ function NoticeAdmin({
   };
   const card = {
     background: "var(--card, #fff)",
-    borderRadius: 14,
-    boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+    borderRadius: 12,
+    boxShadow: "var(--card-shadow)",
     padding: "16px 18px",
     marginBottom: 14
   };
@@ -3178,7 +3178,7 @@ function NoticeAdmin({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...card,
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--text)",
       lineHeight: 1.7
     }
@@ -3194,7 +3194,7 @@ function NoticeAdmin({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, "\u2460 \u7DCA\u6025\u304A\u77E5\u3089\u305B\u30D0\u30CA\u30FC\u3092\u8868\u793A\u3059\u308B"), /*#__PURE__*/React.createElement("button", {
@@ -3202,7 +3202,7 @@ function NoticeAdmin({
     style: {
       width: 58,
       height: 32,
-      borderRadius: 16,
+      borderRadius: 12,
       border: "none",
       cursor: "pointer",
       position: "relative",
@@ -3223,15 +3223,15 @@ function NoticeAdmin({
     }
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: enabled ? "var(--primary)" : "#999",
       fontWeight: 700,
       marginBottom: 14
     }
   }, enabled ? "● 表示中（保存すると全員に出ます）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3244,7 +3244,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       outline: "none",
@@ -3254,34 +3254,20 @@ function NoticeAdmin({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       margin: "14px 0 6px",
       fontWeight: 700
     }
   }, "\u30D7\u30EC\u30D3\u30E5\u30FC\uFF08\u5B9F\u969B\u306E\u898B\u3048\u65B9\uFF09"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff4e5",
-      border: "1px solid #ffc98a",
-      color: "#8a4b00",
-      borderRadius: 12,
-      padding: "12px 14px",
-      fontSize: 13.5,
-      fontWeight: 700,
-      lineHeight: 1.6,
-      display: "flex",
-      gap: 9,
-      alignItems: "flex-start"
-    }
+    className: "notice-line"
   }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
-      lineHeight: 1.3
-    }
-  }, "\u26A0\uFE0F"), /*#__PURE__*/React.createElement("span", {
+    className: "notice-dot",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", {
     style: {
       whiteSpace: "pre-wrap",
-      color: message.trim() ? "#8a4b00" : "#c79a6a"
+      color: message.trim() ? "var(--ink)" : "var(--faint)"
     }
   }, message.trim() || "（ここにお知らせ文が表示されます）"))), /*#__PURE__*/React.createElement("div", {
     style: card
@@ -3295,7 +3281,7 @@ function NoticeAdmin({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, "\u2461 \u30DB\u30FC\u30E0\u753B\u9762\u306E\u6848\u5185\u30E1\u30C3\u30BB\u30FC\u30B8"), /*#__PURE__*/React.createElement("button", {
@@ -3303,7 +3289,7 @@ function NoticeAdmin({
     style: {
       width: 58,
       height: 32,
-      borderRadius: 16,
+      borderRadius: 12,
       border: "none",
       cursor: "pointer",
       position: "relative",
@@ -3324,22 +3310,22 @@ function NoticeAdmin({
     }
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: tipEnabled ? "#2f6fed" : "#999",
       fontWeight: 700,
       marginBottom: 6
     }
   }, tipEnabled ? "● 表示中（ホーム画面下に出ます）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
   }, "\u30BF\u30C3\u30D7\u307E\u305F\u306F\u30B9\u30AF\u30ED\u30FC\u30EB\u3067\u81EA\u52D5\u7684\u306B\u6D88\u3048\u308B\u3001\u30DB\u30FC\u30E0\u753B\u9762\u4E0B\u306E\u30D5\u30ED\u30FC\u30C6\u30A3\u30F3\u30B0\u6848\u5185\u3067\u3059\u3002\u300C\u5B63\u7BC0\u306E\u30DD\u30C3\u30D7\u306F\u81EA\u52D5\u3067\u30A2\u30FC\u30AB\u30A4\u30D6\u3055\u308C\u307E\u3059\u300D\u3068\u3044\u3063\u305F\u8EFD\u3044\u6848\u5185\u306B\u4F7F\u3044\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3352,7 +3338,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       outline: "none",
@@ -3362,7 +3348,7 @@ function NoticeAdmin({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       margin: "14px 0 6px",
       fontWeight: 700
@@ -3374,12 +3360,12 @@ function NoticeAdmin({
       gap: 10,
       background: "linear-gradient(135deg,#fff3ea,#ffe9d6)",
       border: "1.5px solid #ffd9bd",
-      borderRadius: 14,
+      borderRadius: 12,
       padding: "12px 14px"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       fontWeight: 700,
       color: "#a8480a",
       lineHeight: 1.5,
@@ -3397,7 +3383,7 @@ function NoticeAdmin({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, "\u2462 \u65B0\u6A5F\u80FD\u306E\u304A\u77E5\u3089\u305B\u30D0\u30CA\u30FC"), /*#__PURE__*/React.createElement("button", {
@@ -3405,7 +3391,7 @@ function NoticeAdmin({
     style: {
       width: 58,
       height: 32,
-      borderRadius: 16,
+      borderRadius: 12,
       border: "none",
       cursor: "pointer",
       position: "relative",
@@ -3426,22 +3412,22 @@ function NoticeAdmin({
     }
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: featEnabled ? "#2f6fb0" : "#999",
       fontWeight: 700,
       marginBottom: 6
     }
   }, featEnabled ? "● 表示中（ホーム上部に青のバナー）" : "○ 非表示"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
   }, "\u65B0\u6A5F\u80FD\u3092\u8FFD\u52A0\u3057\u305F\u3068\u304D\u306B\u3001\u30DB\u30FC\u30E0\u753B\u9762\u306E\u4E0A\u90E8\u306B\u51FA\u3059\u6848\u5185\u3067\u3059\u3002\u5404\u81EA\u304C\u4E00\u5EA6\u300C\xD7\u300D\u3067\u9589\u3058\u308B\u3068\u3001\u305D\u306E\u4EBA\u306B\u306F\u518D\u8868\u793A\u3055\u308C\u307E\u305B\u3093\uFF08\u6587\u9762\u3092\u5909\u3048\u3066\u4FDD\u5B58\u3059\u308B\u3068\u3001\u307E\u305F\u5168\u54E1\u306B\u8868\u793A\u3055\u308C\u307E\u3059\uFF09\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3454,7 +3440,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       outline: "none",
@@ -3464,8 +3450,8 @@ function NoticeAdmin({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       margin: "14px 0 6px"
     }
@@ -3476,7 +3462,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       background: "var(--card, #fff)",
@@ -3489,7 +3475,7 @@ function NoticeAdmin({
     value: t.key
   }, t.label))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       margin: "14px 0 6px",
       fontWeight: 700
@@ -3500,7 +3486,7 @@ function NoticeAdmin({
       alignItems: "center",
       gap: 10,
       background: "linear-gradient(135deg,#2f6fb0,#4a8fd4)",
-      borderRadius: 14,
+      borderRadius: 12,
       padding: "12px 14px"
     }
   }, /*#__PURE__*/React.createElement("span", {
@@ -3515,20 +3501,20 @@ function NoticeAdmin({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "rgba(255,255,255,0.8)"
     }
   }, "\u65B0\u6A5F\u80FD\u306E\u304A\u77E5\u3089\u305B"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "#fff",
       lineHeight: 1.4
     }
   }, featMessage.trim() || "（ここにお知らせ文が表示されます）")), featTab && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "#2f6fb0",
       background: "var(--card, #fff)",
       borderRadius: 8,
@@ -3539,13 +3525,13 @@ function NoticeAdmin({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u30E1\u30CB\u30E5\u30FC\u306B\u51FA\u3059\u3082\u306E\u3092\u3048\u3089\u3076"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 11,
       lineHeight: 1.6
@@ -3571,7 +3557,7 @@ function NoticeAdmin({
         width: "100%",
         border: on ? "1px solid #cfe8d8" : "1px solid var(--line)",
         background: on ? "#f4faf6" : "#fafafa",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "9px 11px",
         cursor: "pointer"
       }
@@ -3579,7 +3565,7 @@ function NoticeAdmin({
       style: {
         width: 20,
         height: 20,
-        borderRadius: 6,
+        borderRadius: 8,
         flexShrink: 0,
         border: on ? "none" : "1.5px solid var(--line)",
         background: on ? "#3f9e63" : "var(--card)",
@@ -3609,7 +3595,7 @@ function NoticeAdmin({
     }, t.icon), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: on ? "var(--ink)" : "var(--faint)",
         flex: 1
       }
@@ -3623,21 +3609,21 @@ function NoticeAdmin({
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 15,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u2463 \u4E0B\u306E\u30DC\u30BF\u30F3\u306B\u8D64\u3044\u5370\u3092\u3064\u3051\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 12,
       lineHeight: 1.6
     }
   }, "\u4E0B\u306E\u30D0\u30FC\u306E\u30DC\u30BF\u30F3\u306B\u8D64\u3044\u4E38\u3068\u5439\u304D\u51FA\u3057\u3092\u51FA\u3057\u307E\u3059\u3002\u300C\u30AB\u30BF\u30ED\u30B0\u306B\u30CF\u30ED\u30FC\u30C7\u30A4\u3092\u8FFD\u52A0\u3057\u307E\u3057\u305F\u300D\u306E\u3088\u3046\u306B\u3001\u5BFE\u5FDC\u3057\u305F\u3053\u3068\u3092\u77E5\u3089\u305B\u305F\u3044\u6642\u306B\u3002\u4E00\u5EA6\u30BF\u30C3\u30D7\u3059\u308B\u3068\u6D88\u3048\u3001\u6307\u5B9A\u3057\u305F\u65E5\u6570\u304C\u904E\u304E\u3066\u3082\u81EA\u52D5\u3067\u6D88\u3048\u307E\u3059\u3002"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3648,7 +3634,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       background: "var(--card, #fff)",
@@ -3665,8 +3651,8 @@ function NoticeAdmin({
     value: "__more"
   }, "\u30E1\u30CB\u30E5\u30FC")), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3678,7 +3664,7 @@ function NoticeAdmin({
       width: "100%",
       boxSizing: "border-box",
       padding: "11px 13px",
-      border: "1px solid #e2e2e6",
+      border: "1px solid var(--line)",
       borderRadius: 10,
       fontSize: 14,
       outline: "none",
@@ -3687,8 +3673,8 @@ function NoticeAdmin({
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 6
     }
@@ -3706,15 +3692,15 @@ function NoticeAdmin({
       border: badgeDays === d ? "2px solid var(--primary-soft)" : "1px solid var(--line)",
       background: badgeDays === d ? "var(--soft)" : "var(--card)",
       color: badgeDays === d ? "var(--primary)" : "var(--sub)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "9px 0",
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, d, "\u65E5\u9593"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginBottom: 6,
       fontWeight: 700
@@ -3722,7 +3708,7 @@ function NoticeAdmin({
   }, "\u30D7\u30EC\u30D3\u30E5\u30FC"), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "var(--fill)",
-      borderRadius: 14,
+      borderRadius: 12,
       padding: "22px 14px 12px",
       display: "flex",
       justifyContent: "center"
@@ -3753,8 +3739,8 @@ function NoticeAdmin({
     d: "M12 5.5s2.5-1.5 4.5-1.5S21 5.5 21 5.5v14s-2-1.5-4.5-1.5S12 19.5 12 19.5z"
   })), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 13,
-      fontWeight: 800
+      fontSize: 13.5,
+      fontWeight: 600
     }
   }, "\u30AB\u30BF\u30ED\u30B0"), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3775,9 +3761,9 @@ function NoticeAdmin({
       transform: "translateX(-50%)",
       background: "#e0555f",
       color: "#fff",
-      fontSize: 12,
-      fontWeight: 800,
-      borderRadius: 9,
+      fontSize: 12.5,
+      fontWeight: 600,
+      borderRadius: 8,
       padding: "6px 11px",
       whiteSpace: "nowrap"
     }
@@ -3789,10 +3775,10 @@ function NoticeAdmin({
       border: "none",
       background: saving ? "#bbb" : saved ? "#2f6fb0" : "var(--fill)",
       color: "#fff",
-      borderRadius: 11,
+      borderRadius: 10,
       padding: "13px",
       fontSize: 15,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: saving ? "default" : "pointer",
       marginBottom: 14
     }
@@ -3843,7 +3829,7 @@ function RotateAdmin() {
   const shown = onlyRotated ? pops.filter(p => (p.rotation || 0) !== 0) : pops;
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 10
@@ -3853,8 +3839,8 @@ function RotateAdmin() {
       display: "flex",
       alignItems: "center",
       gap: 7,
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       marginBottom: 12,
       cursor: "pointer"
@@ -3865,9 +3851,9 @@ function RotateAdmin() {
     onChange: e => setOnlyRotated(e.target.checked)
   }), "\u56DE\u8EE2\u3055\u305B\u305F\u3082\u306E\u3060\u3051\u8868\u793A"), msg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "#b3261e",
-      fontWeight: 800,
+      fontWeight: 600,
       marginBottom: 10
     }
   }, msg), loading ? /*#__PURE__*/React.createElement("div", {
@@ -3875,14 +3861,14 @@ function RotateAdmin() {
       textAlign: "center",
       color: "var(--faint)",
       padding: "30px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : shown.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "36px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8A72\u5F53\u3059\u308B\u30DD\u30C3\u30D7\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3897,7 +3883,7 @@ function RotateAdmin() {
       key: pop.id,
       style: {
         border: "1px solid var(--line)",
-        borderRadius: 11,
+        borderRadius: 10,
         padding: 8,
         background: "var(--card, #fff)"
       }
@@ -3925,8 +3911,8 @@ function RotateAdmin() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         color: "var(--ink)",
         whiteSpace: "nowrap",
         overflow: "hidden",
@@ -3947,10 +3933,10 @@ function RotateAdmin() {
         border: "1px solid var(--line)",
         background: "var(--card, #fff)",
         color: "var(--text)",
-        borderRadius: 7,
+        borderRadius: 8,
         padding: "6px 0",
-        fontSize: 13,
-        fontWeight: 900,
+        fontSize: 13.5,
+        fontWeight: 700,
         cursor: "pointer"
       },
       title: "\u5DE6\u306B90\u5EA6"
@@ -3962,10 +3948,10 @@ function RotateAdmin() {
         border: "1px solid var(--line)",
         background: "var(--card, #fff)",
         color: "var(--text)",
-        borderRadius: 7,
+        borderRadius: 8,
         padding: "6px 0",
-        fontSize: 13,
-        fontWeight: 900,
+        fontSize: 13.5,
+        fontWeight: 700,
         cursor: "pointer"
       },
       title: "\u53F3\u306B90\u5EA6"
@@ -3976,10 +3962,10 @@ function RotateAdmin() {
         border: "1px solid var(--line)",
         background: "var(--soft)",
         color: "var(--primary)",
-        borderRadius: 7,
+        borderRadius: 8,
         padding: "6px 8px",
         fontSize: 12.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer"
       },
       title: "\u5143\u306B\u623B\u3059"
@@ -3987,7 +3973,7 @@ function RotateAdmin() {
       style: {
         fontSize: 12.5,
         color: "var(--primary-soft)",
-        fontWeight: 800,
+        fontWeight: 600,
         marginTop: 5,
         textAlign: "center"
       }
@@ -4158,7 +4144,7 @@ function CatalogAdmin() {
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 12
@@ -4173,15 +4159,15 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 10
     }
   }, "\u30AB\u30BF\u30ED\u30B0\u3092\u8FFD\u52A0"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 5
     }
@@ -4201,8 +4187,8 @@ function CatalogAdmin() {
       color: form.store === st ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "5px 11px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, st))), /*#__PURE__*/React.createElement("input", {
@@ -4212,7 +4198,7 @@ function CatalogAdmin() {
     style: {
       ...inp,
       marginBottom: 10,
-      fontSize: 12
+      fontSize: 12.5
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4230,8 +4216,8 @@ function CatalogAdmin() {
       color: form.kind === k ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "7px 0",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, l))), form.kind !== "link" && /*#__PURE__*/React.createElement("input", {
@@ -4241,7 +4227,7 @@ function CatalogAdmin() {
     onChange: pickFile,
     disabled: busy,
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       width: "100%",
       marginBottom: 10
     }
@@ -4257,8 +4243,8 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 4
     }
@@ -4277,8 +4263,8 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 4
     }
@@ -4298,8 +4284,8 @@ function CatalogAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginBottom: 4
     }
@@ -4310,14 +4296,14 @@ function CatalogAdmin() {
     onChange: pickThumb,
     disabled: busy,
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       width: "100%"
     }
   }), form.thumb_url && /*#__PURE__*/React.createElement("img", {
     src: form.thumb_url,
     style: {
       width: 60,
-      borderRadius: 6,
+      borderRadius: 8,
       marginTop: 6,
       display: "block"
     }
@@ -4344,7 +4330,7 @@ function CatalogAdmin() {
     style: {
       ...inp,
       marginBottom: 11,
-      fontSize: 12
+      fontSize: 12.5
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4357,8 +4343,8 @@ function CatalogAdmin() {
       display: "flex",
       alignItems: "center",
       gap: 6,
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       cursor: "pointer"
     }
@@ -4374,23 +4360,23 @@ function CatalogAdmin() {
       border: "none",
       background: busy ? "#ccc" : "var(--primary-soft)",
       color: "#fff",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "10px 20px",
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       cursor: busy ? "default" : "pointer"
     }
   }, busy ? "処理中…" : "追加")), msg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginTop: 9,
       lineHeight: 1.5
     }
   }, msg)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 9
     }
@@ -4399,14 +4385,14 @@ function CatalogAdmin() {
       textAlign: "center",
       color: "var(--faint)",
       padding: "26px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--faint)",
       padding: "32px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4418,7 +4404,7 @@ function CatalogAdmin() {
     key: c.id,
     style: {
       border: "1px solid var(--line)",
-      borderRadius: 11,
+      borderRadius: 10,
       padding: "10px 12px",
       background: "var(--card, #fff)",
       opacity: c.visible ? 1 : 0.55,
@@ -4432,7 +4418,7 @@ function CatalogAdmin() {
       width: 38,
       height: 48,
       objectFit: "cover",
-      borderRadius: 6,
+      borderRadius: 8,
       flexShrink: 0,
       background: "var(--chip)"
     }
@@ -4440,7 +4426,7 @@ function CatalogAdmin() {
     style: {
       width: 38,
       height: 48,
-      borderRadius: 6,
+      borderRadius: 8,
       background: "var(--soft)",
       display: "flex",
       alignItems: "center",
@@ -4457,13 +4443,13 @@ function CatalogAdmin() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--primary-soft)"
     }
   }, c.store, c.year ? `　${c.year}${c.season || ""}` : "", c.link_status === "dead" ? "　⚠リンク切れ" : ""), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: "var(--ink)",
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -4471,7 +4457,7 @@ function CatalogAdmin() {
     }
   }, c.title), c.note && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       whiteSpace: "nowrap",
       overflow: "hidden",
@@ -4490,10 +4476,10 @@ function CatalogAdmin() {
       border: "1px solid var(--line)",
       background: c.visible ? "var(--soft)" : "var(--card)",
       color: c.visible ? "var(--primary)" : "var(--sub)",
-      borderRadius: 7,
+      borderRadius: 8,
       padding: "4px 10px",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, c.visible ? "表示中" : "非表示"), /*#__PURE__*/React.createElement("button", {
@@ -4502,10 +4488,10 @@ function CatalogAdmin() {
       border: "1px solid var(--line)",
       background: c.link_status === "dead" ? "#fdeaea" : "var(--card)",
       color: c.link_status === "dead" ? "#b3261e" : "var(--sub)",
-      borderRadius: 7,
+      borderRadius: 8,
       padding: "4px 10px",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, c.link_status === "dead" ? "切れ中" : "切れ報告"), /*#__PURE__*/React.createElement("button", {
@@ -4514,10 +4500,10 @@ function CatalogAdmin() {
       border: "1px solid #f0c8c4",
       background: "var(--card, #fff)",
       color: "#b3261e",
-      borderRadius: 7,
+      borderRadius: 8,
       padding: "4px 10px",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u524A\u9664"))))));
@@ -4598,7 +4584,7 @@ function RenameReview({
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       lineHeight: 1.7,
       marginBottom: 12
@@ -4617,8 +4603,8 @@ function RenameReview({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--ink)",
       marginBottom: 8
     }
@@ -4641,7 +4627,7 @@ function RenameReview({
       border: "1px solid var(--line)",
       borderRadius: 10,
       padding: "10px 12px",
-      fontSize: 16,
+      fontSize: 17,
       background: "var(--bg)",
       color: "var(--text)"
     }
@@ -4655,7 +4641,7 @@ function RenameReview({
       borderRadius: 10,
       padding: "0 18px",
       fontSize: 14,
-      fontWeight: 800,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, "\u78BA\u304B\u3081\u308B")), 番号Err && /*#__PURE__*/React.createElement("div", {
@@ -4742,7 +4728,7 @@ function RenameReview({
         flex: 1,
         minWidth: 0,
         border: "1px solid var(--line)",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "9px 10px",
         fontSize: 15,
         background: "var(--bg)",
@@ -4755,10 +4741,10 @@ function RenameReview({
         border: "none",
         background: "var(--fill)",
         color: "#fff",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "0 14px",
         fontSize: 13.5,
-        fontWeight: 800,
+        fontWeight: 600,
         cursor: "pointer",
         opacity: !通った || !String(新[p.id] || "").trim() ? 0.45 : 1
       }
@@ -4923,7 +4909,7 @@ function ResourceAdmin() {
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6,
       marginBottom: 12
@@ -4938,8 +4924,8 @@ function ResourceAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 10
     }
@@ -4962,8 +4948,8 @@ function ResourceAdmin() {
       color: form.kind === k.k ? "var(--primary)" : "var(--sub)",
       borderRadius: 8,
       padding: "6px 11px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, k.emoji, " ", k.label))), (form.kind === "pdf" || form.kind === "image") && /*#__PURE__*/React.createElement("div", {
@@ -4977,7 +4963,7 @@ function ResourceAdmin() {
     onChange: pickFile,
     disabled: busy,
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       width: "100%"
     }
   })), /*#__PURE__*/React.createElement("input", {
@@ -5003,7 +4989,7 @@ function ResourceAdmin() {
     style: {
       ...inp,
       marginBottom: 10,
-      fontSize: 12
+      fontSize: 12.5
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5016,8 +5002,8 @@ function ResourceAdmin() {
       display: "flex",
       alignItems: "center",
       gap: 6,
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--text)",
       cursor: "pointer"
     }
@@ -5033,15 +5019,15 @@ function ResourceAdmin() {
       border: "none",
       background: busy ? "#ccc" : "var(--primary-soft)",
       color: "#fff",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "10px 20px",
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       cursor: busy ? "default" : "pointer"
     }
   }, busy ? "処理中…" : "追加")), msg && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       marginTop: 9,
       lineHeight: 1.5
@@ -5055,8 +5041,8 @@ function ResourceAdmin() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 900,
+      fontSize: 13.5,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, "\u767B\u9332\u6E08\u307F\uFF08", list.length, "\uFF09"), /*#__PURE__*/React.createElement("button", {
@@ -5066,10 +5052,10 @@ function ResourceAdmin() {
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "6px 12px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, loading ? "更新中…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
@@ -5077,14 +5063,14 @@ function ResourceAdmin() {
       textAlign: "center",
       color: "var(--sub)",
       padding: "26px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
       padding: "32px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u307E\u3060\u767B\u9332\u304C\u3042\u308A\u307E\u305B\u3093") : /*#__PURE__*/React.createElement("div", {
     className: "res-grid"
@@ -5186,15 +5172,15 @@ function 数字札({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
-      fontWeight: 800,
+      fontSize: 12,
+      fontWeight: 600,
       color: "var(--sub)",
       whiteSpace: "nowrap"
     }
   }, 名), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 24,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       lineHeight: 1.15,
       marginTop: 3,
@@ -5202,15 +5188,15 @@ function 数字札({
     }
   }, 値, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       color: "var(--sub)",
       marginLeft: 2
     }
   }, 単位)), 差 != null && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
-      fontWeight: 800,
+      fontSize: 12,
+      fontWeight: 600,
       marginTop: 2,
       color: 上 ? "var(--ink)" : "var(--sub)"
     }
@@ -5235,12 +5221,12 @@ function 見出し({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, children), 補 && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)"
     }
   }, 補));
@@ -5274,7 +5260,7 @@ function 日別棒({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: i == null ? "var(--sub)" : "var(--ink)",
       marginBottom: 8,
       minHeight: 18
@@ -5356,7 +5342,7 @@ function 時間帯の地図({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: 選 ? "var(--ink)" : "var(--sub)",
       marginBottom: 8,
       minHeight: 18
@@ -5379,9 +5365,9 @@ function 時間帯の地図({
     key: w
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
-      fontWeight: 800,
+      fontWeight: 600,
       alignSelf: "center"
     }
   }, 曜[w]), 表[w].map((v, b) => /*#__PURE__*/React.createElement("button", {
@@ -5400,7 +5386,7 @@ function 時間帯の地図({
     }
   }))))), 夜 > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 7
     }
@@ -5440,7 +5426,7 @@ function 横棒({
       display: "flex",
       justifyContent: "space-between",
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--ink)",
       marginBottom: 4
     }
@@ -5477,7 +5463,7 @@ function 横棒({
     }
   })))), items.length > 並.length && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginBottom: 8
     }
@@ -5535,7 +5521,7 @@ function DeviceStatsPanel() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.7
     }
@@ -5547,10 +5533,10 @@ function DeviceStatsPanel() {
       border: "1px solid var(--line)",
       background: "var(--card)",
       color: "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "7px 13px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, loading ? "…" : "更新")), loading ? /*#__PURE__*/React.createElement("div", {
@@ -5558,14 +5544,14 @@ function DeviceStatsPanel() {
       textAlign: "center",
       color: "var(--sub)",
       padding: "30px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u8AAD\u307F\u8FBC\u307F\u4E2D\u2026") : rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       color: "var(--sub)",
       padding: "40px 0",
-      fontSize: 13
+      fontSize: 13.5
     }
   }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5601,10 +5587,10 @@ function DeviceStatsPanel() {
       border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)",
       background: 日数 === d ? "var(--soft)" : "var(--card)",
       color: 日数 === d ? "var(--primary)" : "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "6px 12px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, d === 90 ? "3か月" : d + "日"))), /*#__PURE__*/React.createElement(日別棒, {
@@ -5698,7 +5684,7 @@ function DeviceStatsPanel() {
     }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002"));
   })(), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11.5,
+      fontSize: 12,
       color: "var(--sub)",
       lineHeight: 1.8,
       marginTop: 16
@@ -5748,7 +5734,7 @@ function ViewInsights({
     単位: "\u679A"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: "var(--sub)",
       marginTop: 6,
       lineHeight: 1.7
@@ -5769,10 +5755,10 @@ function ViewInsights({
       border: 日数 === d ? "2px solid var(--primary)" : "1px solid var(--line)",
       background: 日数 === d ? "var(--soft)" : "var(--card)",
       color: 日数 === d ? "var(--primary)" : "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "6px 12px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, d === 90 ? "3か月" : d + "日"))), /*#__PURE__*/React.createElement(日別棒, {
@@ -5917,7 +5903,7 @@ function RankingPanel({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.6
     }
@@ -5929,10 +5915,10 @@ function RankingPanel({
       border: "1px solid var(--line)",
       background: "var(--card, #fff)",
       color: "var(--text)",
-      borderRadius: 9,
+      borderRadius: 8,
       padding: "7px 13px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: loading ? "default" : "pointer"
     }
   }, loading ? "更新中…" : "更新")), !loading && /*#__PURE__*/React.createElement(ViewInsights, {
@@ -5941,7 +5927,7 @@ function RankingPanel({
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       margin: "4px 0 9px"
     }
@@ -5960,8 +5946,8 @@ function RankingPanel({
       color: days === d ? "var(--primary)" : "var(--sub)",
       borderRadius: 999,
       padding: "5px 14px",
-      fontSize: 12,
-      fontWeight: 800,
+      fontSize: 12.5,
+      fontWeight: 600,
       cursor: "pointer"
     }
   }, d === 30 ? "1か月" : d + "日間"))), /*#__PURE__*/React.createElement("div", {
@@ -5977,7 +5963,7 @@ function RankingPanel({
     style: {
       flex: 1,
       border: metric === x.key ? "2px solid var(--primary)" : "1px solid var(--line)",
-      borderRadius: 11,
+      borderRadius: 10,
       padding: "9px 6px",
       cursor: "pointer",
       background: metric === x.key ? "var(--soft)" : "var(--card)",
@@ -5985,12 +5971,12 @@ function RankingPanel({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      fontWeight: 800
+      fontSize: 13.5,
+      fontWeight: 600
     }
   }, x.label), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       fontWeight: 700,
       opacity: 0.75,
       marginTop: 2
@@ -6003,7 +5989,7 @@ function RankingPanel({
       alignItems: "center",
       background: "var(--card, #fff)",
       border: "1px solid var(--line)",
-      borderRadius: 13,
+      borderRadius: 12,
       padding: "10px 12px",
       marginBottom: 9
     }
@@ -6012,14 +5998,14 @@ function RankingPanel({
     style: {
       width: 34,
       height: 34,
-      borderRadius: 9
+      borderRadius: 8
     }
   }), /*#__PURE__*/React.createElement("div", {
     className: "sk",
     style: {
       width: 56,
       height: 56,
-      borderRadius: 9
+      borderRadius: 8
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6030,14 +6016,14 @@ function RankingPanel({
     style: {
       width: "70%",
       height: 13,
-      borderRadius: 6
+      borderRadius: 8
     }
   }), /*#__PURE__*/React.createElement("div", {
     className: "sk",
     style: {
       width: "40%",
       height: 11,
-      borderRadius: 6,
+      borderRadius: 8,
       marginTop: 7
     }
   }))))) : metric === "cold" ? 眠り.filter(p => !p.archived).length === 0 ? /*#__PURE__*/React.createElement("div", {
@@ -6045,12 +6031,12 @@ function RankingPanel({
       textAlign: "center",
       color: "var(--sub)",
       padding: "36px 0",
-      fontSize: 13,
+      fontSize: 13.5,
       lineHeight: 1.8
     }
   }, "\u7720\u3063\u3066\u3044\u308B\u30DD\u30C3\u30D7\u306F\u3042\u308A\u307E\u305B\u3093\u3002") : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.8,
       marginBottom: 10
@@ -6064,7 +6050,7 @@ function RankingPanel({
         gap: 11,
         alignItems: "center",
         background: "var(--card)",
-        borderRadius: 13,
+        borderRadius: 12,
         padding: "9px 10px",
         marginBottom: 8,
         boxShadow: "var(--card-shadow)"
@@ -6078,7 +6064,7 @@ function RankingPanel({
         width: 52,
         height: 52,
         objectFit: "cover",
-        borderRadius: 9,
+        borderRadius: 8,
         background: "var(--mat)",
         flexShrink: 0,
         cursor: "pointer"
@@ -6093,7 +6079,7 @@ function RankingPanel({
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13.5,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--ink)",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -6101,7 +6087,7 @@ function RankingPanel({
       }
     }, p.product_name), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11.5,
+        fontSize: 12,
         color: "var(--sub)",
         marginTop: 2
       }
@@ -6113,10 +6099,10 @@ function RankingPanel({
         border: "1px solid var(--line)",
         background: "var(--card)",
         color: "var(--text)",
-        borderRadius: 9,
+        borderRadius: 8,
         padding: "8px 10px",
-        fontSize: 12,
-        fontWeight: 800,
+        fontSize: 12.5,
+        fontWeight: 600,
         cursor: "pointer",
         fontFamily: "inherit"
       }
@@ -6126,7 +6112,7 @@ function RankingPanel({
       textAlign: "center",
       color: "var(--faint)",
       padding: "40px 0",
-      fontSize: 13,
+      fontSize: 13.5,
       lineHeight: 1.8
     }
   }, "\u307E\u3060\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093\u3002", /*#__PURE__*/React.createElement("br", null), "\u30DD\u30C3\u30D7\u304C\u898B\u3089\u308C\u308B\u30FB\u4F7F\u308F\u308C\u308B\u3068\u3001\u3053\u3053\u306B\u9806\u4F4D\u304C\u4E26\u3073\u307E\u3059\u3002") : ranked.map((p, i) => {
@@ -6140,7 +6126,7 @@ function RankingPanel({
         alignItems: "center",
         background: "var(--card, #fff)",
         border: i < 3 ? "1.5px solid " + rs.bg : "1px solid var(--line)",
-        borderRadius: 13,
+        borderRadius: 12,
         padding: "10px 12px",
         marginBottom: 9,
         cursor: "pointer"
@@ -6149,14 +6135,14 @@ function RankingPanel({
       style: {
         width: 34,
         height: 34,
-        borderRadius: 9,
+        borderRadius: 8,
         background: rs.bg,
         color: rs.fg,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontSize: i < 3 ? 16 : 13,
-        fontWeight: 900,
+        fontWeight: 700,
         flexShrink: 0
       }
     }, i + 1), /*#__PURE__*/React.createElement("img", {
@@ -6166,7 +6152,7 @@ function RankingPanel({
         width: 56,
         height: 56,
         objectFit: "cover",
-        borderRadius: 9,
+        borderRadius: 8,
         flexShrink: 0,
         border: "1px solid var(--line)"
       }
@@ -6178,7 +6164,7 @@ function RankingPanel({
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 14,
-        fontWeight: 900,
+        fontWeight: 700,
         color: "var(--ink)",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -6186,7 +6172,7 @@ function RankingPanel({
       }
     }, p.product_name), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 12.5,
         color: "var(--sub)",
         marginTop: 2
       }
@@ -6198,7 +6184,7 @@ function RankingPanel({
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 17,
-        fontWeight: 900,
+        fontWeight: 700,
         color: i < 3 ? "var(--primary)" : "var(--ink)",
         lineHeight: 1
       }
@@ -6291,13 +6277,13 @@ function DimsBackfill() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)",
       marginBottom: 4
     }
   }, "\u30DD\u30C3\u30D7\u306E\u7E26\u9577\u30FB\u6A2A\u9577\u3092\u6E2C\u308B"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       color: "var(--sub)",
       lineHeight: 1.8,
       marginBottom: 10
@@ -6313,13 +6299,13 @@ function DimsBackfill() {
       borderRadius: 10,
       padding: "12px",
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       cursor: "pointer"
     }
   }, st.busy ? st.total ? `測っています… ${st.done} / ${st.total}` : "準備しています…" : "まとめて測る"), st.msg && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
-      fontWeight: 800,
+      fontWeight: 600,
       color: "var(--sub)",
       marginTop: 9,
       textAlign: "center"

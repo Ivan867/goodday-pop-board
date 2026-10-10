@@ -777,8 +777,8 @@ function KifudaTab() {
     w.document.close();
   };
   const card = {
-    background: "var(--card)",
-    borderRadius: 14,
+    background: "var(--card, #fff)",
+    borderRadius: 12,
     boxShadow: "var(--card-shadow)",
     padding: 14
   };
@@ -815,7 +815,7 @@ function KifudaTab() {
   const 候補 = (k, base) => [...new Set([...(recent[k] || []), ...base])].slice(0, 10);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontSize: 13.5,
       color: "var(--sub)",
       marginBottom: 12
     }
@@ -853,8 +853,8 @@ function KifudaTab() {
   }, "\u5370\u5237")), msg && /*#__PURE__*/React.createElement("div", {
     role: "status",
     style: {
-      fontSize: 13,
-      fontWeight: 800,
+      fontSize: 13.5,
+      fontWeight: 600,
       color: "var(--primary)",
       marginTop: 8,
       textAlign: "center"
@@ -871,7 +871,7 @@ function KifudaTab() {
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontWeight: 800
+      fontWeight: 600
     }
   }, "\u7A0E\u8FBC\u306E\u7AEF\u6570"), [["ceil", "切り上げ"], ["round", "四捨五入"], ["floor", "切り捨て"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
     key: k,
@@ -901,12 +901,12 @@ function KifudaTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 14,
-      fontWeight: 900,
+      fontWeight: 700,
       color: "var(--ink)"
     }
   }, "\u898B\u305F\u76EE ", 字待ち && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 12,
+      fontSize: 12.5,
       fontWeight: 700,
       color: "var(--sub)"
     }
@@ -984,7 +984,7 @@ function KifudaTab() {
       "aria-hidden": "true",
       style: {
         color: "var(--sub)",
-        fontSize: 16
+        fontSize: 17
       }
     }, on ? "▴" : "▾")), on && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("canvas", {
       ref: stripRef,
@@ -998,7 +998,7 @@ function KifudaTab() {
       style: {
         ...inp,
         fontSize: 20,
-        fontWeight: 800
+        fontWeight: 600
       },
       value: r.name,
       placeholder: "\u4F8B\uFF1A\u771F\u3055\u3070",
@@ -1011,7 +1011,7 @@ function KifudaTab() {
       style: {
         ...inp,
         fontSize: 20,
-        fontWeight: 800
+        fontWeight: 600
       },
       inputMode: "numeric",
       value: r.price,
@@ -1023,7 +1023,7 @@ function KifudaTab() {
       style: {
         ...inp,
         fontSize: 20,
-        fontWeight: 800,
+        fontWeight: 600,
         color: "var(--ink)",
         background: "transparent"
       }

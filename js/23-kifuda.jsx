@@ -349,7 +349,7 @@ function KifudaTab() {
     w.document.close();
   };
 
-  const card = { background:"var(--card)", borderRadius:14, boxShadow:"var(--card-shadow)", padding:14 };
+  const card = { background:"var(--card, #fff)", borderRadius:12, boxShadow:"var(--card-shadow)", padding:14 };
   const lab = { display:"block", fontSize:12, fontWeight:800, color:"var(--sub)", margin:"10px 0 4px" };
   const inp = { width:"100%", boxSizing:"border-box", border:"1px solid var(--line)", borderRadius:10, padding:"10px 12px", fontSize:16, background:"var(--bg)", color:"var(--text)" };
   const Chips = ({ list, onPick, on }) => (
@@ -361,7 +361,7 @@ function KifudaTab() {
 
   return (
     <div>
-      <div style={{ fontSize:13, color:"var(--sub)", marginBottom:12 }}>
+      <div style={{ fontSize:13.5, color:"var(--sub)", marginBottom:12 }}>
         A4たてに4段の木札を作ります。上の札を押すと、その段を直せます。入れた内容はこの端末に残ります。
       </div>
       <div className="kf-grid">
@@ -374,9 +374,9 @@ function KifudaTab() {
               <button className="kf-btn" onClick={download}>画像を保存</button>
               <button className="kf-btn" onClick={print}>印刷</button>
             </div>
-            {msg && <div role="status" style={{ fontSize:13, fontWeight:800, color:"var(--primary)", marginTop:8, textAlign:"center" }}>{msg}</div>}
+            {msg && <div role="status" style={{ fontSize:13.5, fontWeight:600, color:"var(--primary)", marginTop:8, textAlign:"center" }}>{msg}</div>}
             <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginTop:12, fontSize:12.5, color:"var(--sub)" }}>
-              <span style={{ fontWeight:800 }}>税込の端数</span>
+              <span style={{ fontWeight:600 }}>税込の端数</span>
               {[["ceil","切り上げ"],["round","四捨五入"],["floor","切り捨て"]].map(([k, l]) => (
                 <button key={k} type="button" className={"kf-chip" + (taxMode === k ? " on" : "")} aria-pressed={taxMode === k} onClick={() => setTaxMode(k)}>{l}</button>
               ))}
@@ -388,7 +388,7 @@ function KifudaTab() {
           </div>
 
           <div style={{ ...card, marginTop:12 }}>
-            <div style={{ fontSize:14, fontWeight:900, color:"var(--ink)" }}>見た目 {字待ち && <span style={{ fontSize:12, fontWeight:700, color:"var(--sub)" }}>（字を読み込み中…）</span>}</div>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--ink)" }}>見た目 {字待ち && <span style={{ fontSize:12.5, fontWeight:700, color:"var(--sub)" }}>（字を読み込み中…）</span>}</div>
             <div style={lab}>背景</div>
             <div className="kf-bgs">
               {KF_BGS.map(b => <KfBgThumb key={b.id} bg={b} on={look.bg === b.id} onPick={() => setL("bg", b.id)} />)}
@@ -417,22 +417,22 @@ function KifudaTab() {
                   <span className="kf-no">{i + 1}段目</span>
                   <span className="kf-sum">{r.name || <span style={{ color:"var(--faint)" }}>（空き）</span>}</span>
                   <span className="kf-sum-p">{isNaN(p) ? "" : `${p}円（税込${kfTax(p, taxMode)}円）`}</span>
-                  <span aria-hidden="true" style={{ color:"var(--sub)", fontSize:16 }}>{on ? "▴" : "▾"}</span>
+                  <span aria-hidden="true" style={{ color:"var(--sub)", fontSize:17 }}>{on ? "▴" : "▾"}</span>
                 </button>
                 {on && (
                   <div>
                     <canvas ref={stripRef} width={600} height={Math.round(600 * KF_S / KF_W)} className="kf-strip" aria-hidden="true" />
                     <label style={lab}>品名</label>
-                    <input style={{ ...inp, fontSize:20, fontWeight:800 }} value={r.name} placeholder="例：真さば" onChange={e => setRow(i, "name", e.target.value)} />
+                    <input style={{ ...inp, fontSize:20, fontWeight:600 }} value={r.name} placeholder="例：真さば" onChange={e => setRow(i, "name", e.target.value)} />
 
                     <div className="kf-two">
                       <div>
                         <label style={lab}>本体価格（円）</label>
-                        <input style={{ ...inp, fontSize:20, fontWeight:800 }} inputMode="numeric" value={r.price} placeholder="359" onChange={e => setRow(i, "price", e.target.value.replace(/[^\d]/g, ""))} />
+                        <input style={{ ...inp, fontSize:20, fontWeight:600 }} inputMode="numeric" value={r.price} placeholder="359" onChange={e => setRow(i, "price", e.target.value.replace(/[^\d]/g, ""))} />
                       </div>
                       <div>
                         <label style={lab}>税込（自動）</label>
-                        <div style={{ ...inp, fontSize:20, fontWeight:800, color:"var(--ink)", background:"transparent" }}>{isNaN(p) ? "—" : kfTax(p, taxMode) + "円"}</div>
+                        <div style={{ ...inp, fontSize:20, fontWeight:600, color:"var(--ink)", background:"transparent" }}>{isNaN(p) ? "—" : kfTax(p, taxMode) + "円"}</div>
                       </div>
                     </div>
 
