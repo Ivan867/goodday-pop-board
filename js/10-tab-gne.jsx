@@ -77,7 +77,7 @@ const GNE_PRESETS = [
     } },
   // 魚屋のおすすめ 旬の味覚（よこ）：配置はCGCフェアの見本にならう。
   // 左に品名（2行以上は最後の行が赤）とキャッチ、右下に大きな価格、その下に（税込 ○○円）
-  { id:"shun", name:"旬の味覚", land:true, img:"tpl/shun.jpg", thumb:"tpl/shun_thumb.jpg", useCopy:true,
+  { id:"shun", name:"横A4", land:true, img:"tpl/yoko_a4.jpg", thumb:"tpl/yoko_a4_thumb.jpg", useCopy:true,   // 2026-10-10 絵を差し替え（旧：旬の味覚）
     taxFmt:"（税込 *{n}*円）", labels:{ taxLabel:"本体価格" },
     layout:{
       name:     { x:70,  y:880,  size:150, fill:"#141414", stroke:"#ffffff", sw:10, align:"left",  maxW:900, maxH:270, lastLineFill:"#d6121a" },

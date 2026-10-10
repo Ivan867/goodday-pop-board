@@ -530,11 +530,12 @@ const GNE_PRESETS = [{
 // 左に品名（2行以上は最後の行が赤）とキャッチ、右下に大きな価格、その下に（税込 ○○円）
 {
   id: "shun",
-  name: "旬の味覚",
+  name: "横A4",
   land: true,
-  img: "tpl/shun.jpg",
-  thumb: "tpl/shun_thumb.jpg",
+  img: "tpl/yoko_a4.jpg",
+  thumb: "tpl/yoko_a4_thumb.jpg",
   useCopy: true,
+  // 2026-10-10 絵を差し替え（旧：旬の味覚）
   taxFmt: "（税込 *{n}*円）",
   labels: {
     taxLabel: "本体価格"
