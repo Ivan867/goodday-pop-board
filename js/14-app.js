@@ -177,11 +177,26 @@ const MENU_ICON = (() => {
     }), /*#__PURE__*/React.createElement("path", {
       d: "M8 8h7M8 11.5h7"
     }))),
-    admin: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
-      d: "M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"
+    // 管理画面：3つの歯車（2026-10-10 いただいた絵に合わせて描き直し。濃い歯車は濃紺の上で見えるよう明るくした）
+    admin: /*#__PURE__*/React.createElement("svg", {
+      width: "24",
+      height: "24",
+      viewBox: "0 0 24 24",
+      "aria-hidden": "true",
+      className: "ic-gears"
+    }, /*#__PURE__*/React.createElement("path", {
+      fillRule: "evenodd",
+      fill: "#A9B8F5",
+      d: "M12.50 7.99 L14.01 8.59 L13.23 10.45 L11.75 9.79 L10.36 11.17 L10.36 11.17 L11.01 12.65 L9.14 13.42 L8.56 11.91 L6.61 11.90 L6.61 11.90 L6.01 13.41 L4.15 12.63 L4.81 11.15 L3.43 9.76 L3.43 9.76 L1.95 10.41 L1.18 8.54 L2.69 7.96 L2.70 6.01 L2.70 6.01 L1.19 5.41 L1.97 3.55 L3.45 4.21 L4.84 2.83 L4.84 2.83 L4.19 1.35 L6.06 0.58 L6.64 2.09 L8.59 2.10 L8.59 2.10 L9.19 0.59 L11.05 1.37 L10.39 2.85 L11.77 4.24 L11.77 4.24 L13.25 3.59 L14.02 5.46 L12.51 6.04 L12.50 7.99Z M9.90 7.00 A2.3 2.3 0 1 0 5.30 7.00 A2.3 2.3 0 1 0 9.90 7.00Z"
     }), /*#__PURE__*/React.createElement("path", {
-      d: "M9.5 12.2l1.8 1.8 3.4-3.6"
-    }))),
+      fillRule: "evenodd",
+      fill: "#EAF1F8",
+      d: "M22.40 10.20 L23.50 10.40 L23.22 11.78 L22.13 11.54 L21.37 12.67 L21.37 12.67 L22.01 13.59 L20.84 14.37 L20.24 13.43 L18.90 13.70 L18.90 13.70 L18.70 14.80 L17.32 14.52 L17.56 13.43 L16.43 12.67 L16.43 12.67 L15.51 13.31 L14.73 12.14 L15.67 11.54 L15.40 10.20 L15.40 10.20 L14.30 10.00 L14.58 8.62 L15.67 8.86 L16.43 7.73 L16.43 7.73 L15.79 6.81 L16.96 6.03 L17.56 6.97 L18.90 6.70 L18.90 6.70 L19.10 5.60 L20.48 5.88 L20.24 6.97 L21.37 7.73 L21.37 7.73 L22.29 7.09 L23.07 8.26 L22.13 8.86 L22.40 10.20Z M20.50 10.20 A1.6 1.6 0 1 0 17.30 10.20 A1.6 1.6 0 1 0 20.50 10.20Z"
+    }), /*#__PURE__*/React.createElement("path", {
+      fillRule: "evenodd",
+      fill: "#2E8FE0",
+      d: "M15.91 19.05 L17.31 19.85 L16.30 21.52 L14.94 20.65 L13.42 21.75 L13.42 21.75 L13.85 23.31 L11.95 23.78 L11.60 22.20 L9.75 21.91 L9.75 21.91 L8.95 23.31 L7.28 22.30 L8.15 20.94 L7.05 19.42 L7.05 19.42 L5.49 19.85 L5.02 17.95 L6.60 17.60 L6.89 15.75 L6.89 15.75 L5.49 14.95 L6.50 13.28 L7.86 14.15 L9.38 13.05 L9.38 13.05 L8.95 11.49 L10.85 11.02 L11.20 12.60 L13.05 12.89 L13.05 12.89 L13.85 11.49 L15.52 12.50 L14.65 13.86 L15.75 15.38 L15.75 15.38 L17.31 14.95 L17.78 16.85 L16.20 17.20 L15.91 19.05Z M13.60 17.40 A2.2 2.2 0 1 0 9.20 17.40 A2.2 2.2 0 1 0 13.60 17.40Z"
+    })),
     trend: P(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
       d: "M3.5 17l5-5 3.5 3.5 6-6.5"
     }), /*#__PURE__*/React.createElement("path", {
@@ -1298,18 +1313,13 @@ function App() {
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("svg", {
-    width: "17",
-    height: "17",
+    width: "20",
+    height: "20",
     viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.9",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
+    "aria-hidden": "true"
   }, /*#__PURE__*/React.createElement("path", {
-    d: "M20 12a8 8 0 11-2.3-5.6"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 4v5h-5"
+    fill: "currentColor",
+    d: "M19.97 15.22A8.6 8.6 0 0 0 6.71 5.22L8.80 7.90A5.2 5.2 0 0 1 16.82 13.95ZM5.10 3.17L4.13 9.39L10.40 9.95ZM4.03 8.78A8.6 8.6 0 0 0 17.29 18.78L15.20 16.10A5.2 5.2 0 0 1 7.18 10.05ZM18.90 20.83L19.87 14.61L13.60 14.05Z"
   })), /*#__PURE__*/React.createElement("span", {
     className: "mr-t"
   }, "\u8AAD\u307F\u8FBC\u307F\u76F4\u3059"))), 広い && /*#__PURE__*/React.createElement("button", {
