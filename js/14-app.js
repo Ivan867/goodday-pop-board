@@ -1182,30 +1182,7 @@ function App() {
     "aria-hidden": "true"
   })), /*#__PURE__*/React.createElement("div", {
     className: "dock-ctl"
-  }, 畳む ? /*#__PURE__*/React.createElement(部門切替, null) : /*#__PURE__*/React.createElement(部門スイッチ, null), /*#__PURE__*/React.createElement("button", {
-    className: "dock-find",
-    "aria-label": "\u30DD\u30C3\u30D7\u3092\u3055\u304C\u3059",
-    title: "\u3055\u304C\u3059",
-    onClick: () => {
-      try {
-        window.dispatchEvent(new CustomEvent("openSearch"));
-      } catch (e) {}
-    }
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.1",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("circle", {
-    cx: "10.5",
-    cy: "10.5",
-    r: "6.5"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M20 20l-4.6-4.6"
-  })))))) : null, /*#__PURE__*/React.createElement("div", {
+  }, 畳む ? /*#__PURE__*/React.createElement(部門切替, null) : /*#__PURE__*/React.createElement(部門スイッチ, null)))) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",

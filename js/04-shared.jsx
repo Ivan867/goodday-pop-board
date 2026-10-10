@@ -677,8 +677,8 @@ function PopDetail({ pop, onClose, onDelete, onLiked, onCommented, onCreateFromP
 // 好み（4・5・6列）と、その幅に実際に入る数の小さいほうで並べる。スマホは2列のまま。
 // 横長のポップは2列ぶんを使う。A判なら、横2列ぶんの高さ＝縦1列ぶんの高さになるので、段がそろい、上下の余白も出ない。
 const POP_最小幅 = 120;
-// 選べるのは3列と6列だけ（2026-10-10）。前に選んでいた4・5は近いほうへ寄せる
-function 列の好み() { try { const n = +localStorage.getItem("popCols"); return n === 3 || n === 4 ? 3 : 6; } catch (e) { return 6; } }
+// 選べるのは4列（大）と6列（小）だけ（2026-10-10）。前に選んでいた3・5は近いほうへ寄せる
+function 列の好み() { try { const n = +localStorage.getItem("popCols"); return n === 3 || n === 4 ? 4 : 6; } catch (e) { return 6; } }
 function usePopCols(好み) {
   const [el, setEl] = useState(null);
   const [w, setW] = useState(0);

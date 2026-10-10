@@ -386,9 +386,9 @@ function BoardTab({
       flexShrink: 0
     }
   }, (盤.入る >= 4
-  // パソコン・タブレット：3列と6列だけ。字は出さずマークで（2026-10-10）
-  ? [["md3", "3列", /*#__PURE__*/React.createElement("svg", {
-    key: "c3",
+  // パソコン・タブレット：4列（大きいマス）と6列（小さいマス）だけ。字は出さずマークで（2026-10-10）
+  ? [["md4", "4列（大きく）", /*#__PURE__*/React.createElement("svg", {
+    key: "c4",
     width: "20",
     height: "20",
     viewBox: "0 0 24 24",
@@ -398,69 +398,90 @@ function BoardTab({
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "4",
-    width: "4.6",
-    height: "16",
-    rx: "1"
+    x: "3.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "9.7",
-    y: "4",
-    width: "4.6",
-    height: "16",
-    rx: "1"
+    x: "13.5",
+    y: "3.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "16.4",
-    y: "4",
-    width: "4.6",
-    height: "16",
-    rx: "1"
-  }))], ["md6", "6列", /*#__PURE__*/React.createElement("svg", {
+    x: "3.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "13.5",
+    y: "13.5",
+    width: "7",
+    height: "7",
+    rx: "1.2"
+  }))], ["md6", "6列（小さく）", /*#__PURE__*/React.createElement("svg", {
     key: "c6",
     width: "20",
     height: "20",
     viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.75",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
+    fill: "currentColor",
+    stroke: "none"
   }, /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "4",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "3.5",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "9.7",
-    y: "4",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "9.8",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "16.4",
-    y: "4",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "16.1",
+    y: "3.5",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "3",
-    y: "13",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "3.5",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "9.7",
-    y: "13",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "9.8",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "16.4",
-    y: "13",
-    width: "4.6",
-    height: "7",
-    rx: "1"
+    x: "16.1",
+    y: "9.8",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3.5",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "9.8",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "16.1",
+    y: "16.1",
+    width: "4.4",
+    height: "4.4",
+    rx: ".8"
   }))]] : [["md", "2まい", /*#__PURE__*/React.createElement("svg", {
     key: "3",
     width: "18",
